@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/side_nav_bar"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/mainNavAvatar"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:src="@drawable/default_avatar" />
+
+    <TextView
+        android:id="@+id/mainNavWelcomeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:shadowColor="#000000"
+        android:text="欢迎你，同学"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="17sp" />
+
+</LinearLayout>

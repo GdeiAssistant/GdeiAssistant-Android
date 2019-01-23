@@ -1,0 +1,70 @@
+<!--  items选项 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/cardItemDividerLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#daddde"
+        android:visibility="visible" />
+
+    <RelativeLayout
+        android:id="@+id/cardItemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cardItemTradeName"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:text="交易名称"
+            android:textColor="#000000"
+            android:textSize="17sp" />
+
+        <!-- 消费为支出的为红色,收入的为蓝色 -->
+
+        <TextView
+            android:id="@+id/cardItemTradePrice"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:gravity="end"
+            android:paddingTop="10dp"
+            android:text="00.00元"
+            android:textAlignment="textEnd"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/cardItemTradeTime"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cardItemTradeName"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:text="2000-08-15 00:00"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/cardItemTradeAccountBalance"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/cardItemTradeName"
+            android:layout_marginRight="10dp"
+            android:gravity="end"
+            android:paddingTop="10dp"
+            android:text="余额：0.00元"
+            android:textAlignment="textEnd"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

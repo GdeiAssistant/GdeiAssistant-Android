@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/fragmentIndexSwipeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/fragmentIndexImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/fragment_index_image" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#dddddd" />
+
+                <LinearLayout
+                    android:id="@+id/fragmentIndexScheduleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    android:visibility="invisible">
+
+                    <RelativeLayout
+                        android:id="@+id/fragmentIndexScheduleTitleLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="@drawable/pressable_white_background">
+
+                        <ImageView
+                            android:id="@+id/fragmentIndexScheduleImage"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="35dp"
+                            android:src="@drawable/fragment_index_schedule" />
+
+                        <TextView
+                            android:id="@+id/fragmentIndexTodaySchedule"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="15dp"
+                            android:layout_toRightOf="@id/fragmentIndexScheduleImage"
+                            android:text="今日课表"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/fragmentIndexDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@id/fragmentIndexTodaySchedule"
+                            android:layout_marginLeft="20dp"
+                            android:layout_toRightOf="@id/fragmentIndexTodaySchedule"
+                            android:text="9月1日 周一"
+                            android:textAlignment="center" />
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="20dp"
+                            android:src="@drawable/into" />
+
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#dddddd" />
+
+                    <FrameLayout
+                        android:id="@+id/fragmentIndexScheduleContentLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp">
+
+                        <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                            android:id="@+id/fragmentIndexScheduleListview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:visibility="invisible" />
+
+                        <ProgressBar
+                            android:id="@+id/fragmentIndexScheduleProgress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            android:id="@+id/fragmentIndexScheduleFailedTip"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textAlignment="center"
+                            android:textColor="#c8c7c7"
+                            android:textSize="18sp"
+                            android:visibility="visible" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#dddddd" />
+
+                <LinearLayout
+                    android:id="@+id/fragmentIndexCardLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:id="@+id/fragmentIndexCardTitleLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="@drawable/pressable_white_background">
+
+                        <ImageView
+                            android:id="@+id/fragmentIndexCardImage"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="35dp"
+                            android:src="@drawable/fragment_index_card" />
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="15dp"
+                            android:layout_toRightOf="@id/fragmentIndexCardImage"
+                            android:text="我的饭卡"
+                            android:textSize="20sp" />
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="20dp"
+                            android:src="@drawable/into" />
+
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#dddddd" />
+
+                    <FrameLayout
+                        android:id="@+id/fragmentIndexCardContentLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="130dp">
+
+                        <RelativeLayout
+                            android:id="@+id/fragmentIndexCardDataLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="invisible">
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardBalance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginTop="25dp"
+                                android:text="卡余额:"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardBalanceValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="25dp"
+                                android:layout_toRightOf="@id/fragmentIndexCardBalance"
+                                android:textColor="#18b3ec"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardInterimBalanceValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="25dp"
+                                android:layout_marginRight="45dp"
+                                android:textColor="#18b3ec"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardInterimBalance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginTop="25dp"
+                                android:layout_toLeftOf="@id/fragmentIndexCardInterimBalanceValue"
+                                android:text="过渡余额:"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardLostState"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/fragmentIndexCardInterimBalance"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginBottom="20dp"
+                                android:text="挂失状态:"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardLostStateValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/fragmentIndexCardInterimBalance"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_toRightOf="@id/fragmentIndexCardLostState"
+                                android:textColor="#18b3ec"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardFreezeState"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/fragmentIndexCardInterimBalance"
+                                android:layout_alignLeft="@id/fragmentIndexCardInterimBalance"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginBottom="20dp"
+                                android:text="冻结状态:"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fragmentIndexCardFreezeStateValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/fragmentIndexCardInterimBalance"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_toRightOf="@id/fragmentIndexCardFreezeState"
+                                android:textColor="#18b3ec"
+                                android:textSize="18sp" />
+
+                        </RelativeLayout>
+
+                        <ProgressBar
+                            android:id="@+id/fragmentIndexCardProgress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            android:id="@+id/fragmentIndexCardFailedTip"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textAlignment="center"
+                            android:textColor="#c8c7c7"
+                            android:textSize="18sp"
+                            android:visibility="visible" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>

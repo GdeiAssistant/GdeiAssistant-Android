@@ -1,0 +1,40 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@android:color/holo_blue_bright</item>
+        <item name="colorAccent">@android:color/holo_blue_bright</item>
+        <item name="colorPrimaryDark">@android:color/holo_blue_bright</item>
+        <item name="android:textColorPrimary">@android:color/background_dark</item>
+        <item name="android:textColorSecondary">@android:color/darker_gray</item>
+        <item name="android:colorBackground">@android:color/background_light</item>
+    </style>
+
+    <style name="GuideTheme" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="ThemeToolbar" parent="AppTheme">
+
+        <item name="colorControlNormal">@android:color/background_light</item>
+
+    </style>
+
+    <style name="AppTheme.BlueButton" parent="Widget.AppCompat.Button">
+        <item name="colorButtonNormal">#ff00ddff</item>
+        <item name="colorControlHighlight">#ff0099cc</item>
+    </style>
+
+    <style name="AppTheme.WhiteButton" parent="Widget.AppCompat.Button">
+        <item name="colorButtonNormal">#ffffff</item>
+        <item name="colorControlHighlight">#f2f2f2</item>
+    </style>
+
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

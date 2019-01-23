@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="edu.gdei.gdeiassistant">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:name=".Application.SophixStubApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
+        <meta-data
+            android:name="com.taobao.android.hotfix.IDSECRET"
+            android:value="@string/hotfix_app_key" />
+        <meta-data
+            android:name="com.taobao.android.hotfix.APPSECRET"
+            android:value="@string/hotfix_app_secret" />
+        <meta-data
+            android:name="com.taobao.android.hotfix.RSASECRET"
+            android:value="@string/hotfix_rsa" />
+
+        <service
+            android:name=".Service.UpgradeService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".Service.PatchService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="edu.gdei.gdeiassistant.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <activity
+            android:name=".Activity.GuideActivity"
+            android:theme="@style/GuideTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.LoginActivity" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:theme="@style/MainTheme" />
+        <activity android:name=".Activity.WebViewActivity" />
+        <activity android:name=".Activity.AboutSoftWareActivity" />
+        <activity android:name=".Activity.GradeDetailActivity" />
+        <activity android:name=".Activity.ChargeActivity" />
+        <activity android:name=".Activity.CardActivity" />
+        <activity android:name=".Activity.EvaluateActivity" />
+        <activity android:name=".Activity.LostActivity"></activity>
+    </application>
+
+</manifest>

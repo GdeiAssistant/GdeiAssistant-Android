@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/index"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="首页" />
+        <item
+            android:id="@+id/grade"
+            android:icon="@drawable/ic_grade_black_24dp"
+            android:title="成绩查询"
+            android:visible="false" />
+        <item
+            android:id="@+id/schedule"
+            android:icon="@drawable/ic_class_black_24dp"
+            android:title="课表查询"
+            android:visible="false" />
+        <item
+            android:id="@+id/cet"
+            android:icon="@drawable/ic_cet_black_24dp"
+            android:title="四六级查询"
+            android:visible="false" />
+        <item
+            android:id="@+id/evaluate"
+            android:icon="@drawable/ic_evaluate_black_24dp"
+            android:title="一键评教"
+            android:visible="false" />
+        <item
+            android:id="@+id/card"
+            android:icon="@drawable/ic_card_black_24dp"
+            android:title="消费查询"
+            android:visible="false" />
+        <item
+            android:id="@+id/charge"
+            android:icon="@drawable/ic_charge_black_24dp"
+            android:title="校园卡充值"
+            android:visible="false" />
+        <item
+            android:id="@+id/lost"
+            android:icon="@drawable/ic_lost_black_24dp"
+            android:title="校园卡挂失"
+            android:visible="false" />
+    </group>
+
+    <item android:title="设置">
+        <menu>
+            <item
+                android:id="@+id/exit"
+                android:icon="@drawable/ic_exit_to_app_black_24dp"
+                android:title="退出账号" />
+            <item
+                android:id="@+id/about"
+                android:icon="@drawable/ic_about_black_24dp"
+                android:title="关于软件" />
+            <item
+                android:id="@+id/update"
+                android:icon="@drawable/ic_system_update_black_24dp"
+                android:title="检查更新" />
+        </menu>
+    </item>
+
+</menu>
