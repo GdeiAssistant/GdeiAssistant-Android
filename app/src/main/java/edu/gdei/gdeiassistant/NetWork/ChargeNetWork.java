@@ -36,7 +36,7 @@ public class ChargeNetWork {
                 .add("clientRSASignature", clientRSASignature)
                 .build();
         Request request = new Request.Builder()
-                .header("Version-Code", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName)
+                .header("Version-Code", "V" + context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName)
                 .header("Client-Type", "Android")
                 .header("User-Agent", userAgent)
                 .post(requestBody).url("https://www.gdeiassistant.cn/rest/charge").build();

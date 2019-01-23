@@ -32,7 +32,7 @@ public class AboutSoftWareActivity extends AppCompatActivity {
         }
         //更新版本号
         try {
-            String versionName = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            String versionName = "V " + getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             aboutSoftWareVersionCode.setText(versionName);
         } catch (PackageManager.NameNotFoundException ignored) {
 
