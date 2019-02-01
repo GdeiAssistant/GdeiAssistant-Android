@@ -64,6 +64,7 @@ public class MainModel {
                             message.what = RequestConstant.SERVER_ERROR;
                         }
                     } else {
+                        bundle.putString("Message", result.getMessage());
                         message.what = RequestConstant.REQUEST_FAILURE;
                     }
                 } catch (NullPointerException ignored) {
@@ -105,6 +106,7 @@ public class MainModel {
                             message.what = RequestConstant.SERVER_ERROR;
                         }
                     } else {
+                        bundle.putString("Message", result.getMessage());
                         message.what = RequestConstant.REQUEST_FAILURE;
                     }
                 } catch (NullPointerException ignored) {
@@ -186,6 +188,7 @@ public class MainModel {
                             message.what = RequestConstant.SERVER_ERROR;
                         }
                     } else {
+                        bundle.putString("Message", result.getMessage());
                         message.what = RequestConstant.REQUEST_FAILURE;
                     }
                 } catch (NullPointerException ignored) {
@@ -264,6 +267,7 @@ public class MainModel {
                             message.what = RequestConstant.SERVER_ERROR;
                         }
                     } else {
+                        bundle.putString("Message", result.getMessage());
                         message.what = RequestConstant.REQUEST_FAILURE;
                     }
                 } catch (NullPointerException ignored) {

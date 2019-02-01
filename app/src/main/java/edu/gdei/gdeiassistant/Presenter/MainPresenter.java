@@ -107,6 +107,17 @@ public class MainPresenter {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case RequestConstant.REQUEST_FAILURE:
+                    switch (msg.getData().getInt("Tag")) {
+                        case MainTagConstant.DOWNLOAD_AVATAR:
+                        case MainTagConstant.GET_USER_ACCESS:
+                        case MainTagConstant.GET_USER_PROFILE:
+                        case MainTagConstant.UPLOAD_AVATAR:
+                            mainActivity.ShowToast(msg.getData().getString("Message"));
+                            break;
+                    }
+                    break;
+
                 case RequestConstant.REQUEST_SUCCESS:
                     switch (msg.getData().getInt("Tag")) {
                         case MainTagConstant.DOWNLOAD_AVATAR:
