@@ -163,6 +163,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 显示今日课表模块的进度条
      */
     public void ShowScheduleProgressbar() {
+        SetScheduleLayoutHeight(0);
         fragmentIndexScheduleProgress.setVisibility(View.VISIBLE);
     }
 
@@ -170,6 +171,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 隐藏今日课表模块的进度条
      */
     public void HideScheduleProgressbar() {
+        SetScheduleLayoutHeight(0);
         fragmentIndexScheduleProgress.setVisibility(View.INVISIBLE);
     }
 
@@ -177,9 +179,6 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 显示今日课表模块
      */
     public void ShowScheduleModule() {
-        ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
-        layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
-        fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
         fragmentIndexScheduleLayout.setVisibility(View.VISIBLE);
     }
 
@@ -199,6 +198,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * @param text
      */
     public void ShowScheduleFailTip(String text) {
+        SetScheduleLayoutHeight(0);
         fragmentIndexScheduleFailedTip.setText(text);
         fragmentIndexScheduleFailedTip.setVisibility(View.VISIBLE);
     }
@@ -207,8 +207,39 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 隐藏今日课表模块的失败提示
      */
     public void HideScheduleFailTip() {
+        SetScheduleLayoutHeight(0);
         fragmentIndexScheduleFailedTip.setVisibility(View.INVISIBLE);
         fragmentIndexScheduleFailedTip.setText("");
+    }
+
+    /**
+     * 设置今日课表模块的高度
+     *
+     * @param scheduleLength
+     */
+    public void SetScheduleLayoutHeight(int scheduleLength) {
+        if (scheduleLength == 0) {
+            ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
+            fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+        } else {
+            ListAdapter listAdapter = fragmentIndexScheduleListview.getAdapter();
+            if (listAdapter == null) {
+                ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+                layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
+                fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+            } else {
+                View listItem = listAdapter.getView(0, null, fragmentIndexScheduleListview);
+                listItem.measure(0, 0);
+                int listViewHeight = listItem.getMeasuredHeight();
+                ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+                layoutParams.height = listViewHeight * (scheduleLength + 1);
+                fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+                ViewGroup.LayoutParams contentLayoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
+                contentLayoutParams.height = listViewHeight * (scheduleLength);
+                fragmentIndexScheduleContentLayout.setLayoutParams(contentLayoutParams);
+            }
+        }
     }
 
     /**
@@ -251,17 +282,9 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
                     alertDialog.show();
                 }
             });
-            ListAdapter listAdapter = fragmentIndexScheduleListview.getAdapter();
-            if (listAdapter == null) {
-                return;
-            }
-            View listItem = listAdapter.getView(0, null, fragmentIndexScheduleListview);
-            listItem.measure(0, 0);
-            int listViewHeight = listItem.getMeasuredHeight() * todayScheduleList.size();
-            ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
-            layoutParams.height = listViewHeight;
             HideScheduleProgressbar();
             HideScheduleFailTip();
+            SetScheduleLayoutHeight(todayScheduleList.size());
         } else {
             //今日无课程
             fragmentIndexScheduleFailedTip.setText("今天没有课程");
