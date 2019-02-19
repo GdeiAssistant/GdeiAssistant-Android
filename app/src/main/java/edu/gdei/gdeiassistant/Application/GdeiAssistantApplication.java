@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.gdei.gdeiassistant.Pojo.Entity.Access;
 import edu.gdei.gdeiassistant.Tools.StringUtils;
 import edu.gdei.gdeiassistant.Tools.TokenUtils;
 import okhttp3.Cookie;
@@ -45,6 +46,8 @@ public class GdeiAssistantApplication extends Application {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.createNotificationChannel(notificationChannel);
     }
+
+    private Access access;
 
     private String token;
 
@@ -110,5 +113,13 @@ public class GdeiAssistantApplication extends Application {
         this.cookieJar = null;
         this.username = null;
         this.token = null;
+    }
+
+    public Access getAccess() {
+        return access;
+    }
+
+    public void setAccess(Access access) {
+        this.access = access;
     }
 }

@@ -25,7 +25,9 @@ import java.util.List;
 
 import edu.gdei.gdeiassistant.Activity.CardActivity;
 import edu.gdei.gdeiassistant.Activity.MainActivity;
+import edu.gdei.gdeiassistant.Application.GdeiAssistantApplication;
 import edu.gdei.gdeiassistant.Constant.MainItemTagConstant;
+import edu.gdei.gdeiassistant.Pojo.Entity.Access;
 import edu.gdei.gdeiassistant.Pojo.Entity.CardInfo;
 import edu.gdei.gdeiassistant.Pojo.Entity.Schedule;
 import edu.gdei.gdeiassistant.Presenter.IndexPresenter;
@@ -55,6 +57,8 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
 
     private LinearLayout fragmentIndexCardLayout;
 
+    private FrameLayout fragmentIndexCardContentLayout;
+
     private RelativeLayout fragmentIndexCardTitleLayout;
 
     private RelativeLayout fragmentIndexCardDataLayout;
@@ -72,6 +76,10 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
     private TextView fragmentIndexCardFailedTip;
 
     private IndexPresenter indexPresenter;
+
+    public IndexPresenter getIndexPresenter() {
+        return this.indexPresenter;
+    }
 
     @Nullable
     @Override
@@ -109,6 +117,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
         fragmentIndexScheduleFailedTip = rootView.findViewById(R.id.fragmentIndexScheduleFailedTip);
 
         fragmentIndexCardLayout = rootView.findViewById(R.id.fragmentIndexCardLayout);
+        fragmentIndexCardContentLayout = rootView.findViewById(R.id.fragmentIndexCardContentLayout);
         fragmentIndexCardTitleLayout = rootView.findViewById(R.id.fragmentIndexCardTitleLayout);
         fragmentIndexCardDataLayout = rootView.findViewById(R.id.fragmentIndexCardDataLayout);
         fragmentIndexCardBalanceValue = rootView.findViewById(R.id.fragmentIndexCardBalanceValue);
@@ -186,9 +195,6 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 显示校园卡信息模块
      */
     public void ShowCardModule() {
-        ViewGroup.LayoutParams layoutParams = fragmentIndexCardLayout.getLayoutParams();
-        layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 180, getResources().getDisplayMetrics());
-        fragmentIndexCardLayout.setLayoutParams(layoutParams);
         fragmentIndexCardLayout.setVisibility(View.VISIBLE);
     }
 
@@ -218,27 +224,59 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * @param scheduleLength
      */
     public void SetScheduleLayoutHeight(int scheduleLength) {
-        if (scheduleLength == 0) {
-            ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
-            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
-            fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
-        } else {
-            ListAdapter listAdapter = fragmentIndexScheduleListview.getAdapter();
-            if (listAdapter == null) {
+        GdeiAssistantApplication application = (GdeiAssistantApplication) getActivity().getApplication();
+        if (application.getAccess() != null && Boolean.TRUE.equals(application.getAccess().getSchedule())) {
+            if (scheduleLength == 0) {
                 ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
                 layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
                 fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+                layoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
+                layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+                fragmentIndexScheduleContentLayout.setLayoutParams(layoutParams);
             } else {
-                View listItem = listAdapter.getView(0, null, fragmentIndexScheduleListview);
-                listItem.measure(0, 0);
-                int listViewHeight = listItem.getMeasuredHeight();
-                ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
-                layoutParams.height = listViewHeight * (scheduleLength + 1);
-                fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
-                ViewGroup.LayoutParams contentLayoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
-                contentLayoutParams.height = listViewHeight * (scheduleLength);
-                fragmentIndexScheduleContentLayout.setLayoutParams(contentLayoutParams);
+                ListAdapter listAdapter = fragmentIndexScheduleListview.getAdapter();
+                if (listAdapter == null) {
+                    ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+                    layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 260, getResources().getDisplayMetrics());
+                    fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+                    layoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
+                    layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+                    fragmentIndexScheduleContentLayout.setLayoutParams(layoutParams);
+                } else {
+                    View listItem = listAdapter.getView(0, null, fragmentIndexScheduleListview);
+                    listItem.measure(0, 0);
+                    int listViewHeight = listItem.getMeasuredHeight();
+                    ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+                    layoutParams.height = listViewHeight * (scheduleLength + 1);
+                    fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+                    ViewGroup.LayoutParams contentLayoutParams = fragmentIndexScheduleContentLayout.getLayoutParams();
+                    contentLayoutParams.height = listViewHeight * (scheduleLength);
+                    fragmentIndexScheduleContentLayout.setLayoutParams(contentLayoutParams);
+                }
             }
+        } else {
+            ViewGroup.LayoutParams layoutParams = fragmentIndexScheduleLayout.getLayoutParams();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics());
+            fragmentIndexScheduleLayout.setLayoutParams(layoutParams);
+        }
+    }
+
+    /**
+     * 设置校园卡信息模块的高度
+     */
+    public void SetCardLayoutHeight() {
+        GdeiAssistantApplication application = (GdeiAssistantApplication) getActivity().getApplication();
+        if (application.getAccess() != null && Boolean.TRUE.equals(application.getAccess().getSchedule())) {
+            ViewGroup.LayoutParams layoutParams = fragmentIndexCardLayout.getLayoutParams();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190, getResources().getDisplayMetrics());
+            fragmentIndexCardLayout.setLayoutParams(layoutParams);
+            layoutParams = fragmentIndexCardContentLayout.getLayoutParams();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 130, getResources().getDisplayMetrics());
+            fragmentIndexCardContentLayout.setLayoutParams(layoutParams);
+        } else {
+            ViewGroup.LayoutParams layoutParams = fragmentIndexCardLayout.getLayoutParams();
+            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics());
+            fragmentIndexCardLayout.setLayoutParams(layoutParams);
         }
     }
 
@@ -297,6 +335,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 显示饭卡基本信息模块的进度条
      */
     public void ShowCardProgressbar() {
+        SetCardLayoutHeight();
         fragmentIndexCardProgress.setVisibility(View.VISIBLE);
     }
 
@@ -304,6 +343,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 隐藏饭卡基本信息模块的进度条
      */
     public void HideCardProgressbar() {
+        SetCardLayoutHeight();
         fragmentIndexCardProgress.setVisibility(View.INVISIBLE);
     }
 
@@ -313,6 +353,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * @param text
      */
     public void ShowCardFailTip(String text) {
+        SetCardLayoutHeight();
         fragmentIndexCardFailedTip.setText(text);
         fragmentIndexCardFailedTip.setVisibility(View.VISIBLE);
     }
@@ -321,6 +362,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * 隐藏饭卡基本信息模块的失败提示
      */
     public void HideCardFailTip() {
+        SetCardLayoutHeight();
         fragmentIndexCardFailedTip.setVisibility(View.INVISIBLE);
         fragmentIndexCardFailedTip.setText("");
     }
@@ -331,6 +373,7 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
      * @param cardInfo
      */
     public void LoadCardInfo(CardInfo cardInfo) {
+        SetCardLayoutHeight();
         fragmentIndexCardBalanceValue.setText(cardInfo.getCardBalance() + "元");
         fragmentIndexCardInterimBalanceValue.setText(cardInfo.getCardInterimBalance() + "元");
         fragmentIndexCardLostStateValue.setText(cardInfo.getCardLostState());
@@ -364,8 +407,18 @@ public class FragmentIndex extends Fragment implements View.OnClickListener, Ada
     @Override
     public void onRefresh() {
         if (fragmentIndexSwipeContainer.isRefreshing()) {
-            indexPresenter.TodayScheduleQuery();
-            indexPresenter.CardInfoQuery();
+            GdeiAssistantApplication application = (GdeiAssistantApplication) getActivity().getApplication();
+            Access access = application.getAccess();
+            if (access == null) {
+                ((MainActivity) getActivity()).getMainPresenter().GetUserAccess();
+            } else {
+                if (Boolean.TRUE.equals(access.getSchedule())) {
+                    indexPresenter.TodayScheduleQuery();
+                }
+                if (Boolean.TRUE.equals(access.getCard())) {
+                    indexPresenter.CardInfoQuery();
+                }
+            }
         }
     }
 }

@@ -154,12 +154,6 @@ public class IndexPresenter {
         this.fragmentIndex = fragmentIndex;
         this.indexModel = new IndexModel();
         this.fragmentIndexHandler = new FragmentIndexHandler(fragmentIndex);
-        Init();
-    }
-
-    private void Init() {
-        TodayScheduleQuery();
-        CardInfoQuery();
     }
 
     /**

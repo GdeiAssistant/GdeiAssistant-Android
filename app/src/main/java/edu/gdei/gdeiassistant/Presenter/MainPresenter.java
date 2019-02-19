@@ -143,6 +143,8 @@ public class MainPresenter {
                         case MainTagConstant.GET_USER_ACCESS:
                             //加载用户权限并显示功能菜单
                             Access access = (Access) msg.getData().getSerializable("Access");
+                            //缓存用户权限信息
+                            ((GdeiAssistantApplication) mainActivity.getApplication()).setAccess(access);
                             mainActivity.LoadAccessAndShowMenu(access);
                             break;
                     }
@@ -263,7 +265,14 @@ public class MainPresenter {
             mainActivity.registerReceiver(receiver, new IntentFilter("edu.gdei.gdeiassistant.PATCH_RELAUNCH"));
             mainActivity.registerReceiver(receiver, new IntentFilter("edu.gdei.gdeiassistant.CHECK_UPGRADE"));
         }
-        //获取用户权限列表信息
+        //加载用户权限列表信息
+        GetUserAccess();
+    }
+
+    /**
+     * 获取用户权限列表信息
+     */
+    public void GetUserAccess() {
         mainModel.GetUserAccess(mainActivityHandler, mainActivity.getApplicationContext());
     }
 

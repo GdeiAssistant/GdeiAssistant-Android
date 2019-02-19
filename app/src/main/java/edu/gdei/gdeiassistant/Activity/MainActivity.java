@@ -61,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private MainPresenter mainPresenter;
 
+    public MainPresenter getMainPresenter() {
+        return mainPresenter;
+    }
+
     private long exitTime = 0;
 
     @Override
@@ -538,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (menu.getItem(i).getItemId() == R.id.schedule) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getSchedule()));
                 fragmentIndex.ShowScheduleModule();
+                fragmentIndex.getIndexPresenter().TodayScheduleQuery();
             }
             if (menu.getItem(i).getItemId() == R.id.cet) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getCet()));
@@ -548,6 +553,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (menu.getItem(i).getItemId() == R.id.card) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getBill()));
                 fragmentIndex.ShowCardModule();
+                fragmentIndex.getIndexPresenter().CardInfoQuery();
             }
             if (menu.getItem(i).getItemId() == R.id.charge) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getCharge()));
