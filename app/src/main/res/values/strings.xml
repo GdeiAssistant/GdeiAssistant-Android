@@ -1,0 +1,20 @@
+<resources>
+
+    <string name="app_name">易小助</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- 请求令牌 -->
+    <string name="request_validate_token"></string>
+
+    <!-- 安卓移动热修复应用配置信息 -->
+    <string name="hotfix_app_key"></string>
+    <string name="hotfix_app_secret"></string>
+    <string name="hotfix_rsa"></string>
+
+    <!-- HTTPDNS配置信息 -->
+    <string name="httpdns_account_id"></string>
+    <string name="httpdns_secret_key"></string>
+
+</resources>
