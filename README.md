@@ -37,6 +37,10 @@
 - [Google Play下载](https://play.google.com/store/apps/details?id=edu.gdei.gdeiassistant)
 - [Amazone Store下载](https://www.amazon.cn/dp/B07932T9V8)
 
+## 相关
+
+广东二师助手安卓客户端的后端API数据接口由[广东第二师范学院校园助手系统](https://github.com/SweetRadish/GdeiAssistant)提供
+
 ## 协议
 
 [MIT](http://opensource.org/licenses/MIT)
@@ -45,4 +49,16 @@ Copyright (c) 2016 - 2019 GdeiAssistant
 
 ## 贡献
 
-如果你有好的意见或建议，欢迎给我们提[issue](https://github.com/SweetRadish/GdeiAssistant-Android/issues)。
+- 若你喜欢本项目，欢迎Star本项目
+
+- 要贡献代码，欢迎Fork之后再提交[Pull Request](https://github.com/SweetRadish/GdeiAssistant-Android/pulls)
+
+- 如果你有好的意见或建议，欢迎给我们提交[Issue](https://github.com/SweetRadish/GdeiAssistant-Android/issues)
+
+## 联系
+
+- 邮箱：[gdeiassistant@gmail.com](mailto:gdeiassistant@gmail.com)
+
+## 声明
+
+本项目只用作个人学习研究，如因使用本项目导致任何损失，本人概不负责。
