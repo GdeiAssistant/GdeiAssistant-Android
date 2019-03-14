@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" src="https://gdeiassistant.cn/img/download/logo.png">
+  <img width="300" src="./github/logo.png">
 </p>
 
 # 广东二师助手安卓客户端
@@ -18,9 +18,9 @@
 ## 预览
 
 <p>
-  <img width="250" src="https://gdeiassistant.cn/img/download/screenshot_01.jpg">
-  <img width="250" src="https://gdeiassistant.cn/img/download/screenshot_02.jpg">
-  <img width="250" src="https://gdeiassistant.cn/img/download/screenshot_04.jpg">
+  <img width="250" src="./github/screenshot_01.jpg">
+  <img width="250" src="./github/screenshot_02.jpg">
+  <img width="250" src="./github/screenshot_03.jpg">
 </p>
 
 ## 日志
