@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        applicationId "edu.gdei.gdeiassistant"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 5
+        versionName "3.0.4"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        buildTypes {
+            release {
+                minifyEnabled = true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.gdeiassistant
+            }
+            debug {
+                signingConfig signingConfigs.gdeiassistant
+            }
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+repositories {
+    maven {
+        url "http://maven.aliyun.com/nexus/content/repositories/releases"
+    }
+    flatDir {
+        dirs 'libs'
+    }
+    google()
+}
+
+dependencies {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testImplementation 'junit:junit:4.12'
+    apply plugin: 'com.aliyun.ams.emas-services'
+    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'com.alibaba:fastjson:1.2.54'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.7'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.auth0.android:jwtdecode:1.2.0'
+    implementation 'com.aliyun.ams:alicloud-android-hotfix:3.2.8'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:design:28.0.0'
+    implementation files('libs/aliyun-oss-sdk-android-2.4.3.jar')
+}
+
+configurations {
+    all {
+        exclude module: 'httpclient'
+    }
+}
