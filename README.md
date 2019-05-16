@@ -23,6 +23,10 @@
   <img width="250" src="./github/screenshot_03.jpg">
 </p>
 
+## 体验
+
+为便于非在校师生用户体验和测试应用，应用提供了体验用户账号。详情请查阅 [广东二师助手体验用户账号说明](https://github.com/PeachShrubFizz/GdeiAssistant#%E4%BD%93%E9%AA%8C)
+
 ## 日志
 
 - V3.0.6：修正功能模块加载逻辑的错误
