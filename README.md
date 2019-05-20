@@ -63,7 +63,7 @@ $ git clone https://github.com/SweetRadish/GdeiAssistant-Android.git
 
 项目路径下的res/values/strings.xml是字符串资源文件。在项目中，该文件还保存了一些重要的配置参数信息。
 
-1. **防重放攻击**：request_validate_token是移动端请求服务端的拥有防重放攻击保护的数据接口时，需要携带的令牌信息。该令牌信息应该与服务端中配置的防重放攻击令牌值相同，否则校验无法通过。详情请参考 [广东第二师范学院校园助手系统初始化说明](https://github.com/SweetRadish/GdeiAssistant/blob/master/README.md#%E5%88%9D%E5%A7%8B%E5%8C%96)
+1. **防重放攻击**：request_validate_token是移动端请求服务端的拥有防重放攻击保护的数据接口时，需要携带的令牌信息。该令牌信息应该与服务端中配置的防重放攻击令牌值相同，否则校验无法通过。详情请参考 [广东第二师范学院校园助手系统初始化配置文件说明](https://github.com/PeachShrubFizz/GdeiAssistant/blob/master/README.md#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
 
 2. **HotFix热修复**：项目使用了阿里云平台提供的移动热修复（Mobile Hotfix）。HotFix是阿里云提供的全平台App热修复服务方案。产品基于阿里巴巴首创hotpatch技术，提供最细粒度热修复能力，能让用户无需等待实时修复应用线上问题。字符串资源文件中的hotfix_app_key、hotfix_app_secret和hotfix_rsa分别代表通过平台HotFix服务申请得到的AppID、AppSecret和RSA密钥。
 
