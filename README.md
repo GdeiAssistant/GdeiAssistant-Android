@@ -43,9 +43,11 @@
 - [Google Play下载](https://play.google.com/store/apps/details?id=edu.gdei.gdeiassistant)
 - [Amazone Store下载](https://www.amazon.cn/dp/B07932T9V8)
 
-## 相关
+## 数据接口
 
 广东二师助手安卓客户端的后端API数据接口由[广东第二师范学院校园助手系统](https://github.com/SweetRadish/GdeiAssistant)提供
+
+数据接口API文档说明请查阅[广东第二师范学院校园助手系统数据接口API文档](https://github.com/PeachShrubFizz/GdeiAssistant/wiki)
 
 ## 初始化
 
