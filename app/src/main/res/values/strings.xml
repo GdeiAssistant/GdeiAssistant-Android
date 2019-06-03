@@ -5,8 +5,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <!-- 请求令牌 -->
-    <string name="request_validate_token"></string>
+    <!-- 请求令牌，该默认值为生产环境供开发者体验预览的令牌值 -->
+    <string name="request_validate_token">GdeiAssistantRequest</string>
 
     <!-- 安卓移动热修复应用配置信息 -->
     <string name="hotfix_app_key"></string>
