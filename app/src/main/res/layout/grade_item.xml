@@ -5,12 +5,12 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/book_item_layout"
+        android:id="@+id/grade_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/book_item_bookname"
+            android:id="@+id/grade_item_subjectname"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

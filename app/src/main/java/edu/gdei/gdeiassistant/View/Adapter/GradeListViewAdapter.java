@@ -62,8 +62,8 @@ public class GradeListViewAdapter extends BaseAdapter {
             convertView = listContainer.inflate(this.itemViewResource, null);
             //初始化列表项各组件
             listItemView = new ListItemView();
-            listItemView.item_layout = convertView.findViewById(edu.gdei.gdeiassistant.R.id.book_item_layout);
-            listItemView.subject_name = convertView.findViewById(edu.gdei.gdeiassistant.R.id.book_item_bookname);
+            listItemView.item_layout = convertView.findViewById(edu.gdei.gdeiassistant.R.id.grade_item_layout);
+            listItemView.subject_name = convertView.findViewById(edu.gdei.gdeiassistant.R.id.grade_item_subjectname);
             listItemView.subject_score = convertView.findViewById(edu.gdei.gdeiassistant.R.id.grade_item_subjectscore);
             //设置控件集到convertView
             convertView.setTag(listItemView);
