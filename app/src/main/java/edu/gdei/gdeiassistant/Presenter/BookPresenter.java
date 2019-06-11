@@ -1,7 +1,9 @@
 package edu.gdei.gdeiassistant.Presenter;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.view.inputmethod.InputMethodManager;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -88,6 +90,11 @@ public class BookPresenter {
         if (StringUtils.isBlank(password)) {
             bookActivity.ShowToast("图书证借阅密码不能为空");
         } else {
+            InputMethodManager inputMethodManager = (InputMethodManager) bookActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                //收起虚拟键盘
+                inputMethodManager.hideSoftInputFromWindow(bookActivity.getWindow().getDecorView().getWindowToken(), 0);
+            }
             bookModel.SubmitBookQuery(password, bookActivityHandler, bookActivity.getApplicationContext());
         }
     }
