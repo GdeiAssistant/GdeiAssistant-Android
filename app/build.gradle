@@ -7,8 +7,8 @@ android {
         applicationId "edu.gdei.gdeiassistant"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 5
-        versionName "3.0.4"
+        versionCode 1
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
