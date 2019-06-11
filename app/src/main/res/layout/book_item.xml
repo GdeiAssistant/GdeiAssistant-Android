@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><!--  items选项 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/bookItemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/bookItemBookName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="图书名称"
+            android:textSize="16sp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="10dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:gravity="right"
+            android:paddingLeft="5dp"
+            android:paddingRight="10dp"
+            android:textAlignment="center"
+            android:paddingEnd="10dp"
+            android:paddingStart="5dp">
+
+            <TextView
+                android:id="@+id/bookItemBorrowDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:paddingTop="10dp"
+                android:text="借阅时间：2016-06-25"
+                android:textAlignment="textEnd"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/bookItemReturnDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:paddingBottom="10dp"
+                android:text="应还时间：2019-01-01"
+                android:textAlignment="textEnd"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

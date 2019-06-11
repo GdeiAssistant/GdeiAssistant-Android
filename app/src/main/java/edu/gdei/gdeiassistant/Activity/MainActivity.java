@@ -233,6 +233,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.evaluate) {
             CloseDrawer();
             startActivity(new Intent(this, EvaluateActivity.class));
+        } else if (id == R.id.book) {
+            CloseDrawer();
+            startActivity(new Intent(this, BookActivity.class));
         } else if (id == R.id.card) {
             CloseDrawer();
             startActivity(new Intent(this, CardActivity.class));
@@ -541,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             if (menu.getItem(i).getItemId() == R.id.schedule) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getSchedule()));
-                if(Boolean.TRUE.equals(access.getSchedule())){
+                if (Boolean.TRUE.equals(access.getSchedule())) {
                     fragmentIndex.ShowScheduleModule();
                     fragmentIndex.getIndexPresenter().TodayScheduleQuery();
                 }
@@ -552,9 +555,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (menu.getItem(i).getItemId() == R.id.evaluate) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getEvaluate()));
             }
+            if (menu.getItem(i).getItemId() == R.id.book) {
+                menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getBook()));
+            }
             if (menu.getItem(i).getItemId() == R.id.card) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getBill()));
-                if(Boolean.TRUE.equals(access.getBill())){
+                if (Boolean.TRUE.equals(access.getBill())) {
                     fragmentIndex.ShowCardModule();
                     fragmentIndex.getIndexPresenter().CardInfoQuery();
                 }

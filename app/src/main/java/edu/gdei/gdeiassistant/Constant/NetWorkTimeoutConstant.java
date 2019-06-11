@@ -14,6 +14,8 @@ public class NetWorkTimeoutConstant {
 
     public static final int EVALUATE_NETWORK_TIMEOUT = 15;
 
+    public static final int BOOK_QUERY_NETWORK_TIMEOUT = 15;
+
     public static final int GRADE_QUERY_NETWORK_TIMEOUT = 15;
 
     public static final int LOGIN_NETWORK_TIMEOUT = 15;

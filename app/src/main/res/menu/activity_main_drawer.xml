@@ -32,6 +32,11 @@
             android:title="消费查询"
             android:visible="false" />
         <item
+            android:id="@+id/book"
+            android:icon="@drawable/ic_book_black_24dp"
+            android:title="借阅查询"
+            android:visible="false" />
+        <item
             android:id="@+id/charge"
             android:icon="@drawable/ic_charge_black_24dp"
             android:title="校园卡充值"

@@ -15,6 +15,8 @@ public class Access implements Serializable {
 
     private Boolean evaluate;
 
+    private Boolean book;
+
     private Boolean card;
 
     private Boolean bill;
@@ -85,5 +87,13 @@ public class Access implements Serializable {
 
     public void setCharge(Boolean charge) {
         this.charge = charge;
+    }
+
+    public Boolean getBook() {
+        return book;
+    }
+
+    public void setBook(Boolean book) {
+        this.book = book;
     }
 }

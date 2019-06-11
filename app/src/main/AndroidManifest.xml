@@ -69,7 +69,9 @@
         <activity android:name=".Activity.ChargeActivity" />
         <activity android:name=".Activity.CardActivity" />
         <activity android:name=".Activity.EvaluateActivity" />
-        <activity android:name=".Activity.LostActivity"></activity>
+        <activity android:name=".Activity.BookActivity" />
+        <activity android:name=".Activity.BookDetailActivity" />
+        <activity android:name=".Activity.LostActivity" />
     </application>
 
 </manifest>
