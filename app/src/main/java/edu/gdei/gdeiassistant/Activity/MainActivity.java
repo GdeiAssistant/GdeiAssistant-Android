@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.book) {
             CloseDrawer();
             startActivity(new Intent(this, BookActivity.class));
-        } else if (id == R.id.card) {
+        } else if (id == R.id.bill) {
             CloseDrawer();
             startActivity(new Intent(this, CardActivity.class));
         } else if (id == R.id.charge) {
@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (menu.getItem(i).getItemId() == R.id.book) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getBook()));
             }
-            if (menu.getItem(i).getItemId() == R.id.card) {
+            if (menu.getItem(i).getItemId() == R.id.bill) {
                 menu.getItem(i).setVisible(Boolean.TRUE.equals(access.getBill()));
                 if (Boolean.TRUE.equals(access.getBill())) {
                     fragmentIndex.ShowCardModule();

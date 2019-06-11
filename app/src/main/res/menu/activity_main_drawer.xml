@@ -27,7 +27,7 @@
             android:title="一键评教"
             android:visible="false" />
         <item
-            android:id="@+id/card"
+            android:id="@+id/bill"
             android:icon="@drawable/ic_card_black_24dp"
             android:title="消费查询"
             android:visible="false" />
