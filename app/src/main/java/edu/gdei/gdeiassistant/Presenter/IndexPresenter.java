@@ -86,6 +86,7 @@ public class IndexPresenter {
                             fragmentIndex.HideCardProgressbar();
                             fragmentIndex.HideRefreshingTip();
                             fragmentIndex.ShowCardFailTip(msg.getData().getString("Message"));
+                            break;
                     }
                     break;
 
@@ -103,6 +104,7 @@ public class IndexPresenter {
                             fragmentIndex.HideCardProgressbar();
                             fragmentIndex.HideRefreshingTip();
                             fragmentIndex.ShowCardFailTip("网络连接超时，点击重试");
+                            break;
                     }
                     break;
 
@@ -120,6 +122,7 @@ public class IndexPresenter {
                             fragmentIndex.HideCardProgressbar();
                             fragmentIndex.HideRefreshingTip();
                             fragmentIndex.ShowCardFailTip("服务暂不可用，点击重试");
+                            break;
                     }
                     break;
 
@@ -137,6 +140,7 @@ public class IndexPresenter {
                             fragmentIndex.HideCardProgressbar();
                             fragmentIndex.HideRefreshingTip();
                             fragmentIndex.ShowCardFailTip("出现未知异常，点击重试");
+                            break;
                     }
                     break;
             }

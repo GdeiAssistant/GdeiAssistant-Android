@@ -42,6 +42,7 @@ public class EvaluatePresenter {
                     switch (msg.getData().getInt("Tag")) {
                         case EvaluateTagConstant.NORMAL_SUBMIT:
                             evaluateActivity.ShowToast("一键评教成功，请登录教务系统进行最终确认");
+                            break;
 
                         case EvaluateTagConstant.DIRECTLY_SUBMIT:
                             evaluateActivity.ShowToast("一键评教成功");
