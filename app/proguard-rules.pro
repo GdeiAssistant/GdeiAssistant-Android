@@ -27,7 +27,6 @@
 #-----------------不需要混淆第三方类库------------------------------------------------------------------
 
 -ignorewarnings
--keepattributes Signature,*Annotation*
 
 -dontwarn android.support.v4.**
 -keep class android.support.v4.** { *; }
