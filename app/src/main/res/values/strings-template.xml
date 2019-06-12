@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- 本文件是values目录下strings.xml的模板配置文件，开发者需要移除文件名和参数名称的后缀，并填入相应的配置参数
+
+    即文件名strings-template.xml重命名为strings.xml，参数名称app_name_template修改为app_name -->
+
+    <string name="app_name_template">易小助</string>
+
+    <string name="navigation_drawer_open_template">Open navigation drawer</string>
+    <string name="navigation_drawer_close_template">Close navigation drawer</string>
+
+    <!-- 请求令牌，该默认值为生产环境供开发者体验预览的令牌值 -->
+    <string name="request_validate_token_template">GdeiAssistantRequest</string>
+
+    <!-- 安卓移动热修复应用配置信息 -->
+    <string name="hotfix_app_key_template"></string>
+    <string name="hotfix_app_secret_template"></string>
+    <string name="hotfix_rsa_template"></string>
+
+    <!-- HTTPDNS配置信息 -->
+    <string name="httpdns_account_id_template"></string>
+    <string name="httpdns_secret_key_template"></string>
+
+</resources>
