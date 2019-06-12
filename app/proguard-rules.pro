@@ -25,10 +25,6 @@
 #-renamesourcefileattribute SourceFile
 
 #-----------------不需要混淆第三方类库------------------------------------------------------------------
-
--ignorewarnings
-
--dontwarn android.support.v4.**
 -keep class android.support.v4.** { *; }
 -keep interface android.support.v4.app.** { *; }
 -keep public class * extends android.support.v4.**
@@ -37,12 +33,15 @@
 -keep class org.jdesktop.** { *; }
 -keep class com.sun.** { *; }
 -keep class org.jsoup.** { *; }
+-dontwarn android.support.v4.**
 
 # keep okhttp3、okio
--dontwarn okhttp3.**
 -keep class okhttp3.** { *;}
 -keep interface okhttp3.** { *; }
+-keep class okio.** { *; }
+-keep interface okio.** { *; }
 -dontwarn okio.**
+-dontwarn okhttp3.**
 
 # keep rx
 -dontwarn sun.misc.**
@@ -60,7 +59,6 @@
 }
 
 #-----------------不需要混淆系统组件等-------------------------------------------------------------------
-
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Fragment
@@ -73,7 +71,7 @@
 
 #-----------------不需要混淆JavaBean实体类-------------------------------------------------------------------
 # 确保JavaBean不被混淆-否则gson将无法将数据解析成具体对象
--keep class edu.gdei.gdeiassistant.Pojo.**{*;}
+-keep class edu.gdei.gdeiassistant.Pojo.** { *; }
 
 #基线包使用，生成mapping.txt
 -printmapping mapping.txt
@@ -82,15 +80,11 @@
 #修复后的项目使用，保证混淆结果一致
 #-applymapping mapping.txt
 
-#hotfix
--keep class com.taobao.sophix.**{*;}
--keep class com.ta.utdid2.device.**{*;}
-
-#httpdns
--keep class com.taobao.** {*;}
--keep class com.alibaba.** {*;}
--keep class com.ta.**{*;}
--keep class com.ut.**{*;}
+# 不混淆阿里云移动研发平台组件
+-keep class com.taobao.** { *; }
+-keep class com.alibaba.** { *; }
+-keep class com.ta.** { *; }
+-keep class com.ut.** { *; }
 -dontwarn com.taobao.**
 -dontwarn com.alibaba.**
 -dontwarn com.ta.**
