@@ -136,7 +136,7 @@ public class MainPresenter {
                             //获取用户资料
                             Profile profile = (Profile) msg.getData().getSerializable("Profile");
                             if (profile != null) {
-                                mainActivity.UpdateMainNavigationWelcomeText(profile.getKickname());
+                                mainActivity.UpdateMainNavigationWelcomeText(profile.getNickname());
                             }
                             break;
 
