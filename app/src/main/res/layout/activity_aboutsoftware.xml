@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="15dp"
-                android:text="Copyright © 2016 - 2019 GdeiAssistant"
+                android:text="Copyright © 2016 - 2020 GdeiAssistant"
                 android:textSize="18sp" />
 
             <TextView
