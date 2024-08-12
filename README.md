@@ -11,7 +11,7 @@
 - 成绩查询
 - 课表查询
 - 四六级查询
-- 一键评教
+- 教学评价
 - 消费查询
 - 校园卡充值
 
@@ -23,10 +23,6 @@
   <img width="250" src="./github/screenshot_03.jpg">
 </p>
 
-## 体验
-
-为便于非在校师生用户体验和测试应用，应用提供了体验用户账号。详情请查阅 [广东二师助手体验用户账号说明](https://github.com/GdeiAssistant/GdeiAssistant#%E4%BD%93%E9%AA%8C)
-
 ## 日志
 
 - V3.1.0：添加图书借阅查询功能
@@ -34,9 +30,6 @@
 
 ## 链接
 - [广东二师助手官网](https://gdeiassistant.cn)
-- [酷安APP平台下载](https://www.coolapk.com/apk/edu.gdei.gdeiassistant)
-- [Google Play下载](https://play.google.com/store/apps/details?id=edu.gdei.gdeiassistant)
-- [Amazone Store下载](https://www.amazon.cn/dp/B07932T9V8)
 
 ## 数据接口
 
@@ -82,7 +75,7 @@ $ git clone https://github.com/GdeiAssistant/GdeiAssistant-Android.git
 
 [Anti 996 License](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
-Copyright (c) 2016 - 2020 GdeiAssistant
+Copyright (c) 2016 - 2023 GdeiAssistant
 
 ## 贡献
 
