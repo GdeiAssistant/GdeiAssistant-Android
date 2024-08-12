@@ -103,7 +103,7 @@ public class EvaluateActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.evaluateSubmit:
-                //提交一键评教请求
+                //提交教学评价请求
                 evaluatePresenter.SubmitEvaluate(switchCompat.isChecked());
                 break;
         }

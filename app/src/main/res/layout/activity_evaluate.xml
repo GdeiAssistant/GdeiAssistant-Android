@@ -26,7 +26,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"
-                android:text="一键评教"
+                android:text="教学评价"
                 android:textAlignment="center"
                 android:textColor="#ffffff"
                 android:textSize="19sp" />

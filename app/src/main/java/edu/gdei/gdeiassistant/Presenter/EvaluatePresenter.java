@@ -37,21 +37,21 @@ public class EvaluatePresenter {
             super.handleMessage(msg);
             switch (msg.what) {
                 case RequestConstant.REQUEST_SUCCESS:
-                    //一键评教成功
+                    //教学评价成功
                     evaluateActivity.HideProgressDialog();
                     switch (msg.getData().getInt("Tag")) {
                         case EvaluateTagConstant.NORMAL_SUBMIT:
-                            evaluateActivity.ShowToast("一键评教成功，请登录教务系统进行最终确认");
+                            evaluateActivity.ShowToast("教学评价成功，请登录教务系统进行最终确认");
                             break;
 
                         case EvaluateTagConstant.DIRECTLY_SUBMIT:
-                            evaluateActivity.ShowToast("一键评教成功");
+                            evaluateActivity.ShowToast("教学评价成功");
                             break;
                     }
                     break;
 
                 case RequestConstant.REQUEST_FAILURE:
-                    //一键评教失败
+                    //教学评价失败
                     evaluateActivity.HideProgressDialog();
                     evaluateActivity.ShowToast(msg.getData().getString("Message"));
                     break;
@@ -84,7 +84,7 @@ public class EvaluatePresenter {
     }
 
     /**
-     * 提交一键评教请求
+     * 提交教学评价请求
      */
     public void SubmitEvaluate(boolean directlySubmit) {
         evaluateModel.SubmitEvaluate(directlySubmit, evaluateActivityHandler, evaluateActivity.getApplicationContext());

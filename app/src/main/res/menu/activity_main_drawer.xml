@@ -24,7 +24,7 @@
         <item
             android:id="@+id/evaluate"
             android:icon="@drawable/ic_evaluate_black_24dp"
-            android:title="一键评教"
+            android:title="教学评价"
             android:visible="false" />
         <item
             android:id="@+id/bill"

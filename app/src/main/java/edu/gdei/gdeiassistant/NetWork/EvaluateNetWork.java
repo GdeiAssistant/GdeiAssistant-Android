@@ -18,7 +18,7 @@ import okhttp3.Response;
 public class EvaluateNetWork {
 
     /**
-     * 提交一键评教请求
+     * 提交教学评价请求
      *
      * @param directlySubmit
      * @param context
