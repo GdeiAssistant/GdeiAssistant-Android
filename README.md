@@ -45,30 +45,6 @@
 $ git clone https://github.com/GdeiAssistant/GdeiAssistant-Android.git
 ```
 
-### Android EMAS统一接入
-
-阿里云平台为了方便EMAS各个产品的接入，提供了基于gradle的emas-services插件。详情请查阅[Android EMAS统一接入](https://help.aliyun.com/knowledge_detail/68655.html)
-
-该插件需要开发者在项目主模块路径下提供文件名为“aliyun-emas-services.json”的配置文件，该配置文件用于emas-services插件读取、解析阿里云移动研发平台SDK初始化必要的字段并保存到工程XML中。各阿里云移动研发平台产品SDK默认初始化时自动读取该配置文件中的对应字段。
-
-项目主模块路径下提供了文件名为aliyun-emas-services-template.json的EMAS模板配置文件，开发者需要将文件去除后缀重命名为“aliyun-emas-services.json”，并填入配置参数。此外，开发者也可以通过阿里云移动研发平台控制台下载该配置文件，放置到对应的位置中。
-
-### 字符串资源
-
-项目主模块路径下的src/main/res/values/strings-template.xml是字符串资源模板配置文件，该文件用于保存字符串资源和重要的配置参数信息。
-
-开发者需要将该模板配置文件去除其后缀“_template”，根据字符串资源模板配置文件修改和生成字符串资源配置文件，即将文件重命名为strings.xml。
-
-同时，开发者还需要将模板配置文件内的配置参数名称的后缀“_template”去除，如参数名称app_name_template修改为app_name。
-
-最后，填入相应的配置参数。配置参数的说明如下：
-
-1. **防重放攻击**：request_validate_token是移动端请求服务端的拥有防重放攻击保护的数据接口时，需要携带的令牌信息。该令牌信息应该与服务端中配置的防重放攻击令牌值相同，否则校验无法通过。详情请参考 [广东第二师范学院校园助手系统初始化配置文件说明](https://github.com/GdeiAssistant/GdeiAssistant/blob/master/README.md#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
-
-2. **HotFix热修复**：项目使用了阿里云平台提供的移动热修复（Mobile Hotfix）。HotFix是阿里云提供的全平台App热修复服务方案。产品基于阿里巴巴首创hotpatch技术，提供最细粒度热修复能力，能让用户无需等待实时修复应用线上问题。字符串资源文件中的hotfix_app_key、hotfix_app_secret和hotfix_rsa分别代表通过平台HotFix服务申请得到的AppID、AppSecret和RSA密钥。
-
-3. **HTTPDNS**：项目使用了阿里云平台提供的HTTPDNS组件，能有效防止DNS劫持。HTTPDNS是面向移动开发者推出的一款域名解析产品，具有域名防劫持、精准调度的特性。字符串资源文件中的httpdns_account_id和httpdns_secret_key分别表示通过平台HTTPDNS服务申请的AccountID和SecretKey。
-
 ## 协议
 
 [MIT License](http://opensource.org/licenses/MIT)

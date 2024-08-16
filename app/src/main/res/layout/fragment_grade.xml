@@ -157,14 +157,14 @@
                         android:layout_marginTop="30dp"
                         android:background="#dddddd" />
 
-                    <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                    <cn.gdeiassistant.View.ListView.ListViewForScrollView
                         android:id="@+id/firstTermGradeQueryListview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@null"
                         android:dividerHeight="1dp">
 
-                    </edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView>
+                    </cn.gdeiassistant.View.ListView.ListViewForScrollView>
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -233,14 +233,14 @@
                         android:layout_marginTop="30dp"
                         android:background="#dddddd" />
 
-                    <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                    <cn.gdeiassistant.View.ListView.ListViewForScrollView
                         android:id="@+id/secondTermGradeQueryListview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@null"
                         android:dividerHeight="1dp">
 
-                    </edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView>
+                    </cn.gdeiassistant.View.ListView.ListViewForScrollView>
 
                 </LinearLayout>
 

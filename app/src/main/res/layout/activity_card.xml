@@ -124,7 +124,7 @@
 
                 </LinearLayout>
 
-                <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                <cn.gdeiassistant.View.ListView.ListViewForScrollView
                     android:id="@+id/cardQueryListview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

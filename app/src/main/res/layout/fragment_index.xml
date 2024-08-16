@@ -91,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="200dp">
 
-                        <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                        <cn.gdeiassistant.View.ListView.ListViewForScrollView
                             android:id="@+id/fragmentIndexScheduleListview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

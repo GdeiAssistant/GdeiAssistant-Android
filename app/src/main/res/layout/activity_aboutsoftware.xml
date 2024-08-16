@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="关于易小助"
+            android:text="关于广东二师助手"
             android:textAlignment="center"
             android:textColor="#ffffff"
             android:textSize="17sp" />
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:text="扫描二维码关注易小助公众号"
+                android:text="扫描二维码关注广东二师助手公众号"
                 android:textSize="18sp" />
 
             <TextView

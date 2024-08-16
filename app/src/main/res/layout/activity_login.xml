@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="易小助-请登录"
+            android:text="广东二师助手-请登录"
             android:textAlignment="center"
             android:textColor="#ffffff"
             android:textSize="17sp" />
@@ -49,7 +49,7 @@
                 android:layout_marginLeft="35dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="35dp"
-                android:hint="请输入教务系统账号"
+                android:hint="请输入校园网系统账号"
                 android:inputType="text"
                 android:maxLength="25" />
 
@@ -60,7 +60,7 @@
                 android:layout_marginLeft="35dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="35dp"
-                android:hint="请输入教务系统密码"
+                android:hint="请输入校园网系统密码"
                 android:inputType="textPassword"
                 android:maxLength="35" />
 

@@ -53,7 +53,7 @@
                 android:orientation="horizontal"
                 android:weightSum="8">
 
-                <edu.gdei.gdeiassistant.View.ListView.ListViewForScrollView
+                <cn.gdeiassistant.View.ListView.ListViewForScrollView
                     android:id="@+id/scheduleQueryListViewNumber"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -65,7 +65,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="7">
 
-                    <edu.gdei.gdeiassistant.View.ViewGroup.ScheduleView
+                    <cn.gdeiassistant.View.ViewGroup.ScheduleView
                         android:id="@+id/scheduleQueryScheduleView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />

@@ -71,7 +71,7 @@
 
 #-----------------不需要混淆JavaBean实体类-------------------------------------------------------------------
 # 确保JavaBean不被混淆-否则gson将无法将数据解析成具体对象
--keep class edu.gdei.gdeiassistant.Pojo.** { *; }
+-keep class cn.gdeiassistant.Pojo.** { *; }
 
 #基线包使用，生成mapping.txt
 -printmapping mapping.txt
@@ -93,6 +93,6 @@
 #防止inline
 -dontoptimize
 
--keepclassmembers class edu.gdei.gdeiassistant.Application.GdeiAssistantApplication {
+-keepclassmembers class cn.gdeiassistant.Application.GdeiAssistantApplication {
     public <init>();
 }

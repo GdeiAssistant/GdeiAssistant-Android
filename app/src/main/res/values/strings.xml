@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="app_name">广东二师助手</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- 请求令牌 -->
+    <string name="request_validate_token">7UnEVKNng3XV/eBcsL1/lRIANRfXcoPT</string>
+
+    <!-- 资源域名 -->
+    <string name="resource_domain">https://gdeiassistant.azurewebsites.net/</string>
+
+</resources>
