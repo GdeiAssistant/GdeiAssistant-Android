@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SplashScreen 背景（与 M3 浅色表面一致） -->
+    <color name="splash_background">#F6FAFA</color>
+</resources>
