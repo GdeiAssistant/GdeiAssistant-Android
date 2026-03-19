@@ -27,6 +27,14 @@ object MockInfoProvider {
         val publishTime: String
     )
 
+    data class MockNewsRecord(
+        val id: String,
+        val type: Int,
+        val title: String,
+        val publishDate: String,
+        val content: String
+    )
+
     private val mockAnnouncements = listOf(
         MockAnnouncementRecord(
             id = "1001",
@@ -56,6 +64,17 @@ object MockInfoProvider {
         MockInteractionRecord("msg_005", "express", "comment", "表白墙收到留言", "有人给你发布的表白留下了新的评论。", "2026-03-15 23:10", false, "comment", "10102"),
         MockInteractionRecord("msg_006", "delivery", "accept", "全民快递有新进展", "你发布的快递订单已经被接单，记得留意配送动态。", "2026-03-15 21:15", false, "trade", "13104"),
         MockInteractionRecord("msg_007", "photograph", "like", "拍好校园收到点赞", "你上传的校园照片刚刚获得了一次新的点赞。", "2026-03-15 20:48", true, "like", "14102")
+    )
+
+    private val mockNewsRecords = listOf(
+        MockNewsRecord("news_1324_1", 1, "学校高质量发展大会暨 2026 年工作会议召开", "2026-03-03", "学校召开高质量发展大会，系统总结上一阶段重点工作，并对 2026 年改革发展目标与重点任务作出部署。"),
+        MockNewsRecord("news_1324_2", 1, "学校启动春季学期教学巡查工作", "2026-02-26", "为进一步提升课堂教学质量，学校启动春季学期教学巡查，持续关注课堂秩序、课程建设与教学保障。"),
+        MockNewsRecord("news_1325_1", 2, "管理学院召开教职工思想教育会议", "2026-03-19", "管理学院围绕师德师风建设、年度重点工作与学生成长支持召开专题会议，进一步明确本学期工作方向。"),
+        MockNewsRecord("news_1325_2", 2, "外国语学院举办专业建设专题研讨", "2026-03-12", "外国语学院组织开展专业建设专题研讨，聚焦课程优化、实践教学与人才培养方案迭代。"),
+        MockNewsRecord("news_1376_1", 3, "关于网站群管理平台升级切换的通知", "2026-01-22", "因学校网站群管理平台升级切换，学校主页及部分二级网站访问将在指定时间窗口内短暂停止，请各单位提前做好工作安排。"),
+        MockNewsRecord("news_1376_2", 3, "关于清明节假期校园服务安排的通知", "2026-03-01", "清明节假期期间，图书馆、食堂、校园巴士与安保值班安排将按节假日模式执行，请师生留意各部门发布的具体通知。"),
+        MockNewsRecord("news_3981_1", 4, "美术学院举办高层次科研项目申报学术讲座", "2026-03-09", "讲座围绕高层次科研项目选题、申报书撰写和团队协作展开，帮助青年教师提升项目申报质量。"),
+        MockNewsRecord("news_3981_2", 4, "教育学院开展人工智能赋能教学专题分享", "2026-02-24", "专题分享聚焦生成式人工智能在教学设计、课堂反馈与学习评价中的应用场景与实践方法。")
     )
 
     fun mockAnnouncementPage(request: Request): String {
@@ -124,42 +143,30 @@ object MockInfoProvider {
     }
 
     fun mockNews(request: Request): String {
-        val size = request.url.pathSegments.lastOrNull()
+        val type = request.pathValueAfter("type")
+            ?.toIntOrNull()
+            ?: 1
+        val start = request.pathValueAfter("start")
+            ?.toIntOrNull()
+            ?.coerceAtLeast(0)
+            ?: 0
+        val size = request.pathValueAfter("size")
             ?.toIntOrNull()
             ?.coerceIn(1, 20)
             ?: 5
-        val payload = listOf(
-            linkedMapOf(
-                "id" to "n1",
-                "title" to "关于2026年上半年节假日放假安排的通知",
-                "publishDate" to "2026-02-28",
-                "content" to "<p>根据国务院办公厅通知精神，结合学校实际，现将2026年上半年节假日放假安排通知如下。</p><p>清明节为4月4日至6日，劳动节为5月1日至5日，请各单位妥善安排值班与安全保卫工作。</p><a href='https://gdeiassistant.cn/notice/1'>查看原文</a>"
-            ),
-            linkedMapOf(
-                "id" to "n2",
-                "title" to "教务处关于开展本学期期中教学检查的通知",
-                "publishDate" to "2026-02-27",
-                "content" to "<p>为加强教学过程管理，教务处定于第8至9周开展本学期期中教学检查。</p><p>检查内容包括课堂秩序、教案与作业批改、实验实训开展情况，各教学单位需按时提交自查报告。</p><a href='https://gdeiassistant.cn/notice/2'>查看原文</a>"
-            ),
-            linkedMapOf(
-                "id" to "n3",
-                "title" to "图书馆关于清明节期间开放时间调整的公告",
-                "publishDate" to "2026-02-26",
-                "content" to "<p>清明节假期图书馆开放时间将临时调整。</p><p>4月4日闭馆，4月5日至6日开放时间为9:00至17:00，4月7日起恢复正常开放。</p><a href='https://gdeiassistant.cn/notice/3'>查看原文</a>"
-            ),
-            linkedMapOf(
-                "id" to "n4",
-                "title" to "学生处关于2026届毕业生图像信息采集的通知",
-                "publishDate" to "2026-02-25",
-                "content" to "<p>2026届毕业生图像信息采集工作定于3月15日至16日进行。</p><p>地点位于教学楼A栋101，请各院系组织学生按时参加并携带身份证与学生证。</p><a href='https://gdeiassistant.cn/notice/4'>查看原文</a>"
-            ),
-            linkedMapOf(
-                "id" to "n5",
-                "title" to "后勤处关于校园一卡通系统升级维护的公告",
-                "publishDate" to "2026-02-24",
-                "content" to "<p>校园一卡通系统将于2月28日22:00至24:00进行升级维护。</p><p>维护期间食堂、门禁、图书馆等刷卡服务将暂停，请师生提前做好准备。</p><a href='https://gdeiassistant.cn/notice/5'>查看原文</a>"
-            )
-        )
-        return MockUtils.successDataJson(payload.take(size))
+        val payload = mockNewsRecords
+            .filter { it.type == type }
+            .drop(start)
+            .take(size)
+            .map { news ->
+                linkedMapOf(
+                    "id" to news.id,
+                    "type" to news.type,
+                    "title" to news.title,
+                    "publishDate" to news.publishDate,
+                    "content" to news.content
+                )
+            }
+        return MockUtils.successDataJson(payload)
     }
 }

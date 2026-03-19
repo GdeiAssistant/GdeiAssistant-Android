@@ -16,6 +16,7 @@ interface NoticeApi {
 
 data class NewsItemDto(
     val id: String? = null,
+    val type: Int? = null,
     val title: String? = null,
     val publishDate: String? = null,
     val content: String? = null

@@ -59,7 +59,7 @@ class MessagesViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val newsDeferred = async { newsRepository.getNewsList(type = 5, size = 5) }
+            val newsDeferred = async { newsRepository.getLatestNews(size = 5) }
             val announcementDeferred = async { announcementRepository.getAnnouncements(limit = 5) }
             val interactionDeferred = async { messagesRepository.getInteractionMessages(size = 10) }
             val unreadDeferred = async { messagesRepository.getUnreadCount() }

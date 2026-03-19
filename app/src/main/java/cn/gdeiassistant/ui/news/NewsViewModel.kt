@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 data class NewsUiState(
     val isLoading: Boolean = false,
-    val selectedType: Int = 5,
+    val selectedType: Int = 1,
     val categories: List<NewsCategory> = emptyList(),
     val items: List<SchoolNews> = emptyList(),
     val error: String? = null
@@ -70,4 +70,3 @@ class NewsViewModel @Inject constructor(
         }
     }
 }
-

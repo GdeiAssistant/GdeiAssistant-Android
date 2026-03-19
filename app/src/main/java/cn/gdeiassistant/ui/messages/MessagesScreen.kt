@@ -48,6 +48,7 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.InteractionMessage
 import cn.gdeiassistant.model.SchoolNews
+import cn.gdeiassistant.model.newsSourceLabel
 import cn.gdeiassistant.model.toArticleDetailContent
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
@@ -265,7 +266,7 @@ private fun NewsSection(
                     title = item.title,
                     body = item.content.ifBlank { stringResource(R.string.article_detail_empty_body) },
                     date = item.publishDate,
-                    badge = stringResource(R.string.news_title),
+                    badge = newsSourceLabel(item.type),
                     onClick = { onOpenItem(item) }
                 )
             }

@@ -94,10 +94,10 @@ fun AnnouncementItem.toArticleDetailContent(): ArticleDetailContent {
 
 fun newsSourceLabel(type: Int): String {
     return when (type) {
-        1 -> "教学信息"
-        2 -> "考试信息"
-        3 -> "教务信息"
-        4 -> "行政通知"
-        else -> "综合信息"
+        1 -> "学校要闻"
+        2 -> "院部通知"
+        3 -> "通知公告"
+        4 -> "学术动态"
+        else -> "新闻通知"
     }
 }
