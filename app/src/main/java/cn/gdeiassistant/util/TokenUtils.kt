@@ -2,17 +2,30 @@ package cn.gdeiassistant.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.auth0.android.jwt.DecodeException
 import com.auth0.android.jwt.JWT
 import java.util.Date
 
 object TokenUtils {
-    private const val PREFS_NAME = "GdeiAssistant"
+    private const val PREFS_NAME = "GdeiAssistant_secure"
     private const val KEY_ACCESS = "AccessToken"
     private const val KEY_REFRESH = "RefreshToken"
 
-    private fun prefs(context: Context): SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private fun prefs(context: Context): SharedPreferences {
+        val appContext = context.applicationContext
+        val masterKey = MasterKey.Builder(appContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        return EncryptedSharedPreferences.create(
+            appContext,
+            PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
 
     @JvmStatic fun GetUserAccessToken(context: Context): String? = prefs(context).getString(KEY_ACCESS, null)
     @JvmStatic fun GetUserRefreshToken(context: Context): String? = prefs(context).getString(KEY_REFRESH, null)

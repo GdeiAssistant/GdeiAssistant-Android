@@ -1,10 +1,8 @@
 package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class SchoolNews(
     val id: String,
@@ -15,7 +13,6 @@ data class SchoolNews(
     val link: String? = null
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class AnnouncementItem(
     val id: String,
@@ -24,7 +21,6 @@ data class AnnouncementItem(
     val publishTime: String
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class InteractionMessage(
     val id: String,
@@ -39,7 +35,6 @@ data class InteractionMessage(
     val targetSubId: String? = null
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class UserProfileSummary(
     val username: String,
@@ -69,7 +64,6 @@ enum class UserDataExportState(val code: Int) {
     }
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class ArticleDetailContent(
     val title: String,

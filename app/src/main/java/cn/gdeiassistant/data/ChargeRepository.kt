@@ -8,7 +8,7 @@ import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.network.api.ChargeApi
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.util.ChargeCrypto
-import com.alibaba.fastjson.JSON
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -54,7 +54,7 @@ class ChargeRepository @Inject constructor(
             val clientSignature = Base64.encodeToString(
                 ChargeCrypto.encryptWithPrivateKey(
                     clientKeyPair.private.encoded,
-                    ChargeCrypto.sha1Hex(JSON.toJSONString(signPayload)).toByteArray(Charsets.UTF_8)
+                    ChargeCrypto.sha1Hex(Gson().toJson(signPayload)).toByteArray(Charsets.UTF_8)
                 ),
                 Base64.NO_WRAP
             )
@@ -87,9 +87,9 @@ class ChargeRepository @Inject constructor(
                 ChargeCrypto.decryptWithAes(aesKey, Base64.decode(encryptedData, Base64.NO_WRAP)),
                 Charsets.UTF_8
             )
-            val charge = JSON.parseObject(chargeJson, Charge::class.java)
+            val charge = Gson().fromJson(chargeJson, Charge::class.java)
                 ?: return@withContext Result.failure(IllegalStateException("支付信息解析失败"))
-            val expectedSignature = ChargeCrypto.sha1Hex(JSON.toJSONString(charge))
+            val expectedSignature = ChargeCrypto.sha1Hex(Gson().toJson(charge))
             val actualSignature = String(
                 ChargeCrypto.decryptWithPublicKey(
                     Base64.decode(serverPublicKey, Base64.NO_WRAP),

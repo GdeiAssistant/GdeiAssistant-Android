@@ -1,10 +1,8 @@
 package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class Schedule(
     val id: String? = null,
@@ -23,7 +21,6 @@ data class Schedule(
     val scheduleWeek: String? = null
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class ScheduleQueryResult(
     val scheduleList: List<Schedule>? = null,

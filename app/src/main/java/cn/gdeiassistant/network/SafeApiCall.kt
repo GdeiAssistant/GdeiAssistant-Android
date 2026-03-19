@@ -12,27 +12,13 @@ import java.io.IOException
  * 优先使用后端返回的 message（AppException / success=false 的 message），否则使用兜底文案。
  */
 suspend fun <T> safeApiCall(block: suspend () -> DataJsonResult<T>): Result<T?> {
-    return try {
-        val res = block()
-        if (res.success == true) {
-            Result.success(res.data)
-        } else {
-            Result.failure(AppException(res.message ?: NetworkConstants.MESSAGE_REQUEST_FAILED, res.code ?: -1))
-        }
-    } catch (e: AppException) {
-        Result.failure(e)
-    } catch (e: HttpException) {
-        val message = e.response()?.errorBody()?.string()?.let { parseMessageFromErrorBody(it) }
-            ?: when (e.code()) {
-                NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.MESSAGE_LOGIN_EXPIRED
-                NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.MESSAGE_FORBIDDEN
-                else -> NetworkConstants.MESSAGE_SERVER_ERROR.format(e.code())
-            }
-        Result.failure(AppException(message, e.code()))
-    } catch (e: IOException) {
-        Result.failure(Exception(NetworkConstants.MESSAGE_NETWORK_ERROR))
-    } catch (e: Exception) {
-        Result.failure(e)
+    return safeResultCall(
+        block = block,
+        isSuccessful = { it.success == true },
+        errorMessage = { it.message },
+        errorCode = { it.code }
+    ) { response ->
+        response.data
     }
 }
 
@@ -40,12 +26,34 @@ suspend fun <T> safeApiCall(block: suspend () -> DataJsonResult<T>): Result<T?> 
  * 对无 data 的 JsonResult 接口（如评教提交）的统一封装。
  */
 suspend fun safeJsonResultCall(block: suspend () -> JsonResult): Result<Unit> {
+    return safeResultCall(
+        block = block,
+        isSuccessful = { it.success == true },
+        errorMessage = { it.message },
+        errorCode = { it.code }
+    ) {
+        Unit
+    }
+}
+
+private suspend inline fun <Response, ResultType> safeResultCall(
+    crossinline block: suspend () -> Response,
+    crossinline isSuccessful: (Response) -> Boolean,
+    crossinline errorMessage: (Response) -> String?,
+    crossinline errorCode: (Response) -> Int?,
+    crossinline successValue: (Response) -> ResultType
+): Result<ResultType> {
     return try {
-        val res = block()
-        if (res.success == true) {
-            Result.success(Unit)
+        val response = block()
+        if (isSuccessful(response)) {
+            Result.success(successValue(response))
         } else {
-            Result.failure(AppException(res.message ?: NetworkConstants.MESSAGE_REQUEST_FAILED, res.code ?: -1))
+            Result.failure(
+                AppException(
+                    errorMessage(response) ?: NetworkConstants.MESSAGE_REQUEST_FAILED,
+                    errorCode(response) ?: -1
+                )
+            )
         }
     } catch (e: AppException) {
         Result.failure(e)
@@ -58,7 +66,7 @@ suspend fun safeJsonResultCall(block: suspend () -> JsonResult): Result<Unit> {
             }
         Result.failure(AppException(message, e.code()))
     } catch (e: IOException) {
-        Result.failure(Exception(NetworkConstants.MESSAGE_NETWORK_ERROR))
+        Result.failure(AppException(NetworkConstants.MESSAGE_NETWORK_ERROR, -1))
     } catch (e: Exception) {
         Result.failure(e)
     }

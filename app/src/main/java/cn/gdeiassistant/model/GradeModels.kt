@@ -1,10 +1,8 @@
 package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class Grade(
     val gradeYear: String? = null,
@@ -17,7 +15,6 @@ data class Grade(
     val gradeScore: String? = null
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class GradeQueryResult(
     val year: Int? = null,

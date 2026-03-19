@@ -18,8 +18,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            isAllowInsecureProtocol = true
-            url = uri("http://maven.aliyun.com/nexus/content/repositories/releases/")
+            url = uri("https://maven.aliyun.com/repository/public/")
         }
         flatDir {
             dirs(rootDir.resolve("app/libs"))

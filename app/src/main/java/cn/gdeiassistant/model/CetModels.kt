@@ -1,9 +1,7 @@
 package cn.gdeiassistant.model
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class Cet(
     val name: String? = null,
     val school: String? = null,

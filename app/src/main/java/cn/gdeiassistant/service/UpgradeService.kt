@@ -8,14 +8,18 @@ import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import cn.gdeiassistant.constant.NotificationIDConstant
-import cn.gdeiassistant.network.RetrofitClient
 import cn.gdeiassistant.network.api.UpgradeApi
 import cn.gdeiassistant.R
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class UpgradeService : LifecycleService() {
+
+    @Inject lateinit var upgradeApi: UpgradeApi
 
     override fun onCreate() { super.onCreate() }
 
@@ -43,7 +47,7 @@ class UpgradeService : LifecycleService() {
     private fun checkUpgrade() {
         lifecycleScope.launch {
             try {
-                val result = withContext(Dispatchers.IO) { runCatching { RetrofitClient.create<UpgradeApi>().getUpgradeInfo() }.getOrNull() }
+                val result = withContext(Dispatchers.IO) { runCatching { upgradeApi.getUpgradeInfo() }.getOrNull() }
                 if (result?.success == true && result.data != null) {
                     val currentVersionCode = PackageInfoCompat.getLongVersionCode(
                         packageManager.getPackageInfo(packageName, 0)

@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import cn.gdeiassistant.data.SessionManager
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
@@ -18,6 +20,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settingsRepository: SettingsRepository
 
+    @Inject
+    lateinit var sessionManager: SessionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -27,8 +32,9 @@ class MainActivity : ComponentActivity() {
             val themeColor by settingsRepository.themeColor.collectAsState(
                 initial = SettingsRepository.DEFAULT_THEME_COLOR
             )
+            val hasActiveSession = remember { sessionManager.hasActiveSession() }
             GdeiAssistantTheme(themeColor = themeColor) {
-                GdeiAssistantApp()
+                GdeiAssistantApp(hasActiveSession = hasActiveSession)
             }
         }
     }

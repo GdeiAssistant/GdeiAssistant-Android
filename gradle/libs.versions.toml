@@ -21,12 +21,11 @@ activity-compose = "1.10.1"
 navigation = "2.9.3"
 datastore = "1.2.0"
 immutable = "0.3.7"
-commons-codec = "1.11"
-fastjson = "1.2.54"
-jackson = "2.9.7"
+commons-codec = "1.17.0"
 jwtdecode = "1.2.0"
 androidx-junit = "1.1.5"
 coil = "2.7.0"
+security-crypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,10 +49,6 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
-fastjson = { group = "com.alibaba", name = "fastjson", version.ref = "fastjson" }
-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
-jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson" }
 jwtdecode = { group = "com.auth0.android", name = "jwtdecode", version.ref = "jwtdecode" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
@@ -62,6 +57,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -86,12 +86,11 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
 
+    // Security
+    implementation(libs.androidx.security.crypto)
+
     // Utilities
     implementation(libs.commons.codec)
-    implementation(libs.fastjson)
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.core)
-    implementation(libs.jackson.annotations)
     implementation(libs.jwtdecode)
 
     // Testing

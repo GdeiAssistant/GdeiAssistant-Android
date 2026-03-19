@@ -1,10 +1,8 @@
 package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class Book(
     val id: String? = null,
@@ -17,14 +15,12 @@ data class Book(
     val renewTime: Int? = null
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class EncryptedData(
     val data: String? = null,
     val signature: String? = null
 )
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class CheckUpgradeResult(
     val downloadURL: String? = null,

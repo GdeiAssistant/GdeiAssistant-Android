@@ -1,7 +1,6 @@
 package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable
 import java.util.Calendar
 
@@ -19,7 +18,6 @@ data class SpareRoomQuery(
     val classNumber: Int = 0
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class SpareRoomItem(
     val id: String,
@@ -39,7 +37,6 @@ data class GraduateExamQuery(
     val idNumber: String = ""
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class GraduateExamScore(
     val name: String,
@@ -65,7 +62,6 @@ data class ElectricityQuery(
     }
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class ElectricityBill(
     val year: Int,
@@ -81,7 +77,6 @@ data class ElectricityBill(
     val averageElectricBill: String
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class YellowPageEntry(
     val id: String,
@@ -94,7 +89,6 @@ data class YellowPageEntry(
     val website: String
 ) : Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Immutable
 data class YellowPageCategory(
     val id: String,

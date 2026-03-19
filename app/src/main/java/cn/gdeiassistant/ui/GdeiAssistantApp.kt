@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cn.gdeiassistant.GdeiAssistantApplication
 import cn.gdeiassistant.data.toArticleDetailContent
 import cn.gdeiassistant.event.GlobalEvent
 import cn.gdeiassistant.event.GlobalEventManager
@@ -97,21 +96,30 @@ import cn.gdeiassistant.ui.topic.TopicProfileScreen
 import cn.gdeiassistant.ui.topic.TopicScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cn.gdeiassistant.R
 
+private object AppNavGraphs {
+    const val SERVICE = "service_graph"
+    const val ACCOUNT = "account_graph"
+    const val COMMUNITY = "community_graph"
+    const val INFORMATION = "information_graph"
+}
+
 @Composable
 fun GdeiAssistantApp(
     navController: NavHostController = rememberNavController(),
-    initialRoute: String? = null
+    initialRoute: String? = null,
+    hasActiveSession: Boolean = false
 ) {
     val context = LocalContext.current
-    val app = context.applicationContext as? GdeiAssistantApplication
-    val startDestination = if (app?.token.isNullOrBlank()) Routes.LOGIN else Routes.HOME
+    val startDestination = if (hasActiveSession) Routes.HOME else Routes.LOGIN
 
     LaunchedEffect(initialRoute) {
         when (initialRoute) {
@@ -208,182 +216,218 @@ fun GdeiAssistantApp(
             composable(Routes.HOME) { HomeScreen(navController = navController) }
             composable(Routes.MESSAGES) { MessagesScreen(navController = navController) }
             composable(Routes.PROFILE) { ProfileScreen(navController = navController) }
-            composable(Routes.DISCOVERY) { DiscoveryScreen(navController = navController) }
-            composable(Routes.GRADE) { GradeScreen(navController = navController) }
-            composable(Routes.SCHEDULE) { ScheduleScreen(navController = navController) }
-            composable(Routes.CET) { CetScreen(navController = navController) }
-            composable(Routes.EVALUATE) { EvaluateScreen(navController = navController) }
-            composable(Routes.SPARE) { SpareScreen(navController = navController) }
-            composable(Routes.GRADUATE_EXAM) { GraduateExamScreen(navController = navController) }
-            composable(Routes.BOOK) { BookScreen(navController = navController) }
-            composable(Routes.CARD) { CardScreen(navController = navController) }
-            composable(Routes.CHARGE) { ChargeScreen(navController = navController) }
-            composable(Routes.LOST) { LostScreen(navController = navController) }
-            composable(Routes.ABOUT) { AboutScreen(navController = navController) }
-            composable(Routes.PROFILE_PRIVACY) { PrivacySettingsScreen(navController = navController) }
-            composable(Routes.PROFILE_LOGIN_RECORDS) { LoginRecordsScreen(navController = navController) }
-            composable(Routes.PROFILE_BIND_PHONE) { BindPhoneScreen(navController = navController) }
-            composable(Routes.PROFILE_BIND_EMAIL) { BindEmailScreen(navController = navController) }
-            composable(Routes.PROFILE_AVATAR) { AvatarEditScreen(navController = navController) }
-            composable(Routes.PROFILE_DOWNLOAD_DATA) { DownloadDataScreen(navController = navController) }
-            composable(Routes.PROFILE_FEEDBACK) { FeedbackScreen(navController = navController) }
-            composable(Routes.PROFILE_DELETE_ACCOUNT) { DeleteAccountScreen(navController = navController) }
-            composable(Routes.PROFILE_SETTINGS) { ProfileSettingsScreen(navController = navController) }
-            composable(Routes.PROFILE_THEME) { ProfileThemeScreen(navController = navController) }
-            composable(Routes.NEWS) { NewsScreen(navController = navController) }
-            composable(Routes.DATA_CENTER) { DataCenterScreen(navController = navController) }
-            composable(Routes.ELECTRICITY_FEES) { ElectricityFeesScreen(navController = navController) }
-            composable(Routes.YELLOW_PAGE) { YellowPageScreen(navController = navController) }
-            composable(Routes.MARKETPLACE) { MarketplaceScreen(navController = navController) }
-            composable(Routes.MARKETPLACE_PROFILE) { MarketplaceProfileScreen(navController = navController) }
-            composable(Routes.LOST_FOUND) { LostFoundScreen(navController = navController) }
-            composable(Routes.LOST_FOUND_PROFILE) { LostFoundProfileScreen(navController = navController) }
-            composable(Routes.SECRET) { SecretScreen(navController = navController) }
-            composable(Routes.SECRET_PROFILE) { SecretProfileScreen(navController = navController) }
-            composable(Routes.SECRET_PUBLISH) { SecretPublishScreen(navController = navController) }
-            composable(
-                route = Routes.DATING_ROUTE,
-                arguments = listOf(navArgument(Routes.DATING_TAB) {
+            composable(Routes.LOGIN) { LoginScreen(navController = navController) }
+            serviceGraph(navController)
+            accountGraph(navController)
+            communityGraph(navController)
+            informationGraph(navController)
+        }
+    }
+}
+
+private fun NavGraphBuilder.serviceGraph(navController: NavHostController) {
+    navigation(
+        startDestination = Routes.DISCOVERY,
+        route = AppNavGraphs.SERVICE
+    ) {
+        composable(Routes.DISCOVERY) { DiscoveryScreen(navController = navController) }
+        composable(Routes.GRADE) { GradeScreen(navController = navController) }
+        composable(Routes.SCHEDULE) { ScheduleScreen(navController = navController) }
+        composable(Routes.CET) { CetScreen(navController = navController) }
+        composable(Routes.EVALUATE) { EvaluateScreen(navController = navController) }
+        composable(Routes.SPARE) { SpareScreen(navController = navController) }
+        composable(Routes.GRADUATE_EXAM) { GraduateExamScreen(navController = navController) }
+        composable(Routes.BOOK) { BookScreen(navController = navController) }
+        composable(Routes.CARD) { CardScreen(navController = navController) }
+        composable(Routes.CHARGE) { ChargeScreen(navController = navController) }
+        composable(Routes.LOST) { LostScreen(navController = navController) }
+        composable(Routes.ABOUT) { AboutScreen(navController = navController) }
+        composable(Routes.DATA_CENTER) { DataCenterScreen(navController = navController) }
+        composable(Routes.ELECTRICITY_FEES) { ElectricityFeesScreen(navController = navController) }
+        composable(Routes.YELLOW_PAGE) { YellowPageScreen(navController = navController) }
+        composable(Routes.YELLOW_PAGE_DETAIL) { YellowPageDetailScreen(navController = navController) }
+        composable(Routes.GRADE_DETAIL) {
+            val grade = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<Grade>(Routes.GRADE_DETAIL_GRADE)
+            val termLabelResId = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<Int>(Routes.GRADE_DETAIL_TERM_LABEL)
+            val args = if (grade != null && termLabelResId != null) {
+                GradeDetailArgs(grade = grade, termLabelResId = termLabelResId)
+            } else {
+                null
+            }
+            GradeDetailScreen(navController = navController, args = args)
+        }
+        composable(Routes.BOOK_DETAIL) {
+            val book = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<CollectionBorrowItem>(Routes.BOOK_DETAIL_BOOK)
+            BookDetailScreen(navController = navController, book = book)
+        }
+        composable(
+            route = Routes.BOOK_COLLECTION_DETAIL,
+            arguments = listOf(
+                navArgument(Routes.BOOK_COLLECTION_DETAIL_URL) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) {
+            CollectionDetailScreen(navController = navController)
+        }
+    }
+}
+
+private fun NavGraphBuilder.accountGraph(navController: NavHostController) {
+    navigation(
+        startDestination = Routes.PROFILE_PRIVACY,
+        route = AppNavGraphs.ACCOUNT
+    ) {
+        composable(Routes.PROFILE_PRIVACY) { PrivacySettingsScreen(navController = navController) }
+        composable(Routes.PROFILE_LOGIN_RECORDS) { LoginRecordsScreen(navController = navController) }
+        composable(Routes.PROFILE_BIND_PHONE) { BindPhoneScreen(navController = navController) }
+        composable(Routes.PROFILE_BIND_EMAIL) { BindEmailScreen(navController = navController) }
+        composable(Routes.PROFILE_AVATAR) { AvatarEditScreen(navController = navController) }
+        composable(Routes.PROFILE_DOWNLOAD_DATA) { DownloadDataScreen(navController = navController) }
+        composable(Routes.PROFILE_FEEDBACK) { FeedbackScreen(navController = navController) }
+        composable(Routes.PROFILE_DELETE_ACCOUNT) { DeleteAccountScreen(navController = navController) }
+        composable(Routes.PROFILE_SETTINGS) { ProfileSettingsScreen(navController = navController) }
+        composable(Routes.PROFILE_THEME) { ProfileThemeScreen(navController = navController) }
+    }
+}
+
+private fun NavGraphBuilder.communityGraph(navController: NavHostController) {
+    navigation(
+        startDestination = Routes.MARKETPLACE,
+        route = AppNavGraphs.COMMUNITY
+    ) {
+        composable(Routes.MARKETPLACE) { MarketplaceScreen(navController = navController) }
+        composable(Routes.MARKETPLACE_PROFILE) { MarketplaceProfileScreen(navController = navController) }
+        composable(Routes.LOST_FOUND) { LostFoundScreen(navController = navController) }
+        composable(Routes.LOST_FOUND_PROFILE) { LostFoundProfileScreen(navController = navController) }
+        composable(Routes.SECRET) { SecretScreen(navController = navController) }
+        composable(Routes.SECRET_PROFILE) { SecretProfileScreen(navController = navController) }
+        composable(Routes.SECRET_PUBLISH) { SecretPublishScreen(navController = navController) }
+        composable(
+            route = Routes.DATING_ROUTE,
+            arguments = listOf(navArgument(Routes.DATING_TAB) {
+                type = NavType.StringType
+                defaultValue = ""
+                nullable = true
+            })
+        ) {
+            DatingScreen(navController = navController)
+        }
+        composable(Routes.EXPRESS) { ExpressScreen(navController = navController) }
+        composable(Routes.EXPRESS_PROFILE) { ExpressProfileScreen(navController = navController) }
+        composable(Routes.EXPRESS_PUBLISH) { ExpressPublishScreen(navController = navController) }
+        composable(Routes.TOPIC) { TopicScreen(navController = navController) }
+        composable(Routes.TOPIC_PROFILE) { TopicProfileScreen(navController = navController) }
+        composable(Routes.TOPIC_PUBLISH) { TopicPublishScreen(navController = navController) }
+        composable(Routes.DELIVERY) { DeliveryScreen(navController = navController) }
+        composable(Routes.DELIVERY_MINE) { DeliveryMineScreen(navController = navController) }
+        composable(Routes.DELIVERY_PUBLISH) { DeliveryPublishScreen(navController = navController) }
+        composable(Routes.PHOTOGRAPH) { PhotographScreen(navController = navController) }
+        composable(Routes.PHOTOGRAPH_PROFILE) { PhotographProfileScreen(navController = navController) }
+        composable(Routes.PHOTOGRAPH_PUBLISH) { PhotographPublishScreen(navController = navController) }
+        composable(
+            route = Routes.MARKETPLACE_DETAIL,
+            arguments = listOf(navArgument(Routes.MARKETPLACE_ITEM_ID) { type = NavType.StringType })
+        ) {
+            MarketplaceDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.LOST_FOUND_DETAIL,
+            arguments = listOf(navArgument(Routes.LOST_FOUND_ITEM_ID) { type = NavType.StringType })
+        ) {
+            LostFoundDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.SECRET_DETAIL,
+            arguments = listOf(navArgument(Routes.SECRET_POST_ID) { type = NavType.StringType })
+        ) {
+            SecretDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.EXPRESS_DETAIL,
+            arguments = listOf(navArgument(Routes.EXPRESS_POST_ID) { type = NavType.StringType })
+        ) {
+            ExpressDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.TOPIC_DETAIL,
+            arguments = listOf(navArgument(Routes.TOPIC_POST_ID) { type = NavType.StringType })
+        ) {
+            TopicDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.DELIVERY_DETAIL,
+            arguments = listOf(navArgument(Routes.DELIVERY_ORDER_ID) { type = NavType.StringType })
+        ) {
+            DeliveryDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.PHOTOGRAPH_DETAIL,
+            arguments = listOf(navArgument(Routes.PHOTOGRAPH_POST_ID) { type = NavType.StringType })
+        ) {
+            PhotographDetailScreen(navController = navController)
+        }
+    }
+}
+
+private fun NavGraphBuilder.informationGraph(navController: NavHostController) {
+    navigation(
+        startDestination = Routes.NEWS,
+        route = AppNavGraphs.INFORMATION
+    ) {
+        composable(Routes.NEWS) { NewsScreen(navController = navController) }
+        composable(Routes.ARTICLE_DETAIL) { ArticleDetailScreen(navController = navController) }
+        composable(Routes.INTERACTION_LIST) { InteractionListScreen(navController = navController) }
+        composable(Routes.NOTICE_LIST) {
+            NoticeListScreen(
+                navController = navController,
+                onOpenNotice = { notice ->
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(Routes.ARTICLE_DETAIL_CONTENT, notice.toArticleDetailContent())
+                    navController.navigate(Routes.ARTICLE_DETAIL)
+                }
+            )
+        }
+        composable(
+            route = Routes.NOTICE_DETAIL,
+            arguments = listOf(navArgument("noticeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val noticeId = backStackEntry.arguments?.getString("noticeId") ?: "0"
+            NoticeDetailScreen(noticeId = noticeId, navController = navController)
+        }
+        composable(
+            route = Routes.WEB_VIEW,
+            arguments = listOf(
+                navArgument(Routes.WEB_VIEW_TITLE) {
                     type = NavType.StringType
                     defaultValue = ""
                     nullable = true
-                })
-            ) {
-                DatingScreen(navController = navController)
-            }
-            composable(Routes.EXPRESS) { ExpressScreen(navController = navController) }
-            composable(Routes.EXPRESS_PROFILE) { ExpressProfileScreen(navController = navController) }
-            composable(Routes.EXPRESS_PUBLISH) { ExpressPublishScreen(navController = navController) }
-            composable(Routes.TOPIC) { TopicScreen(navController = navController) }
-            composable(Routes.TOPIC_PROFILE) { TopicProfileScreen(navController = navController) }
-            composable(Routes.TOPIC_PUBLISH) { TopicPublishScreen(navController = navController) }
-            composable(Routes.DELIVERY) { DeliveryScreen(navController = navController) }
-            composable(Routes.DELIVERY_MINE) { DeliveryMineScreen(navController = navController) }
-            composable(Routes.DELIVERY_PUBLISH) { DeliveryPublishScreen(navController = navController) }
-            composable(Routes.PHOTOGRAPH) { PhotographScreen(navController = navController) }
-            composable(Routes.PHOTOGRAPH_PROFILE) { PhotographProfileScreen(navController = navController) }
-            composable(Routes.PHOTOGRAPH_PUBLISH) { PhotographPublishScreen(navController = navController) }
-            composable(Routes.YELLOW_PAGE_DETAIL) { YellowPageDetailScreen(navController = navController) }
-            composable(Routes.ARTICLE_DETAIL) { ArticleDetailScreen(navController = navController) }
-            composable(
-                route = Routes.BOOK_COLLECTION_DETAIL,
-                arguments = listOf(
-                    navArgument(Routes.BOOK_COLLECTION_DETAIL_URL) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    }
-                )
-            ) {
-                CollectionDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.MARKETPLACE_DETAIL,
-                arguments = listOf(navArgument(Routes.MARKETPLACE_ITEM_ID) { type = NavType.StringType })
-            ) {
-                MarketplaceDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.LOST_FOUND_DETAIL,
-                arguments = listOf(navArgument(Routes.LOST_FOUND_ITEM_ID) { type = NavType.StringType })
-            ) {
-                LostFoundDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.SECRET_DETAIL,
-                arguments = listOf(navArgument(Routes.SECRET_POST_ID) { type = NavType.StringType })
-            ) {
-                SecretDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.EXPRESS_DETAIL,
-                arguments = listOf(navArgument(Routes.EXPRESS_POST_ID) { type = NavType.StringType })
-            ) {
-                ExpressDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.TOPIC_DETAIL,
-                arguments = listOf(navArgument(Routes.TOPIC_POST_ID) { type = NavType.StringType })
-            ) {
-                TopicDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.DELIVERY_DETAIL,
-                arguments = listOf(navArgument(Routes.DELIVERY_ORDER_ID) { type = NavType.StringType })
-            ) {
-                DeliveryDetailScreen(navController = navController)
-            }
-            composable(
-                route = Routes.PHOTOGRAPH_DETAIL,
-                arguments = listOf(navArgument(Routes.PHOTOGRAPH_POST_ID) { type = NavType.StringType })
-            ) {
-                PhotographDetailScreen(navController = navController)
-            }
-            composable(Routes.GRADE_DETAIL) {
-                val grade = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Grade>(Routes.GRADE_DETAIL_GRADE)
-                val termLabelResId = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Int>(Routes.GRADE_DETAIL_TERM_LABEL)
-                val args = if (grade != null && termLabelResId != null) {
-                    GradeDetailArgs(grade = grade, termLabelResId = termLabelResId)
-                } else {
-                    null
+                },
+                navArgument(Routes.WEB_VIEW_URL) {
+                    type = NavType.StringType
+                    defaultValue = "about:blank"
+                },
+                navArgument(Routes.WEB_VIEW_ALLOW_JAVASCRIPT) {
+                    type = NavType.BoolType
+                    defaultValue = false
                 }
-                GradeDetailScreen(navController = navController, args = args)
-            }
-            composable(Routes.BOOK_DETAIL) {
-                val book = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<CollectionBorrowItem>(Routes.BOOK_DETAIL_BOOK)
-                BookDetailScreen(navController = navController, book = book)
-            }
-            composable(
-                route = Routes.WEB_VIEW,
-                arguments = listOf(
-                    navArgument(Routes.WEB_VIEW_TITLE) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                        nullable = true
-                    },
-                    navArgument(Routes.WEB_VIEW_URL) {
-                        type = NavType.StringType
-                        defaultValue = "about:blank"
-                    },
-                    navArgument(Routes.WEB_VIEW_ALLOW_JAVASCRIPT) {
-                        type = NavType.BoolType
-                        defaultValue = false
-                    }
-                )
-            ) { backStackEntry ->
-                val defaultWebTitle = stringResource(R.string.web_title_default)
-                WebScreen(
-                    title = backStackEntry.arguments?.getString(Routes.WEB_VIEW_TITLE).orEmpty().ifBlank { defaultWebTitle },
-                    url = backStackEntry.arguments?.getString(Routes.WEB_VIEW_URL).orEmpty().ifBlank { "about:blank" },
-                    navController = navController,
-                    allowJavaScript = backStackEntry.arguments?.getBoolean(Routes.WEB_VIEW_ALLOW_JAVASCRIPT) == true
-                )
-            }
-            composable(Routes.LOGIN) { LoginScreen(navController = navController) }
-            composable(Routes.INTERACTION_LIST) { InteractionListScreen(navController = navController) }
-            composable(Routes.NOTICE_LIST) {
-                NoticeListScreen(
-                    navController = navController,
-                    onOpenNotice = { notice ->
-                        navController.currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set(Routes.ARTICLE_DETAIL_CONTENT, notice.toArticleDetailContent())
-                        navController.navigate(Routes.ARTICLE_DETAIL)
-                    }
-                )
-            }
-            composable(
-                route = Routes.NOTICE_DETAIL,
-                arguments = listOf(navArgument("noticeId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val noticeId = backStackEntry.arguments?.getString("noticeId") ?: "0"
-                NoticeDetailScreen(noticeId = noticeId, navController = navController)
-            }
+            )
+        ) { backStackEntry ->
+            val defaultWebTitle = stringResource(R.string.web_title_default)
+            WebScreen(
+                title = backStackEntry.arguments?.getString(Routes.WEB_VIEW_TITLE).orEmpty().ifBlank { defaultWebTitle },
+                url = backStackEntry.arguments?.getString(Routes.WEB_VIEW_URL).orEmpty().ifBlank { "about:blank" },
+                navController = navController,
+                allowJavaScript = backStackEntry.arguments?.getBoolean(Routes.WEB_VIEW_ALLOW_JAVASCRIPT) == true
+            )
         }
     }
 }
