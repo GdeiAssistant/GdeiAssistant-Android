@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.AllInbox
 import androidx.compose.material.icons.rounded.AutoStories
@@ -12,7 +13,6 @@ import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.EventSeat
 import androidx.compose.material.icons.rounded.FindInPage
 import androidx.compose.material.icons.rounded.LocalShipping
-import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Quiz
@@ -71,7 +71,7 @@ object AppFeatureCatalog {
         AppFeature(Routes.GRADE, R.string.menu_grade, R.string.feature_grade_subtitle, Icons.Rounded.School, TintPrimary, AppFeatureGroup.SERVICE),
         AppFeature(Routes.SCHEDULE, R.string.menu_schedule, R.string.feature_schedule_subtitle, Icons.Rounded.CalendarMonth, TintSecondary, AppFeatureGroup.SERVICE),
         AppFeature(Routes.CET, R.string.cet_title, R.string.feature_cet_subtitle, Icons.Rounded.Quiz, TintPrimaryDeep, AppFeatureGroup.SERVICE),
-        AppFeature(Routes.GRADUATE_EXAM, R.string.graduate_exam_title, R.string.feature_graduate_exam_subtitle, Icons.Rounded.MenuBook, TintPrimaryDeep, AppFeatureGroup.SERVICE),
+        AppFeature(Routes.GRADUATE_EXAM, R.string.graduate_exam_title, R.string.feature_graduate_exam_subtitle, Icons.AutoMirrored.Rounded.MenuBook, TintPrimaryDeep, AppFeatureGroup.SERVICE),
         AppFeature(Routes.SPARE, R.string.spare_title, R.string.feature_spare_subtitle, Icons.Rounded.EventSeat, TintSecondaryDeep, AppFeatureGroup.SERVICE),
         AppFeature(Routes.BOOK, R.string.menu_book, R.string.feature_book_subtitle, Icons.Rounded.AutoStories, TintTertiary, AppFeatureGroup.SERVICE),
         AppFeature(Routes.CARD, R.string.menu_card, R.string.feature_card_subtitle, Icons.Rounded.CreditCard, TintSecondaryDeep, AppFeatureGroup.SERVICE),

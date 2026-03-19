@@ -1,11 +1,14 @@
 package cn.gdeiassistant.ui.datacenter
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DataCenterRepository
 import cn.gdeiassistant.model.ElectricityBill
 import cn.gdeiassistant.model.ElectricityQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +26,8 @@ data class ElectricityFeesUiState(
 
 @HiltViewModel
 class ElectricityFeesViewModel @Inject constructor(
-    private val dataCenterRepository: DataCenterRepository
+    private val dataCenterRepository: DataCenterRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ElectricityFeesUiState())
@@ -44,11 +48,15 @@ class ElectricityFeesViewModel @Inject constructor(
     fun submit() {
         val query = _state.value.query
         if (query.name.isBlank() || query.studentNumber.isBlank()) {
-            _state.update { it.copy(error = "请填写姓名与学号", bill = null) }
+            _state.update {
+                it.copy(error = context.getString(R.string.electricity_error_incomplete), bill = null)
+            }
             return
         }
         if (query.studentNumber.length != 11) {
-            _state.update { it.copy(error = "请输入正确的学号（11位数字）", bill = null) }
+            _state.update {
+                it.copy(error = context.getString(R.string.electricity_error_student_number), bill = null)
+            }
             return
         }
         viewModelScope.launch {

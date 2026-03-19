@@ -1,10 +1,12 @@
 package cn.gdeiassistant.ui.login
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,37 +23,28 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,25 +52,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.ui.components.Atmosphere
-import cn.gdeiassistant.ui.navigation.AppFeature
-import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
 
-private val LoginBackground = Color(0xFFF2F7FF)
-private val LoginHeroStart = Color(0xFF1764F6)
-private val LoginHeroEnd = Color(0xFF1CC69A)
-private val LoginSurface = Color(0xFFFFFFFF)
-private val LoginMutedSurface = Color(0xFFF4F8FF)
-private val LoginBorder = Color(0xFFD8E7FC)
-// LoginError and LoginErrorBorder replaced by MaterialTheme.colorScheme tokens inline
+private val LoginBackground = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFF7F7FF),
+        Color(0xFFF1F3FF),
+        Color(0xFFEEF5FF)
+    )
+)
+private val LoginCardBorder = Color(0x1F3A235A)
+private val LoginMockTint = Color(0xFF5E35B1)
+private val LoginMockContainer = Color(0xFFF1EBFF)
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -101,174 +94,104 @@ fun LoginScreen(navController: NavHostController) {
         state = uiState,
         onUsernameChange = viewModel::updateUsername,
         onPasswordChange = viewModel::updatePassword,
+        onMockModeChange = viewModel::setMockModeEnabled,
         onLoginClick = viewModel::login
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginContent(
     state: LoginUiState,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onMockModeChange: (Boolean) -> Unit,
     onLoginClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
-    Scaffold(
-        containerColor = Color.Transparent,
-        topBar = {
-            TopAppBar(
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                )
-            )
-        }
-    ) { innerPadding ->
-        Atmosphere(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LoginBackground)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .imePadding()
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(LoginBackground)
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ) {
-                CampusHero()
-                CapabilityRow()
-                LoginFormCard(
-                    state = state,
-                    onUsernameChange = onUsernameChange,
-                    onPasswordChange = onPasswordChange,
-                    onLoginClick = {
-                        focusManager.clearFocus(force = true)
-                        onLoginClick()
-                    }
-                )
-                SecurityFootnote()
-            }
+            LoginHeader()
+            LoginFormCard(
+                state = state,
+                onUsernameChange = onUsernameChange,
+                onPasswordChange = onPasswordChange,
+                onLoginClick = {
+                    focusManager.clearFocus(force = true)
+                    onLoginClick()
+                }
+            )
+            LoginMockCard(
+                enabled = state.isMockModeEnabled,
+                onToggle = onMockModeChange
+            )
         }
     }
 }
 
 @Composable
-private fun CampusHero() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+private fun LoginHeader() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(brush = Brush.linearGradient(colors = listOf(LoginHeroStart, LoginHeroEnd)))
-                .padding(22.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .size(72.dp)
+                .clip(CircleShape)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            LoginMockTint.copy(alpha = 0.16f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+                        )
+                    )
+                )
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Surface(
-                shape = RoundedCornerShape(999.dp),
-                color = Color.White.copy(alpha = 0.16f)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Badge,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.login_channel_badge),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.White
-                    )
-                }
-            }
+            Text(
+                text = "G",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
             Text(
                 text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = stringResource(R.string.login_subtitle),
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = 0.9f),
-                lineHeight = 24.sp
-            )
-
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White.copy(alpha = 0.14f)
-            ) {
-                Text(
-                    text = stringResource(R.string.login_secure_hint),
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CapabilityRow() {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        AppFeatureCatalog.highlightedFeatures.forEach { feature ->
-            CapabilityTile(
-                modifier = Modifier.weight(1f),
-                feature = feature
-            )
-        }
-    }
-}
-
-@Composable
-private fun CapabilityTile(
-    modifier: Modifier = Modifier,
-    feature: AppFeature
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = LoginSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, LoginBorder)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .background(feature.tint.copy(alpha = 0.12f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(feature.icon, contentDescription = null, tint = feature.tint)
-            }
-            Text(
-                text = stringResource(feature.titleRes),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -283,30 +206,29 @@ private fun LoginFormCard(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize(),
-        shape = RoundedCornerShape(30.dp),
-        colors = CardDefaults.cardColors(containerColor = LoginSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, LoginBorder)
+        shape = AppShapes.card,
+        color = MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, LoginCardBorder)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 22.dp),
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(R.string.login_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.ExtraBold
                 )
                 Text(
-                    text = stringResource(R.string.login_agreement),
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = stringResource(R.string.login_username_hint) + " / " + stringResource(R.string.login_password_hint),
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -318,23 +240,19 @@ private fun LoginFormCard(
             ) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = AppShapes.button,
                     color = MaterialTheme.colorScheme.errorContainer,
-                    shape = RoundedCornerShape(18.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                    )
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = stringResource(R.string.login_error_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = state.errorMessage?.asString().orEmpty(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Text(
+                        text = state.errorMessage?.asString().orEmpty(),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
 
@@ -342,13 +260,11 @@ private fun LoginFormCard(
                 value = state.username,
                 onValueChange = onUsernameChange,
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.login_username_hint)) },
+                label = { Text(text = stringResource(R.string.login_username_hint)) },
                 singleLine = true,
                 enabled = !state.isLoading,
-                leadingIcon = {
-                    Icon(Icons.Outlined.Person, contentDescription = null)
-                },
-                shape = RoundedCornerShape(18.dp),
+                leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null) },
+                shape = AppShapes.button,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
@@ -359,13 +275,11 @@ private fun LoginFormCard(
                 value = state.password,
                 onValueChange = onPasswordChange,
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.login_password_hint)) },
+                label = { Text(text = stringResource(R.string.login_password_hint)) },
                 singleLine = true,
                 enabled = !state.isLoading,
-                leadingIcon = {
-                    Icon(Icons.Outlined.Lock, contentDescription = null)
-                },
-                shape = RoundedCornerShape(18.dp),
+                leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                shape = AppShapes.button,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -374,54 +288,153 @@ private fun LoginFormCard(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus(force = true)
-                        if (state.canSubmit) onLoginClick()
+                        if (state.canSubmit) {
+                            onLoginClick()
+                        }
                     }
                 )
             )
 
-            Button(
-                onClick = onLoginClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
+            LoginActionButton(
+                text = if (state.isLoading) {
+                    stringResource(R.string.login_loading)
+                } else {
+                    stringResource(R.string.login_button)
+                },
+                loading = state.isLoading,
                 enabled = state.canSubmit,
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LoginHeroStart,
-                    disabledContainerColor = LoginHeroStart.copy(alpha = 0.45f)
-                )
+                onClick = onLoginClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoginMockCard(
+    enabled: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        shape = AppShapes.card,
+        color = MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, LoginCardBorder)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(LoginMockContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DataObject,
+                        contentDescription = null,
+                        tint = LoginMockTint
                     )
-                    Spacer(modifier = Modifier.size(10.dp))
                 }
-                Text(
-                    text = if (state.isLoading) stringResource(R.string.login_loading) else stringResource(R.string.login_button),
-                    style = MaterialTheme.typography.titleMedium
+                Spacer(modifier = Modifier.width(14.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.login_mock_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    AnimatedContent(targetState = enabled, label = "loginMockMode") { isEnabled ->
+                        Text(
+                            text = if (isEnabled) {
+                                stringResource(R.string.login_mock_enabled_subtitle)
+                            } else {
+                                stringResource(R.string.login_mock_disabled_subtitle)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Switch(
+                    checked = enabled,
+                    onCheckedChange = onToggle
                 )
             }
 
-            TextButton(
-                onClick = {},
-                enabled = !state.isLoading,
-                modifier = Modifier.align(Alignment.End)
+            AnimatedVisibility(
+                visible = enabled,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Text(text = stringResource(R.string.privacy_policy))
+                Surface(
+                    shape = AppShapes.button,
+                    color = LoginMockContainer,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, LoginMockTint.copy(alpha = 0.14f))
+                ) {
+                    Text(
+                        text = stringResource(R.string.login_mock_account_hint),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LoginMockTint
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SecurityFootnote() {
-    Text(
-        text = stringResource(R.string.login_secure_hint),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 4.dp)
-    )
+private fun LoginActionButton(
+    text: String,
+    loading: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled && !loading,
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppShapes.button,
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = if (enabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                }
+            )
+        }
+    }
 }

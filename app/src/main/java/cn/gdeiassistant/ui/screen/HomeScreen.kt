@@ -47,20 +47,25 @@ fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val greeting = remember {
-        when (LocalTime.now().hour) {
-            in 5..11  -> "早上好"
-            in 12..13 -> "中午好"
-            in 14..17 -> "下午好"
-            in 18..23 -> "晚上好"
-            else      -> "夜深了"
-        }
+    val greeting = when (LocalTime.now().hour) {
+        in 5..11 -> stringResource(R.string.home_greeting_morning)
+        in 12..13 -> stringResource(R.string.home_greeting_noon)
+        in 14..17 -> stringResource(R.string.home_greeting_afternoon)
+        in 18..23 -> stringResource(R.string.home_greeting_evening)
+        else -> stringResource(R.string.home_greeting_night)
     }
-    val nameText = state.displayName?.ifBlank { null }?.removeSuffix("同学")
-    val greetingText = if (nameText != null) "$greeting，${nameText}同学" else "$greeting，同学"
-    val todayLabel = remember {
-        LocalDate.now().format(DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.SIMPLIFIED_CHINESE))
+    val studentSuffix = stringResource(R.string.home_student_suffix)
+    val nameText = state.displayName
+        ?.ifBlank { null }
+        ?.removeSuffix(studentSuffix)
+        ?.ifBlank { null }
+    val greetingText = if (nameText != null) {
+        stringResource(R.string.home_greeting_with_name, greeting, nameText)
+    } else {
+        stringResource(R.string.home_greeting_without_name, greeting)
     }
+    val todayLabel = LocalDate.now()
+        .format(DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.SIMPLIFIED_CHINESE))
 
     LazyScreen(title = greetingText) {
         item {
@@ -125,10 +130,15 @@ private fun GreetingHeader(
             else      -> "✨"
         }
     }
-    val statsLine = buildString {
-        append(if (courseCount > 0) "今日 $courseCount 节课" else "今日无课")
-        if (!cardBalance.isNullOrBlank()) append(" · 校园卡 ¥$cardBalance")
+    val courseSummary = if (courseCount > 0) {
+        stringResource(R.string.home_stats_course_count, courseCount)
+    } else {
+        stringResource(R.string.home_stats_no_course)
     }
+    val balanceSummary = cardBalance
+        ?.takeIf { it.isNotBlank() }
+        ?.let { stringResource(R.string.home_stats_card_balance, it) }
+    val statsLine = listOfNotNull(courseSummary, balanceSummary).joinToString(" · ")
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -167,12 +177,16 @@ private fun TodayScheduleGrid(
                     fontWeight = FontWeight.ExtraBold
                 )
                 Text(
-                    text = if (courses.isEmpty()) "今天无课，好好休息" else "共 ${courses.size} 节课",
+                    text = if (courses.isEmpty()) {
+                        stringResource(R.string.home_today_schedule_empty_summary)
+                    } else {
+                        stringResource(R.string.home_today_schedule_count, courses.size)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            GhostButton(text = "查看课表", onClick = onOpenSchedule)
+            GhostButton(text = stringResource(R.string.home_view_schedule), onClick = onOpenSchedule)
         }
         Spacer(modifier = Modifier.height(16.dp))
         AnimatedContent(
@@ -195,12 +209,12 @@ private fun TodayScheduleGrid(
                         Text("🏖️", fontSize = 30.sp)
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                text = "今天没有课",
+                                text = stringResource(R.string.home_today_schedule_empty_title),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = "可以放松一下了",
+                                text = stringResource(R.string.home_today_schedule_empty_body),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -229,7 +243,7 @@ private fun CourseRow(course: Schedule) {
         val len = course.scheduleLength ?: 1
         val s = r * 2 + 1
         val e = (r + len - 1) * 2 + 2
-        "${s}-${e}节"
+        "$s-$e"
     }
     val startTime = SectionStartTimes[course.row ?: 0] ?: ""
     val subtitle = listOfNotNull(course.scheduleLocation, course.scheduleTeacher)
@@ -267,7 +281,7 @@ private fun CourseRow(course: Schedule) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = course.scheduleName ?: "未命名课程",
+                text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,

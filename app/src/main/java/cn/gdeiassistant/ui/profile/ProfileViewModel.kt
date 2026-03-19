@@ -98,8 +98,7 @@ class ProfileViewModel @Inject constructor(
             val locationResult = locationDeferred.await()
             val fallbackUsername = sessionManager.currentUsername().orEmpty()
             val profile = profileResult.getOrNull() ?: UserProfileSummary(
-                username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) },
-                nickname = fallbackUsername.ifBlank { context.getString(R.string.profile_default_nickname) }
+                username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) }
             )
 
             _state.update { current ->
@@ -219,10 +218,6 @@ class ProfileViewModel @Inject constructor(
 
     fun saveBirthday(value: String) {
         saveDraftUpdate { it.copy(birthday = value) }
-    }
-
-    fun clearBirthdayAndSave() {
-        saveDraftUpdate { it.copy(birthday = "") }
     }
 
     fun saveCollege(value: String) {

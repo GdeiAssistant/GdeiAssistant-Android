@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui.cet
 
 import android.graphics.BitmapFactory
 import android.util.Base64
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,25 +23,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Verified
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -57,13 +54,19 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Cet
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
-import cn.gdeiassistant.ui.components.HeroCard
+import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.ShimmerBox
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.util.asString
+
+private enum class CetResultState {
+    Loading,
+    Empty,
+    Ready
+}
 
 @Composable
 fun CetScreen(navController: NavHostController) {
@@ -97,7 +100,15 @@ private fun CetContent(
 
     LazyScreen(
         title = stringResource(R.string.cet_title),
-        onBack = onBack
+        onBack = onBack,
+        actions = {
+            IconButton(onClick = onRefreshCheckcode, enabled = !state.isCheckCodeLoading) {
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.cet_refresh_checkcode)
+                )
+            }
+        }
     ) {
         if (!errorText.isNullOrBlank()) {
             item {
@@ -119,13 +130,26 @@ private fun CetContent(
                 onReset = onReset
             )
         }
-        when {
-            state.isLoading -> item { LoadingCard() }
-            state.showResult && state.result != null -> {
-                item { ResultSummaryCard(result = state.result) }
-                item { ResultDetailCard(result = state.result) }
+        item {
+            AnimatedContent(
+                targetState = when {
+                    state.isLoading -> CetResultState.Loading
+                    state.showResult && state.result != null -> CetResultState.Ready
+                    else -> CetResultState.Empty
+                },
+                label = "cet_result_state"
+            ) { resultState ->
+                when (resultState) {
+                    CetResultState.Loading -> LoadingCard()
+                    CetResultState.Empty -> EmptyResultCard()
+                    CetResultState.Ready -> Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        state.result?.let { result ->
+                            ResultSummaryCard(result = result)
+                            ResultDetailCard(result = result)
+                        }
+                    }
+                }
             }
-            else -> item { EmptyResultCard() }
         }
     }
 }
@@ -140,17 +164,36 @@ private fun QueryFormCard(
     onQuery: () -> Unit,
     onReset: () -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
+    SectionCard(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            BadgePill(
+                text = stringResource(
+                    if (state.showResult && state.result != null) R.string.cet_mode_ready_badge else R.string.cet_mode_query_badge
+                ),
+                tint = if (state.showResult && state.result != null) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.tertiary
+                }
+            )
+
             Text(
                 text = stringResource(R.string.cet_form_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(
+                text = stringResource(R.string.cet_form_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             OutlinedTextField(
@@ -159,7 +202,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_number_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 leadingIcon = { Icon(Icons.Outlined.Badge, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -174,7 +217,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_name_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -188,7 +231,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_checkcode_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -204,31 +247,25 @@ private fun QueryFormCard(
                 onRefresh = onRefreshCheckcode
             )
 
-            Button(
-                onClick = onQuery,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                enabled = state.canQuery,
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-                Text(text = stringResource(R.string.cet_query))
-            }
-
-            OutlinedButton(
-                onClick = onReset,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                enabled = !state.isLoading,
-                shape = RoundedCornerShape(18.dp)
-            ) {
-                Text(text = stringResource(R.string.cet_reset))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                TintButton(
+                    text = if (state.isLoading) {
+                        stringResource(R.string.cet_loading_title)
+                    } else {
+                        stringResource(R.string.cet_query)
+                    },
+                    onClick = onQuery,
+                    modifier = Modifier.weight(1f),
+                    enabled = state.canQuery
+                )
+                GhostButton(
+                    text = stringResource(R.string.cet_reset),
+                    onClick = onReset,
+                    modifier = Modifier.weight(1f),
+                    enabled = !state.isLoading,
+                    borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.28f),
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                )
             }
         }
     }
@@ -245,13 +282,14 @@ private fun CaptchaCard(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (isLoading) {
                 ShimmerBox(
@@ -283,10 +321,18 @@ private fun CaptchaCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-            TextButton(onClick = onRefresh) {
-                Text(text = stringResource(R.string.cet_refresh_checkcode))
-            }
+            Text(
+                text = stringResource(R.string.cet_query_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            GhostButton(
+                text = stringResource(R.string.cet_refresh_checkcode),
+                onClick = onRefresh,
+                borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.24f),
+                contentColor = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -294,61 +340,90 @@ private fun CaptchaCard(
 @Composable
 private fun LoadingCard() {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = stringResource(R.string.cet_query),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = stringResource(R.string.cet_loading_result),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
+            Column {
+                Text(
+                    text = stringResource(R.string.cet_loading_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.cet_loading_result),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun ResultSummaryCard(result: Cet) {
-    HeroCard(modifier = Modifier.fillMaxWidth()) {
+    SectionCard(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
+    ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            Icon(Icons.Rounded.Verified, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-            BadgePill(text = stringResource(R.string.cet_result_title), onGradient = true)
-        }
-        Spacer(modifier = Modifier.height(14.dp))
-        Text(
-            text = result.totalScore ?: "\u2014",
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.cet_total_score),
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.88f)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = Color.White.copy(alpha = 0.14f)
-        ) {
-            Text(
-                text = result.type ?: stringResource(R.string.cet_no_data),
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    BadgePill(
+                        text = stringResource(R.string.cet_result_title),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    BadgePill(
+                        text = result.type ?: stringResource(R.string.cet_result_type_placeholder),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(
+                    text = result.totalScore ?: "\u2014",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.cet_total_score),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Surface(
+                shape = RoundedCornerShape(18.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                    Icon(
+                        imageVector = Icons.Rounded.Verified,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = result.name ?: "\u2014",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = result.school ?: stringResource(R.string.cet_result_school_placeholder),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

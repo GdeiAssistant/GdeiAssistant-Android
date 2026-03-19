@@ -26,6 +26,7 @@ local.properties
 
 # Android Studio
 .idea/
+.vscode/
 *.iml
 *.ipr
 *.iws
@@ -62,6 +63,7 @@ Desktop.ini
 
 # Kotlin
 *.kotlin_module
+.kotlin/
 
 # Test reports
 **/test-results/

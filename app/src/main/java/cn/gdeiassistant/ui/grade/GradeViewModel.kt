@@ -32,13 +32,19 @@ class GradeViewModel @Inject constructor(
             repository.loadGrades(year).fold(
                 onSuccess = { result ->
                     val resolvedYear = year ?: _state.value.selectedYear
+                    val firstTermGrades = result?.firstTermGradeList.orEmpty().toPersistentList()
+                    val secondTermGrades = result?.secondTermGradeList.orEmpty().toPersistentList()
                     _state.update {
                         it.copy(
                             isLoading = false,
                             rawResult = result,
                             selectedYear = resolvedYear,
-                            firstTermGrades = result?.firstTermGradeList.orEmpty().toPersistentList(),
-                            secondTermGrades = result?.secondTermGradeList.orEmpty().toPersistentList()
+                            selectedTerm = it.selectedTerm.resolveWith(
+                                firstTermHasData = firstTermGrades.isNotEmpty(),
+                                secondTermHasData = secondTermGrades.isNotEmpty()
+                            ),
+                            firstTermGrades = firstTermGrades,
+                            secondTermGrades = secondTermGrades
                         )
                     }
                 },
@@ -63,7 +69,18 @@ class GradeViewModel @Inject constructor(
         loadGrades(year)
     }
 
+    fun setTerm(term: GradeTerm) {
+        _state.update { it.copy(selectedTerm = term) }
+    }
+
     fun refresh() {
         loadGrades(_state.value.selectedYear)
+    }
+}
+
+private fun GradeTerm.resolveWith(firstTermHasData: Boolean, secondTermHasData: Boolean): GradeTerm {
+    return when (this) {
+        GradeTerm.FIRST -> if (firstTermHasData || !secondTermHasData) GradeTerm.FIRST else GradeTerm.SECOND
+        GradeTerm.SECOND -> if (secondTermHasData || !firstTermHasData) GradeTerm.SECOND else GradeTerm.FIRST
     }
 }

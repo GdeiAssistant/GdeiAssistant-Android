@@ -1,47 +1,71 @@
 package cn.gdeiassistant.ui.spare
 
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Workspaces
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.SpareOption
 import cn.gdeiassistant.model.SpareRoomItem
-import cn.gdeiassistant.model.spareTypeTitles
-import cn.gdeiassistant.model.spareWeekTypeTitles
-import cn.gdeiassistant.model.spareZoneTitles
+import cn.gdeiassistant.model.spareClassNumberOptions
+import cn.gdeiassistant.model.spareTypeOptions
+import cn.gdeiassistant.model.spareWeekTypeOptions
+import cn.gdeiassistant.model.spareWeekdayOptions
+import cn.gdeiassistant.model.spareZoneOptions
+import androidx.compose.foundation.text.KeyboardOptions
+import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.TintButton
+import cn.gdeiassistant.ui.theme.AppShapes
+
+private enum class SpareResultState {
+    Loading,
+    Empty,
+    Ready
+}
 
 @Composable
 fun SpareScreen(navController: NavHostController) {
@@ -54,87 +78,141 @@ fun SpareScreen(navController: NavHostController) {
         onBack = navController::popBackStack
     ) {
         item {
-            SectionCard(modifier = Modifier.fillMaxWidth()) {
+            SectionCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize(),
+                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
+            ) {
+                BadgePill(
+                    text = stringResource(R.string.spare_hero_badge),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
                 Text(
                     text = stringResource(R.string.spare_condition_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.ExtraBold
                 )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                OptionRow(
-                    title = stringResource(R.string.spare_zone_label),
-                    options = spareZoneTitles,
-                    selectedIndex = query.zone,
-                    onSelect = viewModel::updateZone
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
+                Text(
+                    text = stringResource(R.string.spare_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(18.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SpareDropdownField(
+                        title = stringResource(R.string.spare_zone_label),
+                        value = spareZoneOptions.labelFor(query.zone),
+                        options = spareZoneOptions,
+                        onSelect = viewModel::updateZone,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SpareDropdownField(
+                        title = stringResource(R.string.spare_weekday_label),
+                        value = spareWeekdayOptions.labelFor(state.selectedWeekday),
+                        options = spareWeekdayOptions,
+                        onSelect = viewModel::updateWeekday,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                OptionRow(
+
+                SpareDropdownField(
                     title = stringResource(R.string.spare_type_label),
-                    options = spareTypeTitles,
-                    selectedIndex = query.type,
+                    value = spareTypeOptions.labelFor(query.type),
+                    options = spareTypeOptions,
                     onSelect = viewModel::updateType
                 )
+
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    CounterCard(
-                        title = stringResource(R.string.spare_min_week_label),
-                        value = stringResource(R.string.spare_week_value, query.minWeek),
-                        onDecrease = { viewModel.adjustMinWeek(-1) },
-                        onIncrease = { viewModel.adjustMinWeek(1) },
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = query.minSeating?.toString().orEmpty(),
+                        onValueChange = viewModel::updateMinSeating,
+                        modifier = Modifier.weight(1f),
+                        shape = AppShapes.button,
+                        label = { Text(text = stringResource(R.string.spare_min_seating_label)) },
+                        placeholder = { Text(text = stringResource(R.string.spare_optional_hint)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = query.maxSeating?.toString().orEmpty(),
+                        onValueChange = viewModel::updateMaxSeating,
+                        modifier = Modifier.weight(1f),
+                        shape = AppShapes.button,
+                        label = { Text(text = stringResource(R.string.spare_max_seating_label)) },
+                        placeholder = { Text(text = stringResource(R.string.spare_optional_hint)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SpareDropdownField(
+                        title = stringResource(R.string.spare_week_type_label),
+                        value = spareWeekTypeOptions.labelFor(query.weekType),
+                        options = spareWeekTypeOptions,
+                        onSelect = viewModel::updateWeekType,
                         modifier = Modifier.weight(1f)
                     )
-                    CounterCard(
-                        title = stringResource(R.string.spare_max_week_label),
-                        value = stringResource(R.string.spare_week_value, query.maxWeek),
-                        onDecrease = { viewModel.adjustMaxWeek(-1) },
-                        onIncrease = { viewModel.adjustMaxWeek(1) },
+                    SpareDropdownField(
+                        title = stringResource(R.string.spare_class_number_label),
+                        value = spareClassNumberOptions.labelFor(query.classNumber),
+                        options = spareClassNumberOptions,
+                        onSelect = viewModel::updateClassNumber,
                         modifier = Modifier.weight(1f)
                     )
                 }
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                OptionRow(
-                    title = stringResource(R.string.spare_week_type_label),
-                    options = spareWeekTypeTitles,
-                    selectedIndex = query.weekType,
-                    onSelect = viewModel::updateWeekType
-                )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    CounterCard(
-                        title = stringResource(R.string.spare_start_time_label),
-                        value = query.startTime.toString(),
-                        onDecrease = { viewModel.adjustStartTime(-1) },
-                        onIncrease = { viewModel.adjustStartTime(1) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    CounterCard(
-                        title = stringResource(R.string.spare_end_time_label),
-                        value = query.endTime.toString(),
-                        onDecrease = { viewModel.adjustEndTime(-1) },
-                        onIncrease = { viewModel.adjustEndTime(1) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-                CounterCard(
-                    title = stringResource(R.string.spare_class_number_label),
-                    value = stringResource(R.string.spare_class_number_value, query.classNumber),
-                    onDecrease = { viewModel.adjustClassNumber(-1) },
-                    onIncrease = { viewModel.adjustClassNumber(1) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
-                Button(
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SpareMetricCard(
+                        label = stringResource(R.string.spare_metric_zone),
+                        value = spareZoneOptions.labelFor(query.zone),
+                        modifier = Modifier.weight(1f)
+                    )
+                    SpareMetricCard(
+                        label = stringResource(R.string.spare_metric_time),
+                        value = spareClassNumberOptions.labelFor(query.classNumber),
+                        modifier = Modifier.weight(1f)
+                    )
+                    SpareMetricCard(
+                        label = stringResource(R.string.spare_metric_results),
+                        value = state.items.size.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(18.dp))
+
+                TintButton(
+                    text = stringResource(R.string.spare_query_action),
                     onClick = viewModel::submitQuery,
                     enabled = !state.isLoading,
+                    icon = Icons.Rounded.Search,
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Rounded.Search, contentDescription = null)
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
-                    Text(text = stringResource(R.string.spare_query_action))
-                }
+                )
             }
         }
+
         if (!state.error.isNullOrBlank()) {
             item {
                 StatusBanner(
@@ -145,33 +223,54 @@ fun SpareScreen(navController: NavHostController) {
                 )
             }
         }
-        when {
-            state.isLoading -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            state.items.isEmpty() -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                ) {
-                    EmptyState(
-                        icon = Icons.Rounded.Workspaces,
-                        message = stringResource(R.string.spare_empty),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-            else -> {
-                items(state.items, key = { it.id }) { item ->
-                    SpareRoomCard(item = item)
+
+        item {
+            AnimatedContent(
+                targetState = when {
+                    state.isLoading -> SpareResultState.Loading
+                    state.items.isEmpty() -> SpareResultState.Empty
+                    else -> SpareResultState.Ready
+                },
+                label = "spareResultState"
+            ) { resultState ->
+                when (resultState) {
+                    SpareResultState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    SpareResultState.Empty -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(260.dp)
+                        ) {
+                            EmptyState(
+                                icon = Icons.Rounded.Workspaces,
+                                message = stringResource(R.string.spare_empty),
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+
+                    SpareResultState.Ready -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            SpareResultHeader(
+                                zoneLabel = spareZoneOptions.labelFor(query.zone),
+                                typeLabel = spareTypeOptions.labelFor(query.type),
+                                count = state.items.size
+                            )
+                            state.items.forEach { item ->
+                                SpareRoomCard(item = item)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -179,63 +278,139 @@ fun SpareScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun OptionRow(
-    title: String,
-    options: List<String>,
-    selectedIndex: Int,
-    onSelect: (Int) -> Unit
-) {
-    val scrollState = rememberScrollState()
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold
-    )
-    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
-    Row(
-        modifier = Modifier.horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        options.forEachIndexed { index, label ->
-            FilterChip(
-                selected = selectedIndex == index,
-                onClick = { onSelect(index) },
-                label = { Text(text = label) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun CounterCard(
-    title: String,
+private fun SpareMetricCard(
+    label: String,
     value: String,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    SectionCard(modifier = modifier) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onDecrease) {
-                Icon(Icons.Rounded.Remove, contentDescription = null)
-            }
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            IconButton(onClick = onIncrease) {
-                Icon(Icons.Rounded.Add, contentDescription = null)
+        }
+    }
+}
+
+@Composable
+private fun SpareResultHeader(
+    zoneLabel: String,
+    typeLabel: String,
+    count: Int
+) {
+    SectionCard(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.spare_result_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
+                Text(
+                    text = stringResource(R.string.spare_result_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            BadgePill(
+                text = stringResource(R.string.spare_result_count_badge, count),
+                tint = MaterialTheme.colorScheme.tertiary
+            )
+        }
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            SpareMetricCard(
+                label = stringResource(R.string.spare_metric_zone),
+                value = zoneLabel,
+                modifier = Modifier.weight(1f)
+            )
+            SpareMetricCard(
+                label = stringResource(R.string.spare_type_label),
+                value = typeLabel,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SpareDropdownField(
+    title: String,
+    value: String,
+    options: List<SpareOption>,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Box {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true },
+                shape = AppShapes.button,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(text = option.label) },
+                        onClick = {
+                            onSelect(option.value)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }
@@ -247,7 +422,7 @@ private fun SpareRoomCard(item: SpareRoomItem) {
         Text(
             text = item.roomName,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.ExtraBold
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
         Text(
@@ -255,24 +430,42 @@ private fun SpareRoomCard(item: SpareRoomItem) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricChip(
+            SpareMetricCard(
                 label = stringResource(R.string.spare_room_section_label),
                 value = item.sectionText,
                 modifier = Modifier.weight(1f)
             )
-            MetricChip(
+            SpareMetricCard(
                 label = stringResource(R.string.spare_room_seating_label),
                 value = item.classSeating,
                 modifier = Modifier.weight(1f)
             )
         }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
-        Text(
-            text = stringResource(R.string.spare_room_exam_seating, item.examSeating),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.42f))
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = item.roomNumber,
+                style = MaterialTheme.typography.labelLarge,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = stringResource(R.string.spare_room_exam_seating, item.examSeating),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
+}
+
+private fun List<SpareOption>.labelFor(value: Int): String {
+    return firstOrNull { it.value == value }?.label ?: firstOrNull()?.label.orEmpty()
 }

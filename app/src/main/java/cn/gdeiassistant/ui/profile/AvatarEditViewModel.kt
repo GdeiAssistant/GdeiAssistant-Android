@@ -81,8 +81,7 @@ class AvatarEditViewModel @Inject constructor(
             val avatarResult = avatarDeferred.await()
             val fallbackUsername = sessionManager.currentUsername().orEmpty()
             val profile = profileResult.getOrNull() ?: UserProfileSummary(
-                username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) },
-                nickname = fallbackUsername.ifBlank { context.getString(R.string.profile_default_nickname) }
+                username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) }
             )
 
             _state.update {

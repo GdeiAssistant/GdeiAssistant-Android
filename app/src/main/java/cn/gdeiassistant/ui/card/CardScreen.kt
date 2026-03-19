@@ -2,7 +2,6 @@ package cn.gdeiassistant.ui.card
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Lock
@@ -27,10 +26,10 @@ import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,21 +44,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import androidx.compose.foundation.lazy.items
 import cn.gdeiassistant.model.Card
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.GhostButton
-import cn.gdeiassistant.ui.components.HeroCard
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import java.time.Instant
 import java.time.LocalDate
@@ -100,20 +98,37 @@ private fun CardContent(
         onBack = onBack,
         actions = {
             IconButton(onClick = onRefresh, enabled = !state.isLoading) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.schedule_refresh)
+                )
             }
         },
         showLoadingPlaceholder = state.isLoading && state.cardInfo == null
     ) {
         item {
-            CardHeroCard(state = state)
+            CardOverviewCard(state = state)
         }
-
         item {
             ActionRow(
                 onChargeClick = onChargeClick,
                 onLostClick = onLostClick
             )
+        }
+        item {
+            SectionCard(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.card_notice_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.card_notice_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         if (!state.error.isNullOrBlank()) {
@@ -149,27 +164,28 @@ private fun CardContent(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            if (state.selectedDate != null) {
-                                Text(
-                                    text = state.selectedDate.format(dateFormatter),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (state.selectedDate != null) {
-                            GhostButton(
-                                text = stringResource(R.string.card_date_filter_clear),
-                                onClick = { onDateQuery(null) }
+                            Text(
+                                text = state.selectedDate?.format(dateFormatter)
+                                    ?: stringResource(R.string.card_recent_records_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        GhostButton(
-                            text = stringResource(R.string.card_select_date),
-                            onClick = { showDatePicker = true }
-                        )
                     }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    TintButton(
+                        text = stringResource(R.string.card_select_date),
+                        onClick = { showDatePicker = true },
+                        modifier = Modifier.weight(1f)
+                    )
+                    GhostButton(
+                        text = stringResource(R.string.card_date_filter_clear),
+                        onClick = { onDateQuery(null) },
+                        enabled = state.selectedDate != null,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
@@ -215,7 +231,9 @@ private fun CardContent(
                         Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
                     }
                     onDateQuery(date)
-                }) { Text(stringResource(R.string.card_date_filter_confirm)) }
+                }) {
+                    Text(stringResource(R.string.card_date_filter_confirm))
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
@@ -229,7 +247,7 @@ private fun CardContent(
 }
 
 @Composable
-private fun CardHeroCard(state: CardUiState) {
+private fun CardOverviewCard(state: CardUiState) {
     val holderName = state.cardInfo?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.card_holder_default)
     val lost = state.cardInfo?.cardLostState == "1"
     val frozen = state.cardInfo?.cardFreezeState == "1"
@@ -239,9 +257,9 @@ private fun CardHeroCard(state: CardUiState) {
         else -> stringResource(R.string.card_status_normal)
     }
 
-    HeroCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = holderName, onGradient = true)
-        Spacer(modifier = Modifier.height(18.dp))
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        BadgePill(text = holderName)
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -251,42 +269,45 @@ private fun CardHeroCard(state: CardUiState) {
                 Text(
                     text = stringResource(R.string.card_balance),
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.White.copy(alpha = 0.78f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = state.balanceText,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Monospace
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.card_number_status, state.cardNumberText, cardStatusText),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.84f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Icon(
-                imageVector = Icons.Rounded.CreditCard,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.22f),
-                modifier = Modifier.size(46.dp)
-            )
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.CreditCard,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(14.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricChip(
+            InfoMetric(
                 label = stringResource(R.string.home_interim_balance),
-                value = state.cardInfo?.cardInterimBalance ?: "\u2014",
-                modifier = Modifier.weight(1f),
-                onGradient = true
+                value = state.cardInfo?.cardInterimBalance ?: "—",
+                modifier = Modifier.weight(1f)
             )
-            MetricChip(
+            InfoMetric(
                 label = stringResource(R.string.card_status_title),
                 value = cardStatusText,
-                modifier = Modifier.weight(1f),
-                onGradient = true
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -331,15 +352,15 @@ private fun ActionCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, tint.copy(alpha = 0.14f)),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Box(
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(44.dp)
                     .background(tint.copy(alpha = 0.12f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -403,11 +424,11 @@ private fun RecordItem(record: Card) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -436,7 +457,8 @@ private fun RecordItem(record: Card) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = amountColor
+                        color = amountColor,
+                        fontFamily = FontFamily.Monospace
                     )
                 }
             }
@@ -446,19 +468,47 @@ private fun RecordItem(record: Card) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 MetaPill(
                     icon = Icons.Rounded.Schedule,
-                    text = record.tradeTime ?: "\u2014",
+                    text = record.tradeTime ?: "—",
                     tint = MaterialTheme.colorScheme.primary,
                     surface = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.weight(1f)
                 )
                 MetaPill(
                     icon = Icons.Rounded.Lock,
-                    text = stringResource(R.string.card_record_balance, record.accountBalance ?: "\u2014"),
+                    text = stringResource(R.string.card_record_balance, record.accountBalance ?: "—"),
                     tint = tradeTypeColor,
                     surface = amountSurface,
                     modifier = Modifier.weight(1f)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun InfoMetric(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace
+            )
         }
     }
 }

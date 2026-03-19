@@ -20,10 +20,5 @@ interface CetApi {
     ): DataJsonResult<Cet>
 
     @GET("api/cet/checkcode")
-    suspend fun getCheckCode(): DataJsonResult<CetCheckCodeResult>
+    suspend fun getCheckCode(): DataJsonResult<String>
 }
-
-data class CetCheckCodeResult(
-    val token: String? = null,
-    val imageBase64: String? = null
-)

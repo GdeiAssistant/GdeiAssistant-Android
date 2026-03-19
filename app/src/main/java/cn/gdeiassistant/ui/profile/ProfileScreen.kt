@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Settings
@@ -137,6 +138,9 @@ fun ProfileScreen(navController: NavHostController) {
         ProfileMenuItem(Icons.Rounded.Feedback, stringResource(R.string.profile_feedback_title)) {
             navController.navigate(Routes.PROFILE_FEEDBACK)
         },
+        ProfileMenuItem(Icons.Rounded.Palette, stringResource(R.string.profile_theme_title)) {
+            navController.navigate(Routes.PROFILE_THEME)
+        },
         ProfileMenuItem(Icons.Rounded.Settings, stringResource(R.string.profile_settings_title)) {
             navController.navigate(Routes.PROFILE_SETTINGS)
         }
@@ -194,7 +198,6 @@ fun ProfileScreen(navController: NavHostController) {
                         onOpenAvatarManager = { navController.navigate(Routes.PROFILE_AVATAR) },
                         onSaveNickname = viewModel::saveNickname,
                         onSaveBirthday = viewModel::saveBirthday,
-                        onClearBirthday = viewModel::clearBirthdayAndSave,
                         onSaveCollege = viewModel::saveCollege,
                         onSaveMajor = viewModel::saveMajor,
                         onSaveEnrollment = viewModel::saveEnrollment,
@@ -253,7 +256,6 @@ private fun ProfileAccountCard(
     onOpenAvatarManager: () -> Unit,
     onSaveNickname: (String) -> Unit,
     onSaveBirthday: (String) -> Unit,
-    onClearBirthday: () -> Unit,
     onSaveCollege: (String) -> Unit,
     onSaveMajor: (String) -> Unit,
     onSaveEnrollment: (String) -> Unit,
@@ -267,7 +269,9 @@ private fun ProfileAccountCard(
     var textEditorValue by rememberSaveable { mutableStateOf("") }
     var activeSelectionEditor by remember { mutableStateOf<ProfileSelectionEditorField?>(null) }
     val displayName = profile.nickname?.takeIf(String::isNotBlank)
-        ?: stringResource(R.string.profile_edit_placeholder)
+        ?: stringResource(R.string.profile_info_not_set)
+    val avatarFallbackLabel = profile.nickname?.takeIf(String::isNotBlank)
+        ?: profile.username
     val currentCollege = profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentMajor = profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentEnrollment = profile.enrollment?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
@@ -286,7 +290,7 @@ private fun ProfileAccountCard(
         ) {
             ProfileAvatar(
                 imageModel = profile.avatar?.trim()?.takeIf(String::isNotBlank),
-                fallbackLabel = displayName,
+                fallbackLabel = avatarFallbackLabel,
                 size = 72.dp,
                 modifier = Modifier.clickable(onClick = onOpenAvatarManager)
             )
@@ -329,7 +333,6 @@ private fun ProfileAccountCard(
                 activeTextEditor = ProfileTextEditorField.Nickname
             },
             onEditBirthday = { showBirthdayPicker = true },
-            onClearBirthday = onClearBirthday,
             onEditCollege = { activeSelectionEditor = ProfileSelectionEditorField.College },
             onEditMajor = {
                 if (!canSelectMajor) {
@@ -373,6 +376,10 @@ private fun ProfileAccountCard(
             title = when (field) {
                 ProfileLocationField.Location -> stringResource(R.string.profile_country_region_picker_title)
                 ProfileLocationField.Hometown -> stringResource(R.string.profile_hometown_picker_title)
+            },
+            currentDisplay = when (field) {
+                ProfileLocationField.Location -> profile.location
+                ProfileLocationField.Hometown -> profile.hometown
             },
             regions = state.locationRegions,
             onDismiss = { activeLocationField = null },
@@ -444,7 +451,6 @@ private fun ProfileSummaryContent(
     isSaving: Boolean,
     onEditNickname: () -> Unit,
     onEditBirthday: () -> Unit,
-    onClearBirthday: () -> Unit,
     onEditCollege: () -> Unit,
     onEditMajor: () -> Unit,
     onEditEnrollment: () -> Unit,
@@ -455,7 +461,7 @@ private fun ProfileSummaryContent(
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_nickname),
-            value = displayText(profile.nickname, stringResource(R.string.profile_edit_placeholder)),
+            value = displayText(profile.nickname, stringResource(R.string.profile_info_not_set)),
             onClick = onEditNickname,
             enabled = !isSaving
         )
@@ -463,9 +469,7 @@ private fun ProfileSummaryContent(
             title = stringResource(R.string.profile_info_birthday),
             value = displayText(profile.birthday, stringResource(R.string.profile_not_selected)),
             onClick = onEditBirthday,
-            enabled = !isSaving,
-            actionLabel = if (!profile.birthday.isNullOrBlank()) stringResource(R.string.profile_clear_birthday) else null,
-            onActionClick = onClearBirthday
+            enabled = !isSaving
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_college_label),
@@ -500,7 +504,7 @@ private fun ProfileSummaryContent(
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_intro),
-            value = displayText(profile.introduction, stringResource(R.string.profile_bio_placeholder)),
+            value = displayText(profile.introduction, stringResource(R.string.profile_info_not_set)),
             onClick = onEditBio,
             enabled = !isSaving,
             multiline = true
@@ -513,7 +517,6 @@ private fun ProfileEditingContent(
     state: ProfileUiState,
     onNicknameChange: (String) -> Unit,
     onBirthdayChange: (String) -> Unit,
-    onClearBirthday: () -> Unit,
     onSelectCollege: (String) -> Unit,
     onSelectMajor: (String) -> Unit,
     onSelectEnrollment: (String) -> Unit,
@@ -537,14 +540,7 @@ private fun ProfileEditingContent(
             title = stringResource(R.string.profile_info_birthday),
             value = displayText(draft.birthday, stringResource(R.string.profile_not_selected)),
             onClick = onShowBirthdayPicker,
-            leadingIcon = Icons.Rounded.CalendarMonth,
-            trailingContent = {
-                if (draft.birthday.isNotBlank()) {
-                    TextButton(onClick = onClearBirthday) {
-                        Text(text = stringResource(R.string.profile_clear_birthday))
-                    }
-                }
-            }
+            leadingIcon = Icons.Rounded.CalendarMonth
         )
 
         ProfileSelectionField(
@@ -1117,13 +1113,23 @@ private fun ProfileBirthdayPickerDialog(
 @Composable
 private fun ProfileLocationPickerSheet(
     title: String,
+    currentDisplay: String?,
     regions: List<ProfileLocationRegion>,
     onDismiss: () -> Unit,
     onConfirm: (ProfileLocationSelection) -> Unit
 ) {
-    var selectedRegionCode by remember(regions) { mutableStateOf(regions.firstOrNull()?.code.orEmpty()) }
-    var selectedStateCode by remember(regions) { mutableStateOf("") }
-    var selectedCityCode by remember(regions) { mutableStateOf("") }
+    val initialSelection = remember(regions, currentDisplay) {
+        resolveLocationSelection(regions = regions, displayName = currentDisplay)
+    }
+    var selectedRegionCode by remember(regions, currentDisplay) {
+        mutableStateOf(initialSelection?.regionCode ?: regions.firstOrNull()?.code.orEmpty())
+    }
+    var selectedStateCode by remember(regions, currentDisplay) {
+        mutableStateOf(initialSelection?.stateCode.orEmpty())
+    }
+    var selectedCityCode by remember(regions, currentDisplay) {
+        mutableStateOf(initialSelection?.cityCode.orEmpty())
+    }
 
     val currentRegion = remember(regions, selectedRegionCode) {
         regions.firstOrNull { it.code == selectedRegionCode } ?: regions.firstOrNull()
@@ -1187,6 +1193,37 @@ private fun ProfileLocationPickerSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = AppShapes.button,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.36f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.42f))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.profile_location_preview_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        AnimatedContent(
+                            targetState = currentSelection?.displayName.orEmpty(),
+                            label = "profileLocationSelection"
+                        ) { value ->
+                            Text(
+                                text = displayText(value, stringResource(R.string.profile_not_selected)),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+
                 ProfileSelectionField(
                     title = stringResource(R.string.profile_country_region_label),
                     value = currentRegion?.name.orEmpty(),
@@ -1247,4 +1284,56 @@ private data class ProfileMenuItem(
 private fun displayText(value: String?, fallback: String): String {
     val trimmed = value?.trim().orEmpty()
     return if (trimmed.isEmpty()) fallback else trimmed
+}
+
+private fun resolveLocationSelection(
+    regions: List<ProfileLocationRegion>,
+    displayName: String?
+): ProfileLocationSelection? {
+    val target = normalizeLocationDisplayName(displayName)
+    if (target.isEmpty()) {
+        return null
+    }
+    regions.forEach { region ->
+        region.states.forEach { state ->
+            state.cities.forEach { city ->
+                val candidate = ProfileFormSupport.makeLocationDisplay(region.name, state.name, city.name)
+                if (normalizeLocationDisplayName(candidate) == target) {
+                    return ProfileLocationSelection(
+                        displayName = candidate,
+                        regionCode = region.code,
+                        stateCode = state.code,
+                        cityCode = city.code
+                    )
+                }
+            }
+            val candidate = ProfileFormSupport.makeLocationDisplay(region.name, state.name, "")
+            if (normalizeLocationDisplayName(candidate) == target) {
+                return ProfileLocationSelection(
+                    displayName = candidate,
+                    regionCode = region.code,
+                    stateCode = state.code,
+                    cityCode = ""
+                )
+            }
+        }
+        if (normalizeLocationDisplayName(region.name) == target) {
+            return ProfileLocationSelection(
+                displayName = region.name,
+                regionCode = region.code,
+                stateCode = "",
+                cityCode = ""
+            )
+        }
+    }
+    return null
+}
+
+private fun normalizeLocationDisplayName(value: String?): String {
+    return value
+        ?.trim()
+        .orEmpty()
+        .replace(" ", "")
+        .replace("\u3000", "")
+        .replace(Regex("[\\x{1F1E6}-\\x{1F1FF}]"), "")
 }

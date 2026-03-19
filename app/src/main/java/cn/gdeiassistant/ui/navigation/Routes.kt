@@ -25,6 +25,7 @@ object Routes {
     const val PROFILE_FEEDBACK = "profile_feedback"
     const val PROFILE_DELETE_ACCOUNT = "profile_delete_account"
     const val PROFILE_SETTINGS = "profile_settings"
+    const val PROFILE_THEME = "profile_theme"
     const val NEWS = "news"
     const val SPARE = "spare"
     const val GRADUATE_EXAM = "graduate_exam"

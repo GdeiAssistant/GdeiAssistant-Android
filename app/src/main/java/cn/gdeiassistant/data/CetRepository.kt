@@ -20,15 +20,13 @@ class CetRepository @Inject constructor(
         return token
     }
 
-    /** 获取验证码图片与会话 token（用于后续 query）。 */
-    suspend fun getCheckCode(): Result<Pair<String, String>> = withContext(Dispatchers.IO) {
+    /** 获取验证码图片。后端当前直接返回 Base64 字符串。 */
+    suspend fun getCheckCode(): Result<String> = withContext(Dispatchers.IO) {
         try {
             safeApiCall { cetApi.getCheckCode() }.fold(
                 onSuccess = { data ->
-                    val token = data?.token
-                    val imageBase64 = data?.imageBase64
-                    if (!token.isNullOrBlank() && !imageBase64.isNullOrBlank()) {
-                        Result.success(Pair(token, imageBase64))
+                    if (!data.isNullOrBlank()) {
+                        Result.success(data)
                     } else {
                         Result.failure(Exception("验证码加载失败"))
                     }

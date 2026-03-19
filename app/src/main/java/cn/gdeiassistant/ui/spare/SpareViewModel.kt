@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.SpareRoomRepository
 import cn.gdeiassistant.model.SpareRoomItem
 import cn.gdeiassistant.model.SpareRoomQuery
+import cn.gdeiassistant.model.selectedWeekdayValue
+import cn.gdeiassistant.model.sparePeriodRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +16,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SpareUiState(
-    val query: SpareRoomQuery = SpareRoomQuery(minWeek = 1, maxWeek = 20),
+    val query: SpareRoomQuery = SpareRoomQuery(),
     val items: List<SpareRoomItem> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
-)
+) {
+    val selectedWeekday: Int
+        get() = query.selectedWeekdayValue()
+}
 
 @HiltViewModel
 class SpareViewModel @Inject constructor(
@@ -36,17 +41,36 @@ class SpareViewModel @Inject constructor(
         _state.update { it.copy(query = it.query.copy(type = type)) }
     }
 
-    fun adjustMinWeek(delta: Int) {
+    fun updateMinSeating(value: String) {
         _state.update { state ->
-            val next = (state.query.minWeek + delta).coerceIn(1, state.query.maxWeek)
-            state.copy(query = state.query.copy(minWeek = next))
+            state.copy(
+                query = state.query.copy(
+                    minSeating = value.filter(Char::isDigit).toIntOrNull()
+                )
+            )
         }
     }
 
-    fun adjustMaxWeek(delta: Int) {
+    fun updateMaxSeating(value: String) {
         _state.update { state ->
-            val next = (state.query.maxWeek + delta).coerceIn(state.query.minWeek, 20)
-            state.copy(query = state.query.copy(maxWeek = next))
+            state.copy(
+                query = state.query.copy(
+                    maxSeating = value.filter(Char::isDigit).toIntOrNull()
+                )
+            )
+        }
+    }
+
+    fun updateWeekday(weekday: Int) {
+        _state.update { state ->
+            val minWeek = if (weekday < 0) 0 else weekday
+            val maxWeek = if (weekday < 0) 6 else weekday
+            state.copy(
+                query = state.query.copy(
+                    minWeek = minWeek,
+                    maxWeek = maxWeek
+                )
+            )
         }
     }
 
@@ -54,25 +78,16 @@ class SpareViewModel @Inject constructor(
         _state.update { it.copy(query = it.query.copy(weekType = weekType)) }
     }
 
-    fun adjustStartTime(delta: Int) {
+    fun updateClassNumber(classNumber: Int) {
         _state.update { state ->
-            val nextStart = (state.query.startTime + delta).coerceIn(1, 20)
-            val nextEnd = state.query.endTime.coerceAtLeast(nextStart)
-            state.copy(query = state.query.copy(startTime = nextStart, endTime = nextEnd))
-        }
-    }
-
-    fun adjustEndTime(delta: Int) {
-        _state.update { state ->
-            val nextEnd = (state.query.endTime + delta).coerceIn(state.query.startTime, 20)
-            state.copy(query = state.query.copy(endTime = nextEnd))
-        }
-    }
-
-    fun adjustClassNumber(delta: Int) {
-        _state.update { state ->
-            val nextClassNumber = (state.query.classNumber + delta).coerceIn(1, 10)
-            state.copy(query = state.query.copy(classNumber = nextClassNumber))
+            val (startTime, endTime) = sparePeriodRange(classNumber)
+            state.copy(
+                query = state.query.copy(
+                    classNumber = classNumber,
+                    startTime = startTime,
+                    endTime = endTime
+                )
+            )
         }
     }
 

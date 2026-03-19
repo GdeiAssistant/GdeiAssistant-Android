@@ -8,6 +8,7 @@ import android.graphics.Color.parseColor
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +32,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarMonth
@@ -41,12 +41,10 @@ import androidx.compose.material.icons.rounded.Image as ImageIcon
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -73,10 +71,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Schedule
-import cn.gdeiassistant.ui.components.HeroCard
+import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.SectionCard
+import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.StatusBanner
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
@@ -117,7 +115,6 @@ fun ScheduleScreen(navController: NavHostController) {
 // 内容
 // ──────────────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleContent(
     state: ScheduleUiState,
@@ -144,6 +141,13 @@ private fun ScheduleContent(
     val todayLabel = currentDayIndex?.let { stringResource(dayLabels[it]) }
     val busiestDayLabel = state.busiestDayIndex?.let { stringResource(dayLabels[it]) }
         ?: stringResource(R.string.schedule_busiest_day_none)
+    val focusCourses = remember(state.scheduleList, currentDayIndex, state.selectedWeek) {
+        if (currentDayIndex != null) {
+            state.coursesForDay(currentDayIndex)
+        } else {
+            state.busiestDayIndex?.let(state::coursesForDay).orEmpty()
+        }
+    }
 
     LazyScreen(
         title = stringResource(R.string.schedule_title),
@@ -155,12 +159,14 @@ private fun ScheduleContent(
         },
         showLoadingPlaceholder = state.isLoading && state.scheduleList.isEmpty()
     ) {
-        item { ScheduleHeroCard(state, todayLabel, busiestDayLabel) }
         item {
-            WeekSelector(
+            ScheduleOverviewCard(
                 selectedWeek = state.selectedWeek,
                 maxWeeks = state.maxWeeks,
                 currentWeek = currentWeek.coerceIn(1, state.maxWeeks),
+                totalCourses = state.totalCourses,
+                todayLabel = todayLabel,
+                busiestDayLabel = busiestDayLabel,
                 onPrevious = { onWeekChange((state.selectedWeek - 1).coerceAtLeast(1)) },
                 onNext = { onWeekChange((state.selectedWeek + 1).coerceAtMost(state.maxWeeks)) },
                 onWeekSelected = onWeekChange,
@@ -175,6 +181,18 @@ private fun ScheduleContent(
                     icon = Icons.Rounded.CalendarMonth
                 )
             }
+        }
+        item {
+            TodayAgendaCard(
+                selectedWeek = state.selectedWeek,
+                currentWeek = currentWeek,
+                todayLabel = todayLabel,
+                busiestDayLabel = busiestDayLabel,
+                courses = focusCourses,
+                emptyCurrentText = stringResource(R.string.schedule_focus_empty_current),
+                emptyOtherText = stringResource(R.string.schedule_focus_empty_other),
+                onCourseClick = { selectedCourse = it }
+            )
         }
         item {
             ScheduleGridCard(
@@ -208,103 +226,109 @@ private fun ScheduleContent(
     }
 }
 
-// ──────────────────────────────────────────────────────────
-// 英雄卡
-// ──────────────────────────────────────────────────────────
-
 @Composable
-private fun ScheduleHeroCard(state: ScheduleUiState, todayLabel: String?, busiestDayLabel: String) {
-    HeroCard(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.schedule_week_nth, state.selectedWeek),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = todayLabel?.let { stringResource(R.string.schedule_hero_current_week, it) }
-                ?: stringResource(R.string.schedule_hero_other_week, state.selectedWeek),
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.84f)
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            MetricSlot { MetricChip(stringResource(R.string.schedule_metric_course_count), state.totalCourses.toString(), Modifier.fillMaxWidth(), true) }
-            MetricSlot { MetricChip(stringResource(R.string.schedule_metric_today), todayLabel ?: stringResource(R.string.schedule_metric_non_current), Modifier.fillMaxWidth(), true) }
-            MetricSlot { MetricChip(stringResource(R.string.schedule_metric_busiest), busiestDayLabel, Modifier.fillMaxWidth(), true) }
-        }
-    }
-}
-
-@Composable
-private fun RowScope.MetricSlot(content: @Composable RowScope.() -> Unit) {
-    Row(modifier = Modifier.weight(1f), content = content)
-}
-
-// ──────────────────────────────────────────────────────────
-// 周选择器
-// ──────────────────────────────────────────────────────────
-
-@Composable
-private fun WeekSelector(
+private fun ScheduleOverviewCard(
     selectedWeek: Int,
     maxWeeks: Int,
     currentWeek: Int,
+    totalCourses: Int,
+    todayLabel: String?,
+    busiestDayLabel: String,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onWeekSelected: (Int) -> Unit,
     onOpenPicker: () -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
+    val isCurrentWeek = selectedWeek == currentWeek
+    SectionCard(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
+    ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onPrevious, enabled = selectedWeek > 1) {
-                    Icon(Icons.Rounded.ChevronLeft, contentDescription = stringResource(R.string.schedule_previous_week))
-                }
-                Row(
-                    modifier = Modifier.clickable(onClick = onOpenPicker),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Rounded.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(8.dp))
+                WeekStepButton(
+                    icon = Icons.Rounded.ChevronLeft,
+                    enabled = selectedWeek > 1,
+                    contentDescription = stringResource(R.string.schedule_previous_week),
+                    onClick = onPrevious
+                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    BadgePill(
+                        text = stringResource(
+                            if (isCurrentWeek) R.string.schedule_current_week_badge else R.string.schedule_viewing_week_badge
+                        ),
+                        tint = if (isCurrentWeek) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.tertiary
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.schedule_week_nth, selectedWeek),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = if (isCurrentWeek) {
+                            todayLabel?.let { stringResource(R.string.schedule_hero_current_week, it) }
+                                ?: stringResource(R.string.schedule_metric_non_current)
+                        } else {
+                            stringResource(R.string.schedule_hero_other_week, selectedWeek)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
                 }
-                IconButton(onClick = onNext, enabled = selectedWeek < maxWeeks) {
-                    Icon(Icons.Rounded.ChevronRight, contentDescription = stringResource(R.string.schedule_next_week))
-                }
+                WeekStepButton(
+                    icon = Icons.Rounded.ChevronRight,
+                    enabled = selectedWeek < maxWeeks,
+                    contentDescription = stringResource(R.string.schedule_next_week),
+                    onClick = onNext
+                )
+            }
+            Text(
+                text = stringResource(R.string.schedule_week_selector_hint),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable(onClick = onOpenPicker),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ScheduleMetricCard(
+                    label = stringResource(R.string.schedule_metric_course_count),
+                    value = totalCourses.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+                ScheduleMetricCard(
+                    label = stringResource(R.string.schedule_metric_today),
+                    value = todayLabel ?: stringResource(R.string.schedule_metric_non_current),
+                    modifier = Modifier.weight(1f)
+                )
+                ScheduleMetricCard(
+                    label = stringResource(R.string.schedule_metric_busiest),
+                    value = busiestDayLabel,
+                    modifier = Modifier.weight(1f)
+                )
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items((1..maxWeeks).toList()) { week ->
-                    FilterChip(
-                        selected = week == selectedWeek,
-                        onClick = { onWeekSelected(week) },
-                        label = {
-                            Text(
-                                if (week == currentWeek) stringResource(R.string.schedule_week_chip_current, week)
-                                else stringResource(R.string.schedule_week_chip, week)
-                            )
+                    SelectionPill(
+                        text = if (week == currentWeek) {
+                            stringResource(R.string.schedule_week_chip_current, week)
+                        } else {
+                            stringResource(R.string.schedule_week_chip, week)
                         },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            borderColor = MaterialTheme.colorScheme.outlineVariant,
-                            selectedBorderColor = MaterialTheme.colorScheme.primary,
-                            enabled = true,
-                            selected = week == selectedWeek
-                        )
+                        selected = week == selectedWeek,
+                        onClick = { onWeekSelected(week) }
                     )
                 }
             }
@@ -312,9 +336,148 @@ private fun WeekSelector(
     }
 }
 
-// ──────────────────────────────────────────────────────────
-// 课表网格
-// ──────────────────────────────────────────────────────────
+@Composable
+private fun WeekStepButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    enabled: Boolean,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(44.dp)
+                .height(44.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScheduleMetricCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun TodayAgendaCard(
+    selectedWeek: Int,
+    currentWeek: Int,
+    todayLabel: String?,
+    busiestDayLabel: String,
+    courses: List<Schedule>,
+    emptyCurrentText: String,
+    emptyOtherText: String,
+    onCourseClick: (Schedule) -> Unit
+) {
+    val isCurrentWeek = selectedWeek == currentWeek
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(
+                if (isCurrentWeek) R.string.schedule_focus_title_current else R.string.schedule_focus_title_other
+            ),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = if (isCurrentWeek) {
+                todayLabel?.let { stringResource(R.string.schedule_focus_current_subtitle, it) }
+                    ?: stringResource(R.string.schedule_focus_empty_current)
+            } else {
+                stringResource(R.string.schedule_focus_other_subtitle, busiestDayLabel)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        AnimatedContent(
+            targetState = Triple(isCurrentWeek, selectedWeek, courses.size),
+            label = "schedule_focus_courses"
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (courses.isEmpty()) {
+                    Text(
+                        text = if (isCurrentWeek) emptyCurrentText else emptyOtherText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    courses.forEach { course ->
+                        FocusCourseRow(course = course, onClick = { onCourseClick(course) })
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FocusCourseRow(course: Schedule, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(
+                text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = listOfNotNull(
+                    course.sectionDisplayText(),
+                    course.scheduleLocation ?: stringResource(R.string.schedule_location_pending)
+                ).joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = course.scheduleTeacher ?: stringResource(R.string.schedule_teacher_pending),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
+    }
+}
 
 @Composable
 private fun ScheduleGridCard(
@@ -334,24 +497,45 @@ private fun ScheduleGridCard(
     val todayHeaderFill = MaterialTheme.colorScheme.primaryContainer
     val todayColumnFill = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
 
-    ElevatedCard(
+    SectionCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
     ) {
-        Column {
-            Text(
-                text = stringResource(R.string.schedule_grid_title),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.schedule_grid_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.schedule_grid_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (backgroundImageUri != null) {
+                BadgePill(
+                    text = stringResource(R.string.schedule_background_enabled),
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+        ) {
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val dayColumnWidth = (maxWidth - sectionLabelWidth) / dayLabels.size
                 val gridWidth = dayColumnWidth * dayLabels.size
-                Column {
-                    // 表头
+                Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
@@ -386,9 +570,7 @@ private fun ScheduleGridCard(
                             }
                         }
                     }
-                    // 网格主体
                     Row {
-                        // 节次列
                         Column(modifier = Modifier.width(sectionLabelWidth)) {
                             repeat(state.totalSections) { rowIndex ->
                                 Box(
@@ -407,13 +589,11 @@ private fun ScheduleGridCard(
                                 }
                             }
                         }
-                        // 课程网格
                         Box(
                             modifier = Modifier
                                 .width(gridWidth)
                                 .height(cellHeight * state.totalSections)
                         ) {
-                            // 背景图
                             backgroundImage?.let { bitmap ->
                                 Image(
                                     bitmap = bitmap,
@@ -423,9 +603,12 @@ private fun ScheduleGridCard(
                                         .fillMaxSize()
                                         .alpha(0.28f)
                                 )
-                                Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.32f)))
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.28f))
+                                )
                             }
-                            // 交替行背景 (无背景图时生效)
                             if (backgroundImage == null) {
                                 Column(modifier = Modifier.fillMaxSize()) {
                                     repeat(state.totalSections) { rowIndex ->
@@ -443,7 +626,6 @@ private fun ScheduleGridCard(
                                     }
                                 }
                             }
-                            // 今日高亮列
                             currentDayIndex?.let { todayColumn ->
                                 Box(
                                     modifier = Modifier
@@ -453,7 +635,6 @@ private fun ScheduleGridCard(
                                         .background(todayColumnFill)
                                 )
                             }
-                            // 网格线
                             Column(modifier = Modifier.fillMaxSize()) {
                                 repeat(state.totalSections) {
                                     Row(modifier = Modifier.width(gridWidth)) {
@@ -463,7 +644,6 @@ private fun ScheduleGridCard(
                                     }
                                 }
                             }
-                            // 课程卡片
                             state.scheduleList.mapNotNull { course ->
                                 val row = course.row ?: return@mapNotNull null
                                 val column = course.column ?: return@mapNotNull null
@@ -513,7 +693,6 @@ private fun ScheduleGridCard(
                                     }
                                 }
                             }
-                            // 空状态
                             if (state.scheduleList.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Text(
@@ -526,7 +705,7 @@ private fun ScheduleGridCard(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
         }
@@ -631,6 +810,17 @@ private fun courseColor(raw: String?): Color {
     return runCatching { Color(parseColor(raw ?: "#2563EB")) }
         .getOrElse { Color(0xFF315A87) }
         .copy(alpha = 0.88f)
+}
+
+@Composable
+private fun Schedule.sectionDisplayText(): String? {
+    val start = row?.plus(1)
+    val end = row?.plus(scheduleLength ?: 1)
+    return when {
+        !scheduleLesson.isNullOrBlank() -> scheduleLesson
+        start != null && end != null -> stringResource(R.string.schedule_section_text, start, end)
+        else -> null
+    }
 }
 
 @Composable

@@ -78,6 +78,7 @@ import cn.gdeiassistant.ui.profile.PrivacySettingsScreen
 import cn.gdeiassistant.ui.profile.AvatarEditScreen
 import cn.gdeiassistant.ui.profile.ProfileScreen
 import cn.gdeiassistant.ui.profile.ProfileSettingsScreen
+import cn.gdeiassistant.ui.profile.ProfileThemeScreen
 import cn.gdeiassistant.ui.photograph.PhotographDetailScreen
 import cn.gdeiassistant.ui.photograph.PhotographProfileScreen
 import cn.gdeiassistant.ui.photograph.PhotographPublishScreen
@@ -228,6 +229,7 @@ fun GdeiAssistantApp(
             composable(Routes.PROFILE_FEEDBACK) { FeedbackScreen(navController = navController) }
             composable(Routes.PROFILE_DELETE_ACCOUNT) { DeleteAccountScreen(navController = navController) }
             composable(Routes.PROFILE_SETTINGS) { ProfileSettingsScreen(navController = navController) }
+            composable(Routes.PROFILE_THEME) { ProfileThemeScreen(navController = navController) }
             composable(Routes.NEWS) { NewsScreen(navController = navController) }
             composable(Routes.DATA_CENTER) { DataCenterScreen(navController = navController) }
             composable(Routes.ELECTRICITY_FEES) { ElectricityFeesScreen(navController = navController) }

@@ -1,11 +1,14 @@
 package cn.gdeiassistant.ui.graduate
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.GraduateExamRepository
 import cn.gdeiassistant.model.GraduateExamQuery
 import cn.gdeiassistant.model.GraduateExamScore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +25,8 @@ data class GraduateExamUiState(
 
 @HiltViewModel
 class GraduateExamViewModel @Inject constructor(
-    private val graduateExamRepository: GraduateExamRepository
+    private val graduateExamRepository: GraduateExamRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GraduateExamUiState())
@@ -47,7 +51,9 @@ class GraduateExamViewModel @Inject constructor(
     fun submit() {
         val query = _state.value.query
         if (query.name.isBlank() || query.examNumber.isBlank() || query.idNumber.isBlank()) {
-            _state.update { it.copy(error = "请完整填写查询信息", score = null) }
+            _state.update {
+                it.copy(error = context.getString(R.string.graduate_exam_error_incomplete), score = null)
+            }
             return
         }
         viewModelScope.launch {

@@ -1,17 +1,22 @@
 package cn.gdeiassistant.ui.book
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,9 +33,8 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.BookRepository
 import cn.gdeiassistant.model.CollectionDetailInfo
-import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.BadgePill
-import cn.gdeiassistant.ui.components.HeroCard
+import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
@@ -42,7 +46,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import android.content.Context
 import javax.inject.Inject
 
 data class CollectionDetailUiState(
@@ -95,22 +98,27 @@ fun CollectionDetailScreen(navController: NavHostController) {
         onBack = navController::popBackStack,
         actions = {
             IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.schedule_refresh)
+                )
             }
         }
     ) {
         when {
             state.isLoading -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                ) {
-                    EmptyState(
-                        icon = Icons.Rounded.AutoStories,
-                        message = stringResource(R.string.book_collection_detail_loading),
-                        modifier = Modifier.fillMaxSize()
-                    )
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                    ) {
+                        EmptyState(
+                            icon = Icons.Rounded.AutoStories,
+                            message = stringResource(R.string.book_collection_detail_loading),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
             !state.error.isNullOrBlank() && state.detail == null -> item {
@@ -121,37 +129,36 @@ fun CollectionDetailScreen(navController: NavHostController) {
                 )
             }
             state.detail == null -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                ) {
-                    EmptyState(
-                        icon = Icons.Rounded.AutoStories,
-                        message = stringResource(R.string.book_collection_missing),
-                        modifier = Modifier.fillMaxSize()
-                    )
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                    ) {
+                        EmptyState(
+                            icon = Icons.Rounded.AutoStories,
+                            message = stringResource(R.string.book_collection_missing),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
             else -> {
                 val detail = requireNotNull(state.detail)
                 item {
-                    HeroCard(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        BadgePill(text = stringResource(R.string.book_collection_detail_badge), onGradient = true)
+                    SectionCard(modifier = Modifier.fillMaxWidth()) {
+                        BadgePill(text = stringResource(R.string.book_collection_detail_badge))
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = detail.title,
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
+                            fontWeight = FontWeight.ExtraBold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = detail.author,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.92f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -162,7 +169,11 @@ fun CollectionDetailScreen(navController: NavHostController) {
                         DetailText(label = stringResource(R.string.book_collection_detail_price), value = detail.price)
                         DetailText(label = stringResource(R.string.book_collection_detail_physical), value = detail.physicalDescription)
                         DetailText(label = stringResource(R.string.book_collection_detail_subject), value = detail.subjectTheme)
-                        DetailText(label = stringResource(R.string.book_collection_detail_classification), value = detail.classification)
+                        DetailText(
+                            label = stringResource(R.string.book_collection_detail_classification),
+                            value = detail.classification,
+                            showSpacer = false
+                        )
                     }
                 }
                 item {
@@ -180,11 +191,13 @@ fun CollectionDetailScreen(navController: NavHostController) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            detail.distributions.forEach { distribution ->
-                                DetailText(
-                                    label = distribution.location,
-                                    value = "${distribution.callNumber} · ${distribution.state} · ${distribution.barcode}"
-                                )
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                detail.distributions.forEach { distribution ->
+                                    DistributionCard(
+                                        location = distribution.location,
+                                        detail = "${distribution.callNumber} · ${distribution.state} · ${distribution.barcode}"
+                                    )
+                                }
                             }
                         }
                     }
@@ -195,7 +208,36 @@ fun CollectionDetailScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun DetailText(label: String, value: String) {
+private fun DistributionCard(
+    location: String,
+    detail: String
+) {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(
+                text = location,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun DetailText(
+    label: String,
+    value: String,
+    showSpacer: Boolean = true
+) {
     Text(
         text = label,
         style = MaterialTheme.typography.labelLarge,
@@ -206,5 +248,7 @@ private fun DetailText(label: String, value: String) {
         text = value,
         style = MaterialTheme.typography.bodyMedium
     )
-    Spacer(modifier = Modifier.height(12.dp))
+    if (showSpacer) {
+        Spacer(modifier = Modifier.height(12.dp))
+    }
 }

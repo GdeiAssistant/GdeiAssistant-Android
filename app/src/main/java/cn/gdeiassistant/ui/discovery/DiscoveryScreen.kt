@@ -3,13 +3,15 @@ package cn.gdeiassistant.ui.discovery
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.Favorite
@@ -18,9 +20,11 @@ import androidx.compose.material.icons.rounded.Tag
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,12 +38,10 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DiscoveryRepository
 import cn.gdeiassistant.model.DiscoverySummary
-import cn.gdeiassistant.ui.components.EmptyState
-import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
-import cn.gdeiassistant.ui.components.HeroCard
+import cn.gdeiassistant.ui.components.EmptyState
+import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.navigation.Routes
@@ -93,42 +95,15 @@ fun DiscoveryScreen(navController: NavHostController) {
         onBack = navController::popBackStack,
         actions = {
             IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.schedule_refresh)
+                )
             }
         }
     ) {
         item {
-            HeroCard(modifier = Modifier.fillMaxWidth()) {
-                BadgePill(text = stringResource(R.string.discovery_badge), onGradient = true)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.discovery_subtitle),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MetricChip(
-                        label = stringResource(R.string.discovery_metric_secret),
-                        value = state.summary.secretPosts.size.toString(),
-                        modifier = Modifier.weight(1f),
-                        onGradient = true
-                    )
-                    MetricChip(
-                        label = stringResource(R.string.discovery_metric_express),
-                        value = state.summary.expressPosts.size.toString(),
-                        modifier = Modifier.weight(1f),
-                        onGradient = true
-                    )
-                    MetricChip(
-                        label = stringResource(R.string.discovery_metric_topic),
-                        value = state.summary.topicPosts.size.toString(),
-                        modifier = Modifier.weight(1f),
-                        onGradient = true
-                    )
-                }
-            }
+            DiscoveryOverviewCard(summary = state.summary)
         }
         if (!state.error.isNullOrBlank()) {
             item {
@@ -141,16 +116,18 @@ fun DiscoveryScreen(navController: NavHostController) {
         }
         if (!state.isLoading && state.summary.secretPosts.isEmpty() && state.summary.expressPosts.isEmpty() && state.summary.topicPosts.isEmpty()) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                ) {
-                    EmptyState(
-                        icon = Icons.Rounded.Campaign,
-                        message = stringResource(R.string.discovery_empty),
-                        modifier = Modifier.fillMaxSize()
-                    )
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(240.dp)
+                    ) {
+                        EmptyState(
+                            icon = Icons.Rounded.Campaign,
+                            message = stringResource(R.string.discovery_empty),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
         } else {
@@ -216,6 +193,37 @@ fun DiscoveryScreen(navController: NavHostController) {
 }
 
 @Composable
+private fun DiscoveryOverviewCard(summary: DiscoverySummary) {
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        BadgePill(text = stringResource(R.string.discovery_badge))
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.discovery_subtitle),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            DiscoveryMetric(
+                label = stringResource(R.string.discovery_metric_secret),
+                value = summary.secretPosts.size.toString(),
+                modifier = Modifier.weight(1f)
+            )
+            DiscoveryMetric(
+                label = stringResource(R.string.discovery_metric_express),
+                value = summary.expressPosts.size.toString(),
+                modifier = Modifier.weight(1f)
+            )
+            DiscoveryMetric(
+                label = stringResource(R.string.discovery_metric_topic),
+                value = summary.topicPosts.size.toString(),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
 private fun DiscoverySection(
     title: String,
     subtitle: String,
@@ -223,36 +231,56 @@ private fun DiscoverySection(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     tint: androidx.compose.ui.graphics.Color,
     onOpen: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ActionTile(
-                title = title,
-                subtitle = subtitle,
-                icon = icon,
-                onClick = onOpen,
-                tint = tint,
-                emphasized = true,
-                modifier = Modifier.weight(1f)
-            )
-            Column(
-                modifier = Modifier.weight(1.3f),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                content()
+                Surface(
+                    color = tint.copy(alpha = 0.12f),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = tint,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(20.dp)
+                    )
+                }
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
+            GhostButton(
+                text = actionTitle,
+                onClick = onOpen,
+                modifier = Modifier.padding(start = 12.dp),
+                borderColor = tint.copy(alpha = 0.2f),
+                contentColor = tint
+            )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = actionTitle,
-            style = MaterialTheme.typography.labelLarge,
-            color = tint,
-            modifier = Modifier.clickable(onClick = onOpen)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
     }
 }
 
@@ -263,29 +291,60 @@ private fun DiscoveryPreviewRow(
     meta: String,
     onClick: () -> Unit
 ) {
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.32f)
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = meta,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = meta,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun DiscoveryMetric(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

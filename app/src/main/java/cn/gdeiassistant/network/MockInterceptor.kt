@@ -1,11 +1,14 @@
 package cn.gdeiassistant.network
 
 import android.util.Base64
-import cn.gdeiassistant.data.ChinaRegionData
+import cn.gdeiassistant.data.ProfileLocationMockCatalog
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.model.Cookie
 import cn.gdeiassistant.model.ProfileFormSupport
+import cn.gdeiassistant.model.spareClassNumberOptions
+import cn.gdeiassistant.model.spareTypeOptions
+import cn.gdeiassistant.model.spareZoneOptions
 import cn.gdeiassistant.util.ChargeCrypto
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
@@ -167,6 +170,12 @@ class MockInterceptor : Interceptor {
         }}
     """.trimIndent()
 
+    private fun currentMockNickname(): String {
+        return mockProfileSummary.nickname.trim().ifBlank { MOCK_PROFILE_NICKNAME }
+    }
+
+    private fun currentMockAnonymousName(): String = "匿名同学 F"
+
     private fun mockGrade(): String = """
         {"success":true,"code":200,"message":"","data":{
             "year":0,
@@ -206,8 +215,8 @@ class MockInterceptor : Interceptor {
 
     private fun mockCardInfo(): String = """
         {"success":true,"code":200,"message":"","data":{
-            "name":"Mock 用户",
-            "number":"2024001001",
+            "name":"$MOCK_PROFILE_NICKNAME",
+            "number":"$MOCK_STUDENT_NUMBER",
             "cardBalance":"52.50",
             "cardInterimBalance":"0.00",
             "cardNumber":"8888123456789012",
@@ -218,7 +227,7 @@ class MockInterceptor : Interceptor {
 
     private fun mockCardQuery(): String = """
         {"success":true,"code":200,"message":"","data":{
-            "cardInfo":{"name":"Mock 用户","number":"2024001001","cardBalance":"52.50","cardInterimBalance":"0.00","cardNumber":"8888123456789012","cardLostState":"0","cardFreezeState":"0"},
+            "cardInfo":{"name":"$MOCK_PROFILE_NICKNAME","number":"$MOCK_STUDENT_NUMBER","cardBalance":"52.50","cardInterimBalance":"0.00","cardNumber":"8888123456789012","cardLostState":"0","cardFreezeState":"0"},
             "cardList":[
                 {"tradeTime":"2024-02-28 12:15:00","merchantName":"第一食堂","tradeName":"午餐消费","tradePrice":"-12.50","accountBalance":"52.50"},
                 {"tradeTime":"2024-02-27 18:30:00","merchantName":"校园超市","tradeName":"日用品","tradePrice":"-28.00","accountBalance":"65.00"},
@@ -241,12 +250,8 @@ class MockInterceptor : Interceptor {
     private fun mockBookRenew(): String =
         """{"success":true,"code":200,"message":"续借成功"}"""
 
-    private fun mockCetCheckCode(): String = """
-        {"success":true,"code":200,"message":"","data":{
-            "token":"mock_cet_token_${System.currentTimeMillis()}",
-            "imageBase64":"$MOCK_CAPTCHA_BASE64"
-        }}
-    """.trimIndent()
+    private fun mockCetCheckCode(): String =
+        """{"success":true,"code":200,"message":"","data":"$MOCK_CAPTCHA_BASE64"}"""
 
     private fun mockCetQuery(): String = """
         {"success":true,"code":200,"message":"","data":{
@@ -431,7 +436,7 @@ class MockInterceptor : Interceptor {
     }
 
     private fun mockPhoneStatus(): String =
-        """{"success":true,"code":200,"message":"","data":{"username":"2024001001","phone":"13800138000"}}"""
+        """{"success":true,"code":200,"message":"","data":{"username":"$MOCK_CURRENT_USERNAME","phone":"13800138000"}}"""
 
     private fun mockEmailStatus(): String =
         """{"success":true,"code":200,"message":"","data":"mock@gdeiassistant.cn"}"""
@@ -456,11 +461,20 @@ class MockInterceptor : Interceptor {
         val query = runCatching {
             JSON.parseObject(request.bodyUtf8(), MockSpareQueryRequest::class.java)
         }.getOrNull() ?: MockSpareQueryRequest()
-        val zoneName = spareZones.getOrElse(query.zone ?: 0) { spareZones.first() }
-        val roomType = spareTypes.getOrElse(query.type ?: 0) { spareTypes.first() }
-        val section = "${query.startTime ?: 1}-${query.endTime ?: 2}节"
         val payload = mockSpareRooms.mapIndexed { index, room ->
-            """{"number":"${room.number}","name":"${escapeJson(room.name)}","type":"${escapeJson(roomType)}","zone":"${escapeJson(zoneName)}","classSeating":"${room.classSeating + index * 10}","section":"${escapeJson(section)}","examSeating":"${room.examSeating + index * 8}"}"""
+            val zoneName = if ((query.zone ?: 0) == 0) {
+                room.zone
+            } else {
+                spareZoneOptions.firstOrNull { it.value == query.zone }?.label ?: room.zone
+            }
+            val roomType = if ((query.type ?: 0) == 0) {
+                room.type
+            } else {
+                spareTypeOptions.firstOrNull { it.value == query.type }?.label ?: room.type
+            }
+            val section = spareClassNumberOptions.firstOrNull { it.value == (query.classNumber ?: 0) }?.label
+                ?: "第1,2节"
+            """{"number":"${room.number}","name":"${escapeJson(room.name)}","type":"${escapeJson(roomType)}","zone":"${escapeJson(zoneName)}","classSeating":"${room.classSeating + index * 6}","section":"${escapeJson(section)}","examSeating":"${room.examSeating + index * 4}"}"""
         }.joinToString(",")
         return """{"success":true,"code":200,"message":"","data":[$payload]}"""
     }
@@ -670,7 +684,7 @@ class MockInterceptor : Interceptor {
             MockSecretCommentRecord(
                 id = (mockSecretComments.maxOfOrNull { it.id } ?: 7000) + 1,
                 contentId = postId.toInt(),
-                username = "Mock 同学",
+                username = currentMockAnonymousName(),
                 comment = trimmed,
                 publishTime = "刚刚",
                 avatarTheme = 1
@@ -784,7 +798,7 @@ class MockInterceptor : Interceptor {
                 id = (mockExpressComments.maxOfOrNull { it.id } ?: 9500) + 1,
                 expressId = postId.toInt(),
                 username = MOCK_CURRENT_USERNAME,
-                nickname = "Mock 同学",
+                nickname = currentMockNickname(),
                 comment = trimmed,
                 publishTime = "刚刚"
             )
@@ -1049,7 +1063,7 @@ class MockInterceptor : Interceptor {
                 commentId = (mockPhotographCommentRecords.maxOfOrNull { it.commentId } ?: 14200) + 1,
                 photoId = postId.toInt(),
                 username = MOCK_CURRENT_USERNAME,
-                nickname = "Mock 同学",
+                nickname = currentMockNickname(),
                 comment = trimmed,
                 createTime = "刚刚"
             )
@@ -1255,7 +1269,7 @@ class MockInterceptor : Interceptor {
 
     private fun mockExpressPublish(request: Request): String {
         val fields = request.formFields()
-        val nickname = fields["nickname"].orEmpty().ifBlank { "Mock 同学" }
+        val nickname = fields["nickname"].orEmpty().ifBlank { currentMockNickname() }
         val content = fields["content"].orEmpty().ifBlank { "新的表白内容" }
         val name = fields["name"].orEmpty().ifBlank { "你" }
         val selfGender = fields["selfGender"]?.toIntOrNull() ?: 0
@@ -1831,7 +1845,8 @@ class MockInterceptor : Interceptor {
             val zone: Int? = 0,
             val type: Int? = 0,
             val startTime: Int? = 1,
-            val endTime: Int? = 2
+            val endTime: Int? = 2,
+            val classNumber: Int? = 0
         )
 
         data class MockGraduateExamQuery(
@@ -1895,6 +1910,8 @@ class MockInterceptor : Interceptor {
         data class MockSpareRoomRecord(
             val number: String,
             val name: String,
+            val type: String,
+            val zone: String,
             val classSeating: Int,
             val examSeating: Int
         )
@@ -2098,13 +2115,14 @@ class MockInterceptor : Interceptor {
         )
 
         val mockChargeKeyPair: KeyPair by lazy { ChargeCrypto.generateRsaKeyPair() }
-        const val MOCK_CURRENT_USERNAME = "2024001001"
-        val spareZones = listOf("白云校区", "龙洞校区", "三水校区", "东莞校区", "外部教学点")
-        val spareTypes = listOf("普通课室", "多媒体课室", "机房", "实验室", "阶梯教室", "智慧课室")
+        const val MOCK_CURRENT_USERNAME = "gdeiassistant"
+        const val MOCK_STUDENT_NUMBER = "2023001746"
+        const val MOCK_PROFILE_NICKNAME = "林知远"
+        const val MOCK_PROFILE_WECHAT = "linzhiyuan"
         val mockSpareRooms = listOf(
-            MockSpareRoomRecord("A301", "实验楼 A301", 80, 60),
-            MockSpareRoomRecord("B205", "教学楼 B205", 120, 90),
-            MockSpareRoomRecord("C402", "综合楼 C402", 60, 45)
+            MockSpareRoomRecord("A301", "教学楼 A301", "多媒体教室", "海珠", 120, 96),
+            MockSpareRoomRecord("B205", "实验楼 B205", "机房", "花都", 72, 54),
+            MockSpareRoomRecord("C402", "艺术楼 C402", "综合绘画实验室", "广东轻工南海校区", 48, 36)
         )
         val mockYellowPageTypes = listOf(
             MockYellowPageTypeRecord(1, "教学服务"),
@@ -2122,18 +2140,18 @@ class MockInterceptor : Interceptor {
             MockAnnouncementRecord("1002", "校园服务更新", "图书借阅与校园卡模块已完成接口升级，部分页面体验已同步优化。", "2026年03月08日"),
             MockAnnouncementRecord("1003", "系统维护通知", "今晚 23:00 至次日 01:00 进行例行维护，期间部分服务可能出现短暂波动。", "2026年03月06日")
         )
-        val mockProfileLocationRegions = ChinaRegionData.regions.map { region ->
+        val mockProfileLocationRegions = ProfileLocationMockCatalog.regions.map { region ->
             MockProfileLocationRegionRecord(
-                code = region,
-                name = region,
-                states = ChinaRegionData.statesByRegion[region].orEmpty().map { state ->
+                code = region.code,
+                name = region.name,
+                states = region.states.map { state ->
                     MockProfileLocationStateRecord(
-                        code = state,
-                        name = state,
-                        cities = ChinaRegionData.citiesByState[state].orEmpty().map { city ->
+                        code = state.code,
+                        name = state.name,
+                        cities = state.cities.map { city ->
                             MockProfileLocationCityRecord(
-                                code = city,
-                                name = city
+                                code = city.code,
+                                name = city.name
                             )
                         }
                     )
@@ -2142,25 +2160,25 @@ class MockInterceptor : Interceptor {
         }
         var mockProfileSummary = MockProfileSummaryRecord(
             username = MOCK_CURRENT_USERNAME,
-            nickname = "Mock 同学",
+            nickname = MOCK_PROFILE_NICKNAME,
             avatar = "",
             faculty = "计算机科学系",
             major = "软件工程",
-            enrollment = "2024",
-            location = "中国大陆 广东省 广州市",
-            hometown = "中国大陆 广东省 揭阳市",
-            introduction = "保持好奇，持续重构，把校园服务做得更顺手。",
-            birthday = "2005-04-16",
-            ipArea = "广东省",
-            age = 20
+            enrollment = "2023",
+            location = "中国 广东 广州",
+            hometown = "中国 广东 汕头",
+            introduction = "喜欢做实用的小工具，也在准备 iOS 开发实习。",
+            birthday = "2004-09-16",
+            ipArea = "广东",
+            age = 21
         )
         val mockMarketplaceProfiles = listOf(
             MockMarketplaceProfileRecord(
                 avatarURL = "",
                 username = MOCK_CURRENT_USERNAME,
-                nickname = "Mock 同学",
+                nickname = MOCK_PROFILE_NICKNAME,
                 faculty = 12,
-                enrollment = 2024,
+                enrollment = 2023,
                 major = "软件工程"
             ),
             MockMarketplaceProfileRecord(
@@ -2253,7 +2271,7 @@ class MockInterceptor : Interceptor {
             )
         )
         val mockLostFoundProfiles = listOf(
-            MockLostFoundProfileRecord("", MOCK_CURRENT_USERNAME, "Mock 同学"),
+            MockLostFoundProfileRecord("", MOCK_CURRENT_USERNAME, MOCK_PROFILE_NICKNAME),
             MockLostFoundProfileRecord("", "2023002003", "林学长"),
             MockLostFoundProfileRecord("", "2022003018", "陈同学")
         )
@@ -2267,7 +2285,7 @@ class MockInterceptor : Interceptor {
                 itemType = 1,
                 lostType = 0,
                 qq = "214365870",
-                wechat = "mock-student",
+                wechat = MOCK_PROFILE_WECHAT,
                 phone = "13800138000",
                 state = 0,
                 publishTime = "2026-03-15 12:35",
@@ -2297,7 +2315,7 @@ class MockInterceptor : Interceptor {
                 itemType = 11,
                 lostType = 0,
                 qq = "214365870",
-                wechat = "mock-student",
+                wechat = MOCK_PROFILE_WECHAT,
                 phone = "",
                 state = 1,
                 publishTime = "2026-03-10 09:30",
@@ -2370,13 +2388,13 @@ class MockInterceptor : Interceptor {
             MockDatingProfileRecord(
                 profileId = 8101,
                 username = MOCK_CURRENT_USERNAME,
-                nickname = "我自己",
+                nickname = MOCK_PROFILE_NICKNAME,
                 grade = 3,
-                faculty = "计算机科学",
-                hometown = "广州",
+                faculty = "计算机科学系",
+                hometown = "汕头",
                 content = "能聊天、会运动、作息稳定。",
                 qq = "214365870",
-                wechat = "mock-student",
+                wechat = MOCK_PROFILE_WECHAT,
                 area = 1,
                 state = 1
             ),
@@ -2448,8 +2466,8 @@ class MockInterceptor : Interceptor {
             MockExpressPostRecord(
                 id = 10102,
                 username = MOCK_CURRENT_USERNAME,
-                nickname = "Mock 同学",
-                realname = "李思怡",
+                nickname = MOCK_PROFILE_NICKNAME,
+                realname = "林知远",
                 selfGender = 2,
                 name = "图书馆四楼靠窗的你",
                 content = "谢谢你上周把落下的耳机递给我，也谢谢你顺手提醒我别忘了借书。虽然不知道你叫什么，但还是想把这份好感留在这里。",
@@ -2484,7 +2502,7 @@ class MockInterceptor : Interceptor {
             MockExpressCommentRecord(11101, "2023002005", "晚课同学", 10101, "这条好真诚，希望你能被看到。", "2026-03-15 22:03"),
             MockExpressCommentRecord(11102, "2022003018", "隔壁班同学", 10101, "操场的故事总是很浪漫。", "2026-03-15 22:26"),
             MockExpressCommentRecord(11103, "2023002003", "小林", 10102, "图书馆真的很容易发生一些温柔的小事。", "2026-03-14 19:10"),
-            MockExpressCommentRecord(11104, MOCK_CURRENT_USERNAME, "Mock 同学", 10102, "如果真的再遇见，也许可以主动打个招呼。", "2026-03-14 20:02"),
+            MockExpressCommentRecord(11104, MOCK_CURRENT_USERNAME, MOCK_PROFILE_NICKNAME, 10102, "如果真的再遇见，也许可以主动打个招呼。", "2026-03-14 20:02"),
             MockExpressCommentRecord(11105, "2023002019", "理工楼同学", 10102, "这条让我想起很多校园瞬间。", "2026-03-14 21:15")
         )
         val mockTopicPosts = mutableListOf(
@@ -2656,7 +2674,7 @@ class MockInterceptor : Interceptor {
         )
         val mockPhotographCommentRecords = mutableListOf(
             MockPhotographCommentRecord(14201, 14101, "2023002019", "实验楼同学", "这一组光影真的很好看。", "2026-03-15 18:36"),
-            MockPhotographCommentRecord(14202, 14101, MOCK_CURRENT_USERNAME, "Mock 同学", "第二张的层次感特别舒服。", "2026-03-15 19:02"),
+            MockPhotographCommentRecord(14202, 14101, MOCK_CURRENT_USERNAME, MOCK_PROFILE_NICKNAME, "第二张的层次感特别舒服。", "2026-03-15 19:02"),
             MockPhotographCommentRecord(14203, 14102, "2023002005", "食堂搭子", "这张一下就把下课后的氛围拍出来了。", "2026-03-14 19:40")
         )
         val mockInteractionMessages = mutableListOf(

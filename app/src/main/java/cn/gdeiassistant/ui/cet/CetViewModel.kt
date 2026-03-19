@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 data class CetUiState(
     val checkCodeImageBase64: String? = null,
-    val checkCodeToken: String? = null,
     val ticketNumber: String = "",
     val name: String = "",
     val checkcode: String = "",
@@ -49,10 +48,9 @@ class CetViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(error = null, isCheckCodeLoading = true) }
             repository.getCheckCode().fold(
-                onSuccess = { (token, imageBase64) ->
+                onSuccess = { imageBase64 ->
                     _state.update {
                         it.copy(
-                            checkCodeToken = token,
                             checkCodeImageBase64 = imageBase64,
                             isCheckCodeLoading = false
                         )

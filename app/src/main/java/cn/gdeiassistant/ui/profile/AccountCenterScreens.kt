@@ -1,5 +1,7 @@
 package cn.gdeiassistant.ui.profile
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Feedback
@@ -30,7 +33,6 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.WarningAmber
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,13 +63,13 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
 import cn.gdeiassistant.model.UserDataExportState
-import cn.gdeiassistant.ui.components.EmptyState
-import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
-import cn.gdeiassistant.ui.components.HeroCard
 import cn.gdeiassistant.ui.components.LazyScreen
+import cn.gdeiassistant.ui.components.GhostButton
+import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
 
@@ -81,13 +84,7 @@ fun DownloadDataScreen(navController: NavHostController) {
             when (event) {
                 is DownloadDataEvent.ShowMessage -> Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
                 is DownloadDataEvent.OpenDownload -> {
-                    navController.navigate(
-                        Routes.webView(
-                            title = context.getString(R.string.profile_download_data_title),
-                            url = event.url,
-                            allowJavaScript = true
-                        )
-                    )
+                    launchExternal(context, event.url)
                 }
             }
         }
@@ -103,33 +100,20 @@ fun DownloadDataScreen(navController: NavHostController) {
         }
     ) {
         item {
-            HeroCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                BadgePill(
-                    text = stringResource(
-                        when (state.exportState) {
-                            UserDataExportState.NOT_EXPORTED -> R.string.profile_export_idle_badge
-                            UserDataExportState.EXPORTING -> R.string.profile_export_exporting_badge
-                            UserDataExportState.EXPORTED -> R.string.profile_export_exported_badge
-                        }
-                    ),
-                    onGradient = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.profile_download_data_subtitle),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = state.message,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.92f)
-                )
-            }
+            AccountIntroCard(
+                badge = stringResource(
+                    when (state.exportState) {
+                        UserDataExportState.NOT_EXPORTED -> R.string.profile_export_idle_badge
+                        UserDataExportState.EXPORTING -> R.string.profile_export_exporting_badge
+                        UserDataExportState.EXPORTED -> R.string.profile_export_exported_badge
+                    }
+                ),
+                title = stringResource(R.string.profile_download_data_title),
+                subtitle = stringResource(R.string.profile_download_data_subtitle),
+                body = state.message,
+                icon = Icons.Rounded.CloudDownload,
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
         if (!state.error.isNullOrBlank()) {
             item {
@@ -141,25 +125,37 @@ fun DownloadDataScreen(navController: NavHostController) {
             }
         }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionTile(
-                    title = stringResource(R.string.profile_export_start_action),
-                    subtitle = stringResource(R.string.profile_export_start_hint),
-                    icon = Icons.Rounded.CloudDownload,
-                    onClick = viewModel::startExport,
-                    tint = MaterialTheme.colorScheme.primary,
-                    emphasized = state.exportState != UserDataExportState.EXPORTED,
-                    modifier = Modifier.weight(1f)
+            SectionCard(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.profile_account_actions_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
                 )
-                ActionTile(
-                    title = stringResource(R.string.profile_export_download_action),
-                    subtitle = stringResource(R.string.profile_export_download_hint),
-                    icon = Icons.Rounded.Security,
-                    onClick = viewModel::download,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    emphasized = state.exportState == UserDataExportState.EXPORTED,
-                    modifier = Modifier.weight(1f)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.profile_export_start_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    TintButton(
+                        text = stringResource(R.string.profile_export_start_action),
+                        icon = Icons.Rounded.CloudDownload,
+                        onClick = viewModel::startExport,
+                        enabled = state.exportState != UserDataExportState.EXPORTED,
+                        modifier = Modifier.weight(1f)
+                    )
+                    GhostButton(
+                        text = stringResource(R.string.profile_export_download_action),
+                        icon = Icons.Rounded.Security,
+                        onClick = viewModel::download,
+                        enabled = state.exportState == UserDataExportState.EXPORTED,
+                        modifier = Modifier.weight(1f),
+                        borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.28f),
+                        contentColor = MaterialTheme.colorScheme.tertiary
+                    )
+                }
             }
         }
     }
@@ -189,18 +185,13 @@ fun PrivacySettingsScreen(navController: NavHostController) {
         }
     ) {
         item {
-            HeroCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                BadgePill(text = stringResource(R.string.profile_privacy_badge), onGradient = true)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.profile_privacy_subtitle),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White
-                )
-            }
+            AccountIntroCard(
+                badge = stringResource(R.string.profile_privacy_badge),
+                title = stringResource(R.string.profile_privacy_title),
+                subtitle = stringResource(R.string.profile_privacy_subtitle),
+                icon = Icons.Rounded.Lock,
+                tint = MaterialTheme.colorScheme.secondary
+            )
         }
         if (!state.error.isNullOrBlank()) {
             item {
@@ -277,13 +268,12 @@ fun PrivacySettingsScreen(navController: NavHostController) {
             }
         }
         item {
-            Button(
+            TintButton(
+                text = stringResource(R.string.profile_privacy_save_action),
                 onClick = viewModel::save,
                 enabled = !state.isSaving,
-                modifier = Modifier.fillMaxWidth().height(52.dp)
-            ) {
-                Text(text = stringResource(R.string.profile_privacy_save_action))
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -452,30 +442,29 @@ fun BindPhoneScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
+                    GhostButton(
+                        text = stringResource(R.string.profile_send_verification_action),
                         onClick = { viewModel.sendVerification(phone) },
                         enabled = !state.isSendingCode,
-                        modifier = Modifier.weight(1f).height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_send_verification_action))
-                    }
-                    Button(
+                        modifier = Modifier.weight(1f)
+                    )
+                    TintButton(
+                        text = stringResource(R.string.profile_bind_action),
                         onClick = { viewModel.bind(phone, code) },
                         enabled = !state.isSubmitting,
-                        modifier = Modifier.weight(1f).height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_bind_action))
-                    }
+                        modifier = Modifier.weight(1f)
+                    )
                 }
                 if (state.status.isBound) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    Button(
+                    GhostButton(
+                        text = stringResource(R.string.profile_unbind_action),
                         onClick = viewModel::unbind,
                         enabled = !state.isSubmitting,
-                        modifier = Modifier.fillMaxWidth().height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_unbind_action))
-                    }
+                        modifier = Modifier.fillMaxWidth(),
+                        borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.22f),
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -554,30 +543,29 @@ fun BindEmailScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
+                    GhostButton(
+                        text = stringResource(R.string.profile_send_verification_action),
                         onClick = { viewModel.sendVerification(email) },
                         enabled = !state.isSendingCode,
-                        modifier = Modifier.weight(1f).height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_send_verification_action))
-                    }
-                    Button(
+                        modifier = Modifier.weight(1f)
+                    )
+                    TintButton(
+                        text = stringResource(R.string.profile_bind_action),
                         onClick = { viewModel.bind(email, code) },
                         enabled = !state.isSubmitting,
-                        modifier = Modifier.weight(1f).height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_bind_action))
-                    }
+                        modifier = Modifier.weight(1f)
+                    )
                 }
                 if (state.status.isBound) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    Button(
+                    GhostButton(
+                        text = stringResource(R.string.profile_unbind_action),
                         onClick = viewModel::unbind,
                         enabled = !state.isSubmitting,
-                        modifier = Modifier.fillMaxWidth().height(52.dp)
-                    ) {
-                        Text(text = stringResource(R.string.profile_unbind_action))
-                    }
+                        modifier = Modifier.fillMaxWidth(),
+                        borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.22f),
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -611,18 +599,13 @@ fun FeedbackScreen(navController: NavHostController) {
         onBack = navController::popBackStack
     ) {
         item {
-            HeroCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                BadgePill(text = stringResource(R.string.profile_feedback_badge), onGradient = true)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.profile_feedback_subtitle),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White
-                )
-            }
+            AccountIntroCard(
+                badge = stringResource(R.string.profile_feedback_badge),
+                title = stringResource(R.string.profile_feedback_title),
+                subtitle = stringResource(R.string.profile_feedback_subtitle),
+                icon = Icons.Rounded.Feedback,
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
         if (!state.error.isNullOrBlank()) {
             item {
@@ -662,13 +645,12 @@ fun FeedbackScreen(navController: NavHostController) {
                     label = { Text(text = stringResource(R.string.profile_feedback_content_label)) }
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                Button(
+                TintButton(
+                    text = stringResource(R.string.profile_feedback_submit_action),
                     onClick = { viewModel.submit(content = content, contact = contact, type = type) },
                     enabled = !state.isSubmitting,
-                    modifier = Modifier.fillMaxWidth().height(52.dp)
-                ) {
-                    Text(text = stringResource(R.string.profile_feedback_submit_action))
-                }
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
@@ -727,13 +709,14 @@ fun DeleteAccountScreen(navController: NavHostController) {
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                Button(
+                GhostButton(
+                    text = stringResource(R.string.profile_delete_confirm_action),
                     onClick = { viewModel.submit(password) },
                     enabled = !state.isSubmitting,
-                    modifier = Modifier.fillMaxWidth().height(52.dp)
-                ) {
-                    Text(text = stringResource(R.string.profile_delete_confirm_action))
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                    borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.22f),
+                    contentColor = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
@@ -779,15 +762,101 @@ fun ProfileSettingsScreen(navController: NavHostController) {
             }
         }
         item {
-            ActionTile(
-                title = stringResource(R.string.about_title),
-                subtitle = stringResource(R.string.feature_about_subtitle),
-                icon = Icons.Rounded.Settings,
-                onClick = { navController.navigate(Routes.ABOUT) },
-                tint = MaterialTheme.colorScheme.secondary,
-                emphasized = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            SectionCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(Routes.ABOUT) }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(18.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.about_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = stringResource(R.string.feature_about_subtitle),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AccountIntroCard(
+    badge: String,
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    tint: androidx.compose.ui.graphics.Color,
+    body: String? = null
+) {
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        BadgePill(text = badge, tint = tint)
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Surface(
+                color = tint.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(22.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.padding(14.dp)
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                body?.takeIf(String::isNotBlank)?.let { description ->
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }
@@ -845,26 +914,37 @@ private fun BindingStatusCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     tint: androidx.compose.ui.graphics.Color
 ) {
-    HeroCard(
-        modifier = Modifier.fillMaxWidth(),
-        start = tint
-    ) {
-        BadgePill(text = title, onGradient = true)
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        BadgePill(text = title, tint = tint)
         Spacer(modifier = Modifier.height(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Icon(imageVector = icon, contentDescription = null, tint = androidx.compose.ui.graphics.Color.White)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Surface(
+                color = tint.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(18.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
             Text(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = androidx.compose.ui.graphics.Color.White
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = note,
             style = MaterialTheme.typography.bodyLarge,
-            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.92f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -948,5 +1028,13 @@ private fun SettingInfoRow(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+private fun launchExternal(context: android.content.Context, url: String) {
+    runCatching {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }.onFailure {
+        Toast.makeText(context, context.getString(R.string.about_open_failed), Toast.LENGTH_LONG).show()
     }
 }

@@ -95,7 +95,7 @@ private fun NoticeListCard(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "共 ${notices.size} 条",
+                text = stringResource(R.string.home_notice_count, notices.size),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

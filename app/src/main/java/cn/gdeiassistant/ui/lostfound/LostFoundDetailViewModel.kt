@@ -1,12 +1,15 @@
 package cn.gdeiassistant.ui.lostfound
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.LostFoundRepository
 import cn.gdeiassistant.model.LostFoundDetail
 import cn.gdeiassistant.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +26,8 @@ data class LostFoundDetailUiState(
 @HiltViewModel
 class LostFoundDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val lostFoundRepository: LostFoundRepository
+    private val lostFoundRepository: LostFoundRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val itemId: String = savedStateHandle.get<String>(Routes.LOST_FOUND_ITEM_ID).orEmpty()
@@ -37,7 +41,9 @@ class LostFoundDetailViewModel @Inject constructor(
 
     fun refresh() {
         if (itemId.isBlank()) {
-            _state.update { it.copy(isLoading = false, error = "缺少条目编号") }
+            _state.update {
+                it.copy(isLoading = false, error = context.getString(R.string.lost_found_detail_missing_id))
+            }
             return
         }
         viewModelScope.launch {

@@ -94,7 +94,7 @@ private fun AboutContent(
         onBack = onBack
     ) {
         item {
-            AboutHeroCard(
+            AboutOverviewCard(
                 versionName = versionName,
                 versionCode = state.currentVersionCode,
                 sourceText = sourceText,
@@ -128,67 +128,59 @@ private fun AboutContent(
 }
 
 @Composable
-private fun AboutHeroCard(
+private fun AboutOverviewCard(
     versionName: String,
     versionCode: Long,
     sourceText: String,
     onOpenSite: () -> Unit,
     onOpenFeedback: () -> Unit
 ) {
-    HeroCard(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        BadgePill(
-            text = stringResource(R.string.app_name),
-            onGradient = true
-        )
-        Spacer(modifier = Modifier.height(18.dp))
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        BadgePill(text = stringResource(R.string.app_name))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.ExtraBold,
-            color = Color.White
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.about_version, versionName),
+            text = stringResource(R.string.about_subtitle),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.75f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Box(modifier = Modifier.weight(1f)) {
-                MetricChip(
-                    label = stringResource(R.string.about_metric_build),
-                    value = versionCode.toString(),
-                    modifier = Modifier.fillMaxWidth(),
-                    onGradient = true
-                )
-            }
-            Box(modifier = Modifier.weight(1f)) {
-                MetricChip(
-                    label = stringResource(R.string.about_metric_source),
-                    value = sourceText,
-                    modifier = Modifier.fillMaxWidth(),
-                    onGradient = true
-                )
-            }
+            AboutMetricCard(
+                label = stringResource(R.string.about_metric_version),
+                value = versionName,
+                modifier = Modifier.weight(1f)
+            )
+            AboutMetricCard(
+                label = stringResource(R.string.about_metric_source),
+                value = sourceText,
+                modifier = Modifier.weight(1f)
+            )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        AboutMetricCard(
+            label = stringResource(R.string.about_metric_build),
+            value = versionCode.toString(),
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GhostButton(
                 text = stringResource(R.string.about_open_official_site),
                 onClick = onOpenSite,
                 icon = Icons.Rounded.OpenInBrowser,
-                borderColor = Color.White.copy(alpha = 0.35f),
-                contentColor = Color.White
+                modifier = Modifier.weight(1f)
             )
-            GhostButton(
+            TintButton(
                 text = stringResource(R.string.about_feedback),
                 onClick = onOpenFeedback,
                 icon = Icons.AutoMirrored.Rounded.Send,
-                borderColor = Color.White.copy(alpha = 0.35f),
-                contentColor = Color.White
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -251,13 +243,11 @@ private fun UpdateCard(
             UpdateSnapshot(update = update, updateAvailable = state.updateAvailable)
             if (state.updateAvailable && state.hasDownloadUrl) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Button(
+                TintButton(
+                    text = stringResource(R.string.about_download_update),
                     onClick = { onOpenDownload(state.latestVersion?.downloadURL.orEmpty()) },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(text = stringResource(R.string.about_download_update))
-                }
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
@@ -421,12 +411,37 @@ private fun SupportCard(
             modifier = Modifier.padding(start = 52.dp),
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         )
-        SupportRow(
-            icon = Icons.Rounded.Dns,
-            label = stringResource(R.string.about_backend_domain, ""),
-            value = BuildConfig.BASE_URL,
-            onClick = null
-        )
+    }
+}
+
+@Composable
+private fun AboutMetricCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
