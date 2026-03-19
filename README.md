@@ -1,90 +1,212 @@
-<p align="center">
-  <img width="300" src="./github/logo.png" alt="GdeiAssistant Android logo">
-</p>
-
 # 广东二师助手安卓客户端
 
-广东二师助手安卓客户端当前正在进行 2.0 Jetpack Compose 原生重构。项目以广东第二师范学院校园助手系统后端接口为基础，围绕教务查询、校园服务、社区互动和个人中心提供统一的安卓端体验。
+广东二师助手安卓客户端，基于 Kotlin 与 Jetpack Compose 构建，面向广东第二师范学院校园场景，围绕教务查询、校园服务、社区互动与账号管理提供统一的 Android 端体验。
 
-## 当前状态
+当前版本：`2.0.0-PRO`
 
-- Jetpack Compose 全面重构中，当前主流程已经迁移到原生 Compose UI
-- 最低支持 Android 8.0 (`minSdk 26`)，目标版本 Android 15 (`targetSdk 35`)
-- 使用 Kotlin、Material 3、Hilt、Retrofit、OkHttp、DataStore、Coil 等现代 Android 技术栈
-- 支持 Mock 数据模式，方便在后端联调前进行前端开发与页面回归
+## 功能概览
 
-## 已覆盖模块
+### 校园服务
 
-- 教务查询：成绩、课表、四六级、教学评价、考研查询、自习室
-- 校园服务：校园卡、充值、图书借阅、数据中心、黄页、电费
-- 社区功能：二手、失物招领、树洞、表白墙、话题、全民快递、拍好校园、卖室友
-- 资讯与账号：新闻通知、系统通知、互动消息、个人资料、头像管理、隐私与账号设置
+- 成绩查询
+- 课表查询
+- 四六级查询
+- 考研查询
+- 教室查询
+- 教学评价
+- 图书馆
+- 校园卡
+- 校园卡充值
+- 校园卡挂失
+- 电费查询
+- 数据中心
+- 校园黄页
 
-## 近期更新
+### 校园生活
 
-- 完成 Home、Profile、Messages 等核心页面的 Compose 化重构
-- 对齐并重做了社区模块的大量列表页、详情页、发布页与个人页
-- 资料页补齐了头像管理、上传、恢复默认头像、地区与院系等字段链路
-- 资讯模块改为原生详情流，系统通知和新闻支持应用内阅读与跳转
-- 根据后端调整，安卓端已删除阅读模块及相关接口、路由、Mock 数据
+- 二手交易
+- 全民快递
+- 失物招领
+- 校园树洞
+- 卖室友
+- 表白墙
+- 校园话题
+- 拍好校园
+
+### 资讯信息
+
+- 新闻通知
+- 系统通知公告
+- 互动消息
+
+### 个人中心
+
+- 登录与登录态恢复
+- 资料展示与编辑
+- 头像管理
+- 绑定手机
+- 绑定邮箱
+- 隐私设置
+- 登录记录
+- 用户数据导出与下载
+- 意见反馈
+- 主题与个性化设置
+- 关于应用
+- 退出登录
 
 ## 技术栈
 
-- Kotlin 2.1
+- Kotlin
 - Jetpack Compose + Material 3
 - Hilt
-- Retrofit + OkHttp
-- Jackson / Gson / Fastjson
+- Retrofit + OkHttp + Gson
 - DataStore
+- EncryptedSharedPreferences
 - Coil
+- JWT 登录态管理
 
-## 快速开始
+## 工程结构
 
-### 克隆仓库
+```text
+GdeiAssistant-Android/
+├── app/src/main/java/cn/gdeiassistant/
+│   ├── data/
+│   ├── di/
+│   ├── model/
+│   ├── network/
+│   │   ├── api/
+│   │   └── mock/
+│   ├── service/
+│   ├── ui/
+│   │   ├── home/
+│   │   ├── messages/
+│   │   ├── profile/
+│   │   ├── grade/
+│   │   ├── schedule/
+│   │   ├── card/
+│   │   ├── book/
+│   │   ├── marketplace/
+│   │   ├── lostfound/
+│   │   ├── secret/
+│   │   ├── dating/
+│   │   ├── delivery/
+│   │   ├── express/
+│   │   ├── topic/
+│   │   ├── photograph/
+│   │   └── navigation/
+│   └── util/
+├── app/src/main/res/
+└── github/
+```
+
+## 架构说明
+
+### 1. 数据源模式
+
+项目支持两种数据源：
+
+- `remote`：请求真实后端接口
+- `mock`：使用本地模拟数据
+
+应用默认开启 `mock` 模式，便于本地联调和页面验证。切换入口位于应用内关于页，切换后建议重启应用以确保网络层与页面状态全部刷新。
+
+当前 mock 登录账号：
+
+- 用户名：`gdeiassistant`
+- 密码：`gdeiassistant`
+
+### 2. 登录态与安全存储
+
+当前登录链路由以下组件协作完成：
+
+- `SessionManager`：统一管理当前用户、Token 与 Cookie 会话
+- `TokenUtils`：基于 `EncryptedSharedPreferences` 的本地安全存储
+- `AuthInterceptor`：注入鉴权头并处理登录态请求
+- `ResponseInterceptor`：统一响应拦截与错误处理
+
+### 3. 网络层
+
+网络层基于 Retrofit 与 OkHttp，统一负责：
+
+- API Service 注入
+- Bearer Token 注入
+- Cookie 持久化与线程安全管理
+- Mock 路由分发
+- Gson JSON 序列化与反序列化
+- 统一错误归一化处理
+
+### 4. UI 与导航
+
+应用界面基于 Jetpack Compose 构建，当前主导航已经拆分为：
+
+- `service graph`
+- `community graph`
+- `information graph`
+- `account graph`
+
+业务页面按模块拆分在 `ui/` 目录下，便于逐步迭代和独立维护。
+
+## 运行环境
+
+- Android Studio 最新稳定版
+- JDK 17
+- Android SDK 35
+- Android 8.0 及以上设备或模拟器
+
+## 快速部署
+
+### 1. 克隆仓库
 
 ```bash
 git clone https://github.com/GdeiAssistant/GdeiAssistant-Android.git
 cd GdeiAssistant-Android
 ```
 
-### 构建环境
+### 2. 准备本地环境
 
-- Android Studio 最新稳定版
-- JDK 17
-- Android SDK 35
+- 使用 Android Studio 打开项目并完成 Gradle Sync
+- 确保本机已安装 Android SDK 35 与 Build Tools
+- 若命令行环境尚未生成 `local.properties`，请先通过 Android Studio 打开一次项目，或手动补充本地 `sdk.dir`
 
-### 本地编译
+### 3. 构建 Debug 安装包
 
 ```bash
-./gradlew compileDebugKotlin
+./gradlew :app:assembleDebug
 ```
 
-## 数据接口
+构建成功后，APK 默认输出到：
 
-安卓端使用的后端接口由 [GdeiAssistant](https://github.com/GdeiAssistant/GdeiAssistant) 提供。
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
 
-- 项目主页：[广东第二师范学院校园助手系统](https://github.com/GdeiAssistant/GdeiAssistant)
-- 接口文档：[Wiki](https://github.com/GdeiAssistant/GdeiAssistant/wiki)
+### 4. 安装到设备
 
-## 协议
+```bash
+./gradlew :app:installDebug
+```
 
-- [MIT License](http://opensource.org/licenses/MIT)
-- [Anti 996 License](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+### 5. 运行方式
 
-Copyright (c) 2016 - 2026 GdeiAssistant
+- `mock` 模式：适合本地开发、UI 联调、回归验证
+- `remote` 模式：适合连接真实后端接口进行联调
 
-## 贡献
+## 后端接口位置
 
-- 欢迎提交 Issue 反馈问题或建议
-- 欢迎 Fork 后提交 Pull Request
-- 如果项目对你有帮助，欢迎 Star
+本项目对应的后端仓库为：
 
-## 联系
+- GitHub：`https://github.com/GdeiAssistant/GdeiAssistant`
+- Wiki：`https://github.com/GdeiAssistant/GdeiAssistant/wiki`
 
-- 技术支持和意见建议反馈：[gdeiassistant@gmail.com](mailto:gdeiassistant@gmail.com)
-- 用户客服和系统故障工单提交：[support@gdeiassistant.cn](mailto:support@gdeiassistant.cn)
-- 社区违法和不良信息举报邮箱：[report@gdeiassistant.cn](mailto:report@gdeiassistant.cn)
+## 开源协议
 
-## 声明
+本项目采用 [Apache License 2.0](LICENSE) 开源协议。
 
-本项目仅供学习与研究使用，请遵循学校与相关平台的使用规范。
+你可以在遵守协议条款的前提下使用、修改和分发本项目代码。
+
+## 免责声明
+
+1. 本项目为校园场景应用客户端，功能和数据能力以学校实际开放范围、后端接口能力及账号权限为准。
+2. 仓库中的 `mock` 数据仅用于本地开发和界面联调，不代表真实校园业务数据。
+3. 本项目不对因第三方服务异常、学校系统调整、网络问题或接口变更导致的功能不可用承担责任。
+4. 使用者在接入真实后端或部署衍生版本时，应自行确保账号、隐私、日志和数据安全合规。

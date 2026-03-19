@@ -66,8 +66,6 @@
     <string name="login_expired_toast">登录会话已过期，请重新登录</string>
 
     <!-- 首页 -->
-    <string name="home_greeting_named">你好，%1$s同学</string>
-    <string name="home_greeting_generic">你好，同学</string>
     <string name="home_greeting_morning">早上好</string>
     <string name="home_greeting_noon">中午好</string>
     <string name="home_greeting_afternoon">下午好</string>
@@ -76,12 +74,6 @@
     <string name="home_greeting_with_name">%1$s，%2$s同学</string>
     <string name="home_greeting_without_name">%1$s，同学</string>
     <string name="home_student_suffix">同学</string>
-    <string name="home_dashboard_subtitle">把课表、成绩、图书与校园卡服务整理到一个更清晰的入口页。</string>
-    <string name="home_no_course_relax">今天没有课程，放松一下吧～</string>
-    <string name="home_next_course_title">下一节课程</string>
-    <string name="home_feature_list">功能列表</string>
-    <string name="home_feature_highlight_title">高频入口</string>
-    <string name="home_feature_highlight_subtitle">每天都会用到的核心服务</string>
     <string name="home_feature_group_academic">学业服务</string>
     <string name="home_feature_group_academic_subtitle">课程、成绩与考试入口</string>
     <string name="home_feature_group_campus">校园生活</string>
@@ -95,23 +87,14 @@
     <string name="home_feature_group_life">校园生活</string>
     <string name="home_feature_group_life_subtitle">社交、交易、话题与互动</string>
     <string name="home_system_notice_title">系统通知</string>
-    <string name="home_notice_title">教务公告</string>
     <string name="home_notice_count">共 %1$d 条</string>
-    <string name="home_notice_tag_new">最新</string>
-    <string name="home_notice_tag_default">通知</string>
-    <string name="home_notice_empty">暂无公告</string>
     <string name="home_notice_link_missing">该通知暂无可用详情链接</string>
-    <string name="home_metric_today">今日课程</string>
-    <string name="home_metric_notice">公告</string>
-    <string name="home_metric_card">校园卡</string>
-    <string name="home_metric_empty">暂无</string>
     <string name="menu_grade">成绩查询</string>
     <string name="menu_schedule">课表查询</string>
     <string name="menu_card">校园卡</string>
     <string name="menu_book">图书馆</string>
     <string name="menu_charge">校园卡充值</string>
     <string name="menu_lost">校园卡挂失</string>
-    <string name="home_grade_snapshot">成绩概览</string>
     <string name="home_today_schedule_title">今日课表</string>
     <string name="home_today_schedule_empty_summary">今天无课，好好休息</string>
     <string name="home_today_schedule_count">共 %1$d 节课</string>
@@ -122,11 +105,7 @@
     <string name="home_stats_no_course">今日无课</string>
     <string name="home_stats_card_balance">校园卡 ¥%1$s</string>
     <string name="home_view_all">查看全部</string>
-    <string name="home_card_module_title">校园卡状态</string>
-    <string name="home_open_card">查看卡务</string>
-    <string name="home_open_charge">前往充值</string>
     <string name="home_interim_balance">过渡余额</string>
-    <string name="home_card_status_summary">挂失状态 %1$s · 冻结状态 %2$s</string>
     <string name="home_card_status_frozen">已冻结</string>
 
     <!-- 校园卡 -->
@@ -151,7 +130,6 @@
     <string name="card_notice_title">使用提示</string>
     <string name="card_notice_body">如校园卡已挂失，请及时到教务处或相关窗口办理激活后再继续使用。</string>
     <string name="card_record_balance">余额 %s</string>
-    <string name="card_record_time">时间 %s</string>
     <string name="card_record_default">消费记录</string>
     <string name="card_merchant_unknown">未知商户</string>
     <string name="card_month_unknown">未知月份</string>
@@ -159,16 +137,12 @@
     <!-- 图书借阅 -->
     <string name="book_title">图书馆</string>
     <string name="book_empty">当前暂无借阅记录</string>
-    <string name="book_unknown_title">未知书名</string>
-    <string name="book_author_label">作者：%s</string>
     <string name="book_borrow_label">借阅：%s</string>
-    <string name="book_author_unknown">未知</string>
     <string name="book_return_label">应还：%s</string>
     <string name="book_renew_loading">续借中…</string>
     <string name="book_renew">续借</string>
     <string name="book_renew_success">续借成功</string>
     <string name="book_renew_times">已续借 %1$d 次</string>
-    <string name="book_count">%1$d 本图书</string>
 
     <!-- 课表 -->
     <string name="schedule_title">课表查询</string>
@@ -179,7 +153,6 @@
     <string name="schedule_week_chip_current">%1$d周 · 本周</string>
     <string name="schedule_previous_week">上一周</string>
     <string name="schedule_next_week">下一周</string>
-    <string name="schedule_course_count">%1$d 节课</string>
     <string name="schedule_metric_course_count">课程</string>
     <string name="schedule_metric_today">今日</string>
     <string name="schedule_metric_busiest">最满</string>
@@ -256,10 +229,6 @@
     <string name="grade_list_subtitle">点击课程可查看完整详情</string>
 
     <!-- 首页课表摘要 -->
-    <string name="home_today_course_count">今天有 %d 节课</string>
-    <string name="home_term_summary">第1学期 %1$s · 第2学期 %2$s</string>
-    <string name="home_term_first_only">第1学期 %s</string>
-    <string name="home_term_second_only">第2学期 %s</string>
     <string name="feature_schedule_subtitle">按周浏览课程安排</string>
     <string name="feature_grade_subtitle">按学年查看绩点与明细</string>
     <string name="feature_cet_subtitle">查询四级六级成绩</string>
@@ -317,7 +286,6 @@
     <string name="about_mock_mode_desc">开启后，应用会优先使用本地模拟数据，方便调试和演示。</string>
     <string name="about_mock_mode_restart_hint">切换成功后建议重启应用，确保网络层与页面状态全部刷新。</string>
     <string name="about_mock_mode_toast">切换成功，建议重启应用生效</string>
-    <string name="about_version_code">内部版本号 %1$d</string>
     <string name="about_checking">正在检查更新…</string>
     <string name="about_update_none">升级接口未返回可用版本信息</string>
     <string name="about_open_failed">无法打开外部链接</string>
@@ -385,13 +353,7 @@
 
     <!-- 图书详情 -->
     <string name="book_detail_title">借阅图书详情</string>
-    <string name="book_detail_status">馆藏状态</string>
     <string name="book_detail_status_borrowed">借阅中</string>
-    <string name="book_detail_status_with_value">馆藏状态：%1$s</string>
-    <string name="book_detail_call_number">索书号</string>
-    <string name="book_detail_barcode">条形码</string>
-    <string name="book_detail_accession_code">馆藏编码</string>
-    <string name="book_detail_timeline">借阅记录</string>
     <string name="book_detail_renew_action">继续续借</string>
     <string name="book_detail_renew_failed">续借失败</string>
     <string name="book_detail_unknown">暂无记录</string>
@@ -628,15 +590,12 @@
     <string name="profile_subtitle_default">整理账号资料、绑定状态和数据导出入口。</string>
     <string name="profile_metric_location">所在地</string>
     <string name="profile_metric_ip">IP 归属</string>
-    <string name="profile_download_data">下载用户数据</string>
     <string name="profile_export_submitting">正在提交导出请求</string>
     <string name="profile_export_ready">数据已准备完成</string>
     <string name="profile_export_request">申请导出个人数据</string>
     <string name="profile_contact_title">账号绑定状态</string>
     <string name="profile_phone_title">手机号</string>
-    <string name="profile_phone_empty">暂未绑定手机号</string>
     <string name="profile_email_title">邮箱</string>
-    <string name="profile_email_empty">暂未绑定邮箱</string>
     <string name="profile_export_state_idle">当前还没有导出记录，可随时发起导出请求。</string>
     <string name="profile_export_state_exporting">导出请求已提交，数据正在准备中。</string>
     <string name="profile_export_state_exported">数据已准备完成，可直接下载导出文件。</string>
@@ -803,9 +762,6 @@
     <string name="secret_default_anonymous">匿名同学</string>
     <string name="secret_default_comment_empty">暂无评论内容</string>
     <string name="secret_timer_hint">24 小时后自动删除</string>
-    <string name="secret_state_published">已发布</string>
-    <string name="secret_state_scheduled">定时删除</string>
-    <string name="secret_state_deleted">管理员删除</string>
     <string name="secret_like_metric">点赞</string>
     <string name="secret_comment_metric">评论</string>
     <string name="feature_secret_subtitle">查看匿名树洞与回应</string>
@@ -858,7 +814,6 @@
     <string name="express_subtitle">保留与 iOS 一致的表白墙浏览、详情、评论、点赞和猜名字能力，让校园里的心意与回应有稳定入口。</string>
     <string name="express_metric_feed">表白</string>
     <string name="express_metric_guessable">可猜名</string>
-    <string name="express_metric_mine">我的</string>
     <string name="express_my_posts_title">我的表白</string>
     <string name="express_my_posts_subtitle">查看自己发过的内容</string>
     <string name="express_guide_title">互动说明</string>
@@ -881,7 +836,6 @@
     <string name="express_guess_title">猜名字</string>
     <string name="express_guess_placeholder">输入你猜的名字</string>
     <string name="express_guess_action">猜一猜</string>
-    <string name="express_guess_disabled">不可猜名</string>
     <string name="express_real_name_title">真实姓名</string>
     <string name="express_stat_like">点赞</string>
     <string name="express_stat_comment">评论</string>
@@ -913,7 +867,6 @@
     <string name="topic_subtitle">对齐 iOS 的话题信息流结构，支持浏览话题、查看详情、管理我的发布和点赞互动。</string>
     <string name="topic_metric_feed">话题</string>
     <string name="topic_metric_images">配图</string>
-    <string name="topic_metric_mine">我的</string>
     <string name="topic_my_posts_title">我的话题</string>
     <string name="topic_my_posts_subtitle">查看自己发布过的话题</string>
     <string name="topic_guide_title">浏览提示</string>
@@ -971,7 +924,6 @@
     <string name="delivery_info_remarks">备注</string>
     <string name="delivery_info_runner">接单者</string>
     <string name="delivery_info_accept_time">接单时间</string>
-    <string name="delivery_section_status">状态</string>
     <string name="delivery_section_order">订单信息</string>
     <string name="delivery_section_trade">交易信息</string>
     <string name="delivery_section_action">操作</string>
@@ -981,9 +933,7 @@
     <string name="delivery_role_publisher">发布者</string>
     <string name="delivery_role_runner">接单者</string>
     <string name="delivery_role_visitor">大厅访客</string>
-    <string name="delivery_status_pending_desc">任务仍在大厅中，等待同学接单。</string>
     <string name="delivery_status_delivering_desc">订单已被接单，正在进行取件或送达。</string>
-    <string name="delivery_status_completed_desc">订单已完成交付。</string>
     <string name="delivery_status_pending_publisher">订单正在等待同学接单，保持电话畅通即可。</string>
     <string name="delivery_status_pending_visitor">当前仍在大厅中，接单后才能看到完整取件码和联系方式。</string>
     <string name="delivery_status_delivering_publisher">已有同学接单，确认收件后可在这里完成交易。</string>
@@ -993,7 +943,6 @@
     <string name="delivery_complete_hint">确认订单完成后，该订单会切换到已完成状态。</string>
     <string name="delivery_accept_action">立即抢单</string>
     <string name="delivery_complete_action">确认订单完成</string>
-    <string name="delivery_complete_dialog">确认订单已经完成交付？</string>
     <string name="delivery_result_accept">接单成功</string>
     <string name="delivery_result_finish">订单已完成</string>
     <string name="delivery_toast_accept_failed">接单失败</string>
@@ -1058,7 +1007,6 @@
     <string name="photograph_stat_like">点赞</string>
     <string name="photograph_section_info">作品信息</string>
     <string name="photograph_section_gallery">图片</string>
-    <string name="photograph_section_interaction">互动状态</string>
     <string name="photograph_section_comments">评论</string>
     <string name="photograph_gallery_empty">这条作品暂时没有可展示的图片</string>
     <string name="photograph_like_action">点赞作品</string>
