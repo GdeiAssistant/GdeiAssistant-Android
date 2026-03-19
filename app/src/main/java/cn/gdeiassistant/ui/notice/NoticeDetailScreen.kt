@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,25 +22,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.NoticeDetail
+import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
+import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.theme.AppShapes
 
 @Composable
 fun NoticeDetailScreen(
-    noticeId: String,
     navController: NavController
 ) {
     val viewModel: NoticeDetailViewModel = hiltViewModel()
-    val detail = viewModel.state.detail
-    val parsedNoticeId = noticeId.toIntOrNull()
-    val paragraphs = remember(detail?.body) {
-        detail?.body
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val detail = state.detail
+    val paragraphs = remember(detail?.content) {
+        detail?.content
             ?.split("\n\n")
             ?.map(String::trim)
             ?.filter(String::isNotBlank)
@@ -48,9 +50,19 @@ fun NoticeDetailScreen(
 
     LazyScreen(
         title = stringResource(R.string.notice_detail_title),
-        onBack = { navController.popBackStack() }
+        onBack = { navController.popBackStack() },
+        showLoadingPlaceholder = state.isLoading && detail == null
     ) {
-        if (detail == null) {
+        if (!state.error.isNullOrBlank()) {
+            item {
+                StatusBanner(
+                    title = stringResource(R.string.load_failed),
+                    body = state.error.orEmpty(),
+                    icon = Icons.Rounded.Campaign
+                )
+            }
+        }
+        if (detail == null && !state.isLoading) {
             item {
                 Box(
                     modifier = Modifier
@@ -69,16 +81,16 @@ fun NoticeDetailScreen(
                     }
                 }
             }
-        } else {
+        } else if (detail != null) {
             item {
                 NoticeHeadlineCard(
                     detail = detail,
-                    noticeId = parsedNoticeId ?: detail.id,
+                    noticeId = detail.id,
                     paragraphCount = paragraphs.size.coerceAtLeast(1)
                 )
             }
             item {
-                NoticeBodyCard(paragraphs = paragraphs.ifEmpty { listOf(detail.body) })
+                NoticeBodyCard(paragraphs = paragraphs.ifEmpty { listOf(detail.content) })
             }
         }
     }
@@ -86,14 +98,14 @@ fun NoticeDetailScreen(
 
 @Composable
 private fun NoticeHeadlineCard(
-    detail: NoticeDetail,
-    noticeId: Int,
+    detail: AnnouncementItem,
+    noticeId: String,
     paragraphCount: Int
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             BadgePill(text = stringResource(R.string.notice_detail_channel_default))
-            BadgePill(text = detail.date)
+            BadgePill(text = detail.publishTime)
         }
         Spacer(modifier = Modifier.height(14.dp))
         Text(
@@ -125,7 +137,7 @@ private fun NoticeHeadlineCard(
                 )
                 NoticeMetaColumn(
                     label = stringResource(R.string.notice_detail_date_label),
-                    value = detail.date,
+                    value = detail.publishTime,
                     modifier = Modifier.weight(1f)
                 )
                 NoticeMetaColumn(

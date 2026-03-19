@@ -750,6 +750,45 @@ object MockCommunityProvider {
         )
     }
 
+    fun mockMarketplacePublish(request: Request): String {
+        val name = request.multipartField("name").orEmpty().trim()
+        val description = request.multipartField("description").orEmpty().trim()
+        val price = request.multipartField("price").orEmpty().trim()
+        val location = request.multipartField("location").orEmpty().trim()
+        val type = request.multipartField("type")?.toIntOrNull() ?: 11
+        val qq = request.multipartField("qq").orEmpty().trim()
+        val phone = request.multipartField("phone").orEmpty().trim()
+        if (name.isBlank() || description.isBlank() || location.isBlank() || qq.isBlank()) {
+            return MockUtils.failureJson("请完整填写商品信息")
+        }
+        if (request.multipartImageCount() <= 0) {
+            return MockUtils.failureJson("请至少上传一张商品图片")
+        }
+        val id = (mockMarketplaceItems.maxOfOrNull { it.id } ?: 4100) + 1
+        val imageCount = request.multipartImageCount().coerceAtMost(4)
+        val pictureUrls = (1..imageCount).map { index ->
+            "https://picsum.photos/seed/gdei-market-$id-$index/960/720"
+        }
+        mockMarketplaceItems.add(
+            0,
+            MockMarketplaceItemRecord(
+                id = id,
+                username = MockUtils.MOCK_CURRENT_USERNAME,
+                name = name,
+                description = description,
+                price = price.ifBlank { "0.00" },
+                location = location,
+                type = type,
+                qq = qq,
+                phone = phone,
+                state = 1,
+                publishTime = "刚刚",
+                pictureURL = pictureUrls
+            )
+        )
+        return MockUtils.successJson("发布成功")
+    }
+
     fun mockMarketplaceStateUpdate(request: Request): String {
         val itemId = request.itemIdFromPath() ?: return MockUtils.failureJson("缺少商品编号")
         val targetState = request.url.queryParameter("state")
@@ -760,6 +799,24 @@ object MockCommunityProvider {
         if (index < 0) return MockUtils.failureJson("未找到商品")
         mockMarketplaceItems[index] = mockMarketplaceItems[index].copy(state = targetState)
         return MockUtils.successJson("状态已更新")
+    }
+
+    fun mockMarketplaceUpdate(request: Request): String {
+        val itemId = request.itemIdFromPath() ?: return MockUtils.failureJson("缺少商品编号")
+        val fields = request.formFields()
+        val index = mockMarketplaceItems.indexOfFirst { it.id.toString() == itemId }
+        if (index < 0) return MockUtils.failureJson("未找到商品")
+        val current = mockMarketplaceItems[index]
+        mockMarketplaceItems[index] = current.copy(
+            name = fields["name"].orEmpty().ifBlank { current.name },
+            description = fields["description"].orEmpty().ifBlank { current.description },
+            price = fields["price"].orEmpty().ifBlank { current.price },
+            location = fields["location"].orEmpty().ifBlank { current.location },
+            type = fields["type"]?.toIntOrNull() ?: current.type,
+            qq = fields["qq"].orEmpty().ifBlank { current.qq },
+            phone = fields["phone"].orEmpty()
+        )
+        return MockUtils.successJson("商品信息已更新")
     }
 
     // ── Lost & Found endpoints ──────────────────────────────────────────────
@@ -802,6 +859,60 @@ object MockCommunityProvider {
                 "didfound" to mine.filter { it.state == 1 }.sortedByDescending { it.publishTime }.map { it.toLostFoundItemPayload() }
             )
         )
+    }
+
+    fun mockLostFoundPublish(request: Request): String {
+        val name = request.multipartField("name").orEmpty().ifBlank { "新的失物招领" }
+        val description = request.multipartField("description").orEmpty().ifBlank { "新的失物招领描述" }
+        val location = request.multipartField("location").orEmpty().ifBlank { "校内待确认地点" }
+        val itemType = request.multipartField("itemType")?.toIntOrNull() ?: 11
+        val lostType = request.multipartField("lostType")?.toIntOrNull() ?: 0
+        val qq = request.multipartField("qq").orEmpty()
+        val wechat = request.multipartField("wechat").orEmpty()
+        val phone = request.multipartField("phone").orEmpty()
+        val imageCount = request.multipartImageCount().coerceIn(1, 4)
+        val id = (mockLostFoundItems.maxOfOrNull { it.id } ?: 5199) + 1
+        val imageUrls = (1..imageCount).map { index ->
+            "https://picsum.photos/seed/gdei-lost-$id-$index/960/720"
+        }
+        mockLostFoundItems.add(
+            0,
+            MockLostFoundItemRecord(
+                id = id,
+                username = MockUtils.MOCK_CURRENT_USERNAME,
+                name = name,
+                description = description,
+                location = location,
+                itemType = itemType,
+                lostType = lostType,
+                qq = qq,
+                wechat = wechat,
+                phone = phone,
+                state = 0,
+                publishTime = "刚刚",
+                pictureURL = imageUrls
+            )
+        )
+        return MockUtils.successJson("发布成功")
+    }
+
+    fun mockLostFoundUpdate(request: Request): String {
+        val itemId = request.itemIdFromPath() ?: return MockUtils.failureJson("缺少条目编号")
+        val fields = request.formFields()
+        val index = mockLostFoundItems.indexOfFirst { it.id.toString() == itemId }
+        if (index < 0) return MockUtils.failureJson("未找到条目")
+        val current = mockLostFoundItems[index]
+        mockLostFoundItems[index] = current.copy(
+            name = fields["name"].orEmpty().ifBlank { current.name },
+            description = fields["description"].orEmpty().ifBlank { current.description },
+            location = fields["location"].orEmpty().ifBlank { current.location },
+            itemType = fields["itemType"]?.toIntOrNull() ?: current.itemType,
+            lostType = fields["lostType"]?.toIntOrNull() ?: current.lostType,
+            qq = fields["qq"].orEmpty(),
+            wechat = fields["wechat"].orEmpty(),
+            phone = fields["phone"].orEmpty()
+        )
+        return MockUtils.successJson("失物招领信息已更新")
     }
 
     fun mockLostFoundDidFound(request: Request): String {

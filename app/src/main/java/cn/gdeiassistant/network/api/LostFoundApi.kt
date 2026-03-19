@@ -2,8 +2,14 @@ package cn.gdeiassistant.network.api
 
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.JsonResult
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface LostFoundApi {
@@ -30,6 +36,34 @@ interface LostFoundApi {
 
     @GET("api/lostandfound/profile")
     suspend fun getProfileSummary(): DataJsonResult<LostFoundPersonalSummaryDto>
+
+    @Multipart
+    @POST("api/lostandfound/item")
+    suspend fun publish(
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part("itemType") itemType: RequestBody,
+        @Part("lostType") lostType: RequestBody,
+        @Part("qq") qq: RequestBody? = null,
+        @Part("wechat") wechat: RequestBody? = null,
+        @Part("phone") phone: RequestBody? = null,
+        @Part images: List<MultipartBody.Part>
+    ): JsonResult
+
+    @FormUrlEncoded
+    @POST("api/lostandfound/item/id/{id}")
+    suspend fun updateItem(
+        @Path("id") id: String,
+        @Field("name") name: String,
+        @Field("description") description: String,
+        @Field("location") location: String,
+        @Field("itemType") itemType: Int,
+        @Field("lostType") lostType: Int,
+        @Field("qq") qq: String? = null,
+        @Field("wechat") wechat: String? = null,
+        @Field("phone") phone: String? = null
+    ): JsonResult
 
     @POST("api/lostandfound/item/id/{id}/didfound")
     suspend fun markDidFound(

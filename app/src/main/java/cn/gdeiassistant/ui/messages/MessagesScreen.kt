@@ -106,12 +106,7 @@ fun MessagesScreen(navController: NavHostController) {
                 items = state.announcementItems.take(3),
                 error = state.announcementError,
                 onOpenAll = { navController.navigate(Routes.NOTICE_LIST) },
-                onOpenItem = { item ->
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(Routes.ARTICLE_DETAIL_CONTENT, item.toArticleDetailContent())
-                    navController.navigate(Routes.ARTICLE_DETAIL)
-                }
+                onOpenItem = { item -> navController.navigate(Routes.noticeDetail(item.id)) }
             )
         }
         item {

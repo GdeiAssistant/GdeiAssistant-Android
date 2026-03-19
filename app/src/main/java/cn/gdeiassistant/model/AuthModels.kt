@@ -4,21 +4,8 @@ import androidx.compose.runtime.Immutable
 import java.io.Serializable
 
 @Immutable
-data class Token(
-    val signature: String? = null,
-    val createTime: Long? = null,
-    val expireTime: Long? = null
-) : Serializable
-
-@Immutable
 data class UserLoginResult(
     val token: String? = null
-) : Serializable
-
-@Immutable
-data class TokenRefreshResult(
-    val accessToken: Token? = null,
-    val refreshToken: Token? = null
 ) : Serializable
 
 @Immutable

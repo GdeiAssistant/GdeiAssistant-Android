@@ -1,7 +1,12 @@
 package cn.gdeiassistant.ui.marketplace
 
 import android.widget.Toast
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -59,11 +65,22 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MarketplaceScreen(navController: NavHostController) {
     val viewModel: MarketplaceViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow(Routes.MARKETPLACE_REFRESH_FLAG, false)?.collectLatest { needsRefresh ->
+            if (needsRefresh) {
+                viewModel.refresh()
+                savedStateHandle[Routes.MARKETPLACE_REFRESH_FLAG] = false
+            }
+        }
+    }
 
     LazyScreen(
         title = stringResource(R.string.marketplace_title),
@@ -75,15 +92,25 @@ fun MarketplaceScreen(navController: NavHostController) {
         }
     ) {
         item {
-            ActionTile(
-                title = stringResource(R.string.marketplace_my_items_title),
-                subtitle = stringResource(R.string.marketplace_my_items_subtitle),
-                icon = Icons.Rounded.Person,
-                onClick = { navController.navigate(Routes.MARKETPLACE_PROFILE) },
-                tint = MaterialTheme.colorScheme.primary,
-                emphasized = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ActionTile(
+                    title = stringResource(R.string.marketplace_my_items_title),
+                    subtitle = stringResource(R.string.marketplace_my_items_subtitle),
+                    icon = Icons.Rounded.Person,
+                    onClick = { navController.navigate(Routes.MARKETPLACE_PROFILE) },
+                    tint = MaterialTheme.colorScheme.primary,
+                    emphasized = true,
+                    modifier = Modifier.weight(1f)
+                )
+                ActionTile(
+                    title = stringResource(R.string.marketplace_publish_title),
+                    subtitle = stringResource(R.string.marketplace_publish_subtitle),
+                    icon = Icons.AutoMirrored.Rounded.NoteAdd,
+                    onClick = { navController.navigate(Routes.MARKETPLACE_PUBLISH) },
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
         item {
             val scrollState = rememberScrollState()
@@ -252,6 +279,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var actionMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingStateChange by remember { mutableStateOf<MarketplaceStateChangeRequest?>(null) }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
     androidx.compose.runtime.LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -259,6 +287,15 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                 is MarketplaceProfileEvent.ShowMessage -> {
                     actionMessage = event.message
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow(Routes.MARKETPLACE_PROFILE_REFRESH_FLAG, false)?.collectLatest { needsRefresh ->
+            if (needsRefresh) {
+                viewModel.refresh()
+                savedStateHandle[Routes.MARKETPLACE_PROFILE_REFRESH_FLAG] = false
             }
         }
     }
@@ -397,6 +434,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                                         item = item,
                                         tab = state.selectedTab,
                                         onOpen = { navController.navigate(Routes.marketplaceDetail(item.id)) },
+                                        onEdit = { navController.navigate(Routes.marketplaceEdit(item.id)) },
                                         onRequestStateChange = { request ->
                                             pendingStateChange = request
                                         }
@@ -538,6 +576,7 @@ private fun MarketplaceProfileCard(
     item: MarketplaceItem,
     tab: MarketplaceProfileTab,
     onOpen: () -> Unit,
+    onEdit: () -> Unit,
     onRequestStateChange: (MarketplaceStateChangeRequest) -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
@@ -584,6 +623,10 @@ private fun MarketplaceProfileCard(
                 MarketplaceProfileTab.DOING -> {
                     val soldActionText = stringResource(R.string.marketplace_action_sold)
                     val offShelfActionText = stringResource(R.string.marketplace_action_off_shelf)
+                    GhostButton(
+                        text = stringResource(R.string.marketplace_action_edit),
+                        onClick = onEdit
+                    )
                     TintButton(
                         text = soldActionText,
                         onClick = {
@@ -613,23 +656,18 @@ private fun MarketplaceProfileCard(
                     )
                 }
                 MarketplaceProfileTab.SOLD -> {
-                    val resellActionText = stringResource(R.string.marketplace_action_resell)
-                    TintButton(
-                        text = resellActionText,
-                        onClick = {
-                            onRequestStateChange(
-                                MarketplaceStateChangeRequest(
-                                    itemId = item.id,
-                                    targetState = MarketplaceItemState.SELLING,
-                                    actionText = resellActionText
-                                )
-                            )
-                        },
-                        tint = MaterialTheme.colorScheme.primary
+                    Text(
+                        text = stringResource(R.string.marketplace_sold_readonly_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 MarketplaceProfileTab.OFF -> {
                     val putBackActionText = stringResource(R.string.marketplace_action_put_back)
+                    GhostButton(
+                        text = stringResource(R.string.marketplace_action_edit),
+                        onClick = onEdit
+                    )
                     TintButton(
                         text = putBackActionText,
                         onClick = {

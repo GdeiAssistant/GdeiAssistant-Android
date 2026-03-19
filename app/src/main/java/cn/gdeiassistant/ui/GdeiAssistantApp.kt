@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cn.gdeiassistant.data.toArticleDetailContent
 import cn.gdeiassistant.event.GlobalEvent
 import cn.gdeiassistant.event.GlobalEventManager
 import cn.gdeiassistant.model.CollectionBorrowItem
@@ -55,9 +54,13 @@ import cn.gdeiassistant.ui.information.ArticleDetailScreen
 import cn.gdeiassistant.ui.login.LoginScreen
 import cn.gdeiassistant.ui.lost.LostScreen
 import cn.gdeiassistant.ui.lostfound.LostFoundDetailScreen
+import cn.gdeiassistant.ui.lostfound.LostFoundEditScreen
+import cn.gdeiassistant.ui.lostfound.LostFoundPublishScreen
 import cn.gdeiassistant.ui.lostfound.LostFoundProfileScreen
 import cn.gdeiassistant.ui.lostfound.LostFoundScreen
 import cn.gdeiassistant.ui.marketplace.MarketplaceDetailScreen
+import cn.gdeiassistant.ui.marketplace.MarketplaceEditScreen
+import cn.gdeiassistant.ui.marketplace.MarketplacePublishScreen
 import cn.gdeiassistant.ui.marketplace.MarketplaceProfileScreen
 import cn.gdeiassistant.ui.marketplace.MarketplaceScreen
 import cn.gdeiassistant.ui.messages.InteractionListScreen
@@ -305,8 +308,18 @@ private fun NavGraphBuilder.communityGraph(navController: NavHostController) {
     ) {
         composable(Routes.MARKETPLACE) { MarketplaceScreen(navController = navController) }
         composable(Routes.MARKETPLACE_PROFILE) { MarketplaceProfileScreen(navController = navController) }
+        composable(Routes.MARKETPLACE_PUBLISH) { MarketplacePublishScreen(navController = navController) }
+        composable(
+            route = Routes.MARKETPLACE_EDIT,
+            arguments = listOf(navArgument(Routes.MARKETPLACE_EDIT_ITEM_ID) { type = NavType.StringType })
+        ) { MarketplaceEditScreen(navController = navController) }
         composable(Routes.LOST_FOUND) { LostFoundScreen(navController = navController) }
         composable(Routes.LOST_FOUND_PROFILE) { LostFoundProfileScreen(navController = navController) }
+        composable(Routes.LOST_FOUND_PUBLISH) { LostFoundPublishScreen(navController = navController) }
+        composable(
+            route = Routes.LOST_FOUND_EDIT,
+            arguments = listOf(navArgument(Routes.LOST_FOUND_EDIT_ITEM_ID) { type = NavType.StringType })
+        ) { LostFoundEditScreen(navController = navController) }
         composable(Routes.SECRET) { SecretScreen(navController = navController) }
         composable(Routes.SECRET_PROFILE) { SecretProfileScreen(navController = navController) }
         composable(Routes.SECRET_PUBLISH) { SecretPublishScreen(navController = navController) }
@@ -388,20 +401,14 @@ private fun NavGraphBuilder.informationGraph(navController: NavHostController) {
         composable(Routes.NOTICE_LIST) {
             NoticeListScreen(
                 navController = navController,
-                onOpenNotice = { notice ->
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(Routes.ARTICLE_DETAIL_CONTENT, notice.toArticleDetailContent())
-                    navController.navigate(Routes.ARTICLE_DETAIL)
-                }
+                onOpenNotice = { notice -> navController.navigate(Routes.noticeDetail(notice.id)) }
             )
         }
         composable(
             route = Routes.NOTICE_DETAIL,
             arguments = listOf(navArgument("noticeId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val noticeId = backStackEntry.arguments?.getString("noticeId") ?: "0"
-            NoticeDetailScreen(noticeId = noticeId, navController = navController)
+            NoticeDetailScreen(navController = navController)
         }
         composable(
             route = Routes.WEB_VIEW,

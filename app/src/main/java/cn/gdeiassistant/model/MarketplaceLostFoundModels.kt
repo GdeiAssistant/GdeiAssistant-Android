@@ -5,15 +5,15 @@ import java.io.Serializable
 
 @Immutable
 enum class MarketplaceItemState(val remoteValue: Int) {
-    SELLING(0),
-    SOLD(1),
-    OFF_SHELF(2);
+    OFF_SHELF(0),
+    SELLING(1),
+    SOLD(2);
 
     companion object {
         fun fromRemote(value: Int?): MarketplaceItemState {
             return when (value) {
-                1 -> SOLD
-                2 -> OFF_SHELF
+                0 -> OFF_SHELF
+                2 -> SOLD
                 else -> SELLING
             }
         }
@@ -63,13 +63,54 @@ data class MarketplacePersonalSummary(
     val off: List<MarketplaceItem>
 ) : Serializable
 
+@Immutable
+data class MarketplaceDraft(
+    val title: String,
+    val price: Double,
+    val description: String,
+    val location: String,
+    val typeId: Int,
+    val qq: String,
+    val phone: String? = null
+) : Serializable
+
+@Immutable
+data class MarketplaceUpdateDraft(
+    val title: String,
+    val price: Double,
+    val description: String,
+    val location: String,
+    val typeId: Int,
+    val qq: String,
+    val phone: String? = null
+) : Serializable
+
+@Immutable
+data class MarketplaceEditableItem(
+    val id: String,
+    val title: String,
+    val price: Double,
+    val description: String,
+    val location: String,
+    val typeId: Int,
+    val qq: String,
+    val phone: String? = null,
+    val imageUrls: List<String> = emptyList()
+) : Serializable
+
 val marketplaceTypeTitles = listOf(
-    "数码设备",
-    "教材资料",
-    "生活日用",
-    "服饰鞋包",
-    "运动器材",
-    "其他闲置"
+    "校园代步",
+    "手机",
+    "电脑",
+    "数码配件",
+    "数码",
+    "电器",
+    "运动健身",
+    "衣物伞帽",
+    "图书教材",
+    "租赁",
+    "生活娱乐",
+    "其他"
 )
 
 fun marketplaceTypeTitle(value: Int?): String {
@@ -156,3 +197,66 @@ data class LostFoundPersonalSummary(
     val found: List<LostFoundItem>,
     val didFound: List<LostFoundItem>
 ) : Serializable
+
+@Immutable
+data class LostFoundItemTypeOption(
+    val id: Int,
+    val title: String
+) : Serializable
+
+@Immutable
+data class LostFoundDraft(
+    val title: String,
+    val type: LostFoundType,
+    val itemTypeId: Int,
+    val description: String,
+    val location: String,
+    val qq: String? = null,
+    val wechat: String? = null,
+    val phone: String? = null
+) : Serializable
+
+@Immutable
+data class LostFoundUpdateDraft(
+    val title: String,
+    val type: LostFoundType,
+    val itemTypeId: Int,
+    val description: String,
+    val location: String,
+    val qq: String? = null,
+    val wechat: String? = null,
+    val phone: String? = null
+) : Serializable
+
+@Immutable
+data class LostFoundEditableItem(
+    val id: String,
+    val title: String,
+    val type: LostFoundType,
+    val itemTypeId: Int,
+    val description: String,
+    val location: String,
+    val qq: String? = null,
+    val wechat: String? = null,
+    val phone: String? = null,
+    val imageUrls: List<String> = emptyList()
+) : Serializable
+
+val lostFoundItemTypeTitles = listOf(
+    "手机",
+    "校园卡",
+    "身份证",
+    "银行卡",
+    "书",
+    "钥匙",
+    "包包",
+    "衣帽",
+    "校园代步",
+    "运动健身",
+    "数码配件",
+    "其他"
+)
+
+fun lostFoundItemTypeTitle(value: Int?): String {
+    return lostFoundItemTypeTitles.getOrElse((value ?: 0).coerceAtLeast(0)) { lostFoundItemTypeTitles.last() }
+}

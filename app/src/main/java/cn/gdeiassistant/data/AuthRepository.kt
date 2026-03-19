@@ -30,7 +30,7 @@ class AuthRepository @Inject constructor(
             val token = data.token
                 ?.takeIf { it.isNotBlank() }
                 ?: throw IllegalStateException(context.getString(R.string.service_unavailable))
-            sessionManager.saveTokens(token, "", username.trim())
+            sessionManager.saveToken(token, username.trim())
             Unit
         }
     }

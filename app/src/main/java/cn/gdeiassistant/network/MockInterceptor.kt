@@ -38,11 +38,7 @@ class MockInterceptor : Interceptor {
         val path = request.url.encodedPath
         return when {
             path.contains("api/auth/login") -> MockAuthProvider.mockLogin(request)
-            path.contains("api/token/refresh") -> MockAuthProvider.mockTokenRefresh(request)
-            path.contains("api/token/expire") -> MockAuthProvider.mockTokenExpire(request)
             path.contains("api/update/android") -> MockAuthProvider.mockUpgrade(request)
-            path.contains("api/upload/presignedUrl") -> MockAuthProvider.mockPresignedUrl(request)
-            path.contains("api/upload/mock") && request.method == "PUT" -> MockAuthProvider.mockUploadFile(request)
             else -> null
         }
     }
@@ -123,13 +119,17 @@ class MockInterceptor : Interceptor {
     private fun routeCommunity(request: Request): String? {
         val path = request.url.encodedPath
         return when {
+            path.endsWith("/api/ershou/item") && request.method == "POST" -> MockCommunityProvider.mockMarketplacePublish(request)
             path.contains("api/ershou/item/state/id/") -> MockCommunityProvider.mockMarketplaceStateUpdate(request)
+            path.contains("api/ershou/item/id/") && request.method == "POST" -> MockCommunityProvider.mockMarketplaceUpdate(request)
             path.contains("api/ershou/item/id/") && path.endsWith("/preview") -> MockCommunityProvider.mockMarketplacePreview(request)
             path.contains("api/ershou/item/id/") -> MockCommunityProvider.mockMarketplaceDetail(request)
             path.contains("api/ershou/item/type/") -> MockCommunityProvider.mockMarketplaceItemsByType(request)
             path.contains("api/ershou/item/start/") -> MockCommunityProvider.mockMarketplaceItemList(request)
             path.contains("api/ershou/profile") -> MockCommunityProvider.mockMarketplaceProfile(request)
+            path.endsWith("/api/lostandfound/item") && request.method == "POST" -> MockCommunityProvider.mockLostFoundPublish(request)
             path.contains("api/lostandfound/item/id/") && path.endsWith("/didfound") -> MockCommunityProvider.mockLostFoundDidFound(request)
+            path.contains("api/lostandfound/item/id/") && request.method == "POST" -> MockCommunityProvider.mockLostFoundUpdate(request)
             path.contains("api/lostandfound/item/id/") && path.endsWith("/preview") -> MockCommunityProvider.mockLostFoundPreview(request)
             path.contains("api/lostandfound/item/id/") -> MockCommunityProvider.mockLostFoundDetail(request)
             path.contains("api/lostandfound/lostitem/start/") -> MockCommunityProvider.mockLostFoundItemList(request)

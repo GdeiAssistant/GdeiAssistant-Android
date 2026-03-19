@@ -11,6 +11,11 @@ interface AnnouncementApi {
         @Path("start") start: Int,
         @Path("size") size: Int
     ): DataJsonResult<List<AnnouncementDto>>
+
+    @GET("api/announcement/id/{id}")
+    suspend fun queryAnnouncementDetail(
+        @Path("id") id: String
+    ): DataJsonResult<AnnouncementDto>
 }
 
 data class AnnouncementDto(
@@ -19,4 +24,3 @@ data class AnnouncementDto(
     val content: String? = null,
     val publishTime: String? = null
 )
-

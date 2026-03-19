@@ -11,7 +11,7 @@ import java.util.Date
 object TokenUtils {
     private const val PREFS_NAME = "GdeiAssistant_secure"
     private const val KEY_ACCESS = "AccessToken"
-    private const val KEY_REFRESH = "RefreshToken"
+    private const val LEGACY_KEY_REFRESH = "RefreshToken"
 
     private fun prefs(context: Context): SharedPreferences {
         val appContext = context.applicationContext
@@ -28,10 +28,12 @@ object TokenUtils {
     }
 
     @JvmStatic fun GetUserAccessToken(context: Context): String? = prefs(context).getString(KEY_ACCESS, null)
-    @JvmStatic fun GetUserRefreshToken(context: Context): String? = prefs(context).getString(KEY_REFRESH, null)
     @JvmStatic fun ClearUserToken(context: Context) { prefs(context).edit().clear().apply() }
-    @JvmStatic fun SaveUserToken(accessToken: String, refreshToken: String, context: Context) {
-        prefs(context).edit().putString(KEY_ACCESS, accessToken).putString(KEY_REFRESH, refreshToken).apply()
+    @JvmStatic fun SaveUserToken(accessToken: String, context: Context) {
+        prefs(context).edit()
+            .putString(KEY_ACCESS, accessToken)
+            .remove(LEGACY_KEY_REFRESH)
+            .apply()
     }
 
     @JvmStatic

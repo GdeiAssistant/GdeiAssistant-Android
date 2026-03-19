@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.material.icons.rounded.LockPerson
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +54,7 @@ import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.NativeImageGallery
+import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.RemoteAvatar
 import cn.gdeiassistant.ui.components.RemoteThumbnail
 import cn.gdeiassistant.ui.components.SelectionPill
@@ -60,11 +63,22 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LostFoundScreen(navController: NavHostController) {
     val viewModel: LostFoundViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow(Routes.LOST_FOUND_REFRESH_FLAG, false)?.collectLatest { needsRefresh ->
+            if (needsRefresh) {
+                viewModel.refresh()
+                savedStateHandle[Routes.LOST_FOUND_REFRESH_FLAG] = false
+            }
+        }
+    }
 
     LazyScreen(
         title = stringResource(R.string.lost_found_title),
@@ -76,15 +90,28 @@ fun LostFoundScreen(navController: NavHostController) {
         }
     ) {
         item {
-            ActionTile(
-                title = stringResource(R.string.lost_found_my_items_title),
-                subtitle = stringResource(R.string.lost_found_my_items_subtitle),
-                icon = Icons.Rounded.Person,
-                onClick = { navController.navigate(Routes.LOST_FOUND_PROFILE) },
-                tint = MaterialTheme.colorScheme.primary,
-                emphasized = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionTile(
+                    title = stringResource(R.string.lost_found_my_items_title),
+                    subtitle = stringResource(R.string.lost_found_my_items_subtitle),
+                    icon = Icons.Rounded.Person,
+                    onClick = { navController.navigate(Routes.LOST_FOUND_PROFILE) },
+                    tint = MaterialTheme.colorScheme.primary,
+                    emphasized = true,
+                    modifier = Modifier.weight(1f)
+                )
+                ActionTile(
+                    title = stringResource(R.string.lost_found_publish_title),
+                    subtitle = stringResource(R.string.lost_found_publish_subtitle),
+                    icon = Icons.AutoMirrored.Rounded.NoteAdd,
+                    onClick = { navController.navigate(Routes.LOST_FOUND_PUBLISH) },
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
         item {
             val scrollState = rememberScrollState()
@@ -271,6 +298,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var actionMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingMarkItemId by remember { mutableStateOf<String?>(null) }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
     androidx.compose.runtime.LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -278,6 +306,15 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                 is LostFoundProfileEvent.ShowMessage -> {
                     actionMessage = event.message
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow(Routes.LOST_FOUND_PROFILE_REFRESH_FLAG, false)?.collectLatest { needsRefresh ->
+            if (needsRefresh) {
+                viewModel.refresh()
+                savedStateHandle[Routes.LOST_FOUND_PROFILE_REFRESH_FLAG] = false
             }
         }
     }
@@ -416,6 +453,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                                         item = item,
                                         tab = state.selectedTab,
                                         onOpen = { navController.navigate(Routes.lostFoundDetail(item.id)) },
+                                        onEdit = { navController.navigate(Routes.lostFoundEdit(item.id)) },
                                         onRequestMarkDidFound = { pendingMarkItemId = item.id }
                                     )
                                 }
@@ -552,6 +590,7 @@ private fun LostFoundProfileCard(
     item: LostFoundItem,
     tab: LostFoundProfileTab,
     onOpen: () -> Unit,
+    onEdit: () -> Unit,
     onRequestMarkDidFound: () -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
@@ -589,11 +628,17 @@ private fun LostFoundProfileCard(
         }
         if (tab != LostFoundProfileTab.DID_FOUND) {
             androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-            TintButton(
-                text = stringResource(R.string.lost_found_action_mark_found),
-                onClick = onRequestMarkDidFound,
-                tint = MaterialTheme.colorScheme.secondary
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                GhostButton(
+                    text = stringResource(R.string.lost_found_action_edit),
+                    onClick = onEdit
+                )
+                TintButton(
+                    text = stringResource(R.string.lost_found_action_mark_found),
+                    onClick = onRequestMarkDidFound,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }

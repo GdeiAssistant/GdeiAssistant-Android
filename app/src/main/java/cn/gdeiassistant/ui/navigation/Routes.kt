@@ -34,8 +34,14 @@ object Routes {
     const val YELLOW_PAGE = "yellow_page"
     const val MARKETPLACE = "marketplace"
     const val MARKETPLACE_PROFILE = "marketplace_profile"
+    const val MARKETPLACE_PUBLISH = "marketplace_publish"
+    const val MARKETPLACE_EDIT_ITEM_ID = "marketplaceEditItemId"
+    const val MARKETPLACE_EDIT = "marketplace_edit/{$MARKETPLACE_EDIT_ITEM_ID}"
     const val LOST_FOUND = "lost_found"
     const val LOST_FOUND_PROFILE = "lost_found_profile"
+    const val LOST_FOUND_PUBLISH = "lost_found_publish"
+    const val LOST_FOUND_EDIT_ITEM_ID = "lostFoundEditItemId"
+    const val LOST_FOUND_EDIT = "lost_found_edit/{$LOST_FOUND_EDIT_ITEM_ID}"
     const val SECRET = "secret"
     const val SECRET_PROFILE = "secret_profile"
     const val SECRET_PUBLISH = "secret_publish"
@@ -80,6 +86,10 @@ object Routes {
     const val GRADE_DETAIL_TERM_LABEL = "grade_detail_term_label"
     const val BOOK_DETAIL_BOOK = "book_detail_book"
     const val BOOK_REFRESH_FLAG = "book_refresh_flag"
+    const val MARKETPLACE_REFRESH_FLAG = "marketplace_refresh_flag"
+    const val MARKETPLACE_PROFILE_REFRESH_FLAG = "marketplace_profile_refresh_flag"
+    const val LOST_FOUND_REFRESH_FLAG = "lost_found_refresh_flag"
+    const val LOST_FOUND_PROFILE_REFRESH_FLAG = "lost_found_profile_refresh_flag"
     const val TOPIC_REFRESH_FLAG = "topic_refresh_flag"
     const val EXPRESS_REFRESH_FLAG = "express_refresh_flag"
     const val SECRET_REFRESH_FLAG = "secret_refresh_flag"
@@ -109,12 +119,20 @@ object Routes {
         return "marketplace_detail/${Uri.encode(itemId)}"
     }
 
+    fun marketplaceEdit(itemId: String): String {
+        return "marketplace_edit/${Uri.encode(itemId)}"
+    }
+
     fun bookCollectionDetail(detailUrl: String): String {
         return "$BOOK_COLLECTION_DETAIL_BASE?detailUrl=${Uri.encode(detailUrl)}"
     }
 
     fun lostFoundDetail(itemId: String): String {
         return "lost_found_detail/${Uri.encode(itemId)}"
+    }
+
+    fun lostFoundEdit(itemId: String): String {
+        return "lost_found_edit/${Uri.encode(itemId)}"
     }
 
     fun secretDetail(postId: String): String {
@@ -143,5 +161,9 @@ object Routes {
 
     fun photographDetail(postId: String): String {
         return "photograph_detail/${Uri.encode(postId)}"
+    }
+
+    fun noticeDetail(noticeId: String): String {
+        return "notice_detail/${Uri.encode(noticeId)}"
     }
 }

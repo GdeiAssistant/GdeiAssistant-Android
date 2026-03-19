@@ -2,12 +2,12 @@ package cn.gdeiassistant.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.data.AnnouncementRepository
 import cn.gdeiassistant.data.CardRepository
-import cn.gdeiassistant.data.NoticeItem
-import cn.gdeiassistant.data.NoticeRepository
 import cn.gdeiassistant.data.ProfileRepository
 import cn.gdeiassistant.data.ScheduleRepository
 import cn.gdeiassistant.data.SessionManager
+import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.Schedule
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ data class HomeUiState(
     val scheduleError: String? = null,
     val cardInfo: CardInfo? = null,
     val cardError: String? = null,
-    val notices: List<NoticeItem> = emptyList(),
+    val notices: List<AnnouncementItem> = emptyList(),
     val noticeError: String? = null
 )
 
@@ -34,7 +34,7 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository,
     private val cardRepository: CardRepository,
-    private val noticeRepository: NoticeRepository,
+    private val announcementRepository: AnnouncementRepository,
     private val profileRepository: ProfileRepository,
     sessionManager: SessionManager
 ) : ViewModel() {
@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
 
             val todayScheduleDeferred = async { scheduleRepository.loadTodaySchedule() }
             val cardDeferred = async { loadCardInfo() }
-            val noticeDeferred = async { noticeRepository.getLatestNoticeList(limit = 5) }
+            val noticeDeferred = async { announcementRepository.getAnnouncements(limit = 5) }
             val profileDeferred = async { profileRepository.getProfile() }
 
             val todayResult = todayScheduleDeferred.await()

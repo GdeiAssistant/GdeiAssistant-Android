@@ -1,6 +1,5 @@
 package cn.gdeiassistant.ui.notice
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.NoticeItem
+import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
@@ -41,7 +39,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 @Composable
 fun NoticeListScreen(
     navController: NavController,
-    onOpenNotice: (NoticeItem) -> Unit
+    onOpenNotice: (AnnouncementItem) -> Unit
 ) {
     val viewModel: NoticeListViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,8 +67,7 @@ fun NoticeListScreen(
             else -> item {
                 NoticeListCard(
                     notices = state.notices,
-                    onOpenNotice = onOpenNotice,
-                    onRefresh = viewModel::load
+                    onOpenNotice = onOpenNotice
                 )
             }
         }
@@ -79,9 +76,8 @@ fun NoticeListScreen(
 
 @Composable
 private fun NoticeListCard(
-    notices: List<NoticeItem>,
-    onOpenNotice: (NoticeItem) -> Unit,
-    onRefresh: () -> Unit
+    notices: List<AnnouncementItem>,
+    onOpenNotice: (AnnouncementItem) -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -108,14 +104,15 @@ private fun NoticeListCard(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                 )
             }
-            NoticeRow(notice = notice, onClick = { onOpenNotice(notice) })
+            NoticeRow(notice = notice, isNew = index == 0, onClick = { onOpenNotice(notice) })
         }
     }
 }
 
 @Composable
 private fun NoticeRow(
-    notice: NoticeItem,
+    notice: AnnouncementItem,
+    isNew: Boolean = false,
     onClick: () -> Unit
 ) {
     Row(
@@ -130,7 +127,7 @@ private fun NoticeRow(
             modifier = Modifier
                 .size(8.dp)
                 .background(
-                    if (notice.isNew) MaterialTheme.colorScheme.primary
+                    if (isNew) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                     CircleShape
                 )
@@ -139,12 +136,12 @@ private fun NoticeRow(
             Text(
                 text = notice.title,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (notice.isNew) FontWeight.SemiBold else FontWeight.Normal,
+                fontWeight = if (isNew) FontWeight.SemiBold else FontWeight.Normal,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = notice.date,
+                text = notice.publishTime,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

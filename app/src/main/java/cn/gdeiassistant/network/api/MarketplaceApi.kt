@@ -2,8 +2,14 @@ package cn.gdeiassistant.network.api
 
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.JsonResult
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -32,6 +38,32 @@ interface MarketplaceApi {
 
     @GET("api/ershou/profile")
     suspend fun getProfileSummary(): DataJsonResult<MarketplacePersonalSummaryDto>
+
+    @Multipart
+    @POST("api/ershou/item")
+    suspend fun publish(
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("qq") qq: RequestBody,
+        @Part("phone") phone: RequestBody? = null,
+        @Part images: List<MultipartBody.Part>
+    ): JsonResult
+
+    @FormUrlEncoded
+    @POST("api/ershou/item/id/{id}")
+    suspend fun updateItem(
+        @Path("id") id: String,
+        @Field("name") name: String,
+        @Field("description") description: String,
+        @Field("price") price: Double,
+        @Field("location") location: String,
+        @Field("type") type: Int,
+        @Field("qq") qq: String,
+        @Field("phone") phone: String? = null
+    ): JsonResult
 
     @POST("api/ershou/item/state/id/{id}")
     suspend fun updateItemState(

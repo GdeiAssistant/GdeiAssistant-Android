@@ -23,8 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.NoticeItem
-import cn.gdeiassistant.data.toArticleDetailContent
+import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Schedule
 import cn.gdeiassistant.ui.components.*
 import cn.gdeiassistant.ui.home.HomeViewModel
@@ -89,12 +88,7 @@ fun HomeScreen(navController: NavController) {
                 NoticeBento(
                     notices = state.notices,
                     onOpenAll = { navController.navigate(Routes.NOTICE_LIST) },
-                    onOpenNotice = { notice ->
-                        navController.currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set(Routes.ARTICLE_DETAIL_CONTENT, notice.toArticleDetailContent())
-                        navController.navigate(Routes.ARTICLE_DETAIL)
-                    }
+                    onOpenNotice = { notice -> navController.navigate(Routes.noticeDetail(notice.id)) }
                 )
             }
         }
@@ -302,9 +296,9 @@ private fun CourseRow(course: Schedule) {
 
 @Composable
 private fun NoticeBento(
-    notices: List<NoticeItem>,
+    notices: List<AnnouncementItem>,
     onOpenAll: () -> Unit,
-    onOpenNotice: (NoticeItem) -> Unit
+    onOpenNotice: (AnnouncementItem) -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth().animateContentSize()) {
         Row(
@@ -326,7 +320,7 @@ private fun NoticeBento(
             transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
         ) { items ->
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                items.forEach { notice ->
+                items.forEachIndexed { index, notice ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -339,7 +333,7 @@ private fun NoticeBento(
                             modifier = Modifier
                                 .size(7.dp)
                                 .background(
-                                    if (notice.isNew) MaterialTheme.colorScheme.secondary
+                                    if (index == 0) MaterialTheme.colorScheme.secondary
                                     else MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
                                     CircleShape
                                 )
@@ -352,7 +346,7 @@ private fun NoticeBento(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = notice.date,
+                            text = notice.publishTime,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

@@ -14,9 +14,6 @@ object NetworkConstants {
     /** 读写超时（秒） */
     const val READ_WRITE_TIMEOUT_SECONDS = 20
 
-    /** Token 刷新专用客户端超时（秒），避免递归拦截 */
-    const val REFRESH_CLIENT_TIMEOUT_SECONDS = 10
-
     /** 401 时兜底提示（网络层无 Context，与 strings.login_expired_toast 保持一致） */
     const val MESSAGE_LOGIN_EXPIRED = "登录已过期，请重新登录"
 

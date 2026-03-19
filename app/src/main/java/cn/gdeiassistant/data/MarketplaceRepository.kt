@@ -1,12 +1,17 @@
 package cn.gdeiassistant.data
 
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.MarketplaceDetail
+import cn.gdeiassistant.model.MarketplaceDraft
+import cn.gdeiassistant.model.MarketplaceEditableItem
 import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceItemState
 import cn.gdeiassistant.model.MarketplacePersonalSummary
 import cn.gdeiassistant.model.MarketplaceTypeOption
+import cn.gdeiassistant.model.MarketplaceUpdateDraft
 import cn.gdeiassistant.model.facultyTitle
 import cn.gdeiassistant.model.marketplaceTypeTitle
 import cn.gdeiassistant.model.marketplaceTypeTitles
@@ -18,6 +23,10 @@ import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -86,10 +95,62 @@ class MarketplaceRepository @Inject constructor(
                     nickname = context.getString(R.string.marketplace_profile_nickname),
                     introduction = context.getString(R.string.marketplace_profile_intro),
                     doing = summary.doing.orEmpty().map(::mapItem),
-                    sold = summary.sold.orEmpty().map(::mapItem),
-                    off = summary.off.orEmpty().map(::mapItem)
+                    sold = summary.off.orEmpty().map(::mapItem),
+                    off = summary.sold.orEmpty().map(::mapItem)
                 )
             }
+    }
+
+    suspend fun getEditableItem(id: String): Result<MarketplaceEditableItem> = withContext(Dispatchers.IO) {
+        safeApiCall { marketplaceApi.getProfileSummary() }
+            .mapCatching { dto ->
+                val summary = dto ?: throw IllegalStateException(context.getString(R.string.marketplace_profile_empty))
+                val item = sequenceOf(summary.doing, summary.sold, summary.off)
+                    .flatMap { it.orEmpty().asSequence() }
+                    .firstOrNull { it.id?.toString() == id }
+                    ?: throw IllegalStateException(context.getString(R.string.marketplace_edit_missing))
+                MarketplaceEditableItem(
+                    id = (item.id ?: id.toLongOrNull() ?: System.nanoTime()).toString(),
+                    title = item.name.orEmpty(),
+                    price = item.price?.toDoubleOrNull() ?: 0.0,
+                    description = item.description.orEmpty(),
+                    location = item.location.orEmpty(),
+                    typeId = item.type ?: 0,
+                    qq = item.qq.orEmpty(),
+                    phone = item.phone?.trim()?.ifBlank { null },
+                    imageUrls = item.pictureURL.orEmpty().filter { it.isNotBlank() }
+                )
+            }
+    }
+
+    suspend fun publish(draft: MarketplaceDraft, images: List<Uri>): Result<Unit> = withContext(Dispatchers.IO) {
+        safeJsonResultCall {
+            marketplaceApi.publish(
+                name = draft.title.trim().toPlainBody(),
+                description = draft.description.trim().toPlainBody(),
+                price = draft.price.toString().toPlainBody(),
+                location = draft.location.trim().toPlainBody(),
+                type = draft.typeId.toString().toPlainBody(),
+                qq = draft.qq.trim().toPlainBody(),
+                phone = draft.phone?.trim()?.takeIf { it.isNotBlank() }?.toPlainBody(),
+                images = images.mapIndexed { index, uri -> uriToPart(uri = uri, index = index + 1) }
+            )
+        }
+    }
+
+    suspend fun updateItem(id: String, draft: MarketplaceUpdateDraft): Result<Unit> = withContext(Dispatchers.IO) {
+        safeJsonResultCall {
+            marketplaceApi.updateItem(
+                id = id,
+                name = draft.title.trim(),
+                description = draft.description.trim(),
+                price = draft.price,
+                location = draft.location.trim(),
+                type = draft.typeId,
+                qq = draft.qq.trim(),
+                phone = draft.phone?.trim()?.takeIf { it.isNotBlank() }
+            )
+        }
     }
 
     suspend fun updateItemState(id: String, state: MarketplaceItemState): Result<Unit> = withContext(Dispatchers.IO) {
@@ -117,4 +178,29 @@ class MarketplaceRepository @Inject constructor(
             phone?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.marketplace_contact_phone, it) }
         ).joinToString(" / ")
     }
+
+    private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
+        val mimeType = context.contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
+        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            ?: throw IllegalStateException(context.getString(R.string.marketplace_publish_read_failed))
+        val fileName = queryDisplayName(uri).ifBlank { "marketplace-${UUID.randomUUID()}.jpg" }
+        return MultipartBody.Part.createFormData(
+            "image$index",
+            fileName,
+            bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+        )
+    }
+
+    private fun queryDisplayName(uri: Uri): String {
+        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+        cursor?.use {
+            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (index >= 0 && it.moveToFirst()) {
+                return it.getString(index).orEmpty()
+            }
+        }
+        return uri.lastPathSegment.orEmpty()
+    }
+
+    private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())
 }

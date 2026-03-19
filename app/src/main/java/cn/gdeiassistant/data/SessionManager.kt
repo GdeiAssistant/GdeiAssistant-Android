@@ -17,7 +17,6 @@ class SessionManager @Inject constructor(
 ) {
 
     private val accessTokenRef = AtomicReference(TokenUtils.GetUserAccessToken(context))
-    private val refreshTokenRef = AtomicReference(TokenUtils.GetUserRefreshToken(context))
     private val usernameRef = AtomicReference(resolveUsername(accessTokenRef.get(), null))
     private val cookieStore = ConcurrentHashMap<String, MutableList<Cookie>>()
     private val cookieLock = Any()
@@ -73,29 +72,21 @@ class SessionManager @Inject constructor(
             ?: TokenUtils.GetUserAccessToken(context)?.also(accessTokenRef::set)
     }
 
-    fun currentRefreshToken(): String? {
-        return refreshTokenRef.get()
-            ?.takeIf(String::isNotBlank)
-            ?: TokenUtils.GetUserRefreshToken(context)?.also(refreshTokenRef::set)
-    }
-
     fun currentUsername(): String? {
         return usernameRef.get()
             ?.takeIf(String::isNotBlank)
             ?: resolveUsername(currentToken(), null)?.also(usernameRef::set)
     }
 
-    fun saveTokens(accessToken: String, refreshToken: String, username: String? = null) {
-        TokenUtils.SaveUserToken(accessToken, refreshToken, context)
+    fun saveToken(accessToken: String, username: String? = null) {
+        TokenUtils.SaveUserToken(accessToken, context)
         accessTokenRef.set(accessToken)
-        refreshTokenRef.set(refreshToken)
         usernameRef.set(resolveUsername(accessToken, username))
     }
 
     fun clearTokens() {
         TokenUtils.ClearUserToken(context)
         accessTokenRef.set(null)
-        refreshTokenRef.set(null)
         usernameRef.set(null)
         clearCookies()
     }
