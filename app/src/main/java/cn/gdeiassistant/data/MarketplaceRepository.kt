@@ -95,8 +95,8 @@ class MarketplaceRepository @Inject constructor(
                     nickname = context.getString(R.string.marketplace_profile_nickname),
                     introduction = context.getString(R.string.marketplace_profile_intro),
                     doing = summary.doing.orEmpty().map(::mapItem),
-                    sold = summary.off.orEmpty().map(::mapItem),
-                    off = summary.sold.orEmpty().map(::mapItem)
+                    sold = summary.sold.orEmpty().map(::mapItem),
+                    off = summary.off.orEmpty().map(::mapItem)
                 )
             }
     }
