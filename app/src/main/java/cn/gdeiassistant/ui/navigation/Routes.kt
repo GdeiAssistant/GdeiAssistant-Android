@@ -66,7 +66,8 @@ object Routes {
     const val BOOK_COLLECTION_DETAIL_BASE = "book_collection_detail"
     const val BOOK_COLLECTION_DETAIL_URL = "detailUrl"
     const val BOOK_COLLECTION_DETAIL = "$BOOK_COLLECTION_DETAIL_BASE?detailUrl={$BOOK_COLLECTION_DETAIL_URL}"
-    const val ARTICLE_DETAIL = "article_detail"
+    const val NEWS_DETAIL_ID = "newsId"
+    const val NEWS_DETAIL = "news_detail/{$NEWS_DETAIL_ID}"
     const val YELLOW_PAGE_DETAIL = "yellow_page_detail"
     const val MARKETPLACE_ITEM_ID = "marketplaceItemId"
     const val LOST_FOUND_ITEM_ID = "lostFoundItemId"
@@ -94,7 +95,6 @@ object Routes {
     const val EXPRESS_REFRESH_FLAG = "express_refresh_flag"
     const val SECRET_REFRESH_FLAG = "secret_refresh_flag"
     const val PROFILE_AVATAR_REFRESH_FLAG = "profile_avatar_refresh_flag"
-    const val ARTICLE_DETAIL_CONTENT = "article_detail_content"
     const val YELLOW_PAGE_ENTRY = "yellow_page_entry"
 
     const val WEB_VIEW_BASE = "webview"
@@ -125,6 +125,10 @@ object Routes {
 
     fun bookCollectionDetail(detailUrl: String): String {
         return "$BOOK_COLLECTION_DETAIL_BASE?detailUrl=${Uri.encode(detailUrl)}"
+    }
+
+    fun newsDetail(newsId: String): String {
+        return "news_detail/${Uri.encode(newsId)}"
     }
 
     fun lostFoundDetail(itemId: String): String {

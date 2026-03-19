@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.information
+package cn.gdeiassistant.ui.news
 
 import android.content.Intent
 import android.net.Uri
@@ -13,35 +13,39 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.model.ArticleDetailContent
+import cn.gdeiassistant.model.newsSourceLabel
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
-import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.components.StatusBanner
 
 @Composable
-fun ArticleDetailScreen(
+fun NewsDetailScreen(
     navController: NavHostController
 ) {
     val context = LocalContext.current
-    val article = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<ArticleDetailContent>(Routes.ARTICLE_DETAIL_CONTENT)
+    val viewModel: NewsDetailViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val detail = state.detail
 
     fun openExternalUrl(url: String) {
         runCatching {
@@ -56,21 +60,37 @@ fun ArticleDetailScreen(
     }
 
     LazyScreen(
-        title = article?.source ?: stringResource(R.string.article_detail_title),
+        title = detail?.let { newsSourceLabel(it.type) } ?: stringResource(R.string.article_detail_title),
         onBack = navController::popBackStack,
+        showLoadingPlaceholder = state.isLoading && detail == null,
         actions = {
-            val externalUrl = article?.externalUrl
-            if (!externalUrl.isNullOrBlank()) {
-                IconButton(onClick = { openExternalUrl(externalUrl) }) {
+            val sourceUrl = detail?.link
+            if (!sourceUrl.isNullOrBlank()) {
+                IconButton(onClick = { openExternalUrl(sourceUrl) }) {
                     Icon(
                         imageVector = Icons.Rounded.OpenInBrowser,
                         contentDescription = stringResource(R.string.web_open_browser)
                     )
                 }
             }
+            IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.schedule_refresh)
+                )
+            }
         }
     ) {
-        if (article == null) {
+        if (!state.error.isNullOrBlank()) {
+            item {
+                StatusBanner(
+                    title = stringResource(R.string.load_failed),
+                    body = state.error.orEmpty(),
+                    icon = Icons.AutoMirrored.Rounded.Article
+                )
+            }
+        }
+        if (detail == null && !state.isLoading) {
             item {
                 Box(
                     modifier = Modifier
@@ -85,7 +105,7 @@ fun ArticleDetailScreen(
                     )
                 }
             }
-        } else {
+        } else if (detail != null) {
             item {
                 SectionCard(modifier = Modifier.fillMaxWidth()) {
                     Row(
@@ -93,26 +113,25 @@ fun ArticleDetailScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        BadgePill(text = article.source)
+                        BadgePill(text = newsSourceLabel(detail.type))
                         Text(
-                            text = article.date,
+                            text = detail.publishDate,
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = article.title,
+                        text = detail.title,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold
                     )
-                    val externalUrl = article.externalUrl
-                    if (!externalUrl.isNullOrBlank()) {
+                    if (!detail.link.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(18.dp))
                         GhostButton(
                             text = stringResource(R.string.web_open_browser),
                             icon = Icons.Rounded.OpenInBrowser,
-                            onClick = { openExternalUrl(externalUrl) }
+                            onClick = { openExternalUrl(detail.link) }
                         )
                     }
                 }
@@ -126,7 +145,7 @@ fun ArticleDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = article.body.ifBlank { stringResource(R.string.article_detail_empty_body) },
+                        text = detail.content.ifBlank { stringResource(R.string.article_detail_empty_body) },
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )

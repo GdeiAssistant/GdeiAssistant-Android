@@ -49,7 +49,6 @@ import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.InteractionMessage
 import cn.gdeiassistant.model.SchoolNews
 import cn.gdeiassistant.model.newsSourceLabel
-import cn.gdeiassistant.model.toArticleDetailContent
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
@@ -94,12 +93,7 @@ fun MessagesScreen(navController: NavHostController) {
                 items = state.newsItems.take(3),
                 error = state.newsError,
                 onOpenAll = { navController.navigate(Routes.NEWS) },
-                onOpenItem = { item ->
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(Routes.ARTICLE_DETAIL_CONTENT, item.toArticleDetailContent())
-                    navController.navigate(Routes.ARTICLE_DETAIL)
-                }
+                onOpenItem = { item -> navController.navigate(Routes.newsDetail(item.id)) }
             )
         }
         item {

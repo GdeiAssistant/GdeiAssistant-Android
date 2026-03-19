@@ -195,6 +195,7 @@ class MockInterceptor : Interceptor {
             path.contains("api/message/readall") -> MockInfoProvider.mockMessageReadAll(request)
             path.contains("api/message/unread") -> MockInfoProvider.mockMessageUnread(request)
             path.contains("api/message/interaction/start/") -> MockInfoProvider.mockInteractionMessages(request)
+            path.contains("api/news/id/") -> MockInfoProvider.mockNewsDetail(request)
             path.contains("api/news/type/") -> MockInfoProvider.mockNews(request)
             else -> null
         }

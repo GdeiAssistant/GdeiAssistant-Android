@@ -33,7 +33,6 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.SchoolNews
 import cn.gdeiassistant.model.newsSourceLabel
-import cn.gdeiassistant.model.toArticleDetailContent
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
@@ -113,10 +112,7 @@ fun NewsScreen(navController: NavHostController) {
                             NewsRow(
                                 item = item,
                                 onClick = {
-                                    navController.currentBackStackEntry
-                                        ?.savedStateHandle
-                                        ?.set(Routes.ARTICLE_DETAIL_CONTENT, item.toArticleDetailContent())
-                                    navController.navigate(Routes.ARTICLE_DETAIL)
+                                    navController.navigate(Routes.newsDetail(item.id))
                                 }
                             )
                         }

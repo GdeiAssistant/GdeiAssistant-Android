@@ -32,7 +32,8 @@ object MockInfoProvider {
         val type: Int,
         val title: String,
         val publishDate: String,
-        val content: String
+        val content: String,
+        val sourceUrl: String
     )
 
     private val mockAnnouncements = listOf(
@@ -67,14 +68,14 @@ object MockInfoProvider {
     )
 
     private val mockNewsRecords = listOf(
-        MockNewsRecord("news_1324_1", 1, "学校高质量发展大会暨 2026 年工作会议召开", "2026-03-03", "学校召开高质量发展大会，系统总结上一阶段重点工作，并对 2026 年改革发展目标与重点任务作出部署。"),
-        MockNewsRecord("news_1324_2", 1, "学校启动春季学期教学巡查工作", "2026-02-26", "为进一步提升课堂教学质量，学校启动春季学期教学巡查，持续关注课堂秩序、课程建设与教学保障。"),
-        MockNewsRecord("news_1325_1", 2, "管理学院召开教职工思想教育会议", "2026-03-19", "管理学院围绕师德师风建设、年度重点工作与学生成长支持召开专题会议，进一步明确本学期工作方向。"),
-        MockNewsRecord("news_1325_2", 2, "外国语学院举办专业建设专题研讨", "2026-03-12", "外国语学院组织开展专业建设专题研讨，聚焦课程优化、实践教学与人才培养方案迭代。"),
-        MockNewsRecord("news_1376_1", 3, "关于网站群管理平台升级切换的通知", "2026-01-22", "因学校网站群管理平台升级切换，学校主页及部分二级网站访问将在指定时间窗口内短暂停止，请各单位提前做好工作安排。"),
-        MockNewsRecord("news_1376_2", 3, "关于清明节假期校园服务安排的通知", "2026-03-01", "清明节假期期间，图书馆、食堂、校园巴士与安保值班安排将按节假日模式执行，请师生留意各部门发布的具体通知。"),
-        MockNewsRecord("news_3981_1", 4, "美术学院举办高层次科研项目申报学术讲座", "2026-03-09", "讲座围绕高层次科研项目选题、申报书撰写和团队协作展开，帮助青年教师提升项目申报质量。"),
-        MockNewsRecord("news_3981_2", 4, "教育学院开展人工智能赋能教学专题分享", "2026-02-24", "专题分享聚焦生成式人工智能在教学设计、课堂反馈与学习评价中的应用场景与实践方法。")
+        MockNewsRecord("news_1324_1", 1, "学校高质量发展大会暨 2026 年工作会议召开", "2026-03-03", "学校召开高质量发展大会，系统总结上一阶段重点工作，并对 2026 年改革发展目标与重点任务作出部署。", "https://www.gdei.edu.cn/1324/1001.htm"),
+        MockNewsRecord("news_1324_2", 1, "学校启动春季学期教学巡查工作", "2026-02-26", "为进一步提升课堂教学质量，学校启动春季学期教学巡查，持续关注课堂秩序、课程建设与教学保障。", "https://www.gdei.edu.cn/1324/1002.htm"),
+        MockNewsRecord("news_1325_1", 2, "管理学院召开教职工思想教育会议", "2026-03-19", "管理学院围绕师德师风建设、年度重点工作与学生成长支持召开专题会议，进一步明确本学期工作方向。", "https://www.gdei.edu.cn/1325/2001.htm"),
+        MockNewsRecord("news_1325_2", 2, "外国语学院举办专业建设专题研讨", "2026-03-12", "外国语学院组织开展专业建设专题研讨，聚焦课程优化、实践教学与人才培养方案迭代。", "https://www.gdei.edu.cn/1325/2002.htm"),
+        MockNewsRecord("news_1376_1", 3, "关于网站群管理平台升级切换的通知", "2026-01-22", "因学校网站群管理平台升级切换，学校主页及部分二级网站访问将在指定时间窗口内短暂停止，请各单位提前做好工作安排。", "https://www.gdei.edu.cn/1376/3001.htm"),
+        MockNewsRecord("news_1376_2", 3, "关于清明节假期校园服务安排的通知", "2026-03-01", "清明节假期期间，图书馆、食堂、校园巴士与安保值班安排将按节假日模式执行，请师生留意各部门发布的具体通知。", "https://www.gdei.edu.cn/1376/3002.htm"),
+        MockNewsRecord("news_3981_1", 4, "美术学院举办高层次科研项目申报学术讲座", "2026-03-09", "讲座围绕高层次科研项目选题、申报书撰写和团队协作展开，帮助青年教师提升项目申报质量。", "https://www.gdei.edu.cn/3981/4001.htm"),
+        MockNewsRecord("news_3981_2", 4, "教育学院开展人工智能赋能教学专题分享", "2026-02-24", "专题分享聚焦生成式人工智能在教学设计、课堂反馈与学习评价中的应用场景与实践方法。", "https://www.gdei.edu.cn/3981/4002.htm")
     )
 
     fun mockAnnouncementPage(request: Request): String {
@@ -164,9 +165,25 @@ object MockInfoProvider {
                     "type" to news.type,
                     "title" to news.title,
                     "publishDate" to news.publishDate,
-                    "content" to news.content
+                    "content" to news.content,
+                    "sourceUrl" to news.sourceUrl
                 )
             }
         return MockUtils.successDataJson(payload)
+    }
+
+    fun mockNewsDetail(request: Request): String {
+        val news = mockNewsRecords.firstOrNull { it.id == request.itemIdFromPath().orEmpty() }
+            ?: return MockUtils.failureJson("查询的新闻通知不存在")
+        return MockUtils.successDataJson(
+            linkedMapOf(
+                "id" to news.id,
+                "type" to news.type,
+                "title" to news.title,
+                "publishDate" to news.publishDate,
+                "content" to news.content,
+                "sourceUrl" to news.sourceUrl
+            )
+        )
     }
 }

@@ -2,11 +2,9 @@ package cn.gdeiassistant.data
 
 import androidx.annotation.StringRes
 import cn.gdeiassistant.R
-import cn.gdeiassistant.model.ArticleDetailContent
 import cn.gdeiassistant.model.SchoolNews
-import cn.gdeiassistant.model.newsSourceLabel
-import cn.gdeiassistant.model.toArticleDetailContent
 import cn.gdeiassistant.network.api.NoticeApi
+import cn.gdeiassistant.network.api.NewsItemDto
 import cn.gdeiassistant.network.safeApiCall
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,22 +35,16 @@ class NewsRepository @Inject constructor(
         safeApiCall {
             noticeApi.queryNewsList(type = type, start = start.coerceAtLeast(0), size = size.coerceIn(1, 50))
         }.mapCatching { items ->
-            items.orEmpty().mapNotNull { dto ->
-                val title = dto.title?.trim().orEmpty()
-                if (title.isBlank()) {
-                    null
-                } else {
-                    val content = dto.content.orEmpty().trim()
-                    SchoolNews(
-                        id = dto.id.orEmpty().ifBlank { "${type}_${title.hashCode()}" },
-                        type = dto.type ?: type,
-                        title = title,
-                        publishDate = dto.publishDate.orEmpty().ifBlank { "—" },
-                        content = plainTextFromHtml(content),
-                        link = extractHttpUrl(content)
-                    )
-                }
-            }
+            items.orEmpty().mapNotNull { dto -> dto.toSchoolNews(fallbackType = type) }
+        }
+    }
+
+    suspend fun getNewsDetail(id: String): Result<SchoolNews> = withContext(Dispatchers.IO) {
+        safeApiCall {
+            noticeApi.queryNewsDetail(id)
+        }.mapCatching { dto ->
+            dto?.toSchoolNews()
+                ?: throw IllegalStateException("新闻详情不存在")
         }
     }
 
@@ -81,12 +73,6 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    fun toDetailContent(news: SchoolNews): ArticleDetailContent {
-        return news.toArticleDetailContent().copy(
-            source = newsSourceLabel(news.type)
-        )
-    }
-
     private fun plainTextFromHtml(raw: String): String {
         return raw
             .replace(Regex("<[^>]*>"), " ")
@@ -102,5 +88,21 @@ class NewsRepository @Inject constructor(
         return Regex("https?://[^\\s'\"<>]+", RegexOption.IGNORE_CASE)
             .find(content)
             ?.value
+    }
+
+    private fun NewsItemDto.toSchoolNews(fallbackType: Int = 1): SchoolNews? {
+        val title = title?.trim().orEmpty()
+        if (title.isBlank()) {
+            return null
+        }
+        val normalizedContent = plainTextFromHtml(content.orEmpty().trim())
+        return SchoolNews(
+            id = id.orEmpty().ifBlank { "${fallbackType}_${title.hashCode()}" },
+            type = type ?: fallbackType,
+            title = title,
+            publishDate = publishDate.orEmpty().ifBlank { "—" },
+            content = normalizedContent,
+            link = sourceUrl?.trim()?.takeIf(String::isNotEmpty) ?: extractHttpUrl(normalizedContent)
+        )
     }
 }

@@ -50,7 +50,6 @@ import cn.gdeiassistant.ui.graduate.GraduateExamScreen
 import cn.gdeiassistant.ui.grade.GradeDetailArgs
 import cn.gdeiassistant.ui.grade.GradeDetailScreen
 import cn.gdeiassistant.ui.grade.GradeScreen
-import cn.gdeiassistant.ui.information.ArticleDetailScreen
 import cn.gdeiassistant.ui.login.LoginScreen
 import cn.gdeiassistant.ui.lost.LostScreen
 import cn.gdeiassistant.ui.lostfound.LostFoundDetailScreen
@@ -69,6 +68,7 @@ import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.navigation.MainTabs
 import cn.gdeiassistant.ui.notice.NoticeDetailScreen
 import cn.gdeiassistant.ui.notice.NoticeListScreen
+import cn.gdeiassistant.ui.news.NewsDetailScreen
 import cn.gdeiassistant.ui.news.NewsScreen
 import cn.gdeiassistant.ui.profile.BindEmailScreen
 import cn.gdeiassistant.ui.profile.BindPhoneScreen
@@ -396,7 +396,12 @@ private fun NavGraphBuilder.informationGraph(navController: NavHostController) {
         route = AppNavGraphs.INFORMATION
     ) {
         composable(Routes.NEWS) { NewsScreen(navController = navController) }
-        composable(Routes.ARTICLE_DETAIL) { ArticleDetailScreen(navController = navController) }
+        composable(
+            route = Routes.NEWS_DETAIL,
+            arguments = listOf(navArgument(Routes.NEWS_DETAIL_ID) { type = NavType.StringType })
+        ) {
+            NewsDetailScreen(navController = navController)
+        }
         composable(Routes.INTERACTION_LIST) { InteractionListScreen(navController = navController) }
         composable(Routes.NOTICE_LIST) {
             NoticeListScreen(

@@ -12,6 +12,11 @@ interface NoticeApi {
         @Path("start") start: Int,
         @Path("size") size: Int
     ): DataJsonResult<List<NewsItemDto>>
+
+    @GET("api/news/id/{id}")
+    suspend fun queryNewsDetail(
+        @Path("id") id: String
+    ): DataJsonResult<NewsItemDto>
 }
 
 data class NewsItemDto(
@@ -19,5 +24,6 @@ data class NewsItemDto(
     val type: Int? = null,
     val title: String? = null,
     val publishDate: String? = null,
-    val content: String? = null
+    val content: String? = null,
+    val sourceUrl: String? = null
 )

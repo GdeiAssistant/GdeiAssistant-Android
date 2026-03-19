@@ -64,34 +64,6 @@ enum class UserDataExportState(val code: Int) {
     }
 }
 
-@Immutable
-data class ArticleDetailContent(
-    val title: String,
-    val body: String,
-    val date: String,
-    val source: String,
-    val externalUrl: String? = null
-) : Serializable
-
-fun SchoolNews.toArticleDetailContent(): ArticleDetailContent {
-    return ArticleDetailContent(
-        title = title,
-        body = content.ifBlank { "暂无详细内容" },
-        date = publishDate,
-        source = newsSourceLabel(type),
-        externalUrl = link
-    )
-}
-
-fun AnnouncementItem.toArticleDetailContent(): ArticleDetailContent {
-    return ArticleDetailContent(
-        title = title,
-        body = content.ifBlank { "暂无详细内容" },
-        date = publishTime,
-        source = "系统通知公告"
-    )
-}
-
 fun newsSourceLabel(type: Int): String {
     return when (type) {
         1 -> "学校要闻"
