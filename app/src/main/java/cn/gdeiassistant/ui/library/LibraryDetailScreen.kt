@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.book
+package cn.gdeiassistant.ui.library
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -52,12 +52,12 @@ import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun BookDetailScreen(
+fun LibraryDetailScreen(
     navController: NavHostController,
     book: CollectionBorrowItem?
 ) {
     val context = LocalContext.current
-    val viewModel: BookDetailViewModel = hiltViewModel()
+    val viewModel: LibraryDetailViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showPasswordDialog by rememberSaveable { mutableStateOf(false) }
     var renewPassword by rememberSaveable { mutableStateOf("") }
@@ -69,11 +69,11 @@ fun BookDetailScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
             when (event) {
-                is BookDetailEvent.ShowMessage -> Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
-                BookDetailEvent.RenewSucceeded -> {
+                is LibraryDetailEvent.ShowMessage -> Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                LibraryDetailEvent.RenewSucceeded -> {
                     showPasswordDialog = false
                     renewPassword = ""
-                    navController.previousBackStackEntry?.savedStateHandle?.set(Routes.BOOK_REFRESH_FLAG, true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(Routes.LIBRARY_REFRESH_FLAG, true)
                 }
             }
         }
@@ -89,18 +89,18 @@ fun BookDetailScreen(
                 }
             },
             title = {
-                Text(text = stringResource(R.string.book_renew_dialog_title))
+                Text(text = stringResource(R.string.library_renew_dialog_title))
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        text = stringResource(R.string.book_renew_dialog_message),
+                        text = stringResource(R.string.library_renew_dialog_message),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     OutlinedTextField(
                         value = renewPassword,
                         onValueChange = { renewPassword = it },
-                        label = { Text(text = stringResource(R.string.book_borrow_password_label)) },
+                        label = { Text(text = stringResource(R.string.library_borrow_password_label)) },
                         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -119,7 +119,7 @@ fun BookDetailScreen(
                     onClick = { viewModel.renewBook(renewPassword) },
                     enabled = !state.isRenewing
                 ) {
-                    Text(text = if (state.isRenewing) stringResource(R.string.book_renew_loading) else stringResource(R.string.book_detail_renew_action))
+                    Text(text = if (state.isRenewing) stringResource(R.string.library_renew_loading) else stringResource(R.string.library_detail_renew_action))
                 }
             },
             dismissButton = {
@@ -136,7 +136,7 @@ fun BookDetailScreen(
         )
     }
     LazyScreen(
-        title = stringResource(R.string.book_detail_title),
+        title = stringResource(R.string.library_detail_title),
         onBack = navController::popBackStack
     ) {
         if (item == null) {
@@ -149,7 +149,7 @@ fun BookDetailScreen(
                     ) {
                         EmptyState(
                             icon = Icons.Rounded.AutoStories,
-                            message = stringResource(R.string.book_detail_unknown),
+                            message = stringResource(R.string.library_detail_unknown),
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -158,7 +158,7 @@ fun BookDetailScreen(
         } else {
             item {
                 SectionCard(modifier = Modifier.fillMaxWidth()) {
-                    BadgePill(text = stringResource(R.string.book_detail_status_borrowed))
+                    BadgePill(text = stringResource(R.string.library_detail_status_borrowed))
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = item.title,
@@ -174,12 +174,12 @@ fun BookDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         DetailMetric(
-                            label = stringResource(R.string.book_detail_due_label),
+                            label = stringResource(R.string.library_detail_due_label),
                             value = item.returnDate,
                             modifier = Modifier.weight(1f)
                         )
                         DetailMetric(
-                            label = stringResource(R.string.book_detail_renew_label),
+                            label = stringResource(R.string.library_detail_renew_label),
                             value = item.renewCount.toString(),
                             modifier = Modifier.weight(1f)
                         )
@@ -199,19 +199,19 @@ fun BookDetailScreen(
                 SectionCard(modifier = Modifier.fillMaxWidth()) {
                     DetailLine(
                         icon = Icons.Rounded.Schedule,
-                        label = stringResource(R.string.book_borrow_label, item.borrowDate)
+                        label = stringResource(R.string.library_borrow_label, item.borrowDate)
                     )
                     DetailLine(
                         icon = Icons.Rounded.Schedule,
-                        label = stringResource(R.string.book_return_label, item.returnDate)
+                        label = stringResource(R.string.library_return_label, item.returnDate)
                     )
                     DetailLine(
                         icon = Icons.Rounded.BookmarkAdded,
-                        label = stringResource(R.string.book_renew_times, item.renewCount)
+                        label = stringResource(R.string.library_renew_times, item.renewCount)
                     )
                     DetailLine(
                         icon = Icons.Rounded.AutoStories,
-                        label = stringResource(R.string.book_collection_code_line, item.sn, item.code),
+                        label = stringResource(R.string.library_collection_code_line, item.sn, item.code),
                         emphasize = true
                     )
                 }
@@ -219,22 +219,22 @@ fun BookDetailScreen(
             item {
                 SectionCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = stringResource(R.string.book_detail_action_title),
+                        text = stringResource(R.string.library_detail_action_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = stringResource(R.string.book_detail_action_hint),
+                        text = stringResource(R.string.library_detail_action_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     TintButton(
                         text = if (state.isRenewing) {
-                            stringResource(R.string.book_renew_loading)
+                            stringResource(R.string.library_renew_loading)
                         } else {
-                            stringResource(R.string.book_detail_renew_action)
+                            stringResource(R.string.library_detail_renew_action)
                         },
                         icon = Icons.Rounded.Sync,
                         onClick = { showPasswordDialog = true },

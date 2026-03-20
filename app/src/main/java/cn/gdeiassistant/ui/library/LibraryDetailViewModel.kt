@@ -1,10 +1,10 @@
-package cn.gdeiassistant.ui.book
+package cn.gdeiassistant.ui.library
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.BookRepository
+import cn.gdeiassistant.data.LibraryRepository
 import cn.gdeiassistant.model.CollectionBorrowItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,28 +18,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class BookDetailUiState(
+data class LibraryDetailUiState(
     val item: CollectionBorrowItem? = null,
     val isRenewing: Boolean = false,
     val error: String? = null
 )
 
-sealed interface BookDetailEvent {
-    data class ShowMessage(val message: String) : BookDetailEvent
-    data object RenewSucceeded : BookDetailEvent
+sealed interface LibraryDetailEvent {
+    data class ShowMessage(val message: String) : LibraryDetailEvent
+    data object RenewSucceeded : LibraryDetailEvent
 }
 
 @HiltViewModel
-class BookDetailViewModel @Inject constructor(
-    private val repository: BookRepository,
+class LibraryDetailViewModel @Inject constructor(
+    private val repository: LibraryRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(BookDetailUiState())
-    val state: StateFlow<BookDetailUiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(LibraryDetailUiState())
+    val state: StateFlow<LibraryDetailUiState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<BookDetailEvent>()
-    val events: SharedFlow<BookDetailEvent> = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<LibraryDetailEvent>()
+    val events: SharedFlow<LibraryDetailEvent> = _events.asSharedFlow()
 
     fun bindItem(item: CollectionBorrowItem?) {
         _state.update { it.copy(item = item, error = null) }
@@ -58,14 +58,14 @@ class BookDetailViewModel @Inject constructor(
                             error = null
                         )
                     }
-                    _events.emit(BookDetailEvent.ShowMessage(context.getString(R.string.book_renew_success)))
-                    _events.emit(BookDetailEvent.RenewSucceeded)
+                    _events.emit(LibraryDetailEvent.ShowMessage(context.getString(R.string.library_renew_success)))
+                    _events.emit(LibraryDetailEvent.RenewSucceeded)
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isRenewing = false, error = error.message) }
                     _events.emit(
-                        BookDetailEvent.ShowMessage(
-                            error.message ?: context.getString(R.string.book_detail_renew_failed)
+                        LibraryDetailEvent.ShowMessage(
+                            error.message ?: context.getString(R.string.library_detail_renew_failed)
                         )
                     )
                 }

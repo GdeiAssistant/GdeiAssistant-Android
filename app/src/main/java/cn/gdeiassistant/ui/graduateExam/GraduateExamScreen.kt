@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.graduate
+package cn.gdeiassistant.ui.graduateExam
 
 import android.content.Intent
 import android.net.Uri

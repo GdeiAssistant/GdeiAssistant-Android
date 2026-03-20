@@ -9,7 +9,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class BookRepositoryContractTest {
+class LibraryRepositoryContractTest {
 
     private val fallbacks = LibraryTextFallbacks(
         defaultTitle = "默认书名",

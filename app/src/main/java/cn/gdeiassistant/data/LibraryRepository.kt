@@ -7,7 +7,7 @@ import cn.gdeiassistant.model.CollectionDetailInfo
 import cn.gdeiassistant.model.CollectionDistributionItem
 import cn.gdeiassistant.model.CollectionSearchItem
 import cn.gdeiassistant.model.CollectionSearchPage
-import cn.gdeiassistant.network.api.BookApi
+import cn.gdeiassistant.network.api.LibraryApi
 import cn.gdeiassistant.network.api.CollectionBorrowDto
 import cn.gdeiassistant.network.api.CollectionDetailDto
 import cn.gdeiassistant.network.api.CollectionItemDto
@@ -22,14 +22,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BookRepository @Inject constructor(
+class LibraryRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val bookApi: BookApi
+    private val libraryApi: LibraryApi
 ) {
 
     suspend fun searchCollections(keyword: String, page: Int = 1): Result<CollectionSearchPage> = withContext(Dispatchers.IO) {
         safeApiCall {
-            bookApi.searchCollections(
+            libraryApi.searchCollections(
                 keyword = keyword,
                 page = page.coerceAtLeast(1)
             )
@@ -38,9 +38,9 @@ class BookRepository @Inject constructor(
                 items = dto?.collectionList.orEmpty().map {
                     mapCollectionSearchItem(
                         dto = it,
-                        fallbackTitle = context.getString(R.string.book_collection_default_title),
-                        fallbackAuthor = context.getString(R.string.book_collection_default_author),
-                        fallbackPublisher = context.getString(R.string.book_collection_default_publisher)
+                        fallbackTitle = context.getString(R.string.library_collection_default_title),
+                        fallbackAuthor = context.getString(R.string.library_collection_default_author),
+                        fallbackPublisher = context.getString(R.string.library_collection_default_publisher)
                     )
                 },
                 sumPage = dto?.sumPage ?: 0
@@ -49,9 +49,9 @@ class BookRepository @Inject constructor(
     }
 
     suspend fun getCollectionDetail(detailUrl: String): Result<CollectionDetailInfo> = withContext(Dispatchers.IO) {
-        safeApiCall { bookApi.getCollectionDetail(detailUrl = detailUrl) }
+        safeApiCall { libraryApi.getCollectionDetail(detailUrl = detailUrl) }
             .mapCatching { dto ->
-                val item = dto ?: throw IllegalStateException(context.getString(R.string.book_collection_missing))
+                val item = dto ?: throw IllegalStateException(context.getString(R.string.library_collection_missing))
                 mapCollectionDetailInfo(
                     dto = item,
                     fallbacks = context.libraryTextFallbacks()
@@ -60,14 +60,14 @@ class BookRepository @Inject constructor(
     }
 
     suspend fun getBorrowedBooks(password: String? = null): Result<List<CollectionBorrowItem>> = withContext(Dispatchers.IO) {
-        safeApiCall { bookApi.getBorrowedBooks(password = password?.takeIf(String::isNotBlank)) }
+        safeApiCall { libraryApi.getBorrowedBooks(password = password?.takeIf(String::isNotBlank)) }
             .mapCatching { items ->
                 items.orEmpty().map {
                     mapCollectionBorrowItem(
                         dto = it,
-                        fallbackTitle = context.getString(R.string.book_collection_default_title),
-                        fallbackAuthor = context.getString(R.string.book_collection_default_author),
-                        fallbackDate = context.getString(R.string.book_collection_unknown_date)
+                        fallbackTitle = context.getString(R.string.library_collection_default_title),
+                        fallbackAuthor = context.getString(R.string.library_collection_default_author),
+                        fallbackDate = context.getString(R.string.library_collection_unknown_date)
                     )
                 }
             }
@@ -77,13 +77,13 @@ class BookRepository @Inject constructor(
         val payload = buildLibraryRenewRequest(
             book = book,
             password = password,
-            missingRenewInfoMessage = context.getString(R.string.book_collection_missing_renew_info),
-            passwordRequiredMessage = context.getString(R.string.book_borrow_password_label)
+            missingRenewInfoMessage = context.getString(R.string.library_collection_missing_renew_info),
+            passwordRequiredMessage = context.getString(R.string.library_borrow_password_label)
         ).getOrElse { error ->
             return@withContext Result.failure(error)
         }
         safeJsonResultCall {
-            bookApi.renew(payload)
+            libraryApi.renew(payload)
         }
     }
 }
@@ -194,17 +194,17 @@ internal fun buildLibraryRenewRequest(
 }
 
 private fun Context.libraryTextFallbacks() = LibraryTextFallbacks(
-    defaultTitle = getString(R.string.book_collection_default_title),
-    defaultAuthor = getString(R.string.book_collection_default_author),
-    defaultPublisher = getString(R.string.book_collection_default_publisher),
-    defaultPrincipal = getString(R.string.book_collection_default_principal),
-    defaultPrice = getString(R.string.book_collection_default_price),
-    defaultDescription = getString(R.string.book_collection_default_description),
-    defaultSubject = getString(R.string.book_collection_default_subject),
-    defaultClassification = getString(R.string.book_collection_default_classification),
-    defaultDistributionLocation = getString(R.string.book_collection_distribution_default_location),
-    defaultDistributionCallNumber = getString(R.string.book_collection_distribution_default_call_number),
-    defaultDistributionBarcode = getString(R.string.book_collection_distribution_default_barcode),
-    defaultDistributionState = getString(R.string.book_collection_distribution_default_state),
-    defaultDate = getString(R.string.book_collection_unknown_date)
+    defaultTitle = getString(R.string.library_collection_default_title),
+    defaultAuthor = getString(R.string.library_collection_default_author),
+    defaultPublisher = getString(R.string.library_collection_default_publisher),
+    defaultPrincipal = getString(R.string.library_collection_default_principal),
+    defaultPrice = getString(R.string.library_collection_default_price),
+    defaultDescription = getString(R.string.library_collection_default_description),
+    defaultSubject = getString(R.string.library_collection_default_subject),
+    defaultClassification = getString(R.string.library_collection_default_classification),
+    defaultDistributionLocation = getString(R.string.library_collection_distribution_default_location),
+    defaultDistributionCallNumber = getString(R.string.library_collection_distribution_default_call_number),
+    defaultDistributionBarcode = getString(R.string.library_collection_distribution_default_barcode),
+    defaultDistributionState = getString(R.string.library_collection_distribution_default_state),
+    defaultDate = getString(R.string.library_collection_unknown_date)
 )

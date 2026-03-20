@@ -53,7 +53,7 @@ object AppFeatureCatalog {
         AppFeature(Routes.CET, R.string.cet_title, R.string.feature_cet_subtitle, Icons.Rounded.Quiz, AppFeatureGroup.SERVICE),
         AppFeature(Routes.GRADUATE_EXAM, R.string.graduate_exam_title, R.string.feature_graduate_exam_subtitle, Icons.AutoMirrored.Rounded.MenuBook, AppFeatureGroup.SERVICE),
         AppFeature(Routes.SPARE, R.string.spare_title, R.string.feature_spare_subtitle, Icons.Rounded.EventSeat, AppFeatureGroup.SERVICE),
-        AppFeature(Routes.BOOK, R.string.menu_book, R.string.feature_book_subtitle, Icons.Rounded.AutoStories, AppFeatureGroup.SERVICE),
+        AppFeature(Routes.LIBRARY, R.string.menu_library, R.string.feature_library_subtitle, Icons.Rounded.AutoStories, AppFeatureGroup.SERVICE),
         AppFeature(Routes.CARD, R.string.menu_card, R.string.feature_card_subtitle, Icons.Rounded.CreditCard, AppFeatureGroup.SERVICE),
         AppFeature(Routes.DATA_CENTER, R.string.data_center_title, R.string.feature_data_center_subtitle, Icons.Rounded.Bolt, AppFeatureGroup.SERVICE),
         AppFeature(Routes.EVALUATE, R.string.evaluate_title, R.string.feature_evaluate_subtitle, Icons.Rounded.Star, AppFeatureGroup.SERVICE),

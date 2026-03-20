@@ -9,7 +9,7 @@ import cn.gdeiassistant.network.NetworkConstants
 import cn.gdeiassistant.network.ResponseInterceptor
 import cn.gdeiassistant.network.api.AnnouncementApi
 import cn.gdeiassistant.network.api.AuthApi
-import cn.gdeiassistant.network.api.BookApi
+import cn.gdeiassistant.network.api.LibraryApi
 import cn.gdeiassistant.network.api.CardApi
 import cn.gdeiassistant.network.api.CetApi
 import cn.gdeiassistant.network.api.ChargeApi
@@ -73,7 +73,7 @@ object NetworkModule {
 
     @Provides @Singleton fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
     @Provides @Singleton fun provideAnnouncementApi(retrofit: Retrofit): AnnouncementApi = retrofit.create(AnnouncementApi::class.java)
-    @Provides @Singleton fun provideBookApi(retrofit: Retrofit): BookApi = retrofit.create(BookApi::class.java)
+    @Provides @Singleton fun provideLibraryApi(retrofit: Retrofit): LibraryApi = retrofit.create(LibraryApi::class.java)
     @Provides @Singleton fun provideCardApi(retrofit: Retrofit): CardApi = retrofit.create(CardApi::class.java)
     @Provides @Singleton fun provideCetApi(retrofit: Retrofit): CetApi = retrofit.create(CetApi::class.java)
     @Provides @Singleton fun provideChargeApi(retrofit: Retrofit): ChargeApi = retrofit.create(ChargeApi::class.java)

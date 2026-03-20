@@ -25,9 +25,9 @@ import cn.gdeiassistant.event.GlobalEventManager
 import cn.gdeiassistant.model.CollectionBorrowItem
 import cn.gdeiassistant.model.Grade
 import cn.gdeiassistant.ui.about.AboutScreen
-import cn.gdeiassistant.ui.book.BookDetailScreen
-import cn.gdeiassistant.ui.book.BookScreen
-import cn.gdeiassistant.ui.book.CollectionDetailScreen
+import cn.gdeiassistant.ui.library.LibraryDetailScreen
+import cn.gdeiassistant.ui.library.LibraryScreen
+import cn.gdeiassistant.ui.library.CollectionDetailScreen
 import cn.gdeiassistant.ui.card.CardScreen
 import cn.gdeiassistant.ui.cet.CetScreen
 import cn.gdeiassistant.ui.charge.ChargeScreen
@@ -49,7 +49,7 @@ import cn.gdeiassistant.ui.express.ExpressDetailScreen
 import cn.gdeiassistant.ui.express.ExpressPublishScreen
 import cn.gdeiassistant.ui.express.ExpressProfileScreen
 import cn.gdeiassistant.ui.express.ExpressScreen
-import cn.gdeiassistant.ui.graduate.GraduateExamScreen
+import cn.gdeiassistant.ui.graduateExam.GraduateExamScreen
 import cn.gdeiassistant.ui.grade.GradeDetailArgs
 import cn.gdeiassistant.ui.grade.GradeDetailScreen
 import cn.gdeiassistant.ui.grade.GradeScreen
@@ -243,7 +243,7 @@ private fun NavGraphBuilder.serviceGraph(navController: NavHostController) {
         composable(Routes.EVALUATE) { EvaluateScreen(navController = navController) }
         composable(Routes.SPARE) { SpareScreen(navController = navController) }
         composable(Routes.GRADUATE_EXAM) { GraduateExamScreen(navController = navController) }
-        composable(Routes.BOOK) { BookScreen(navController = navController) }
+        composable(Routes.LIBRARY) { LibraryScreen(navController = navController) }
         composable(Routes.CARD) { CardScreen(navController = navController) }
         composable(Routes.CHARGE) { ChargeScreen(navController = navController) }
         composable(Routes.LOST) { LostScreen(navController = navController) }
@@ -266,16 +266,16 @@ private fun NavGraphBuilder.serviceGraph(navController: NavHostController) {
             }
             GradeDetailScreen(navController = navController, args = args)
         }
-        composable(Routes.BOOK_DETAIL) {
+        composable(Routes.LIBRARY_DETAIL) {
             val book = navController.previousBackStackEntry
                 ?.savedStateHandle
-                ?.get<CollectionBorrowItem>(Routes.BOOK_DETAIL_BOOK)
-            BookDetailScreen(navController = navController, book = book)
+                ?.get<CollectionBorrowItem>(Routes.LIBRARY_DETAIL_BOOK)
+            LibraryDetailScreen(navController = navController, book = book)
         }
         composable(
-            route = Routes.BOOK_COLLECTION_DETAIL,
+            route = Routes.LIBRARY_COLLECTION_DETAIL,
             arguments = listOf(
-                navArgument(Routes.BOOK_COLLECTION_DETAIL_URL) {
+                navArgument(Routes.LIBRARY_COLLECTION_DETAIL_URL) {
                     type = NavType.StringType
                     defaultValue = ""
                 }

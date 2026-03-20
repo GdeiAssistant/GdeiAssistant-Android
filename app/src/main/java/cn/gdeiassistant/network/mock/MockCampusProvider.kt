@@ -79,7 +79,7 @@ object MockCampusProvider {
     fun mockCardLost(request: Request): String =
         """{"success":true,"code":200,"message":"挂失成功","data":null}"""
 
-    fun mockBookQuery(request: Request): String = """
+    fun mockLibraryBorrowQuery(request: Request): String = """
         {"success":true,"code":200,"message":"","data":[
             {"id":"b1","sn":"SN1001","code":"TP312.8-01","name":"Android 架构演进实践","author":"GDEI Labs","borrowDate":"2026-02-10","returnDate":"2026-03-20","renewTime":1},
             {"id":"b2","sn":"SN1002","code":"TP393-12","name":"现代移动网络编程","author":"Campus Net","borrowDate":"2026-02-14","returnDate":"2026-03-24","renewTime":0},
@@ -87,7 +87,7 @@ object MockCampusProvider {
         ]}
     """.trimIndent()
 
-    fun mockBookRenew(request: Request): String =
+    fun mockLibraryRenew(request: Request): String =
         """{"success":true,"code":200,"message":"续借成功"}"""
 
     fun mockCollectionSearch(request: Request): String {

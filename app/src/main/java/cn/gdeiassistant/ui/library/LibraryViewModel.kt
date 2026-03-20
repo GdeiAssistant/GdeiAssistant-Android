@@ -1,10 +1,10 @@
-package cn.gdeiassistant.ui.book
+package cn.gdeiassistant.ui.library
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.BookRepository
+import cn.gdeiassistant.data.LibraryRepository
 import cn.gdeiassistant.model.CollectionBorrowItem
 import cn.gdeiassistant.model.CollectionSearchItem
 import cn.gdeiassistant.ui.util.UiText
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class BookUiState(
+data class LibraryUiState(
     val searchKeyword: String = "",
     val searchResults: List<CollectionSearchItem> = emptyList(),
     val borrowPassword: String = "",
@@ -40,22 +40,22 @@ data class BookUiState(
         get() = borrowedItems.size
 }
 
-sealed interface BookEvent {
-    data class ShowMessage(val message: UiText) : BookEvent
-    data object RenewSucceeded : BookEvent
+sealed interface LibraryEvent {
+    data class ShowMessage(val message: UiText) : LibraryEvent
+    data object RenewSucceeded : LibraryEvent
 }
 
 @HiltViewModel
-class BookViewModel @Inject constructor(
-    private val repository: BookRepository,
+class LibraryViewModel @Inject constructor(
+    private val repository: LibraryRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(BookUiState())
-    val state: StateFlow<BookUiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(LibraryUiState())
+    val state: StateFlow<LibraryUiState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<BookEvent>()
-    val events: SharedFlow<BookEvent> = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<LibraryEvent>()
+    val events: SharedFlow<LibraryEvent> = _events.asSharedFlow()
 
     fun updateSearchKeyword(keyword: String) {
         _state.update { it.copy(searchKeyword = keyword) }
@@ -148,7 +148,7 @@ class BookViewModel @Inject constructor(
         if (password.isBlank()) {
             _state.update {
                 it.copy(
-                    borrowError = context.getString(R.string.book_borrow_password_required),
+                    borrowError = context.getString(R.string.library_borrow_password_required),
                     isBorrowLoading = false
                 )
             }
@@ -179,8 +179,8 @@ class BookViewModel @Inject constructor(
         val normalizedPassword = password.trim()
         if (normalizedPassword.isBlank()) {
             viewModelScope.launch {
-                _state.update { it.copy(renewError = context.getString(R.string.book_borrow_password_required)) }
-                _events.emit(BookEvent.ShowMessage(UiText.StringResource(R.string.book_borrow_password_required)))
+                _state.update { it.copy(renewError = context.getString(R.string.library_borrow_password_required)) }
+                _events.emit(LibraryEvent.ShowMessage(UiText.StringResource(R.string.library_borrow_password_required)))
             }
             return
         }
@@ -188,8 +188,8 @@ class BookViewModel @Inject constructor(
             _state.update { it.copy(renewingId = item.id, renewError = null) }
             repository.renewBook(item, normalizedPassword)
                 .onSuccess {
-                    _events.emit(BookEvent.ShowMessage(UiText.StringResource(R.string.book_renew_success)))
-                    _events.emit(BookEvent.RenewSucceeded)
+                    _events.emit(LibraryEvent.ShowMessage(UiText.StringResource(R.string.library_renew_success)))
+                    _events.emit(LibraryEvent.RenewSucceeded)
                     _state.update {
                         it.copy(
                             renewingId = null,
@@ -202,8 +202,8 @@ class BookViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.update { it.copy(renewingId = null, renewError = error.message) }
                     _events.emit(
-                        BookEvent.ShowMessage(
-                            UiText.DynamicString(error.message ?: context.getString(R.string.book_detail_renew_failed))
+                        LibraryEvent.ShowMessage(
+                            UiText.DynamicString(error.message ?: context.getString(R.string.library_detail_renew_failed))
                         )
                     )
                 }

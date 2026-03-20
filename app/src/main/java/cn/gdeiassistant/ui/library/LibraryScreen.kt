@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.book
+package cn.gdeiassistant.ui.library
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
@@ -61,24 +61,24 @@ import cn.gdeiassistant.ui.util.resolve
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun BookScreen(navController: NavHostController) {
+fun LibraryScreen(navController: NavHostController) {
     val context = LocalContext.current
-    val viewModel: BookViewModel = hiltViewModel()
+    val viewModel: LibraryViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var renewTarget by remember { mutableStateOf<CollectionBorrowItem?>(null) }
     var renewPassword by rememberSaveable { mutableStateOf("") }
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-    val refreshState = savedStateHandle?.getStateFlow(Routes.BOOK_REFRESH_FLAG, false)
+    val refreshState = savedStateHandle?.getStateFlow(Routes.LIBRARY_REFRESH_FLAG, false)
     val needsRefresh by (refreshState?.collectAsStateWithLifecycle()
         ?: androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) })
 
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
             when (event) {
-                is BookEvent.ShowMessage -> {
+                is LibraryEvent.ShowMessage -> {
                     Toast.makeText(context, event.message.resolve(context), Toast.LENGTH_LONG).show()
                 }
-                BookEvent.RenewSucceeded -> {
+                LibraryEvent.RenewSucceeded -> {
                     renewTarget = null
                     renewPassword = ""
                 }
@@ -106,12 +106,12 @@ fun BookScreen(navController: NavHostController) {
     LaunchedEffect(needsRefresh) {
         if (needsRefresh && state.borrowPassword.isNotBlank()) {
             viewModel.loadBorrowedBooks()
-            savedStateHandle?.set(Routes.BOOK_REFRESH_FLAG, false)
+            savedStateHandle?.set(Routes.LIBRARY_REFRESH_FLAG, false)
         }
     }
 
     LazyScreen(
-        title = stringResource(R.string.book_title),
+        title = stringResource(R.string.library_title),
         onBack = navController::popBackStack,
         actions = {
             IconButton(onClick = viewModel::refresh, enabled = !state.isRefreshing) {
@@ -155,23 +155,23 @@ fun BookScreen(navController: NavHostController) {
                 when {
                     isSearching -> EmptySection(
                         icon = Icons.Rounded.Search,
-                        message = stringResource(R.string.book_collection_loading)
+                        message = stringResource(R.string.library_collection_loading)
                     )
                     hasResults -> Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         SearchResultHeader(
-                            title = stringResource(R.string.book_collection_result_title),
-                            subtitle = stringResource(R.string.book_collection_result_subtitle, state.searchResults.size)
+                            title = stringResource(R.string.library_collection_result_title),
+                            subtitle = stringResource(R.string.library_collection_result_subtitle, state.searchResults.size)
                         )
                         state.searchResults.forEach { item ->
                             SearchResultCard(
                                 item = item,
-                                onClick = { navController.navigate(Routes.bookCollectionDetail(item.detailUrl)) }
+                                onClick = { navController.navigate(Routes.libraryCollectionDetail(item.detailUrl)) }
                             )
                         }
                     }
                     hasKeyword -> EmptySection(
                         icon = Icons.Rounded.Search,
-                        message = stringResource(R.string.book_collection_search_empty)
+                        message = stringResource(R.string.library_collection_search_empty)
                     )
                     else -> Spacer(modifier = Modifier.height(0.dp))
                 }
@@ -193,8 +193,8 @@ fun BookScreen(navController: NavHostController) {
                     renewPassword = state.borrowPassword
                 },
                 onOpenDetail = { item ->
-                    navController.currentBackStackEntry?.savedStateHandle?.set(Routes.BOOK_DETAIL_BOOK, item)
-                    navController.navigate(Routes.BOOK_DETAIL)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(Routes.LIBRARY_DETAIL_BOOK, item)
+                    navController.navigate(Routes.LIBRARY_DETAIL)
                 }
             )
         }
@@ -207,22 +207,22 @@ private fun LibraryOverviewCard(
     searchCount: Int
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = stringResource(R.string.book_collection_badge))
+        BadgePill(text = stringResource(R.string.library_collection_badge))
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.book_collection_subtitle),
+            text = stringResource(R.string.library_collection_subtitle),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.ExtraBold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             LibraryMetricCard(
-                label = stringResource(R.string.book_collection_metric_borrowed),
+                label = stringResource(R.string.library_collection_metric_borrowed),
                 value = borrowedCount.toString(),
                 modifier = Modifier.weight(1f)
             )
             LibraryMetricCard(
-                label = stringResource(R.string.book_collection_metric_search),
+                label = stringResource(R.string.library_collection_metric_search),
                 value = searchCount.toString(),
                 modifier = Modifier.weight(1f)
             )
@@ -241,13 +241,13 @@ private fun SearchSection(
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(R.string.book_collection_search_title),
+            text = stringResource(R.string.library_collection_search_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.book_collection_search_label),
+            text = stringResource(R.string.library_collection_search_label),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -256,20 +256,20 @@ private fun SearchSection(
             value = keyword,
             onValueChange = onKeywordChange,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = stringResource(R.string.book_collection_search_label)) },
+            label = { Text(text = stringResource(R.string.library_collection_search_label)) },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             TintButton(
-                text = stringResource(R.string.book_collection_search_action),
+                text = stringResource(R.string.library_collection_search_action),
                 onClick = onSearch,
                 enabled = !isSearching,
                 icon = Icons.Rounded.Search,
                 modifier = Modifier.weight(1f)
             )
             GhostButton(
-                text = stringResource(R.string.book_collection_clear_action),
+                text = stringResource(R.string.library_collection_clear_action),
                 onClick = onClear,
                 enabled = keyword.isNotBlank(),
                 modifier = Modifier.weight(1f)
@@ -278,7 +278,7 @@ private fun SearchSection(
         if (totalPages > 0) {
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = stringResource(R.string.book_collection_result_pages, totalPages),
+                text = stringResource(R.string.library_collection_result_pages, totalPages),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -301,13 +301,13 @@ private fun BorrowSection(
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(R.string.book_borrow_title),
+            text = stringResource(R.string.library_borrow_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.book_borrow_subtitle),
+            text = stringResource(R.string.library_borrow_subtitle),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -315,7 +315,7 @@ private fun BorrowSection(
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = { Text(text = stringResource(R.string.book_borrow_password_label)) },
+            label = { Text(text = stringResource(R.string.library_borrow_password_label)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -323,9 +323,9 @@ private fun BorrowSection(
         Spacer(modifier = Modifier.height(12.dp))
         TintButton(
             text = if (hasLoadedBorrowedBooks) {
-                stringResource(R.string.book_borrow_refresh_action)
+                stringResource(R.string.library_borrow_refresh_action)
             } else {
-                stringResource(R.string.book_borrow_query_action)
+                stringResource(R.string.library_borrow_query_action)
             },
             onClick = onRefresh,
             enabled = !isLoading,
@@ -348,15 +348,15 @@ private fun BorrowSection(
             when {
                 !hasLoaded && !loading -> EmptySection(
                     icon = Icons.Rounded.LocalLibrary,
-                    message = stringResource(R.string.book_borrow_idle)
+                    message = stringResource(R.string.library_borrow_idle)
                 )
                 loading && empty -> EmptySection(
                     icon = Icons.Rounded.LocalLibrary,
-                    message = stringResource(R.string.book_borrow_loading)
+                    message = stringResource(R.string.library_borrow_loading)
                 )
                 empty -> EmptySection(
                     icon = Icons.Rounded.LocalLibrary,
-                    message = stringResource(R.string.book_empty)
+                    message = stringResource(R.string.library_empty)
                 )
                 else -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items.forEach { item ->
@@ -385,18 +385,18 @@ private fun LibraryRenewPasswordDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(R.string.book_renew_dialog_title))
+            Text(text = stringResource(R.string.library_renew_dialog_title))
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = stringResource(R.string.book_renew_dialog_message),
+                    text = stringResource(R.string.library_renew_dialog_message),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 OutlinedTextField(
                     value = password,
                     onValueChange = onPasswordChange,
-                    label = { Text(text = stringResource(R.string.book_borrow_password_label)) },
+                    label = { Text(text = stringResource(R.string.library_borrow_password_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -412,7 +412,7 @@ private fun LibraryRenewPasswordDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm, enabled = !isSubmitting) {
-                Text(text = if (isSubmitting) stringResource(R.string.book_renew_loading) else stringResource(R.string.book_detail_renew_action))
+                Text(text = if (isSubmitting) stringResource(R.string.library_renew_loading) else stringResource(R.string.library_detail_renew_action))
             }
         },
         dismissButton = {
@@ -517,23 +517,23 @@ private fun BorrowCard(
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = stringResource(R.string.book_collection_borrow_line, item.borrowDate, item.returnDate, item.renewCount),
+            text = stringResource(R.string.library_collection_borrow_line, item.borrowDate, item.returnDate, item.renewCount),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GhostButton(
-                text = stringResource(R.string.book_detail_title),
+                text = stringResource(R.string.library_detail_title),
                 icon = Icons.Rounded.AutoStories,
                 onClick = onClick,
                 modifier = Modifier.weight(1f)
             )
             TintButton(
                 text = if (isRenewing) {
-                    stringResource(R.string.book_renew_loading)
+                    stringResource(R.string.library_renew_loading)
                 } else {
-                    stringResource(R.string.book_renew)
+                    stringResource(R.string.library_renew)
                 },
                 icon = Icons.Rounded.Sync,
                 onClick = onRenew,

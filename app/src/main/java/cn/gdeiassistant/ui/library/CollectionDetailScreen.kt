@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.book
+package cn.gdeiassistant.ui.library
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.data.BookRepository
+import cn.gdeiassistant.data.LibraryRepository
 import cn.gdeiassistant.model.CollectionDetailInfo
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
@@ -58,10 +58,10 @@ data class CollectionDetailUiState(
 class CollectionDetailViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
-    private val repository: BookRepository
+    private val repository: LibraryRepository
 ) : ViewModel() {
 
-    private val detailUrl: String = savedStateHandle.get<String>(Routes.BOOK_COLLECTION_DETAIL_URL).orEmpty()
+    private val detailUrl: String = savedStateHandle.get<String>(Routes.LIBRARY_COLLECTION_DETAIL_URL).orEmpty()
 
     private val _state = MutableStateFlow(CollectionDetailUiState())
     val state: StateFlow<CollectionDetailUiState> = _state.asStateFlow()
@@ -72,7 +72,7 @@ class CollectionDetailViewModel @Inject constructor(
 
     fun refresh() {
         if (detailUrl.isBlank()) {
-            _state.update { it.copy(isLoading = false, error = context.getString(R.string.book_collection_detail_missing_url)) }
+            _state.update { it.copy(isLoading = false, error = context.getString(R.string.library_collection_detail_missing_url)) }
             return
         }
         viewModelScope.launch {
@@ -94,7 +94,7 @@ fun CollectionDetailScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LazyScreen(
-        title = stringResource(R.string.book_collection_detail_title),
+        title = stringResource(R.string.library_collection_detail_title),
         onBack = navController::popBackStack,
         actions = {
             IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
@@ -115,7 +115,7 @@ fun CollectionDetailScreen(navController: NavHostController) {
                     ) {
                         EmptyState(
                             icon = Icons.Rounded.AutoStories,
-                            message = stringResource(R.string.book_collection_detail_loading),
+                            message = stringResource(R.string.library_collection_detail_loading),
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -137,7 +137,7 @@ fun CollectionDetailScreen(navController: NavHostController) {
                     ) {
                         EmptyState(
                             icon = Icons.Rounded.AutoStories,
-                            message = stringResource(R.string.book_collection_missing),
+                            message = stringResource(R.string.library_collection_missing),
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -147,7 +147,7 @@ fun CollectionDetailScreen(navController: NavHostController) {
                 val detail = requireNotNull(state.detail)
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
-                        BadgePill(text = stringResource(R.string.book_collection_detail_badge))
+                        BadgePill(text = stringResource(R.string.library_collection_detail_badge))
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = detail.title,
@@ -164,13 +164,13 @@ fun CollectionDetailScreen(navController: NavHostController) {
                 }
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
-                        DetailText(label = stringResource(R.string.book_collection_detail_principal), value = detail.principal)
-                        DetailText(label = stringResource(R.string.book_collection_detail_publisher), value = detail.publisher)
-                        DetailText(label = stringResource(R.string.book_collection_detail_price), value = detail.price)
-                        DetailText(label = stringResource(R.string.book_collection_detail_physical), value = detail.physicalDescription)
-                        DetailText(label = stringResource(R.string.book_collection_detail_subject), value = detail.subjectTheme)
+                        DetailText(label = stringResource(R.string.library_collection_detail_principal), value = detail.principal)
+                        DetailText(label = stringResource(R.string.library_collection_detail_publisher), value = detail.publisher)
+                        DetailText(label = stringResource(R.string.library_collection_detail_price), value = detail.price)
+                        DetailText(label = stringResource(R.string.library_collection_detail_physical), value = detail.physicalDescription)
+                        DetailText(label = stringResource(R.string.library_collection_detail_subject), value = detail.subjectTheme)
                         DetailText(
-                            label = stringResource(R.string.book_collection_detail_classification),
+                            label = stringResource(R.string.library_collection_detail_classification),
                             value = detail.classification,
                             showSpacer = false
                         )
@@ -179,14 +179,14 @@ fun CollectionDetailScreen(navController: NavHostController) {
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = stringResource(R.string.book_collection_distribution_title),
+                            text = stringResource(R.string.library_collection_distribution_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         if (detail.distributions.isEmpty()) {
                             Text(
-                                text = stringResource(R.string.book_collection_distribution_empty),
+                                text = stringResource(R.string.library_collection_distribution_empty),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

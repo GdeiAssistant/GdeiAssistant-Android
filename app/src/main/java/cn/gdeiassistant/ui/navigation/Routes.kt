@@ -11,7 +11,7 @@ object Routes {
     const val SCHEDULE = "schedule"
     const val CET = "cet"
     const val EVALUATE = "evaluate"
-    const val BOOK = "book"
+    const val LIBRARY = "library"
     const val CARD = "card"
     const val CHARGE = "charge"
     const val LOST = "lost"
@@ -64,10 +64,10 @@ object Routes {
     const val PHOTOGRAPH_PUBLISH = "photograph_publish"
 
     const val GRADE_DETAIL = "grade_detail"
-    const val BOOK_DETAIL = "book_detail"
-    const val BOOK_COLLECTION_DETAIL_BASE = "book_collection_detail"
-    const val BOOK_COLLECTION_DETAIL_URL = "detailUrl"
-    const val BOOK_COLLECTION_DETAIL = "$BOOK_COLLECTION_DETAIL_BASE?detailUrl={$BOOK_COLLECTION_DETAIL_URL}"
+    const val LIBRARY_DETAIL = "library_detail"
+    const val LIBRARY_COLLECTION_DETAIL_BASE = "library_collection_detail"
+    const val LIBRARY_COLLECTION_DETAIL_URL = "detailUrl"
+    const val LIBRARY_COLLECTION_DETAIL = "$LIBRARY_COLLECTION_DETAIL_BASE?detailUrl={$LIBRARY_COLLECTION_DETAIL_URL}"
     const val NEWS_DETAIL_ID = "newsId"
     const val NEWS_DETAIL = "news_detail/{$NEWS_DETAIL_ID}"
     const val YELLOW_PAGE_DETAIL = "yellow_page_detail"
@@ -89,8 +89,8 @@ object Routes {
     const val PHOTOGRAPH_DETAIL = "photograph_detail/{$PHOTOGRAPH_POST_ID}"
     const val GRADE_DETAIL_GRADE = "grade_detail_grade"
     const val GRADE_DETAIL_TERM_LABEL = "grade_detail_term_label"
-    const val BOOK_DETAIL_BOOK = "book_detail_book"
-    const val BOOK_REFRESH_FLAG = "book_refresh_flag"
+    const val LIBRARY_DETAIL_BOOK = "library_detail_book"
+    const val LIBRARY_REFRESH_FLAG = "library_refresh_flag"
     const val MARKETPLACE_REFRESH_FLAG = "marketplace_refresh_flag"
     const val MARKETPLACE_PROFILE_REFRESH_FLAG = "marketplace_profile_refresh_flag"
     const val LOST_FOUND_REFRESH_FLAG = "lost_found_refresh_flag"
@@ -128,8 +128,8 @@ object Routes {
         return "marketplace_edit/${Uri.encode(itemId)}"
     }
 
-    fun bookCollectionDetail(detailUrl: String): String {
-        return "$BOOK_COLLECTION_DETAIL_BASE?detailUrl=${Uri.encode(detailUrl)}"
+    fun libraryCollectionDetail(detailUrl: String): String {
+        return "$LIBRARY_COLLECTION_DETAIL_BASE?detailUrl=${Uri.encode(detailUrl)}"
     }
 
     fun newsDetail(newsId: String): String {

@@ -1,4 +1,4 @@
-package cn.gdeiassistant.ui.graduate
+package cn.gdeiassistant.ui.graduateExam
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
