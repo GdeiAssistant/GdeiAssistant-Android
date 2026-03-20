@@ -3,6 +3,7 @@ package cn.gdeiassistant.ui.screen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -252,6 +253,7 @@ private fun TodayScheduleCard(
 
 @Composable
 private fun CourseRow(course: Schedule) {
+    val isDark = isSystemInDarkTheme()
     val onPrimary = MaterialTheme.colorScheme.onPrimary
     val slotLabel = remember(course.row, course.scheduleLength) {
         val r = course.row ?: 0
@@ -268,7 +270,7 @@ private fun CourseRow(course: Schedule) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Color.White.copy(alpha = 0.15f),
+                if (isDark) Color.Black.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.15f),
                 AppShapes.small
             )
             .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -427,6 +429,7 @@ private fun FeatureGridItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDark = isSystemInDarkTheme()
     Column(
         modifier = modifier
             .clickable(onClick = onClick)
@@ -438,7 +441,7 @@ private fun FeatureGridItem(
             modifier = Modifier
                 .size(42.dp)
                 .background(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                    MaterialTheme.colorScheme.primary.copy(alpha = if (isDark) 0.12f else 0.08f),
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center

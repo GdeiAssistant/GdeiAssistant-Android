@@ -223,7 +223,7 @@ private val AmberGoldDarkScheme = darkColorScheme(
     outline = DarkOutline,
 )
 
-fun themeColorSchemes(themeKey: String, darkTheme: Boolean): Pair<ColorScheme, ColorScheme> {
+fun themeColorSchemes(themeKey: String): Pair<ColorScheme, ColorScheme> {
     return when (themeKey) {
         "campus-green" -> CampusGreenLightScheme to CampusGreenDarkScheme
         "classic-blue" -> ClassicBlueLightScheme to ClassicBlueDarkScheme
@@ -250,7 +250,7 @@ fun GdeiAssistantTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         else -> {
-            val (light, dark) = themeColorSchemes(themeColor, darkTheme)
+            val (light, dark) = themeColorSchemes(themeColor)
             if (darkTheme) dark else light
         }
     }
