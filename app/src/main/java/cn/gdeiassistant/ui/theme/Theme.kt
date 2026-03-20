@@ -15,278 +15,225 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// ── Purple (Default) ──
-private val PurpleLightScheme = lightColorScheme(
-    primary = LightPrimary,
-    onPrimary = LightOnPrimary,
-    primaryContainer = LightPrimaryContainer,
-    onPrimaryContainer = LightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Campus Green (Default) ──
+private val CampusGreenLightScheme = lightColorScheme(
+    primary = CampusGreenLightPrimary,
+    onPrimary = CampusGreenLightOnPrimary,
+    primaryContainer = CampusGreenLightPrimaryContainer,
+    onPrimaryContainer = CampusGreenLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val PurpleDarkScheme = darkColorScheme(
-    primary = DarkPrimary,
-    onPrimary = DarkOnPrimary,
-    primaryContainer = DarkPrimaryContainer,
-    onPrimaryContainer = DarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val CampusGreenDarkScheme = darkColorScheme(
+    primary = CampusGreenDarkPrimary,
+    onPrimary = CampusGreenDarkOnPrimary,
+    primaryContainer = CampusGreenDarkPrimaryContainer,
+    onPrimaryContainer = CampusGreenDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Blue ──
-private val BlueLightScheme = lightColorScheme(
-    primary = BlueLightPrimary,
-    onPrimary = BlueLightOnPrimary,
-    primaryContainer = BlueLightPrimaryContainer,
-    onPrimaryContainer = BlueLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Classic Blue ──
+private val ClassicBlueLightScheme = lightColorScheme(
+    primary = ClassicBlueLightPrimary,
+    onPrimary = ClassicBlueLightOnPrimary,
+    primaryContainer = ClassicBlueLightPrimaryContainer,
+    onPrimaryContainer = ClassicBlueLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val BlueDarkScheme = darkColorScheme(
-    primary = BlueDarkPrimary,
-    onPrimary = BlueDarkOnPrimary,
-    primaryContainer = BlueDarkPrimaryContainer,
-    onPrimaryContainer = BlueDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val ClassicBlueDarkScheme = darkColorScheme(
+    primary = ClassicBlueDarkPrimary,
+    onPrimary = ClassicBlueDarkOnPrimary,
+    primaryContainer = ClassicBlueDarkPrimaryContainer,
+    onPrimaryContainer = ClassicBlueDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Green ──
-private val GreenLightScheme = lightColorScheme(
-    primary = GreenLightPrimary,
-    onPrimary = GreenLightOnPrimary,
-    primaryContainer = GreenLightPrimaryContainer,
-    onPrimaryContainer = GreenLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Vivid Purple ──
+private val VividPurpleLightScheme = lightColorScheme(
+    primary = VividPurpleLightPrimary,
+    onPrimary = VividPurpleLightOnPrimary,
+    primaryContainer = VividPurpleLightPrimaryContainer,
+    onPrimaryContainer = VividPurpleLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val GreenDarkScheme = darkColorScheme(
-    primary = GreenDarkPrimary,
-    onPrimary = GreenDarkOnPrimary,
-    primaryContainer = GreenDarkPrimaryContainer,
-    onPrimaryContainer = GreenDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val VividPurpleDarkScheme = darkColorScheme(
+    primary = VividPurpleDarkPrimary,
+    onPrimary = VividPurpleDarkOnPrimary,
+    primaryContainer = VividPurpleDarkPrimaryContainer,
+    onPrimaryContainer = VividPurpleDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Orange ──
-private val OrangeLightScheme = lightColorScheme(
-    primary = OrangeLightPrimary,
-    onPrimary = OrangeLightOnPrimary,
-    primaryContainer = OrangeLightPrimaryContainer,
-    onPrimaryContainer = OrangeLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Warm Orange ──
+private val WarmOrangeLightScheme = lightColorScheme(
+    primary = WarmOrangeLightPrimary,
+    onPrimary = WarmOrangeLightOnPrimary,
+    primaryContainer = WarmOrangeLightPrimaryContainer,
+    onPrimaryContainer = WarmOrangeLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val OrangeDarkScheme = darkColorScheme(
-    primary = OrangeDarkPrimary,
-    onPrimary = OrangeDarkOnPrimary,
-    primaryContainer = OrangeDarkPrimaryContainer,
-    onPrimaryContainer = OrangeDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val WarmOrangeDarkScheme = darkColorScheme(
+    primary = WarmOrangeDarkPrimary,
+    onPrimary = WarmOrangeDarkOnPrimary,
+    primaryContainer = WarmOrangeDarkPrimaryContainer,
+    onPrimaryContainer = WarmOrangeDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Pink ──
-private val PinkLightScheme = lightColorScheme(
-    primary = PinkLightPrimary,
-    onPrimary = PinkLightOnPrimary,
-    primaryContainer = PinkLightPrimaryContainer,
-    onPrimaryContainer = PinkLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Fresh Teal ──
+private val FreshTealLightScheme = lightColorScheme(
+    primary = FreshTealLightPrimary,
+    onPrimary = FreshTealLightOnPrimary,
+    primaryContainer = FreshTealLightPrimaryContainer,
+    onPrimaryContainer = FreshTealLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val PinkDarkScheme = darkColorScheme(
-    primary = PinkDarkPrimary,
-    onPrimary = PinkDarkOnPrimary,
-    primaryContainer = PinkDarkPrimaryContainer,
-    onPrimaryContainer = PinkDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val FreshTealDarkScheme = darkColorScheme(
+    primary = FreshTealDarkPrimary,
+    onPrimary = FreshTealDarkOnPrimary,
+    primaryContainer = FreshTealDarkPrimaryContainer,
+    onPrimaryContainer = FreshTealDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Teal ──
-private val TealLightScheme = lightColorScheme(
-    primary = TealLightPrimary,
-    onPrimary = TealLightOnPrimary,
-    primaryContainer = TealLightPrimaryContainer,
-    onPrimaryContainer = TealLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Rose Pink ──
+private val RosePinkLightScheme = lightColorScheme(
+    primary = RosePinkLightPrimary,
+    onPrimary = RosePinkLightOnPrimary,
+    primaryContainer = RosePinkLightPrimaryContainer,
+    onPrimaryContainer = RosePinkLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val TealDarkScheme = darkColorScheme(
-    primary = TealDarkPrimary,
-    onPrimary = TealDarkOnPrimary,
-    primaryContainer = TealDarkPrimaryContainer,
-    onPrimaryContainer = TealDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val RosePinkDarkScheme = darkColorScheme(
+    primary = RosePinkDarkPrimary,
+    onPrimary = RosePinkDarkOnPrimary,
+    primaryContainer = RosePinkDarkPrimaryContainer,
+    onPrimaryContainer = RosePinkDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Red ──
-private val RedLightScheme = lightColorScheme(
-    primary = RedLightPrimary,
-    onPrimary = RedLightOnPrimary,
-    primaryContainer = RedLightPrimaryContainer,
-    onPrimaryContainer = RedLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Deep Indigo ──
+private val DeepIndigoLightScheme = lightColorScheme(
+    primary = DeepIndigoLightPrimary,
+    onPrimary = DeepIndigoLightOnPrimary,
+    primaryContainer = DeepIndigoLightPrimaryContainer,
+    onPrimaryContainer = DeepIndigoLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val RedDarkScheme = darkColorScheme(
-    primary = RedDarkPrimary,
-    onPrimary = RedDarkOnPrimary,
-    primaryContainer = RedDarkPrimaryContainer,
-    onPrimaryContainer = RedDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val DeepIndigoDarkScheme = darkColorScheme(
+    primary = DeepIndigoDarkPrimary,
+    onPrimary = DeepIndigoDarkOnPrimary,
+    primaryContainer = DeepIndigoDarkPrimaryContainer,
+    onPrimaryContainer = DeepIndigoDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
-// ── Indigo ──
-private val IndigoLightScheme = lightColorScheme(
-    primary = IndigoLightPrimary,
-    onPrimary = IndigoLightOnPrimary,
-    primaryContainer = IndigoLightPrimaryContainer,
-    onPrimaryContainer = IndigoLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
+// ── Amber Gold ──
+private val AmberGoldLightScheme = lightColorScheme(
+    primary = AmberGoldLightPrimary,
+    onPrimary = AmberGoldLightOnPrimary,
+    primaryContainer = AmberGoldLightPrimaryContainer,
+    onPrimaryContainer = AmberGoldLightOnPrimaryContainer,
     background = LightBackground,
     surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceVariant = LightSurface,
+    outline = LightOutline,
 )
-private val IndigoDarkScheme = darkColorScheme(
-    primary = IndigoDarkPrimary,
-    onPrimary = IndigoDarkOnPrimary,
-    primaryContainer = IndigoDarkPrimaryContainer,
-    onPrimaryContainer = IndigoDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
+private val AmberGoldDarkScheme = darkColorScheme(
+    primary = AmberGoldDarkPrimary,
+    onPrimary = AmberGoldDarkOnPrimary,
+    primaryContainer = AmberGoldDarkPrimaryContainer,
+    onPrimaryContainer = AmberGoldDarkOnPrimaryContainer,
     background = DarkBackground,
     surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
-)
-
-// ── Gold ──
-private val GoldLightScheme = lightColorScheme(
-    primary = GoldLightPrimary,
-    onPrimary = GoldLightOnPrimary,
-    primaryContainer = GoldLightPrimaryContainer,
-    onPrimaryContainer = GoldLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
-    background = LightBackground,
-    surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
-)
-private val GoldDarkScheme = darkColorScheme(
-    primary = GoldDarkPrimary,
-    onPrimary = GoldDarkOnPrimary,
-    primaryContainer = GoldDarkPrimaryContainer,
-    onPrimaryContainer = GoldDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
-    background = DarkBackground,
-    surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
-)
-
-// ── Cyan ──
-private val CyanLightScheme = lightColorScheme(
-    primary = CyanLightPrimary,
-    onPrimary = CyanLightOnPrimary,
-    primaryContainer = CyanLightPrimaryContainer,
-    onPrimaryContainer = CyanLightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
-    background = LightBackground,
-    surface = LightSurface,
-    surfaceVariant = LightSurfaceTranslucent,
-)
-private val CyanDarkScheme = darkColorScheme(
-    primary = CyanDarkPrimary,
-    onPrimary = CyanDarkOnPrimary,
-    primaryContainer = CyanDarkPrimaryContainer,
-    onPrimaryContainer = CyanDarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
-    background = DarkBackground,
-    surface = DarkSurface,
-    surfaceVariant = DarkSurfaceTranslucent,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceVariant = DarkSurface,
+    outline = DarkOutline,
 )
 
 fun themeColorSchemes(themeKey: String, darkTheme: Boolean): Pair<ColorScheme, ColorScheme> {
     return when (themeKey) {
-        "blue" -> BlueLightScheme to BlueDarkScheme
-        "green" -> GreenLightScheme to GreenDarkScheme
-        "orange" -> OrangeLightScheme to OrangeDarkScheme
-        "pink" -> PinkLightScheme to PinkDarkScheme
-        "teal" -> TealLightScheme to TealDarkScheme
-        "red" -> RedLightScheme to RedDarkScheme
-        "indigo" -> IndigoLightScheme to IndigoDarkScheme
-        "gold" -> GoldLightScheme to GoldDarkScheme
-        "cyan" -> CyanLightScheme to CyanDarkScheme
-        else -> PurpleLightScheme to PurpleDarkScheme
+        "campus-green" -> CampusGreenLightScheme to CampusGreenDarkScheme
+        "classic-blue" -> ClassicBlueLightScheme to ClassicBlueDarkScheme
+        "vivid-purple" -> VividPurpleLightScheme to VividPurpleDarkScheme
+        "warm-orange" -> WarmOrangeLightScheme to WarmOrangeDarkScheme
+        "fresh-teal" -> FreshTealLightScheme to FreshTealDarkScheme
+        "rose-pink" -> RosePinkLightScheme to RosePinkDarkScheme
+        "deep-indigo" -> DeepIndigoLightScheme to DeepIndigoDarkScheme
+        "amber-gold" -> AmberGoldLightScheme to AmberGoldDarkScheme
+        else -> CampusGreenLightScheme to CampusGreenDarkScheme
     }
 }
 
@@ -294,7 +241,7 @@ fun themeColorSchemes(themeKey: String, darkTheme: Boolean): Pair<ColorScheme, C
 fun GdeiAssistantTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    themeColor: String = "purple",
+    themeColor: String = "campus-green",
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.OpenInBrowser
@@ -490,7 +491,7 @@ private fun WebCanvasCard(
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
-        shape = RoundedCornerShape(28.dp),
+        shape = AppShapes.card,
         colors = CardDefaults.cardColors(containerColor = WebSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, WebBorder)
@@ -529,7 +530,7 @@ private fun WebStateCard(
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
-        shape = RoundedCornerShape(28.dp),
+        shape = AppShapes.card,
         colors = CardDefaults.cardColors(containerColor = surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, border)

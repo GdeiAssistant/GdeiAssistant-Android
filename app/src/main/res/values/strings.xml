@@ -423,11 +423,11 @@
     <string name="evaluate_toggle_action">切换模式</string>
 
     <!-- 资讯与消息 -->
-    <string name="tab_home">功能主页</string>
+    <string name="tab_home">首页</string>
     <string name="tab_schedule">课表</string>
     <string name="tab_discover">发现</string>
-    <string name="tab_profile">个人中心</string>
-    <string name="tab_messages">资讯信息</string>
+    <string name="tab_profile">我的</string>
+    <string name="tab_messages">资讯</string>
     <string name="news_title">新闻</string>
     <string name="news_subtitle">按学校官网公开栏目浏览最新资讯，不再依赖教务系统账号抓取。</string>
     <string name="news_empty">当前没有可展示的新闻</string>
@@ -1410,16 +1410,14 @@
     <string name="profile_theme_selected">当前已启用</string>
     <string name="profile_theme_select_action">点击切换</string>
     <string name="profile_theme_update_failed">主题切换失败</string>
-    <string name="theme_purple">经典紫</string>
-    <string name="theme_blue">天空蓝</string>
-    <string name="theme_green">薄荷绿</string>
-    <string name="theme_orange">暖阳橙</string>
-    <string name="theme_pink">樱花粉</string>
-    <string name="theme_teal">青瓷色</string>
-    <string name="theme_red">中国红</string>
-    <string name="theme_indigo">靛蓝</string>
-    <string name="theme_gold">琥珀金</string>
-    <string name="theme_cyan">冰川蓝</string>
+    <string name="theme_campus_green">校园绿</string>
+    <string name="theme_classic_blue">天空蓝</string>
+    <string name="theme_vivid_purple">薰衣草</string>
+    <string name="theme_warm_orange">活力橙</string>
+    <string name="theme_fresh_teal">清新青</string>
+    <string name="theme_rose_pink">元气粉</string>
+    <string name="theme_deep_indigo">深空靛</string>
+    <string name="theme_amber_gold">琥珀金</string>
 
     <string name="discovery_title">发现</string>
     <string name="discovery_badge">社区广场</string>

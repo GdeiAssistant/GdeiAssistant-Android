@@ -39,26 +39,22 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.components.BentoCard
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.theme.AppShapes
-import cn.gdeiassistant.ui.theme.BlueLightPrimary
-import cn.gdeiassistant.ui.theme.BlueLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.CyanLightPrimary
-import cn.gdeiassistant.ui.theme.CyanLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.GoldLightPrimary
-import cn.gdeiassistant.ui.theme.GoldLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.GreenLightPrimary
-import cn.gdeiassistant.ui.theme.GreenLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.IndigoLightPrimary
-import cn.gdeiassistant.ui.theme.IndigoLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.LightPrimary
-import cn.gdeiassistant.ui.theme.LightPrimaryContainer
-import cn.gdeiassistant.ui.theme.OrangeLightPrimary
-import cn.gdeiassistant.ui.theme.OrangeLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.PinkLightPrimary
-import cn.gdeiassistant.ui.theme.PinkLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.RedLightPrimary
-import cn.gdeiassistant.ui.theme.RedLightPrimaryContainer
-import cn.gdeiassistant.ui.theme.TealLightPrimary
-import cn.gdeiassistant.ui.theme.TealLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.AmberGoldLightPrimary
+import cn.gdeiassistant.ui.theme.AmberGoldLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.CampusGreenLightPrimary
+import cn.gdeiassistant.ui.theme.CampusGreenLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.ClassicBlueLightPrimary
+import cn.gdeiassistant.ui.theme.ClassicBlueLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.DeepIndigoLightPrimary
+import cn.gdeiassistant.ui.theme.DeepIndigoLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.FreshTealLightPrimary
+import cn.gdeiassistant.ui.theme.FreshTealLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.RosePinkLightPrimary
+import cn.gdeiassistant.ui.theme.RosePinkLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.VividPurpleLightPrimary
+import cn.gdeiassistant.ui.theme.VividPurpleLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.WarmOrangeLightPrimary
+import cn.gdeiassistant.ui.theme.WarmOrangeLightPrimaryContainer
 import kotlinx.coroutines.flow.collectLatest
 
 private data class ThemeOptionSpec(
@@ -69,16 +65,14 @@ private data class ThemeOptionSpec(
 )
 
 private val profileThemeOptions = listOf(
-    ThemeOptionSpec("purple", R.string.theme_purple, LightPrimary, LightPrimaryContainer),
-    ThemeOptionSpec("blue", R.string.theme_blue, BlueLightPrimary, BlueLightPrimaryContainer),
-    ThemeOptionSpec("green", R.string.theme_green, GreenLightPrimary, GreenLightPrimaryContainer),
-    ThemeOptionSpec("orange", R.string.theme_orange, OrangeLightPrimary, OrangeLightPrimaryContainer),
-    ThemeOptionSpec("pink", R.string.theme_pink, PinkLightPrimary, PinkLightPrimaryContainer),
-    ThemeOptionSpec("teal", R.string.theme_teal, TealLightPrimary, TealLightPrimaryContainer),
-    ThemeOptionSpec("red", R.string.theme_red, RedLightPrimary, RedLightPrimaryContainer),
-    ThemeOptionSpec("indigo", R.string.theme_indigo, IndigoLightPrimary, IndigoLightPrimaryContainer),
-    ThemeOptionSpec("gold", R.string.theme_gold, GoldLightPrimary, GoldLightPrimaryContainer),
-    ThemeOptionSpec("cyan", R.string.theme_cyan, CyanLightPrimary, CyanLightPrimaryContainer)
+    ThemeOptionSpec("campus-green", R.string.theme_campus_green, CampusGreenLightPrimary, CampusGreenLightPrimaryContainer),
+    ThemeOptionSpec("classic-blue", R.string.theme_classic_blue, ClassicBlueLightPrimary, ClassicBlueLightPrimaryContainer),
+    ThemeOptionSpec("vivid-purple", R.string.theme_vivid_purple, VividPurpleLightPrimary, VividPurpleLightPrimaryContainer),
+    ThemeOptionSpec("warm-orange", R.string.theme_warm_orange, WarmOrangeLightPrimary, WarmOrangeLightPrimaryContainer),
+    ThemeOptionSpec("fresh-teal", R.string.theme_fresh_teal, FreshTealLightPrimary, FreshTealLightPrimaryContainer),
+    ThemeOptionSpec("rose-pink", R.string.theme_rose_pink, RosePinkLightPrimary, RosePinkLightPrimaryContainer),
+    ThemeOptionSpec("deep-indigo", R.string.theme_deep_indigo, DeepIndigoLightPrimary, DeepIndigoLightPrimaryContainer),
+    ThemeOptionSpec("amber-gold", R.string.theme_amber_gold, AmberGoldLightPrimary, AmberGoldLightPrimaryContainer)
 )
 
 @Composable

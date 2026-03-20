@@ -2,11 +2,11 @@ package cn.gdeiassistant.ui.screen
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +28,7 @@ import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Schedule
 import cn.gdeiassistant.ui.components.*
 import cn.gdeiassistant.ui.home.HomeViewModel
+import cn.gdeiassistant.ui.navigation.AppFeature
 import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
 import cn.gdeiassistant.ui.navigation.AppFeatureGroup
 import cn.gdeiassistant.ui.navigation.Routes
@@ -76,7 +78,7 @@ fun HomeScreen(navController: NavController) {
         }
 
         item {
-            TodayScheduleGrid(
+            TodayScheduleCard(
                 courses = state.todayCourses,
                 error = state.scheduleError,
                 onOpenSchedule = { navController.navigate(Routes.SCHEDULE) }
@@ -153,71 +155,94 @@ private fun GreetingHeader(
 }
 
 @Composable
-private fun TodayScheduleGrid(
+private fun TodayScheduleCard(
     courses: List<Schedule>,
     error: String?,
     onOpenSchedule: () -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth().animateContentSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Card(
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
-            Column {
-                Text(
-                    text = stringResource(R.string.home_today_schedule_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Text(
-                    text = if (courses.isEmpty()) {
-                        stringResource(R.string.home_today_schedule_empty_summary)
-                    } else {
-                        stringResource(R.string.home_today_schedule_count, courses.size)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.home_today_schedule_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        text = if (courses.isEmpty()) {
+                            stringResource(R.string.home_today_schedule_empty_summary)
+                        } else {
+                            stringResource(R.string.home_today_schedule_count, courses.size)
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    )
+                }
+                GhostButton(
+                    text = stringResource(R.string.home_view_schedule),
+                    onClick = onOpenSchedule,
+                    borderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             }
-            GhostButton(text = stringResource(R.string.home_view_schedule), onClick = onOpenSchedule)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        AnimatedContent(
-            targetState = Triple(error, courses.isEmpty(), courses.size),
-            label = "schedule_grid",
-            transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
-        ) { (err, empty, _) ->
-            when {
-                !err.isNullOrBlank() -> {
-                    StatusBanner(title = stringResource(R.string.load_failed), body = err, icon = Icons.Rounded.CalendarMonth)
-                }
-                empty -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        Text("🏖️", fontSize = 30.sp)
-                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text(
-                                text = stringResource(R.string.home_today_schedule_empty_title),
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = stringResource(R.string.home_today_schedule_empty_body),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+            Spacer(modifier = Modifier.height(16.dp))
+            AnimatedContent(
+                targetState = Triple(error, courses.isEmpty(), courses.size),
+                label = "schedule_grid",
+                transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
+            ) { (err, empty, _) ->
+                when {
+                    !err.isNullOrBlank() -> {
+                        Text(
+                            text = err,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        )
+                    }
+                    empty -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            Text("🏖️", fontSize = 30.sp)
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = stringResource(R.string.home_today_schedule_empty_title),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    text = stringResource(R.string.home_today_schedule_empty_body),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                                )
+                            }
                         }
                     }
-                }
-                else -> {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        courses.forEach { course -> CourseRow(course) }
+                    else -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            courses.forEach { course -> CourseRow(course) }
+                        }
                     }
                 }
             }
@@ -227,11 +252,7 @@ private fun TodayScheduleGrid(
 
 @Composable
 private fun CourseRow(course: Schedule) {
-    val courseColor = remember(course.colorCode) {
-        runCatching {
-            Color(android.graphics.Color.parseColor(course.colorCode ?: "#1565C0"))
-        }.getOrDefault(Color(0xFF1565C0))
-    }
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
     val slotLabel = remember(course.row, course.scheduleLength) {
         val r = course.row ?: 0
         val len = course.scheduleLength ?: 1
@@ -246,7 +267,10 @@ private fun CourseRow(course: Schedule) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(courseColor.copy(alpha = 0.07f), AppShapes.small)
+            .background(
+                Color.White.copy(alpha = 0.15f),
+                AppShapes.small
+            )
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -258,12 +282,12 @@ private fun CourseRow(course: Schedule) {
                 text = startTime,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                color = courseColor
+                color = onPrimary
             )
             Text(
                 text = slotLabel,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = onPrimary.copy(alpha = 0.7f)
             )
         }
         Box(
@@ -271,13 +295,14 @@ private fun CourseRow(course: Schedule) {
                 .padding(horizontal = 10.dp)
                 .width(2.dp)
                 .height(36.dp)
-                .background(courseColor.copy(alpha = 0.4f), CircleShape)
+                .background(onPrimary.copy(alpha = 0.4f), CircleShape)
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
+                color = onPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -285,7 +310,7 @@ private fun CourseRow(course: Schedule) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = onPrimary.copy(alpha = 0.7f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -360,7 +385,7 @@ private fun NoticeBento(
 @Composable
 private fun FeatureGroupSection(
     group: AppFeatureGroup,
-    features: List<cn.gdeiassistant.ui.navigation.AppFeature>,
+    features: List<AppFeature>,
     onNavigate: (String) -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth().animateContentSize()) {
@@ -378,17 +403,17 @@ private fun FeatureGroupSection(
                 )
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                features.chunked(3).forEach { rowItems ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column {
+                features.chunked(4).forEach { rowItems ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                         rowItems.forEach { feature ->
-                            HomeEntryTile(
+                            FeatureGridItem(
                                 feature = feature,
                                 onClick = { onNavigate(feature.route) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        repeat(3 - rowItems.size) { Spacer(Modifier.weight(1f)) }
+                        repeat(4 - rowItems.size) { Spacer(Modifier.weight(1f)) }
                     }
                 }
             }
@@ -397,52 +422,40 @@ private fun FeatureGroupSection(
 }
 
 @Composable
-private fun HomeEntryTile(
-    feature: cn.gdeiassistant.ui.navigation.AppFeature,
+private fun FeatureGridItem(
+    feature: AppFeature,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        onClick = onClick,
-        modifier = modifier.heightIn(min = 100.dp),
-        shape = AppShapes.small,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+    Column(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .size(42.dp)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(feature.tint.copy(alpha = 0.14f), AppShapes.small),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = feature.icon,
-                    contentDescription = null,
-                    tint = feature.tint,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(
-                    text = stringResource(feature.titleRes),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = stringResource(feature.subtitleRes),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            Icon(
+                imageVector = feature.icon,
+                contentDescription = stringResource(feature.titleRes),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp)
+            )
         }
+        Text(
+            text = stringResource(feature.titleRes),
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
     }
 }

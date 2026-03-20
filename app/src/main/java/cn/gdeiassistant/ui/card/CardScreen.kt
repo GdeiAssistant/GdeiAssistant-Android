@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
@@ -352,7 +353,7 @@ private fun ActionCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(28.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, tint.copy(alpha = 0.14f)),
         onClick = onClick

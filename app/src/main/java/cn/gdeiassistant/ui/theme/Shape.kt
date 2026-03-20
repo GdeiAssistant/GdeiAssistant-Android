@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
  */
 object AppShapes {
     // Standard Bento Grid Card
-    val card = RoundedCornerShape(28.dp)
+    val card = RoundedCornerShape(16.dp)
     // Large container / Bottom Sheet
     val container = RoundedCornerShape(32.dp)
     // Buttons with "soft" appearance
