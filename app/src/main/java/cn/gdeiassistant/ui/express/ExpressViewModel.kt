@@ -289,18 +289,35 @@ class ExpressPublishViewModel @Inject constructor(
         targetGender: ExpressGender
     ) {
         val normalizedNickname = nickname.trim()
+        val normalizedRealName = realName.trim()
         val normalizedTarget = targetName.trim()
         val normalizedContent = content.trim()
         if (normalizedNickname.isBlank()) {
             emitMessage(context.getString(R.string.express_publish_nickname_required))
             return
         }
+        if (normalizedNickname.length > 10) {
+            emitMessage(context.getString(R.string.express_publish_nickname_too_long))
+            return
+        }
+        if (normalizedRealName.length > 10) {
+            emitMessage(context.getString(R.string.express_publish_realname_too_long))
+            return
+        }
         if (normalizedTarget.isBlank()) {
             emitMessage(context.getString(R.string.express_publish_target_required))
             return
         }
+        if (normalizedTarget.length > 10) {
+            emitMessage(context.getString(R.string.express_publish_target_too_long))
+            return
+        }
         if (normalizedContent.isBlank()) {
             emitMessage(context.getString(R.string.express_publish_content_required))
+            return
+        }
+        if (normalizedContent.length > 250) {
+            emitMessage(context.getString(R.string.express_publish_content_too_long))
             return
         }
         viewModelScope.launch {
@@ -308,7 +325,7 @@ class ExpressPublishViewModel @Inject constructor(
             expressRepository.publish(
                 ExpressDraft(
                     nickname = normalizedNickname,
-                    realName = realName.trim().takeIf(String::isNotBlank),
+                    realName = normalizedRealName.takeIf(String::isNotBlank),
                     selfGender = selfGender,
                     targetName = normalizedTarget,
                     content = normalizedContent,

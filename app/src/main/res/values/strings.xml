@@ -1466,8 +1466,12 @@
     <string name="express_publish_target_gender_label">对方性别</string>
     <string name="express_publish_submit_action">发布表白</string>
     <string name="express_publish_nickname_required">请输入昵称</string>
+    <string name="express_publish_nickname_too_long">昵称不能超过 10 个字</string>
+    <string name="express_publish_realname_too_long">真实姓名不能超过 10 个字</string>
     <string name="express_publish_target_required">请输入表白对象</string>
+    <string name="express_publish_target_too_long">表白对象不能超过 10 个字</string>
     <string name="express_publish_content_required">请输入表白内容</string>
+    <string name="express_publish_content_too_long">表白内容不能超过 250 个字</string>
     <string name="express_publish_success">表白已发布</string>
     <string name="express_publish_failed">发布表白失败</string>
 
