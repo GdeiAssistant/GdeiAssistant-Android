@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,20 +40,36 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.components.BentoCard
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AmberGoldDarkPrimary
+import cn.gdeiassistant.ui.theme.AmberGoldDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.AmberGoldLightPrimary
 import cn.gdeiassistant.ui.theme.AmberGoldLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.CampusGreenDarkPrimary
+import cn.gdeiassistant.ui.theme.CampusGreenDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.CampusGreenLightPrimary
 import cn.gdeiassistant.ui.theme.CampusGreenLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.ClassicBlueDarkPrimary
+import cn.gdeiassistant.ui.theme.ClassicBlueDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.ClassicBlueLightPrimary
 import cn.gdeiassistant.ui.theme.ClassicBlueLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.DeepIndigoDarkPrimary
+import cn.gdeiassistant.ui.theme.DeepIndigoDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.DeepIndigoLightPrimary
 import cn.gdeiassistant.ui.theme.DeepIndigoLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.FreshTealDarkPrimary
+import cn.gdeiassistant.ui.theme.FreshTealDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.FreshTealLightPrimary
 import cn.gdeiassistant.ui.theme.FreshTealLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.RosePinkDarkPrimary
+import cn.gdeiassistant.ui.theme.RosePinkDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.RosePinkLightPrimary
 import cn.gdeiassistant.ui.theme.RosePinkLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.VividPurpleDarkPrimary
+import cn.gdeiassistant.ui.theme.VividPurpleDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.VividPurpleLightPrimary
 import cn.gdeiassistant.ui.theme.VividPurpleLightPrimaryContainer
+import cn.gdeiassistant.ui.theme.WarmOrangeDarkPrimary
+import cn.gdeiassistant.ui.theme.WarmOrangeDarkPrimaryContainer
 import cn.gdeiassistant.ui.theme.WarmOrangeLightPrimary
 import cn.gdeiassistant.ui.theme.WarmOrangeLightPrimaryContainer
 import kotlinx.coroutines.flow.collectLatest
@@ -64,23 +81,44 @@ private data class ThemeOptionSpec(
     val container: Color
 )
 
-private val profileThemeOptions = listOf(
-    ThemeOptionSpec("campus-green", R.string.theme_campus_green, CampusGreenLightPrimary, CampusGreenLightPrimaryContainer),
-    ThemeOptionSpec("classic-blue", R.string.theme_classic_blue, ClassicBlueLightPrimary, ClassicBlueLightPrimaryContainer),
-    ThemeOptionSpec("vivid-purple", R.string.theme_vivid_purple, VividPurpleLightPrimary, VividPurpleLightPrimaryContainer),
-    ThemeOptionSpec("warm-orange", R.string.theme_warm_orange, WarmOrangeLightPrimary, WarmOrangeLightPrimaryContainer),
-    ThemeOptionSpec("fresh-teal", R.string.theme_fresh_teal, FreshTealLightPrimary, FreshTealLightPrimaryContainer),
-    ThemeOptionSpec("rose-pink", R.string.theme_rose_pink, RosePinkLightPrimary, RosePinkLightPrimaryContainer),
-    ThemeOptionSpec("deep-indigo", R.string.theme_deep_indigo, DeepIndigoLightPrimary, DeepIndigoLightPrimaryContainer),
-    ThemeOptionSpec("amber-gold", R.string.theme_amber_gold, AmberGoldLightPrimary, AmberGoldLightPrimaryContainer)
-)
+@Composable
+private fun profileThemeOptions(): List<ThemeOptionSpec> {
+    val dark = isSystemInDarkTheme()
+    return listOf(
+        ThemeOptionSpec("campus-green", R.string.theme_campus_green,
+            if (dark) CampusGreenDarkPrimary else CampusGreenLightPrimary,
+            if (dark) CampusGreenDarkPrimaryContainer else CampusGreenLightPrimaryContainer),
+        ThemeOptionSpec("classic-blue", R.string.theme_classic_blue,
+            if (dark) ClassicBlueDarkPrimary else ClassicBlueLightPrimary,
+            if (dark) ClassicBlueDarkPrimaryContainer else ClassicBlueLightPrimaryContainer),
+        ThemeOptionSpec("vivid-purple", R.string.theme_vivid_purple,
+            if (dark) VividPurpleDarkPrimary else VividPurpleLightPrimary,
+            if (dark) VividPurpleDarkPrimaryContainer else VividPurpleLightPrimaryContainer),
+        ThemeOptionSpec("warm-orange", R.string.theme_warm_orange,
+            if (dark) WarmOrangeDarkPrimary else WarmOrangeLightPrimary,
+            if (dark) WarmOrangeDarkPrimaryContainer else WarmOrangeLightPrimaryContainer),
+        ThemeOptionSpec("fresh-teal", R.string.theme_fresh_teal,
+            if (dark) FreshTealDarkPrimary else FreshTealLightPrimary,
+            if (dark) FreshTealDarkPrimaryContainer else FreshTealLightPrimaryContainer),
+        ThemeOptionSpec("rose-pink", R.string.theme_rose_pink,
+            if (dark) RosePinkDarkPrimary else RosePinkLightPrimary,
+            if (dark) RosePinkDarkPrimaryContainer else RosePinkLightPrimaryContainer),
+        ThemeOptionSpec("deep-indigo", R.string.theme_deep_indigo,
+            if (dark) DeepIndigoDarkPrimary else DeepIndigoLightPrimary,
+            if (dark) DeepIndigoDarkPrimaryContainer else DeepIndigoLightPrimaryContainer),
+        ThemeOptionSpec("amber-gold", R.string.theme_amber_gold,
+            if (dark) AmberGoldDarkPrimary else AmberGoldLightPrimary,
+            if (dark) AmberGoldDarkPrimaryContainer else AmberGoldLightPrimaryContainer)
+    )
+}
 
 @Composable
 fun ProfileThemeScreen(navController: NavHostController) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val viewModel: ProfileThemeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val currentTheme = profileThemeOptions.firstOrNull { it.key == state.themeColor } ?: profileThemeOptions.first()
+    val themeOptions = profileThemeOptions()
+    val currentTheme = themeOptions.firstOrNull { it.key == state.themeColor } ?: themeOptions.first()
 
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
@@ -98,7 +136,7 @@ fun ProfileThemeScreen(navController: NavHostController) {
             ThemePreviewCard(theme = currentTheme)
         }
 
-        profileThemeOptions.chunked(2).forEach { row ->
+        themeOptions.chunked(2).forEach { row ->
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -204,10 +204,10 @@ private fun TodayScheduleCard(
             }
             Spacer(modifier = Modifier.height(16.dp))
             AnimatedContent(
-                targetState = Triple(error, courses.isEmpty(), courses.size),
+                targetState = error to courses,
                 label = "schedule_grid",
                 transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
-            ) { (err, empty, _) ->
+            ) { (err, items) ->
                 when {
                     !err.isNullOrBlank() -> {
                         Text(
@@ -216,7 +216,7 @@ private fun TodayScheduleCard(
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                         )
                     }
-                    empty -> {
+                    items.isEmpty() -> {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -242,7 +242,7 @@ private fun TodayScheduleCard(
                     }
                     else -> {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            courses.forEach { course -> CourseRow(course) }
+                            items.forEach { course -> CourseRow(course) }
                         }
                     }
                 }

@@ -76,6 +76,9 @@ Desktop.ini
 *.lcov
 .jacoco/
 
+# Superpowers
+.superpowers/
+
 # Misc
 *.orig
 *.bak
