@@ -187,7 +187,7 @@ object MockInfoProvider {
 
     fun mockNewsDetail(request: Request): String {
         val news = mockNewsRecords.firstOrNull { it.id == request.itemIdFromPath().orEmpty() }
-            ?: return MockUtils.failureJson("查询的新闻通知不存在")
+            ?: return MockUtils.failureJson("查询的新闻不存在")
         return MockUtils.successDataJson(
             linkedMapOf(
                 "id" to news.id,

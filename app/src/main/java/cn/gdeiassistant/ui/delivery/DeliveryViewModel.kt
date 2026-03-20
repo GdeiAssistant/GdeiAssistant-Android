@@ -260,7 +260,7 @@ class DeliveryPublishViewModel @Inject constructor(
             trimmedRemarks.length > 100 -> emitMessage(context.getString(R.string.delivery_publish_remarks_limit))
             else -> {
                 val reward = rewardText.trim().toDoubleOrNull()
-                if (reward == null || reward <= 0 || reward > 99) {
+                if (reward == null || reward <= 0 || reward > 9999.99) {
                     emitMessage(context.getString(R.string.delivery_publish_reward_invalid))
                     return
                 }

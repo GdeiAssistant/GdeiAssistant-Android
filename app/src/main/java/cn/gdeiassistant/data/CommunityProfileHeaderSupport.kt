@@ -11,13 +11,25 @@ internal data class CommunityProfileHeader(
 )
 
 internal fun Context.toCommunityProfileHeader(profile: UserProfileSummary?): CommunityProfileHeader {
+    return buildCommunityProfileHeader(
+        profile = profile,
+        defaultDisplayName = getString(R.string.profile_default_username),
+        defaultHeadline = getString(R.string.profile_subtitle_default)
+    )
+}
+
+internal fun buildCommunityProfileHeader(
+    profile: UserProfileSummary?,
+    defaultDisplayName: String,
+    defaultHeadline: String
+): CommunityProfileHeader {
     val displayName = profile?.nickname
         ?.trim()
         ?.takeIf(String::isNotBlank)
         ?: profile?.username
             ?.trim()
             ?.takeIf(String::isNotBlank)
-        ?: getString(R.string.profile_default_username)
+        ?: defaultDisplayName
 
     val avatarUrl = profile?.avatar
         ?.trim()
@@ -31,7 +43,7 @@ internal fun Context.toCommunityProfileHeader(profile: UserProfileSummary?): Com
             profile?.major?.trim()?.takeIf(String::isNotBlank),
             profile?.location?.trim()?.takeIf(String::isNotBlank)
         ).joinToString(" · ").takeIf(String::isNotBlank)
-        ?: getString(R.string.profile_subtitle_default)
+        ?: defaultHeadline
 
     return CommunityProfileHeader(
         displayName = displayName,

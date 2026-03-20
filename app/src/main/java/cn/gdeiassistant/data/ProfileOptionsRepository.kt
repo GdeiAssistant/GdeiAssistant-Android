@@ -33,48 +33,51 @@ class ProfileOptionsRepository @Inject constructor(
 
         safeApiCall { profileApi.getProfileOptions() }
             .mapCatching { dto ->
-                val mapped = dto?.toDomain() ?: throw IllegalStateException("资料字典为空")
+                val mapped = dto?.let(::mapProfileOptions) ?: throw IllegalStateException("资料字典为空")
                 cachedOptions = mapped
                 hasLoadedRemoteOptions = true
                 mapped
             }
     }
+}
 
-    private fun cn.gdeiassistant.network.api.ProfileOptionsDto.toDomain(): ProfileOptions {
-        val faculties = faculties.orEmpty().mapNotNull { it.toDomain() }
-        val marketplaceItemTypes = marketplaceItemTypes.orEmpty().mapNotNull { it.toDomain() }
-        val lostFoundItemTypes = lostFoundItemTypes.orEmpty().mapNotNull { it.toDomain() }
-        val lostFoundModes = lostFoundModes.orEmpty().mapNotNull { it.toDomain() }
+internal fun mapProfileOptions(
+    dto: cn.gdeiassistant.network.api.ProfileOptionsDto,
+    fallbackOptions: ProfileOptions = ProfileFormSupport.defaultOptions
+): ProfileOptions {
+    val faculties = dto.faculties.orEmpty().mapNotNull(::mapProfileFacultyOption)
+    val marketplaceItemTypes = dto.marketplaceItemTypes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
+    val lostFoundItemTypes = dto.lostFoundItemTypes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
+    val lostFoundModes = dto.lostFoundModes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
 
-        return ProfileOptions(
-            faculties = faculties.ifEmpty { ProfileFormSupport.defaultOptions.faculties },
-            marketplaceItemTypes = marketplaceItemTypes.ifEmpty { ProfileFormSupport.defaultOptions.marketplaceItemTypes },
-            lostFoundItemTypes = lostFoundItemTypes.ifEmpty { ProfileFormSupport.defaultOptions.lostFoundItemTypes },
-            lostFoundModes = lostFoundModes.ifEmpty { ProfileFormSupport.defaultOptions.lostFoundModes }
-        )
-    }
+    return ProfileOptions(
+        faculties = faculties.ifEmpty { fallbackOptions.faculties },
+        marketplaceItemTypes = marketplaceItemTypes.ifEmpty { fallbackOptions.marketplaceItemTypes },
+        lostFoundItemTypes = lostFoundItemTypes.ifEmpty { fallbackOptions.lostFoundItemTypes },
+        lostFoundModes = lostFoundModes.ifEmpty { fallbackOptions.lostFoundModes }
+    )
+}
 
-    private fun ProfileFacultyOptionDto.toDomain(): ProfileFacultyOption? {
-        val optionCode = code ?: return null
-        val optionLabel = label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
-        val optionMajors = majors.orEmpty()
-            .map(String::trim)
-            .filter(String::isNotEmpty)
-            .ifEmpty { listOf(ProfileFormSupport.UnselectedOption) }
-            .let { normalized ->
-                if (normalized.firstOrNull() == ProfileFormSupport.UnselectedOption) normalized
-                else listOf(ProfileFormSupport.UnselectedOption) + normalized
-            }
-        return ProfileFacultyOption(
-            code = optionCode,
-            label = optionLabel,
-            majors = optionMajors
-        )
-    }
+internal fun mapProfileFacultyOption(dto: ProfileFacultyOptionDto): ProfileFacultyOption? {
+    val optionCode = dto.code ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    val optionMajors = dto.majors.orEmpty()
+        .map(String::trim)
+        .filter(String::isNotEmpty)
+        .ifEmpty { listOf(ProfileFormSupport.UnselectedOption) }
+        .let { normalized ->
+            if (normalized.firstOrNull() == ProfileFormSupport.UnselectedOption) normalized
+            else listOf(ProfileFormSupport.UnselectedOption) + normalized
+        }
+    return ProfileFacultyOption(
+        code = optionCode,
+        label = optionLabel,
+        majors = optionMajors
+    )
+}
 
-    private fun ProfileDictionaryOptionDto.toDomain(): ProfileDictionaryOption? {
-        val optionCode = code ?: return null
-        val optionLabel = label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
-        return ProfileDictionaryOption(code = optionCode, label = optionLabel)
-    }
+internal fun mapProfileDictionaryOption(dto: ProfileDictionaryOptionDto): ProfileDictionaryOption? {
+    val optionCode = dto.code ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    return ProfileDictionaryOption(code = optionCode, label = optionLabel)
 }

@@ -70,6 +70,6 @@ fun newsSourceLabel(type: Int): String {
         2 -> "院部通知"
         3 -> "通知公告"
         4 -> "学术动态"
-        else -> "新闻通知"
+        else -> "新闻"
     }
 }

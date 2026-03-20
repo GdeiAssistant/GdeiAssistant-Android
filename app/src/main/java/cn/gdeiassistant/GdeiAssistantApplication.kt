@@ -29,7 +29,7 @@ class GdeiAssistantApplication : Application() {
 
     fun createServiceForegroundNotificationChannel() {
         val channelId = "service"
-        val channelName = "系统通知"
+        val channelName = "系统公告"
         val channel = NotificationChannel(
             channelId,
             channelName,
