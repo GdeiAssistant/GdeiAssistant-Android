@@ -46,8 +46,10 @@ object Routes {
     const val SECRET_PROFILE = "secret_profile"
     const val SECRET_PUBLISH = "secret_publish"
     const val DATING = "dating"
-    const val DATING_TAB = "datingTab"
-    const val DATING_ROUTE = "$DATING?$DATING_TAB={$DATING_TAB}"
+    const val DATING_CENTER = "dating_center"
+    const val DATING_CENTER_TAB = "datingCenterTab"
+    const val DATING_CENTER_ROUTE = "$DATING_CENTER?$DATING_CENTER_TAB={$DATING_CENTER_TAB}"
+    const val DATING_PUBLISH = "dating_publish"
     const val EXPRESS = "express"
     const val EXPRESS_PROFILE = "express_profile"
     const val EXPRESS_PUBLISH = "express_publish"
@@ -76,9 +78,11 @@ object Routes {
     const val TOPIC_POST_ID = "topicPostId"
     const val DELIVERY_ORDER_ID = "deliveryOrderId"
     const val PHOTOGRAPH_POST_ID = "photographPostId"
+    const val DATING_PROFILE_ID = "datingProfileId"
     const val MARKETPLACE_DETAIL = "marketplace_detail/{$MARKETPLACE_ITEM_ID}"
     const val LOST_FOUND_DETAIL = "lost_found_detail/{$LOST_FOUND_ITEM_ID}"
     const val SECRET_DETAIL = "secret_detail/{$SECRET_POST_ID}"
+    const val DATING_DETAIL = "dating_detail/{$DATING_PROFILE_ID}"
     const val EXPRESS_DETAIL = "express_detail/{$EXPRESS_POST_ID}"
     const val TOPIC_DETAIL = "topic_detail/{$TOPIC_POST_ID}"
     const val DELIVERY_DETAIL = "delivery_detail/{$DELIVERY_ORDER_ID}"
@@ -94,6 +98,7 @@ object Routes {
     const val TOPIC_REFRESH_FLAG = "topic_refresh_flag"
     const val EXPRESS_REFRESH_FLAG = "express_refresh_flag"
     const val SECRET_REFRESH_FLAG = "secret_refresh_flag"
+    const val DATING_REFRESH_FLAG = "dating_refresh_flag"
     const val PROFILE_AVATAR_REFRESH_FLAG = "profile_avatar_refresh_flag"
     const val YELLOW_PAGE_ENTRY = "yellow_page_entry"
 
@@ -143,11 +148,15 @@ object Routes {
         return "secret_detail/${Uri.encode(postId)}"
     }
 
-    fun dating(tab: String? = null): String {
+    fun datingDetail(profileId: String): String {
+        return "dating_detail/${Uri.encode(profileId)}"
+    }
+
+    fun datingCenter(tab: String? = null): String {
         return if (tab.isNullOrBlank()) {
-            DATING
+            DATING_CENTER
         } else {
-            "$DATING?$DATING_TAB=${Uri.encode(tab)}"
+            "$DATING_CENTER?$DATING_CENTER_TAB=${Uri.encode(tab)}"
         }
     }
 

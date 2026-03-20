@@ -46,7 +46,7 @@ class MarketplaceEditViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         MarketplaceEditUiState(
-            typeOptions = marketplaceRepository.typeOptions
+            typeOptions = marketplaceRepository.currentTypeOptions()
         )
     )
     val state: StateFlow<MarketplaceEditUiState> = _state.asStateFlow()
@@ -69,13 +69,22 @@ class MarketplaceEditViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            val typeOptions = marketplaceRepository.getTypeOptions()
+                .getOrDefault(_state.value.typeOptions.ifEmpty { marketplaceRepository.currentTypeOptions() })
+            _state.update { it.copy(typeOptions = typeOptions, isLoading = true, error = null) }
             marketplaceRepository.getEditableItem(itemId)
                 .onSuccess { item ->
-                    _state.update { it.copy(item = item, isLoading = false, error = null) }
+                    _state.update { it.copy(item = item, typeOptions = typeOptions, isLoading = false, error = null) }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(item = null, isLoading = false, error = error.message) }
+                    _state.update {
+                        it.copy(
+                            item = null,
+                            typeOptions = typeOptions,
+                            isLoading = false,
+                            error = error.message
+                        )
+                    }
                 }
         }
     }

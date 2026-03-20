@@ -6,14 +6,14 @@ import retrofit2.http.Path
 
 interface NoticeApi {
 
-    @GET("api/news/type/{type}/start/{start}/size/{size}")
+    @GET("api/information/news/type/{type}/start/{start}/size/{size}")
     suspend fun queryNewsList(
         @Path("type") type: Int,
         @Path("start") start: Int,
         @Path("size") size: Int
     ): DataJsonResult<List<NewsItemDto>>
 
-    @GET("api/news/id/{id}")
+    @GET("api/information/news/id/{id}")
     suspend fun queryNewsDetail(
         @Path("id") id: String
     ): DataJsonResult<NewsItemDto>

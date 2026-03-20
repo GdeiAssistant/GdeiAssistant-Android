@@ -11,6 +11,7 @@ import cn.gdeiassistant.network.api.BookApi
 import cn.gdeiassistant.network.api.CollectionBorrowDto
 import cn.gdeiassistant.network.api.CollectionDetailDto
 import cn.gdeiassistant.network.api.CollectionItemDto
+import cn.gdeiassistant.network.api.LibraryRenewDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -55,11 +56,23 @@ class BookRepository @Inject constructor(
             }
     }
 
-    suspend fun renewBook(book: CollectionBorrowItem): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun renewBook(book: CollectionBorrowItem, password: String): Result<Unit> = withContext(Dispatchers.IO) {
         if (book.sn.isBlank() || book.code.isBlank()) {
             return@withContext Result.failure(IllegalArgumentException(context.getString(R.string.book_collection_missing_renew_info)))
         }
-        safeJsonResultCall { bookApi.renew(sn = book.sn, code = book.code) }
+        val normalizedPassword = password.trim()
+        if (normalizedPassword.isEmpty()) {
+            return@withContext Result.failure(IllegalArgumentException(context.getString(R.string.book_borrow_password_label)))
+        }
+        safeJsonResultCall {
+            bookApi.renew(
+                LibraryRenewDto(
+                    sn = book.sn,
+                    code = book.code,
+                    password = normalizedPassword
+                )
+            )
+        }
     }
 
     private fun mapSearchItem(dto: CollectionItemDto): CollectionSearchItem {

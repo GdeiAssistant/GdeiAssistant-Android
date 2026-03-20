@@ -35,6 +35,9 @@ import cn.gdeiassistant.ui.datacenter.DataCenterScreen
 import cn.gdeiassistant.ui.datacenter.ElectricityFeesScreen
 import cn.gdeiassistant.ui.datacenter.YellowPageDetailScreen
 import cn.gdeiassistant.ui.datacenter.YellowPageScreen
+import cn.gdeiassistant.ui.dating.DatingCenterScreen
+import cn.gdeiassistant.ui.dating.DatingDetailScreen
+import cn.gdeiassistant.ui.dating.DatingPublishScreen
 import cn.gdeiassistant.ui.dating.DatingScreen
 import cn.gdeiassistant.ui.discovery.DiscoveryScreen
 import cn.gdeiassistant.ui.delivery.DeliveryDetailScreen
@@ -323,16 +326,18 @@ private fun NavGraphBuilder.communityGraph(navController: NavHostController) {
         composable(Routes.SECRET) { SecretScreen(navController = navController) }
         composable(Routes.SECRET_PROFILE) { SecretProfileScreen(navController = navController) }
         composable(Routes.SECRET_PUBLISH) { SecretPublishScreen(navController = navController) }
+        composable(Routes.DATING) {
+            DatingScreen(navController = navController)
+        }
         composable(
-            route = Routes.DATING_ROUTE,
-            arguments = listOf(navArgument(Routes.DATING_TAB) {
+            route = Routes.DATING_CENTER_ROUTE,
+            arguments = listOf(navArgument(Routes.DATING_CENTER_TAB) {
                 type = NavType.StringType
                 defaultValue = ""
                 nullable = true
             })
-        ) {
-            DatingScreen(navController = navController)
-        }
+        ) { DatingCenterScreen(navController = navController) }
+        composable(Routes.DATING_PUBLISH) { DatingPublishScreen(navController = navController) }
         composable(Routes.EXPRESS) { ExpressScreen(navController = navController) }
         composable(Routes.EXPRESS_PROFILE) { ExpressProfileScreen(navController = navController) }
         composable(Routes.EXPRESS_PUBLISH) { ExpressPublishScreen(navController = navController) }
@@ -362,6 +367,12 @@ private fun NavGraphBuilder.communityGraph(navController: NavHostController) {
             arguments = listOf(navArgument(Routes.SECRET_POST_ID) { type = NavType.StringType })
         ) {
             SecretDetailScreen(navController = navController)
+        }
+        composable(
+            route = Routes.DATING_DETAIL,
+            arguments = listOf(navArgument(Routes.DATING_PROFILE_ID) { type = NavType.StringType })
+        ) {
+            DatingDetailScreen(navController = navController)
         }
         composable(
             route = Routes.EXPRESS_DETAIL,

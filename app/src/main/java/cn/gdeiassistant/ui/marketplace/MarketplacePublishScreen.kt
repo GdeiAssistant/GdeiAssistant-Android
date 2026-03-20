@@ -165,7 +165,7 @@ fun MarketplacePublishScreen(navController: NavHostController) {
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    viewModel.typeOptions.forEach { option ->
+                    state.typeOptions.forEach { option ->
                         SelectionPill(
                             text = option.title,
                             selected = selectedTypeId == option.id,

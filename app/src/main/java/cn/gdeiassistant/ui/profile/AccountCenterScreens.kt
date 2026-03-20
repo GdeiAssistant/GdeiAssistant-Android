@@ -63,10 +63,12 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
 import cn.gdeiassistant.model.UserDataExportState
+import cn.gdeiassistant.network.NetworkEnvironment
 import cn.gdeiassistant.ui.components.BadgePill
-import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.EmptyState
+import cn.gdeiassistant.ui.components.GhostButton
+import cn.gdeiassistant.ui.components.LazyScreen
+import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
@@ -755,6 +757,13 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                     onCheckedChange = viewModel::setMockModeEnabled
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
+                SettingEnvironmentRow(
+                    selectedEnvironment = state.networkEnvironment,
+                    baseUrl = state.environmentBaseUrl,
+                    enabled = state.canChangeNetworkEnvironment,
+                    onEnvironmentSelected = viewModel::setNetworkEnvironment
+                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
                 SettingInfoRow(
                     title = stringResource(R.string.profile_settings_version_title),
                     value = state.appVersion
@@ -979,6 +988,54 @@ private fun AttributionDropdown(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SettingEnvironmentRow(
+    selectedEnvironment: NetworkEnvironment,
+    baseUrl: String,
+    enabled: Boolean,
+    onEnvironmentSelected: (NetworkEnvironment) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.profile_settings_environment_title),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = if (enabled) {
+                stringResource(R.string.profile_settings_environment_subtitle)
+            } else {
+                stringResource(R.string.profile_settings_environment_release_subtitle)
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            NetworkEnvironment.entries.forEach { environment ->
+                SelectionPill(
+                    text = environment.storageValue.uppercase(),
+                    selected = environment == selectedEnvironment,
+                    onClick = {
+                        if (enabled) {
+                            onEnvironmentSelected(environment)
+                        }
+                    }
+                )
+            }
+        }
+        SettingInfoRow(
+            title = stringResource(R.string.profile_settings_environment_endpoint_title),
+            value = baseUrl
+        )
     }
 }
 

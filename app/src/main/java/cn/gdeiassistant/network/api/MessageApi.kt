@@ -8,21 +8,21 @@ import retrofit2.http.Path
 
 interface MessageApi {
 
-    @GET("api/message/interaction/start/{start}/size/{size}")
+    @GET("api/information/message/interaction/start/{start}/size/{size}")
     suspend fun getInteractionMessages(
         @Path("start") start: Int,
         @Path("size") size: Int
     ): DataJsonResult<List<InteractionMessageDto>>
 
-    @GET("api/message/unread")
+    @GET("api/information/message/unread")
     suspend fun getUnreadCount(): DataJsonResult<Int>
 
-    @POST("api/message/id/{id}/read")
+    @POST("api/information/message/id/{id}/read")
     suspend fun markMessageRead(
         @Path("id") id: String
     ): JsonResult
 
-    @POST("api/message/readall")
+    @POST("api/information/message/readall")
     suspend fun markAllRead(): JsonResult
 }
 
@@ -38,4 +38,3 @@ data class InteractionMessageDto(
     val targetId: String? = null,
     val targetSubId: String? = null
 )
-

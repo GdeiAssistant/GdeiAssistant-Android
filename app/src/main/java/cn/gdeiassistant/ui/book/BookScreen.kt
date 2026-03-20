@@ -20,15 +20,21 @@ import androidx.compose.material.icons.rounded.LocalLibrary
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +65,8 @@ fun BookScreen(navController: NavHostController) {
     val context = LocalContext.current
     val viewModel: BookViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var renewTarget by remember { mutableStateOf<CollectionBorrowItem?>(null) }
+    var renewPassword by rememberSaveable { mutableStateOf("") }
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     val refreshState = savedStateHandle?.getStateFlow(Routes.BOOK_REFRESH_FLAG, false)
     val needsRefresh by (refreshState?.collectAsStateWithLifecycle()
@@ -70,12 +78,33 @@ fun BookScreen(navController: NavHostController) {
                 is BookEvent.ShowMessage -> {
                     Toast.makeText(context, event.message.resolve(context), Toast.LENGTH_LONG).show()
                 }
+                BookEvent.RenewSucceeded -> {
+                    renewTarget = null
+                    renewPassword = ""
+                }
             }
         }
     }
 
+    renewTarget?.let { item ->
+        LibraryRenewPasswordDialog(
+            password = renewPassword,
+            isSubmitting = state.renewingId == item.id,
+            errorMessage = if (state.renewingId == item.id) null else state.renewError,
+            onPasswordChange = { renewPassword = it },
+            onDismiss = {
+                renewTarget = null
+                renewPassword = ""
+                viewModel.clearRenewError()
+            },
+            onConfirm = {
+                viewModel.renewBook(item, renewPassword)
+            }
+        )
+    }
+
     LaunchedEffect(needsRefresh) {
-        if (needsRefresh) {
+        if (needsRefresh && state.borrowPassword.isNotBlank()) {
             viewModel.loadBorrowedBooks()
             savedStateHandle?.set(Routes.BOOK_REFRESH_FLAG, false)
         }
@@ -150,14 +179,19 @@ fun BookScreen(navController: NavHostController) {
         }
         item {
             BorrowSection(
-                borrowPassword = state.borrowPassword,
+                password = state.borrowPassword,
+                hasLoadedBorrowedBooks = state.hasLoadedBorrowedBooks,
                 isLoading = state.isBorrowLoading,
                 error = state.borrowError,
                 items = state.borrowedItems,
                 renewingId = state.renewingId,
                 onPasswordChange = viewModel::updateBorrowPassword,
                 onRefresh = viewModel::loadBorrowedBooks,
-                onRenew = viewModel::renewBook,
+                onRenew = { item ->
+                    viewModel.clearRenewError()
+                    renewTarget = item
+                    renewPassword = state.borrowPassword
+                },
                 onOpenDetail = { item ->
                     navController.currentBackStackEntry?.savedStateHandle?.set(Routes.BOOK_DETAIL_BOOK, item)
                     navController.navigate(Routes.BOOK_DETAIL)
@@ -254,7 +288,8 @@ private fun SearchSection(
 
 @Composable
 private fun BorrowSection(
-    borrowPassword: String,
+    password: String,
+    hasLoadedBorrowedBooks: Boolean,
     isLoading: Boolean,
     error: String?,
     items: List<CollectionBorrowItem>,
@@ -278,16 +313,20 @@ private fun BorrowSection(
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
-            value = borrowPassword,
+            value = password,
             onValueChange = onPasswordChange,
-            modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(R.string.book_borrow_password_label)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
         TintButton(
-            text = stringResource(R.string.book_borrow_refresh_action),
+            text = if (hasLoadedBorrowedBooks) {
+                stringResource(R.string.book_borrow_refresh_action)
+            } else {
+                stringResource(R.string.book_borrow_query_action)
+            },
             onClick = onRefresh,
             enabled = !isLoading,
             icon = Icons.Rounded.Sync,
@@ -303,10 +342,14 @@ private fun BorrowSection(
         }
         Spacer(modifier = Modifier.height(16.dp))
         AnimatedContent(
-            targetState = Pair(isLoading, items.isEmpty()),
+            targetState = Triple(hasLoadedBorrowedBooks, isLoading, items.isEmpty()),
             label = "library-borrowed"
-        ) { (loading, empty) ->
+        ) { (hasLoaded, loading, empty) ->
             when {
+                !hasLoaded && !loading -> EmptySection(
+                    icon = Icons.Rounded.LocalLibrary,
+                    message = stringResource(R.string.book_borrow_idle)
+                )
                 loading && empty -> EmptySection(
                     icon = Icons.Rounded.LocalLibrary,
                     message = stringResource(R.string.book_borrow_loading)
@@ -328,6 +371,56 @@ private fun BorrowSection(
             }
         }
     }
+}
+
+@Composable
+private fun LibraryRenewPasswordDialog(
+    password: String,
+    isSubmitting: Boolean,
+    errorMessage: String?,
+    onPasswordChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(R.string.book_renew_dialog_title))
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = stringResource(R.string.book_renew_dialog_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = onPasswordChange,
+                    label = { Text(text = stringResource(R.string.book_borrow_password_label)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (!errorMessage.isNullOrBlank()) {
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm, enabled = !isSubmitting) {
+                Text(text = if (isSubmitting) stringResource(R.string.book_renew_loading) else stringResource(R.string.book_detail_renew_action))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isSubmitting) {
+                Text(text = stringResource(android.R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable

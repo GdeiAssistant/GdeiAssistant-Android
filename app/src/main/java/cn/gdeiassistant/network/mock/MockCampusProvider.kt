@@ -4,6 +4,8 @@ import android.util.Base64
 import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.model.Cookie
 import cn.gdeiassistant.network.mock.MockUtils.formFields
+import cn.gdeiassistant.network.mock.MockUtils.getString
+import cn.gdeiassistant.network.mock.MockUtils.jsonObjectBody
 import cn.gdeiassistant.util.ChargeCrypto
 import com.google.gson.Gson
 import okhttp3.Request
@@ -137,6 +139,9 @@ object MockCampusProvider {
     }
 
     fun mockCollectionBorrow(request: Request): String {
+        if (request.url.queryParameter("password").orEmpty().trim().isEmpty()) {
+            return MockUtils.failureJson("请输入图书馆密码后再查询借阅")
+        }
         val payload = """[
             {"id":"b1","sn":"SN1001","code":"TP312.8-01","name":"Android 架构演进实践","author":"GDEI Labs","borrowDate":"2026-02-10","returnDate":"2026-03-20","renewTime":1},
             {"id":"b2","sn":"SN1002","code":"TP393-12","name":"现代移动网络编程","author":"Campus Net","borrowDate":"2026-02-14","returnDate":"2026-03-24","renewTime":0},
@@ -146,7 +151,11 @@ object MockCampusProvider {
     }
 
     fun mockCollectionRenew(request: Request): String =
-        """{"success":true,"code":200,"message":"续借成功"}"""
+        if (request.jsonObjectBody()?.getString("password")?.trim().isNullOrEmpty()) {
+            MockUtils.failureJson("请提供图书馆密码")
+        } else {
+            """{"success":true,"code":200,"message":"续借成功"}"""
+        }
 
     fun mockElectricityFees(request: Request): String {
         val fields = request.formFields()

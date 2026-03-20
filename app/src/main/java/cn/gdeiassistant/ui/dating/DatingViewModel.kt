@@ -48,7 +48,7 @@ class DatingViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        DatingUiState(selectedTab = datingTabFrom(savedStateHandle.get<String>(Routes.DATING_TAB)))
+        DatingUiState(selectedTab = datingTabFrom(savedStateHandle.get<String>(Routes.DATING_CENTER_TAB)))
     )
     val state: StateFlow<DatingUiState> = _state.asStateFlow()
 

@@ -14,6 +14,7 @@ import cn.gdeiassistant.model.LoginRecordItem
 import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
 import cn.gdeiassistant.model.UserDataExportState
+import cn.gdeiassistant.network.NetworkEnvironment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -608,6 +609,9 @@ class DeleteAccountViewModel @Inject constructor(
 
 data class ProfileSettingsUiState(
     val isMockModeEnabled: Boolean = true,
+    val networkEnvironment: NetworkEnvironment = NetworkEnvironment.default(),
+    val environmentBaseUrl: String = NetworkEnvironment.default().baseUrl,
+    val canChangeNetworkEnvironment: Boolean = BuildConfig.DEBUG,
     val appVersion: String = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
 )
 
@@ -633,11 +637,34 @@ class ProfileSettingsViewModel @Inject constructor(
                 _state.update { it.copy(isMockModeEnabled = enabled) }
             }
         }
+        viewModelScope.launch {
+            settingsRepository.networkEnvironment.collectLatest { environment ->
+                _state.update {
+                    it.copy(
+                        networkEnvironment = environment,
+                        environmentBaseUrl = environment.baseUrl
+                    )
+                }
+            }
+        }
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
         viewModelScope.launch {
             runCatching { settingsRepository.setMockModeEnabled(enabled) }
+                .onFailure { error ->
+                    _events.emit(
+                        ProfileSettingsEvent.ShowMessage(
+                            error.message ?: context.getString(R.string.profile_settings_toggle_failed)
+                        )
+                    )
+                }
+        }
+    }
+
+    fun setNetworkEnvironment(environment: NetworkEnvironment) {
+        viewModelScope.launch {
+            runCatching { settingsRepository.setNetworkEnvironment(environment) }
                 .onFailure { error ->
                     _events.emit(
                         ProfileSettingsEvent.ShowMessage(

@@ -47,7 +47,8 @@ class MockInterceptor : Interceptor {
         val path = request.url.encodedPath
         return when {
             path.contains("api/user/profile") -> MockProfileProvider.mockUserProfile(request)
-            path.contains("api/locationList") -> MockProfileProvider.mockLocationList(request)
+            path.contains("api/profile/locations") -> MockProfileProvider.mockLocationList(request)
+            path.contains("api/profile/options") -> MockProfileProvider.mockProfileOptions(request)
             path.contains("api/profile/avatar") && request.method == "GET" -> MockProfileProvider.mockAvatarState(request)
             path.contains("api/profile/avatar") && request.method == "POST" -> MockProfileProvider.mockUploadAvatar(request)
             path.contains("api/profile/avatar") && request.method == "DELETE" -> MockProfileProvider.mockDeleteAvatar(request)
@@ -104,12 +105,10 @@ class MockInterceptor : Interceptor {
             path.contains("api/card/info") -> MockCampusProvider.mockCardInfo(request)
             path.contains("api/card/query") -> MockCampusProvider.mockCardQuery(request)
             path.contains("api/card/lost") -> MockCampusProvider.mockCardLost(request)
-            path.contains("api/bookquery") -> MockCampusProvider.mockBookQuery(request)
-            path.contains("api/bookrenew") -> MockCampusProvider.mockBookRenew(request)
-            path.contains("api/collection/search") -> MockCampusProvider.mockCollectionSearch(request)
-            path.contains("api/collection/detail") -> MockCampusProvider.mockCollectionDetail(request)
-            path.contains("api/collection/borrow") -> MockCampusProvider.mockCollectionBorrow(request)
-            path.contains("api/collection/renew") -> MockCampusProvider.mockCollectionRenew(request)
+            path.contains("api/library/search") -> MockCampusProvider.mockCollectionSearch(request)
+            path.contains("api/library/detail") -> MockCampusProvider.mockCollectionDetail(request)
+            path.contains("api/library/borrow") -> MockCampusProvider.mockCollectionBorrow(request)
+            path.contains("api/library/renew") -> MockCampusProvider.mockCollectionRenew(request)
             path.contains("api/encryption/rsa/publickey") -> MockCampusProvider.mockServerPublicKey(request)
             path.contains("api/card/charge") -> MockCampusProvider.mockCharge(request)
             else -> null
@@ -144,9 +143,13 @@ class MockInterceptor : Interceptor {
             path.contains("api/secret/info") && request.method == "POST" -> MockCommunityProvider.mockSecretPublish(request)
             path.contains("api/dating/pick/my/received") -> MockCommunityProvider.mockDatingReceivedPickList(request)
             path.contains("api/dating/pick/my/sent") -> MockCommunityProvider.mockDatingSentPickList(request)
+            path == "/api/dating/pick" -> MockCommunityProvider.mockDatingPickSubmit(request)
             path.contains("api/dating/pick/id/") -> MockCommunityProvider.mockDatingPickStateUpdate(request)
             path.contains("api/dating/profile/id/") && path.endsWith("/state") -> MockCommunityProvider.mockDatingProfileHide(request)
+            path.contains("api/dating/profile/id/") -> MockCommunityProvider.mockDatingDetail(request)
+            path.contains("api/dating/profile/area/") -> MockCommunityProvider.mockDatingProfileList(request)
             path.contains("api/dating/profile/my") -> MockCommunityProvider.mockDatingMyPosts(request)
+            path == "/api/dating/profile" && request.method == "POST" -> MockCommunityProvider.mockDatingPublish(request)
             path.contains("api/express/id/") && path.endsWith("/comment") && request.method == "GET" ->
                 MockCommunityProvider.mockExpressCommentList(request)
             path.contains("api/express/id/") && path.endsWith("/comment") -> MockCommunityProvider.mockExpressCommentSubmit(request)
@@ -190,13 +193,14 @@ class MockInterceptor : Interceptor {
     private fun routeInfo(request: Request): String? {
         val path = request.url.encodedPath
         return when {
-            path.contains("api/announcement/start/") -> MockInfoProvider.mockAnnouncementPage(request)
-            path.contains("api/message/id/") && path.contains("/read") -> MockInfoProvider.mockMessageRead(request)
-            path.contains("api/message/readall") -> MockInfoProvider.mockMessageReadAll(request)
-            path.contains("api/message/unread") -> MockInfoProvider.mockMessageUnread(request)
-            path.contains("api/message/interaction/start/") -> MockInfoProvider.mockInteractionMessages(request)
-            path.contains("api/news/id/") -> MockInfoProvider.mockNewsDetail(request)
-            path.contains("api/news/type/") -> MockInfoProvider.mockNews(request)
+            path.contains("api/information/announcement/start/") -> MockInfoProvider.mockAnnouncementPage(request)
+            path.contains("api/information/announcement/id/") -> MockInfoProvider.mockAnnouncementDetail(request)
+            path.contains("api/information/message/id/") && path.contains("/read") -> MockInfoProvider.mockMessageRead(request)
+            path.contains("api/information/message/readall") -> MockInfoProvider.mockMessageReadAll(request)
+            path.contains("api/information/message/unread") -> MockInfoProvider.mockMessageUnread(request)
+            path.contains("api/information/message/interaction/start/") -> MockInfoProvider.mockInteractionMessages(request)
+            path.contains("api/information/news/id/") -> MockInfoProvider.mockNewsDetail(request)
+            path.contains("api/information/news/type/") -> MockInfoProvider.mockNews(request)
             else -> null
         }
     }

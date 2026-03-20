@@ -21,7 +21,7 @@ private fun InteractionMessage.destinationRoute(): String? {
         "delivery" -> if (target.isNotEmpty()) Routes.deliveryDetail(target) else Routes.DELIVERY
         "marketplace" -> if (target.isNotEmpty()) Routes.marketplaceDetail(target) else Routes.MARKETPLACE
         "lostandfound" -> if (target.isNotEmpty()) Routes.lostFoundDetail(target) else Routes.LOST_FOUND
-        "dating" -> Routes.dating(
+        "dating" -> Routes.datingCenter(
             tab = when (normalizedTargetType) {
                 "sent" -> "sent"
                 "posts", "published" -> "posts"

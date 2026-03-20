@@ -13,7 +13,6 @@ import cn.gdeiassistant.model.LostFoundItemState
 import cn.gdeiassistant.model.LostFoundPersonalSummary
 import cn.gdeiassistant.model.LostFoundType
 import cn.gdeiassistant.model.LostFoundUpdateDraft
-import cn.gdeiassistant.model.lostFoundItemTypeTitles
 import cn.gdeiassistant.network.api.LostFoundApi
 import cn.gdeiassistant.network.api.LostFoundItemDto
 import cn.gdeiassistant.network.safeApiCall
@@ -33,11 +32,18 @@ import javax.inject.Singleton
 @Singleton
 class LostFoundRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val lostFoundApi: LostFoundApi
+    private val lostFoundApi: LostFoundApi,
+    private val profileRepository: ProfileRepository,
+    private val profileOptionsRepository: ProfileOptionsRepository
 ) {
 
-    val itemTypeOptions: List<LostFoundItemTypeOption> = lostFoundItemTypeTitles.mapIndexed { index, title ->
-        LostFoundItemTypeOption(id = index, title = title)
+    fun currentItemTypeOptions(): List<LostFoundItemTypeOption> {
+        return profileOptionsRepository.currentOptions().lostFoundItemTypeOptions()
+    }
+
+    suspend fun getItemTypeOptions(forceRefresh: Boolean = false): Result<List<LostFoundItemTypeOption>> {
+        return profileOptionsRepository.getOptions(forceRefresh = forceRefresh)
+            .map { it.lostFoundItemTypeOptions() }
     }
 
     suspend fun getItems(): Result<List<LostFoundItem>> = withContext(Dispatchers.IO) {
@@ -85,17 +91,24 @@ class LostFoundRepository @Inject constructor(
     }
 
     suspend fun getProfileSummary(): Result<LostFoundPersonalSummary> = withContext(Dispatchers.IO) {
-        safeApiCall { lostFoundApi.getProfileSummary() }
-            .mapCatching { dto ->
+        runCatching {
+            coroutineScope {
+                val summaryDeferred = async { safeApiCall { lostFoundApi.getProfileSummary() } }
+                val profileDeferred = async { profileRepository.getProfile() }
+                val dto = summaryDeferred.await().getOrThrow()
+                val profile = profileDeferred.await().getOrNull()
                 val summary = dto ?: throw IllegalStateException(context.getString(R.string.lost_found_profile_empty))
+                val header = context.toCommunityProfileHeader(profile)
                 LostFoundPersonalSummary(
-                    nickname = context.getString(R.string.lost_found_profile_nickname),
-                    introduction = context.getString(R.string.lost_found_profile_intro),
+                    nickname = header.displayName,
+                    avatarUrl = header.avatarUrl,
+                    introduction = header.headline,
                     lost = summary.lost.orEmpty().map(::mapItem),
                     found = summary.found.orEmpty().map(::mapItem),
                     didFound = summary.didfound.orEmpty().map(::mapItem)
                 )
             }
+        }
     }
 
     suspend fun publish(draft: LostFoundDraft, images: List<Uri>): Result<Unit> = withContext(Dispatchers.IO) {
@@ -203,4 +216,6 @@ class LostFoundRepository @Inject constructor(
     }
 
     private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())
+
+    private fun currentProfileOptions() = profileOptionsRepository.currentOptions()
 }

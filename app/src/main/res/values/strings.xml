@@ -360,7 +360,7 @@
     <string name="book_detail_due_label">应还日期</string>
     <string name="book_detail_renew_label">续借次数</string>
     <string name="book_detail_action_title">续借操作</string>
-    <string name="book_detail_action_hint">续借成功后会自动回刷上一页借阅列表，便于继续确认图书状态。</string>
+    <string name="book_detail_action_hint">点击续借后会先校验图书馆密码，成功后自动回刷上一页借阅列表。</string>
 
     <!-- 公告 -->
     <string name="notice_detail_title">公告详情</string>
@@ -843,6 +843,12 @@
 
     <!-- 卖室友 -->
     <string name="dating_title">卖室友</string>
+    <string name="dating_feed_refresh">刷新卖室友</string>
+    <string name="dating_feed_badge">资料大厅</string>
+    <string name="dating_feed_subtitle">统一按资料大厅 -> 详情 -> 撩一下 -> 互动中心的真实产品路径浏览和处理卖室友内容。</string>
+    <string name="dating_feed_empty">当前分区还没有新的卖室友资料</string>
+    <string name="dating_center_entry_title">互动中心</string>
+    <string name="dating_center_entry_subtitle">查看收到的撩和我的发布</string>
     <string name="dating_refresh">刷新互动中心</string>
     <string name="dating_badge">互动中心</string>
     <string name="dating_subtitle">保持与 iOS 一致的互动中心结构，统一处理收到的撩、我发出的请求和自己的发布记录。</string>
@@ -882,7 +888,53 @@
     <string name="dating_toast_hidden">已隐藏</string>
     <string name="dating_toast_failed">操作失败</string>
     <string name="dating_toast_hide_failed">隐藏失败</string>
-    <string name="feature_dating_subtitle">处理收到的撩与我的发布</string>
+    <string name="dating_detail_title">资料详情</string>
+    <string name="dating_detail_missing">没有找到当前卖室友资料</string>
+    <string name="dating_detail_gallery_title">资料照片</string>
+    <string name="dating_detail_contact_title">联系方式</string>
+    <string name="dating_detail_contact_hidden">对方还没有向你公开联系方式，互相确认后会展示在这里。</string>
+    <string name="dating_detail_contact_empty">对方暂未填写 QQ 或微信</string>
+    <string name="dating_pick_title">撩一下</string>
+    <string name="dating_pick_label">说点什么吧，不超过 50 字</string>
+    <string name="dating_pick_required">请输入想说的话</string>
+    <string name="dating_pick_too_long">撩一下内容不能超过 50 个字</string>
+    <string name="dating_pick_submit">发送请求</string>
+    <string name="dating_pick_submitting">发送中…</string>
+    <string name="dating_pick_success">请求已发送</string>
+    <string name="dating_pick_failed">发送失败</string>
+    <string name="dating_pick_self_hint">这是你自己的资料，无需再发送请求。</string>
+    <string name="dating_pick_contact_visible_hint">你们已经互相确认，联系方式现在已可见。</string>
+    <string name="dating_pick_existing_hint">你已经发过请求了，等待对方处理即可。</string>
+    <string name="dating_publish_title">发布资料</string>
+    <string name="dating_publish_subtitle">补充一条自己的资料</string>
+    <string name="dating_publish_page_subtitle">发布后的资料会出现在大厅里，互动请求会统一进入互动中心处理。</string>
+    <string name="dating_publish_nickname_label">昵称</string>
+    <string name="dating_publish_grade_label">年级</string>
+    <string name="dating_publish_area_label">展示分区</string>
+    <string name="dating_publish_faculty_label">学院</string>
+    <string name="dating_publish_hometown_label">家乡</string>
+    <string name="dating_publish_qq_label">QQ（选填）</string>
+    <string name="dating_publish_wechat_label">微信（选填）</string>
+    <string name="dating_publish_content_label">自我介绍</string>
+    <string name="dating_publish_pick_image">挑一张照片</string>
+    <string name="dating_publish_image_hint">照片为选填，只展示第一张。</string>
+    <string name="dating_publish_submit">发布资料</string>
+    <string name="dating_publish_submitting">发布中…</string>
+    <string name="dating_publish_nickname_required">请输入昵称</string>
+    <string name="dating_publish_nickname_too_long">昵称不能超过 15 个字</string>
+    <string name="dating_publish_faculty_required">请选择学院</string>
+    <string name="dating_publish_hometown_required">请输入家乡</string>
+    <string name="dating_publish_hometown_too_long">家乡不能超过 10 个字</string>
+    <string name="dating_publish_content_required">请输入自我介绍</string>
+    <string name="dating_publish_content_too_long">自我介绍不能超过 100 个字</string>
+    <string name="dating_publish_qq_too_long">QQ 不能超过 15 个字符</string>
+    <string name="dating_publish_wechat_too_long">微信不能超过 20 个字符</string>
+    <string name="dating_publish_success">资料发布成功</string>
+    <string name="dating_publish_failed">资料发布失败</string>
+    <string name="dating_publish_read_failed">读取图片失败</string>
+    <string name="dating_loading_title">正在加载</string>
+    <string name="dating_loading_hint">正在同步卖室友资料和互动状态…</string>
+    <string name="feature_dating_subtitle">浏览资料、发布和处理互动</string>
     <string name="express_title">表白墙</string>
     <string name="express_refresh">刷新表白墙</string>
     <string name="express_badge">真诚留言</string>
@@ -1161,10 +1213,15 @@
     <string name="book_collection_distribution_default_barcode">条码待补充</string>
     <string name="book_collection_distribution_default_state">状态待补充</string>
     <string name="book_borrow_title">我的借阅</string>
-    <string name="book_borrow_subtitle">输入图书馆密码后可以刷新当前借阅，并在详情页继续续借。</string>
-    <string name="book_borrow_password_label">图书馆密码（可选）</string>
+    <string name="book_borrow_subtitle">我的借阅需要先输入图书馆密码查询，续借时会再次校验密码。</string>
+    <string name="book_borrow_password_label">图书馆密码</string>
+    <string name="book_borrow_password_required">请输入图书馆密码</string>
+    <string name="book_borrow_query_action">查询借阅记录</string>
     <string name="book_borrow_refresh_action">刷新借阅记录</string>
+    <string name="book_borrow_idle">输入图书馆密码后即可查看当前借阅记录。</string>
     <string name="book_borrow_loading">正在加载借阅记录…</string>
+    <string name="book_renew_dialog_title">图书续借</string>
+    <string name="book_renew_dialog_message">请输入图书馆密码完成续借校验，密码只用于本次请求。</string>
 
     <string name="profile_default_username">校园账号</string>
     <string name="profile_default_nickname">未填写</string>
@@ -1312,6 +1369,10 @@
     <string name="profile_settings_entry_subtitle">查看版本信息并管理开发开关</string>
     <string name="profile_settings_mock_title">本地模拟数据</string>
     <string name="profile_settings_mock_subtitle">开启后优先使用 Mock 拦截器返回本地示例数据</string>
+    <string name="profile_settings_environment_title">接口环境</string>
+    <string name="profile_settings_environment_subtitle">真实接口支持 dev / staging / prod 三档切换，便于本地联调和灰度验证</string>
+    <string name="profile_settings_environment_release_subtitle">当前为非调试构建，仅展示当前环境信息</string>
+    <string name="profile_settings_environment_endpoint_title">当前服务地址</string>
     <string name="profile_settings_version_title">当前版本</string>
     <string name="profile_settings_toggle_failed">切换设置失败</string>
     <string name="profile_delete_title">注销账号</string>

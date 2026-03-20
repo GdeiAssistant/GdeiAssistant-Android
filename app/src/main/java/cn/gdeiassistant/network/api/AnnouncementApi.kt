@@ -6,13 +6,13 @@ import retrofit2.http.Path
 
 interface AnnouncementApi {
 
-    @GET("api/announcement/start/{start}/size/{size}")
+    @GET("api/information/announcement/start/{start}/size/{size}")
     suspend fun queryAnnouncementPage(
         @Path("start") start: Int,
         @Path("size") size: Int
     ): DataJsonResult<List<AnnouncementDto>>
 
-    @GET("api/announcement/id/{id}")
+    @GET("api/information/announcement/id/{id}")
     suspend fun queryAnnouncementDetail(
         @Path("id") id: String
     ): DataJsonResult<AnnouncementDto>

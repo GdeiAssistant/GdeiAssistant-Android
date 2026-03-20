@@ -45,11 +45,11 @@ class BookDetailViewModel @Inject constructor(
         _state.update { it.copy(item = item, error = null) }
     }
 
-    fun renewBook() {
+    fun renewBook(password: String) {
         val item = _state.value.item ?: return
         viewModelScope.launch {
             _state.update { it.copy(isRenewing = true, error = null) }
-            repository.renewBook(item)
+            repository.renewBook(item, password)
                 .onSuccess {
                     _state.update {
                         it.copy(

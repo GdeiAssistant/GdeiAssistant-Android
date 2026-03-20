@@ -30,6 +30,7 @@ data class MarketplaceUiState(
 )
 
 data class MarketplacePublishUiState(
+    val typeOptions: List<MarketplaceTypeOption> = emptyList(),
     val isSubmitting: Boolean = false,
     val error: String? = null
 )
@@ -46,7 +47,7 @@ class MarketplaceViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         MarketplaceUiState(
-            typeOptions = marketplaceRepository.typeOptions,
+            typeOptions = marketplaceRepository.currentTypeOptions(),
             isLoading = true
         )
     )
@@ -65,12 +66,21 @@ class MarketplaceViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
+            val typeOptions = marketplaceRepository.getTypeOptions()
+                .getOrDefault(_state.value.typeOptions.ifEmpty { marketplaceRepository.currentTypeOptions() })
             marketplaceRepository.getItems(_state.value.selectedTypeId)
                 .onSuccess { items ->
-                    _state.update { it.copy(items = items, isLoading = false, error = null) }
+                    _state.update { it.copy(typeOptions = typeOptions, items = items, isLoading = false, error = null) }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(items = emptyList(), isLoading = false, error = error.message) }
+                    _state.update {
+                        it.copy(
+                            typeOptions = typeOptions,
+                            items = emptyList(),
+                            isLoading = false,
+                            error = error.message
+                        )
+                    }
                 }
         }
     }
@@ -82,13 +92,21 @@ class MarketplacePublishViewModel @Inject constructor(
     private val marketplaceRepository: MarketplaceRepository
 ) : ViewModel() {
 
-    val typeOptions: List<MarketplaceTypeOption> = marketplaceRepository.typeOptions
-
-    private val _state = MutableStateFlow(MarketplacePublishUiState())
+    private val _state = MutableStateFlow(
+        MarketplacePublishUiState(typeOptions = marketplaceRepository.currentTypeOptions())
+    )
     val state: StateFlow<MarketplacePublishUiState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<MarketplacePublishEvent>()
     val events: SharedFlow<MarketplacePublishEvent> = _events.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+            val typeOptions = marketplaceRepository.getTypeOptions()
+                .getOrDefault(_state.value.typeOptions.ifEmpty { marketplaceRepository.currentTypeOptions() })
+            _state.update { it.copy(typeOptions = typeOptions) }
+        }
+    }
 
     fun submit(
         title: String,

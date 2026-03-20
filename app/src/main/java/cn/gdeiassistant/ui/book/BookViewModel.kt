@@ -23,16 +23,18 @@ import javax.inject.Inject
 
 data class BookUiState(
     val searchKeyword: String = "",
-    val borrowPassword: String = "",
     val searchResults: List<CollectionSearchItem> = emptyList(),
+    val borrowPassword: String = "",
     val borrowedItems: List<CollectionBorrowItem> = emptyList(),
     val totalPages: Int = 0,
     val isSearching: Boolean = false,
     val isBorrowLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val hasLoadedBorrowedBooks: Boolean = false,
     val renewingId: String? = null,
     val searchError: String? = null,
-    val borrowError: String? = null
+    val borrowError: String? = null,
+    val renewError: String? = null
 ) {
     val borrowedCount: Int
         get() = borrowedItems.size
@@ -40,6 +42,7 @@ data class BookUiState(
 
 sealed interface BookEvent {
     data class ShowMessage(val message: UiText) : BookEvent
+    data object RenewSucceeded : BookEvent
 }
 
 @HiltViewModel
@@ -59,25 +62,34 @@ class BookViewModel @Inject constructor(
     }
 
     fun updateBorrowPassword(password: String) {
-        _state.update { it.copy(borrowPassword = password) }
+        _state.update { it.copy(borrowPassword = password, borrowError = null) }
+    }
+
+    fun clearRenewError() {
+        _state.update { it.copy(renewError = null) }
     }
 
     fun refresh() {
         viewModelScope.launch {
+            val currentState = _state.value
             _state.update { it.copy(isRefreshing = true) }
-            val borrowDeferred = async { repository.getBorrowedBooks(password = _state.value.borrowPassword) }
-            val searchDeferred = if (_state.value.searchKeyword.isNotBlank()) {
-                async { repository.searchCollections(keyword = _state.value.searchKeyword, page = 1) }
+            val borrowDeferred = if (currentState.hasLoadedBorrowedBooks && currentState.borrowPassword.isNotBlank()) {
+                async { repository.getBorrowedBooks(currentState.borrowPassword) }
+            } else {
+                null
+            }
+            val searchDeferred = if (currentState.searchKeyword.isNotBlank()) {
+                async { repository.searchCollections(keyword = currentState.searchKeyword, page = 1) }
             } else {
                 null
             }
 
-            val borrowResult = borrowDeferred.await()
+            val borrowResult = borrowDeferred?.await()
             val searchResult = searchDeferred?.await()
             _state.update {
                 it.copy(
-                    borrowedItems = borrowResult.getOrDefault(it.borrowedItems),
-                    borrowError = borrowResult.exceptionOrNull()?.message,
+                    borrowedItems = borrowResult?.getOrDefault(it.borrowedItems) ?: it.borrowedItems,
+                    borrowError = borrowResult?.exceptionOrNull()?.message ?: it.borrowError,
                     searchResults = searchResult?.getOrNull()?.items ?: it.searchResults,
                     totalPages = searchResult?.getOrNull()?.sumPage ?: it.totalPages,
                     searchError = searchResult?.exceptionOrNull()?.message,
@@ -132,11 +144,29 @@ class BookViewModel @Inject constructor(
     }
 
     fun loadBorrowedBooks() {
+        val password = _state.value.borrowPassword.trim()
+        if (password.isBlank()) {
+            _state.update {
+                it.copy(
+                    borrowError = context.getString(R.string.book_borrow_password_required),
+                    isBorrowLoading = false
+                )
+            }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isBorrowLoading = true, borrowError = null) }
-            repository.getBorrowedBooks(password = _state.value.borrowPassword)
+            repository.getBorrowedBooks(password)
                 .onSuccess { items ->
-                    _state.update { it.copy(borrowedItems = items, isBorrowLoading = false, borrowError = null) }
+                    _state.update {
+                        it.copy(
+                            borrowedItems = items,
+                            borrowPassword = password,
+                            isBorrowLoading = false,
+                            hasLoadedBorrowedBooks = true,
+                            borrowError = null
+                        )
+                    }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isBorrowLoading = false, borrowError = error.message) }
@@ -144,18 +174,33 @@ class BookViewModel @Inject constructor(
         }
     }
 
-    fun renewBook(item: CollectionBorrowItem) {
+    fun renewBook(item: CollectionBorrowItem, password: String) {
         if (_state.value.renewingId == item.id) return
+        val normalizedPassword = password.trim()
+        if (normalizedPassword.isBlank()) {
+            viewModelScope.launch {
+                _state.update { it.copy(renewError = context.getString(R.string.book_borrow_password_required)) }
+                _events.emit(BookEvent.ShowMessage(UiText.StringResource(R.string.book_borrow_password_required)))
+            }
+            return
+        }
         viewModelScope.launch {
-            _state.update { it.copy(renewingId = item.id) }
-            repository.renewBook(item)
+            _state.update { it.copy(renewingId = item.id, renewError = null) }
+            repository.renewBook(item, normalizedPassword)
                 .onSuccess {
                     _events.emit(BookEvent.ShowMessage(UiText.StringResource(R.string.book_renew_success)))
-                    _state.update { it.copy(renewingId = null) }
+                    _events.emit(BookEvent.RenewSucceeded)
+                    _state.update {
+                        it.copy(
+                            renewingId = null,
+                            renewError = null,
+                            borrowPassword = normalizedPassword
+                        )
+                    }
                     loadBorrowedBooks()
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(renewingId = null) }
+                    _state.update { it.copy(renewingId = null, renewError = error.message) }
                     _events.emit(
                         BookEvent.ShowMessage(
                             UiText.DynamicString(error.message ?: context.getString(R.string.book_detail_renew_failed))

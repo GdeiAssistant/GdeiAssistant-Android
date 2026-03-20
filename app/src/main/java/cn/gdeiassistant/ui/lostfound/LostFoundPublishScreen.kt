@@ -165,7 +165,7 @@ fun LostFoundPublishScreen(navController: NavHostController) {
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    viewModel.itemTypeOptions.forEach { option ->
+                    state.itemTypeOptions.forEach { option ->
                         SelectionPill(
                             text = option.title,
                             selected = selectedItemTypeId == option.id,

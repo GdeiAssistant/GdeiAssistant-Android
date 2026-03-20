@@ -12,9 +12,6 @@ import cn.gdeiassistant.model.MarketplaceItemState
 import cn.gdeiassistant.model.MarketplacePersonalSummary
 import cn.gdeiassistant.model.MarketplaceTypeOption
 import cn.gdeiassistant.model.MarketplaceUpdateDraft
-import cn.gdeiassistant.model.facultyTitle
-import cn.gdeiassistant.model.marketplaceTypeTitle
-import cn.gdeiassistant.model.marketplaceTypeTitles
 import cn.gdeiassistant.network.api.MarketplaceApi
 import cn.gdeiassistant.network.api.MarketplaceItemDto
 import cn.gdeiassistant.network.api.MarketplaceProfileDto
@@ -22,6 +19,8 @@ import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -33,11 +32,18 @@ import javax.inject.Singleton
 @Singleton
 class MarketplaceRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val marketplaceApi: MarketplaceApi
+    private val marketplaceApi: MarketplaceApi,
+    private val profileRepository: ProfileRepository,
+    private val profileOptionsRepository: ProfileOptionsRepository
 ) {
 
-    val typeOptions: List<MarketplaceTypeOption> = marketplaceTypeTitles.mapIndexed { index, title ->
-        MarketplaceTypeOption(id = index, title = title)
+    fun currentTypeOptions(): List<MarketplaceTypeOption> {
+        return profileOptionsRepository.currentOptions().marketplaceTypeOptions()
+    }
+
+    suspend fun getTypeOptions(forceRefresh: Boolean = false): Result<List<MarketplaceTypeOption>> {
+        return profileOptionsRepository.getOptions(forceRefresh = forceRefresh)
+            .map { it.marketplaceTypeOptions() }
     }
 
     suspend fun getItems(typeId: Int? = null): Result<List<MarketplaceItem>> = withContext(Dispatchers.IO) {
@@ -67,7 +73,7 @@ class MarketplaceRepository @Inject constructor(
                 }
                 MarketplaceDetail(
                     item = item,
-                    condition = marketplaceTypeTitle(detail.secondhandItem.type),
+                    condition = currentProfileOptions().marketplaceTypeTitle(detail.secondhandItem.type),
                     description = detail.secondhandItem.description.orEmpty().ifBlank {
                         context.getString(R.string.marketplace_description_empty)
                     },
@@ -77,7 +83,7 @@ class MarketplaceRepository @Inject constructor(
                     ).ifBlank { context.getString(R.string.marketplace_contact_private) },
                     sellerUsername = profile?.username ?: detail.secondhandItem.username,
                     sellerNickname = profile?.nickname?.trim()?.ifBlank { null },
-                    sellerCollege = facultyTitle(profile?.faculty),
+                    sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),
                     sellerMajor = profile?.major?.trim()?.ifBlank { null },
                     sellerGrade = profile?.enrollment?.let {
                         context.getString(R.string.marketplace_seller_grade_suffix, it)
@@ -88,17 +94,24 @@ class MarketplaceRepository @Inject constructor(
     }
 
     suspend fun getProfileSummary(): Result<MarketplacePersonalSummary> = withContext(Dispatchers.IO) {
-        safeApiCall { marketplaceApi.getProfileSummary() }
-            .mapCatching { dto ->
+        runCatching {
+            coroutineScope {
+                val summaryDeferred = async { safeApiCall { marketplaceApi.getProfileSummary() } }
+                val profileDeferred = async { profileRepository.getProfile() }
+                val dto = summaryDeferred.await().getOrThrow()
+                val profile = profileDeferred.await().getOrNull()
                 val summary = dto ?: throw IllegalStateException(context.getString(R.string.marketplace_profile_empty))
+                val header = context.toCommunityProfileHeader(profile)
                 MarketplacePersonalSummary(
-                    nickname = context.getString(R.string.marketplace_profile_nickname),
-                    introduction = context.getString(R.string.marketplace_profile_intro),
+                    nickname = header.displayName,
+                    avatarUrl = header.avatarUrl,
+                    introduction = header.headline,
                     doing = summary.doing.orEmpty().map(::mapItem),
                     sold = summary.sold.orEmpty().map(::mapItem),
                     off = summary.off.orEmpty().map(::mapItem)
                 )
             }
+        }
     }
 
     suspend fun getEditableItem(id: String): Result<MarketplaceEditableItem> = withContext(Dispatchers.IO) {
@@ -167,7 +180,7 @@ class MarketplaceRepository @Inject constructor(
             postedAt = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.marketplace_default_posted_at) },
             location = dto.location.orEmpty().ifBlank { context.getString(R.string.marketplace_default_location) },
             state = MarketplaceItemState.fromRemote(dto.state),
-            tags = listOf(marketplaceTypeTitle(dto.type)),
+            tags = listOf(currentProfileOptions().marketplaceTypeTitle(dto.type)),
             previewImageUrl = dto.pictureURL.orEmpty().firstOrNull { it.isNotBlank() }
         )
     }
@@ -203,4 +216,6 @@ class MarketplaceRepository @Inject constructor(
     }
 
     private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())
+
+    private fun currentProfileOptions() = profileOptionsRepository.currentOptions()
 }

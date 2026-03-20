@@ -94,6 +94,19 @@ object MockInfoProvider {
         return MockUtils.successDataJson(payload)
     }
 
+    fun mockAnnouncementDetail(request: Request): String {
+        val announcement = mockAnnouncements.firstOrNull { it.id == request.itemIdFromPath().orEmpty() }
+            ?: return MockUtils.failureJson("查询的系统公告不存在")
+        return MockUtils.successDataJson(
+            linkedMapOf(
+                "id" to announcement.id,
+                "title" to announcement.title,
+                "content" to announcement.content,
+                "publishTime" to announcement.publishTime
+            )
+        )
+    }
+
     fun mockInteractionMessages(request: Request): String {
         val start = request.pathValueAfter("start")
             ?.toIntOrNull()

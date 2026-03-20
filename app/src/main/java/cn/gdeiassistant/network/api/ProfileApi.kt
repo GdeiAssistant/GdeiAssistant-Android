@@ -18,8 +18,11 @@ interface ProfileApi {
     @GET("api/user/profile")
     suspend fun getUserProfile(): DataJsonResult<UserProfileDto>
 
-    @GET("api/locationList")
+    @GET("api/profile/locations")
     suspend fun getLocationRegions(): DataJsonResult<List<ProfileLocationRegionDto>>
+
+    @GET("api/profile/options")
+    suspend fun getProfileOptions(): DataJsonResult<ProfileOptionsDto>
 
     @GET("api/phone/status")
     suspend fun getPhoneStatus(): DataJsonResult<PhoneStatusDto>
@@ -238,4 +241,22 @@ data class ProfileLocationRegionDto(
     val name: String? = null,
     val aliasesName: String? = null,
     val stateMap: Map<String, ProfileLocationStateDto>? = null
+)
+
+data class ProfileDictionaryOptionDto(
+    val code: Int? = null,
+    val label: String? = null
+)
+
+data class ProfileFacultyOptionDto(
+    val code: Int? = null,
+    val label: String? = null,
+    val majors: List<String>? = null
+)
+
+data class ProfileOptionsDto(
+    val faculties: List<ProfileFacultyOptionDto>? = null,
+    val marketplaceItemTypes: List<ProfileDictionaryOptionDto>? = null,
+    val lostFoundItemTypes: List<ProfileDictionaryOptionDto>? = null,
+    val lostFoundModes: List<ProfileDictionaryOptionDto>? = null
 )

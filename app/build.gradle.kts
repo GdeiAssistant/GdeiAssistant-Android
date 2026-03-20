@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val devBaseUrl = providers.gradleProperty("GDEI_BASE_URL_DEV").orNull ?: "http://10.0.2.2:8080/"
+val stagingBaseUrl = providers.gradleProperty("GDEI_BASE_URL_STAGING").orNull
+    ?: "https://gdeiassistant.azurewebsites.net/"
+val prodBaseUrl = providers.gradleProperty("GDEI_BASE_URL_PROD").orNull
+    ?: "https://gdeiassistant.azurewebsites.net/"
+
 android {
     namespace = "cn.gdeiassistant"
     compileSdk = 35
@@ -17,7 +23,11 @@ android {
         versionCode = 2
         versionName = "2.0.0-PRO"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"https://gdeiassistant.azurewebsites.net/\"")
+        buildConfigField("String", "BASE_URL", "\"$prodBaseUrl\"")
+        buildConfigField("String", "BASE_URL_DEV", "\"$devBaseUrl\"")
+        buildConfigField("String", "BASE_URL_STAGING", "\"$stagingBaseUrl\"")
+        buildConfigField("String", "BASE_URL_PROD", "\"$prodBaseUrl\"")
+        buildConfigField("String", "DEFAULT_NETWORK_ENVIRONMENT", "\"prod\"")
     }
 
     buildTypes {

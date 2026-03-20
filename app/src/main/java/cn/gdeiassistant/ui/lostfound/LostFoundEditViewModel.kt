@@ -47,7 +47,7 @@ class LostFoundEditViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         LostFoundEditUiState(
-            itemTypeOptions = lostFoundRepository.itemTypeOptions
+            itemTypeOptions = lostFoundRepository.currentItemTypeOptions()
         )
     )
     val state: StateFlow<LostFoundEditUiState> = _state.asStateFlow()
@@ -70,13 +70,22 @@ class LostFoundEditViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            val itemTypeOptions = lostFoundRepository.getItemTypeOptions()
+                .getOrDefault(_state.value.itemTypeOptions.ifEmpty { lostFoundRepository.currentItemTypeOptions() })
+            _state.update { it.copy(itemTypeOptions = itemTypeOptions, isLoading = true, error = null) }
             lostFoundRepository.getEditableItem(itemId)
                 .onSuccess { item ->
-                    _state.update { it.copy(item = item, isLoading = false, error = null) }
+                    _state.update { it.copy(item = item, itemTypeOptions = itemTypeOptions, isLoading = false, error = null) }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(item = null, isLoading = false, error = error.message) }
+                    _state.update {
+                        it.copy(
+                            item = null,
+                            itemTypeOptions = itemTypeOptions,
+                            isLoading = false,
+                            error = error.message
+                        )
+                    }
                 }
         }
     }

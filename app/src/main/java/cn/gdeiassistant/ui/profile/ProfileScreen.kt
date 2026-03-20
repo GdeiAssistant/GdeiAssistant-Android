@@ -272,10 +272,11 @@ private fun ProfileAccountCard(
         ?: stringResource(R.string.profile_info_not_set)
     val avatarFallbackLabel = profile.nickname?.takeIf(String::isNotBlank)
         ?: profile.username
+    val profileOptions = state.profileOptions
     val currentCollege = profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentMajor = profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentEnrollment = profile.enrollment?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
-    val canSelectMajor = ProfileFormSupport.canSelectMajor(currentCollege)
+    val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
 
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -422,8 +423,8 @@ private fun ProfileAccountCard(
                 ProfileSelectionEditorField.Enrollment -> stringResource(R.string.profile_info_enrollment)
             },
             options = when (editor) {
-                ProfileSelectionEditorField.College -> ProfileFormSupport.facultyOptions
-                ProfileSelectionEditorField.Major -> ProfileFormSupport.majorOptionsFor(currentCollege)
+                ProfileSelectionEditorField.College -> profileOptions.facultyOptions
+                ProfileSelectionEditorField.Major -> profileOptions.majorOptionsFor(currentCollege)
                 ProfileSelectionEditorField.Enrollment -> listOf(ProfileFormSupport.UnselectedOption) + ProfileFormSupport.enrollmentOptions
             },
             selectedValue = when (editor) {
@@ -527,6 +528,10 @@ private fun ProfileEditingContent(
     onShowBirthdayPicker: () -> Unit
 ) {
     val draft = state.draft
+    val profileOptions = state.profileOptions
+    val majorOptions = profileOptions.majorOptionsFor(draft.college)
+    val canSelectMajor = profileOptions.canSelectMajor(draft.college)
+    val enrollmentOptions = listOf(ProfileFormSupport.UnselectedOption) + ProfileFormSupport.enrollmentOptions
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         ProfileTextInput(
@@ -546,15 +551,15 @@ private fun ProfileEditingContent(
         ProfileSelectionField(
             title = stringResource(R.string.profile_college_label),
             value = draft.college,
-            options = ProfileFormSupport.facultyOptions,
+            options = profileOptions.facultyOptions,
             onSelect = onSelectCollege
         )
 
         ProfileSelectionField(
             title = stringResource(R.string.profile_info_major),
             value = draft.major,
-            options = draft.majorOptions,
-            enabled = draft.canSelectMajor,
+            options = majorOptions,
+            enabled = canSelectMajor,
             disabledLabel = stringResource(R.string.profile_select_college_first),
             onSelect = onSelectMajor
         )
@@ -562,7 +567,7 @@ private fun ProfileEditingContent(
         ProfileSelectionField(
             title = stringResource(R.string.profile_info_enrollment),
             value = draft.grade.ifBlank { ProfileFormSupport.UnselectedOption },
-            options = draft.enrollmentOptions,
+            options = enrollmentOptions,
             onSelect = onSelectEnrollment,
             monospace = true
         )

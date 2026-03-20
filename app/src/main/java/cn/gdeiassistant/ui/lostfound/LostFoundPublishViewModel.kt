@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LostFoundPublishUiState(
+    val itemTypeOptions: List<LostFoundItemTypeOption> = emptyList(),
     val isSubmitting: Boolean = false,
     val error: String? = null
 )
@@ -37,13 +38,21 @@ class LostFoundPublishViewModel @Inject constructor(
     private val lostFoundRepository: LostFoundRepository
 ) : ViewModel() {
 
-    val itemTypeOptions: List<LostFoundItemTypeOption> = lostFoundRepository.itemTypeOptions
-
-    private val _state = MutableStateFlow(LostFoundPublishUiState())
+    private val _state = MutableStateFlow(
+        LostFoundPublishUiState(itemTypeOptions = lostFoundRepository.currentItemTypeOptions())
+    )
     val state: StateFlow<LostFoundPublishUiState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<LostFoundPublishEvent>()
     val events: SharedFlow<LostFoundPublishEvent> = _events.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+            val itemTypeOptions = lostFoundRepository.getItemTypeOptions()
+                .getOrDefault(_state.value.itemTypeOptions.ifEmpty { lostFoundRepository.currentItemTypeOptions() })
+            _state.update { it.copy(itemTypeOptions = itemTypeOptions) }
+        }
+    }
 
     fun submit(
         title: String,

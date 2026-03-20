@@ -57,6 +57,7 @@ data class MarketplaceDetail(
 @Immutable
 data class MarketplacePersonalSummary(
     val nickname: String,
+    val avatarUrl: String? = null,
     val introduction: String,
     val doing: List<MarketplaceItem>,
     val sold: List<MarketplaceItem>,
@@ -98,41 +99,10 @@ data class MarketplaceEditableItem(
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 
-val marketplaceTypeTitles = listOf(
-    "校园代步",
-    "手机",
-    "电脑",
-    "数码配件",
-    "数码",
-    "电器",
-    "运动健身",
-    "衣物伞帽",
-    "图书教材",
-    "租赁",
-    "生活娱乐",
-    "其他"
-)
+val marketplaceTypeTitles = ProfileFormSupport.defaultOptions.marketplaceItemTypes.map(ProfileDictionaryOption::label)
 
 fun marketplaceTypeTitle(value: Int?): String {
-    return marketplaceTypeTitles.getOrElse((value ?: 0).coerceAtLeast(0)) { marketplaceTypeTitles.last() }
-}
-
-fun facultyTitle(value: Int?): String {
-    return when (value) {
-        1 -> "教育学院"
-        2 -> "外语学院"
-        3 -> "数学学院"
-        4 -> "物理与信息工程学院"
-        5 -> "化学学院"
-        6 -> "生物与食品工程学院"
-        7 -> "体育学院"
-        8 -> "音乐学院"
-        9 -> "美术学院"
-        10 -> "管理学院"
-        11 -> "马克思主义学院"
-        12 -> "计算机学院"
-        else -> "未填写学院"
-    }
+    return ProfileFormSupport.defaultOptions.marketplaceTypeTitle(value)
 }
 
 @Immutable
@@ -192,6 +162,7 @@ data class LostFoundDetail(
 @Immutable
 data class LostFoundPersonalSummary(
     val nickname: String,
+    val avatarUrl: String? = null,
     val introduction: String,
     val lost: List<LostFoundItem>,
     val found: List<LostFoundItem>,
@@ -242,21 +213,8 @@ data class LostFoundEditableItem(
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 
-val lostFoundItemTypeTitles = listOf(
-    "手机",
-    "校园卡",
-    "身份证",
-    "银行卡",
-    "书",
-    "钥匙",
-    "包包",
-    "衣帽",
-    "校园代步",
-    "运动健身",
-    "数码配件",
-    "其他"
-)
+val lostFoundItemTypeTitles = ProfileFormSupport.defaultOptions.lostFoundItemTypes.map(ProfileDictionaryOption::label)
 
 fun lostFoundItemTypeTitle(value: Int?): String {
-    return lostFoundItemTypeTitles.getOrElse((value ?: 0).coerceAtLeast(0)) { lostFoundItemTypeTitles.last() }
+    return ProfileFormSupport.defaultOptions.lostFoundItemTypeTitle(value)
 }

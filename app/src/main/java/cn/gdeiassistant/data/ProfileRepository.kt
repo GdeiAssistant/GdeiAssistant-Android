@@ -15,6 +15,7 @@ import cn.gdeiassistant.model.ProfileLocationCity
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
 import cn.gdeiassistant.model.ProfileLocationState
+import cn.gdeiassistant.model.ProfileOptions
 import cn.gdeiassistant.model.ProfileUpdateRequest
 import cn.gdeiassistant.model.UserDataExportState
 import cn.gdeiassistant.model.UserProfileSummary
@@ -52,7 +53,8 @@ import javax.inject.Singleton
 @Singleton
 class ProfileRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val profileApi: ProfileApi
+    private val profileApi: ProfileApi,
+    private val profileOptionsRepository: ProfileOptionsRepository
 ) {
 
     suspend fun getProfile(): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
@@ -84,11 +86,18 @@ class ProfileRepository @Inject constructor(
             }
     }
 
+    suspend fun getProfileOptions(forceRefresh: Boolean = false): Result<ProfileOptions> {
+        return profileOptionsRepository.getOptions(forceRefresh = forceRefresh)
+    }
+
     suspend fun updateProfile(request: ProfileUpdateRequest): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
         runCatching {
             val normalizedNickname = request.nickname.trim()
             val normalizedCollege = ProfileFormSupport.normalizeSelection(request.college)
-            val facultyCode = ProfileFormSupport.facultyCodeFor(normalizedCollege)
+            val profileOptions = profileOptionsRepository.getOptions().getOrElse {
+                profileOptionsRepository.currentOptions()
+            }
+            val facultyCode = profileOptions.facultyCodeFor(normalizedCollege)
                 ?: throw IllegalStateException("当前院系“$normalizedCollege”暂不支持同步到服务端，请使用系统支持的院系名称")
 
             safeJsonResultCall {

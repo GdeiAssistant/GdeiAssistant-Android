@@ -2,6 +2,8 @@ package cn.gdeiassistant.network.mock
 
 import cn.gdeiassistant.data.ProfileLocationMockCatalog
 import cn.gdeiassistant.model.ProfileFormSupport
+import cn.gdeiassistant.model.lostFoundItemTypeTitles
+import cn.gdeiassistant.model.marketplaceTypeTitles
 import cn.gdeiassistant.network.mock.MockUtils.formFields
 import cn.gdeiassistant.network.mock.MockUtils.getBoolean
 import cn.gdeiassistant.network.mock.MockUtils.getInteger
@@ -201,6 +203,34 @@ object MockProfileProvider {
         )
     }
 
+    fun mockProfileOptions(request: Request): String {
+        val faculties = ProfileFormSupport.defaultOptions.faculties.map { option ->
+            linkedMapOf(
+                "code" to option.code,
+                "label" to option.label,
+                "majors" to option.majors
+            )
+        }
+        val marketplaceItemTypes = marketplaceTypeTitles.mapIndexed { index, label ->
+            linkedMapOf("code" to index, "label" to label)
+        }
+        val lostFoundItemTypes = lostFoundItemTypeTitles.mapIndexed { index, label ->
+            linkedMapOf("code" to index, "label" to label)
+        }
+        val lostFoundModes = listOf("寻物启事", "失物招领").mapIndexed { index, label ->
+            linkedMapOf("code" to index, "label" to label)
+        }
+        return MockUtils.successDataJson(
+            data = linkedMapOf(
+                "faculties" to faculties,
+                "marketplaceItemTypes" to marketplaceItemTypes,
+                "lostFoundItemTypes" to lostFoundItemTypes,
+                "lostFoundModes" to lostFoundModes
+            ),
+            message = "success"
+        )
+    }
+
     fun mockAvatarState(request: Request): String {
         val avatar = mockProfileSummary.avatar.trim().takeIf(String::isNotEmpty)
         return MockUtils.successDataJson(
@@ -249,9 +279,10 @@ object MockProfileProvider {
     fun mockUpdateFaculty(request: Request): String {
         val facultyCode = request.jsonObjectBody()?.getInteger("faculty")
             ?: return MockUtils.failureJson("缺少院系信息")
-        val facultyName = ProfileFormSupport.facultyOptions.getOrNull(facultyCode)
+        val options = ProfileFormSupport.defaultOptions
+        val facultyName = options.facultyNameFor(facultyCode)
             ?: return MockUtils.failureJson("院系信息不存在")
-        val majorOptions = ProfileFormSupport.majorOptionsFor(facultyName)
+        val majorOptions = options.majorOptionsFor(facultyName)
         mockProfileSummary = mockProfileSummary.copy(
             faculty = if (facultyName == ProfileFormSupport.UnselectedOption) "" else facultyName,
             major = mockProfileSummary.major.takeIf { majorOptions.contains(it) } ?: ""

@@ -48,7 +48,7 @@ import cn.gdeiassistant.ui.components.TintButton
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun DatingScreen(navController: NavHostController) {
+fun DatingCenterScreen(navController: NavHostController) {
     val context = LocalContext.current
     val viewModel: DatingViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()

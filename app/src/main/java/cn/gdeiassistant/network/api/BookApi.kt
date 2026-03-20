@@ -2,34 +2,31 @@ package cn.gdeiassistant.network.api
 
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.JsonResult
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BookApi {
 
-    @GET("api/collection/search")
+    @GET("api/library/search")
     suspend fun searchCollections(
         @Query("keyword") keyword: String,
         @Query("page") page: Int
     ): DataJsonResult<CollectionSearchResponseDto>
 
-    @GET("api/collection/detail")
+    @GET("api/library/detail")
     suspend fun getCollectionDetail(
         @Query("detailURL") detailUrl: String
     ): DataJsonResult<CollectionDetailDto>
 
-    @GET("api/collection/borrow")
+    @GET("api/library/borrow")
     suspend fun getBorrowedBooks(
         @Query("password") password: String? = null
     ): DataJsonResult<List<CollectionBorrowDto>>
 
-    @POST("api/collection/renew")
-    suspend fun renew(
-        @Query("sn") sn: String,
-        @Query("code") code: String
-    ): JsonResult
+    @POST("api/library/renew")
+    suspend fun renew(@Body body: LibraryRenewDto): JsonResult
 }
 
 data class CollectionSearchResponseDto(
@@ -73,4 +70,10 @@ data class CollectionBorrowDto(
     val borrowDate: String? = null,
     val returnDate: String? = null,
     val renewTime: Int? = null
+)
+
+data class LibraryRenewDto(
+    val sn: String,
+    val code: String,
+    val password: String
 )

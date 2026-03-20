@@ -22,7 +22,7 @@ class GdeiAssistantApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         applicationScope.launch {
-            settingsRepository.initializeMockModeCache()
+            settingsRepository.initializeSyncCache()
         }
         createServiceForegroundNotificationChannel()
     }

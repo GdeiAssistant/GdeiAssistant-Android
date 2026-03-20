@@ -345,7 +345,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RemoteAvatar(
-                                imageModel = null,
+                                imageModel = summary.avatarUrl,
                                 fallbackLabel = summary.nickname,
                                 size = 60.dp
                             )

@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import cn.gdeiassistant.BuildConfig
+import cn.gdeiassistant.network.NetworkEnvironment
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,12 +24,27 @@ class SettingsRepository @Inject constructor(
 ) {
 
     private val appContext = context.applicationContext
+    private val syncCachePreferences =
+        appContext.getSharedPreferences(SYNC_CACHE_PREFERENCES_NAME, Context.MODE_PRIVATE)
+
+    init {
+        mockModeEnabledCache = syncCachePreferences.getBoolean(
+            SYNC_CACHE_KEY_MOCK_MODE_ENABLED,
+            DEFAULT_MOCK_MODE_ENABLED
+        )
+        networkEnvironmentCache = NetworkEnvironment.fromStorage(
+            syncCachePreferences.getString(
+                SYNC_CACHE_KEY_NETWORK_ENVIRONMENT,
+                BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+            )
+        )
+    }
 
     val isMockModeEnabled: Flow<Boolean> =
         appContext.settingsDataStore.data
             .map { preferences -> preferences[KEY_MOCK_MODE_ENABLED] ?: DEFAULT_MOCK_MODE_ENABLED }
             .distinctUntilChanged()
-            .onEach { enabled -> mockModeEnabledCache = enabled }
+            .onEach { enabled -> persistMockModeCache(enabled) }
 
     val scheduleBackgroundUri: Flow<String?> =
         appContext.settingsDataStore.data
@@ -39,11 +56,21 @@ class SettingsRepository @Inject constructor(
             .map { preferences -> preferences[KEY_THEME_COLOR] ?: DEFAULT_THEME_COLOR }
             .distinctUntilChanged()
 
+    val networkEnvironment: Flow<NetworkEnvironment> =
+        appContext.settingsDataStore.data
+            .map { preferences ->
+                NetworkEnvironment.fromStorage(
+                    preferences[KEY_NETWORK_ENVIRONMENT] ?: BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+                )
+            }
+            .distinctUntilChanged()
+            .onEach(::persistNetworkEnvironmentCache)
+
     suspend fun setMockModeEnabled(enabled: Boolean) {
         appContext.settingsDataStore.edit { preferences ->
             preferences[KEY_MOCK_MODE_ENABLED] = enabled
         }
-        mockModeEnabledCache = enabled
+        persistMockModeCache(enabled)
     }
 
     suspend fun setScheduleBackgroundUri(uri: String?) {
@@ -62,20 +89,51 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun initializeMockModeCache() {
-        mockModeEnabledCache = isMockModeEnabled.first()
+    suspend fun setNetworkEnvironment(environment: NetworkEnvironment) {
+        appContext.settingsDataStore.edit { preferences ->
+            preferences[KEY_NETWORK_ENVIRONMENT] = environment.storageValue
+        }
+        persistNetworkEnvironmentCache(environment)
+    }
+
+    suspend fun initializeSyncCache() {
+        persistMockModeCache(isMockModeEnabled.first())
+        persistNetworkEnvironmentCache(networkEnvironment.first())
     }
 
     companion object {
         private val KEY_MOCK_MODE_ENABLED = booleanPreferencesKey("is_mock_mode_enabled")
         private val KEY_SCHEDULE_BACKGROUND_URI = stringPreferencesKey("schedule_background_uri")
         private val KEY_THEME_COLOR = stringPreferencesKey("theme_color")
-        private const val DEFAULT_MOCK_MODE_ENABLED = true
+        private val KEY_NETWORK_ENVIRONMENT = stringPreferencesKey("network_environment")
+        private const val SYNC_CACHE_PREFERENCES_NAME = "developer_settings_sync_cache"
+        private const val SYNC_CACHE_KEY_MOCK_MODE_ENABLED = "is_mock_mode_enabled"
+        private const val SYNC_CACHE_KEY_NETWORK_ENVIRONMENT = "network_environment"
+        private const val DEFAULT_MOCK_MODE_ENABLED = false
         const val DEFAULT_THEME_COLOR = "purple"
 
         @Volatile
         private var mockModeEnabledCache: Boolean = DEFAULT_MOCK_MODE_ENABLED
 
+        @Volatile
+        private var networkEnvironmentCache: NetworkEnvironment = NetworkEnvironment.default()
+
         fun isMockModeEnabledSync(): Boolean = mockModeEnabledCache
+
+        fun currentNetworkEnvironmentSync(): NetworkEnvironment = networkEnvironmentCache
+    }
+
+    private fun persistMockModeCache(enabled: Boolean) {
+        mockModeEnabledCache = enabled
+        syncCachePreferences.edit()
+            .putBoolean(SYNC_CACHE_KEY_MOCK_MODE_ENABLED, enabled)
+            .apply()
+    }
+
+    private fun persistNetworkEnvironmentCache(environment: NetworkEnvironment) {
+        networkEnvironmentCache = environment
+        syncCachePreferences.edit()
+            .putString(SYNC_CACHE_KEY_NETWORK_ENVIRONMENT, environment.storageValue)
+            .apply()
     }
 }

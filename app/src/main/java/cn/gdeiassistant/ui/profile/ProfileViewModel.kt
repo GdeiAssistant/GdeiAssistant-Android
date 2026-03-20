@@ -9,6 +9,7 @@ import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
+import cn.gdeiassistant.model.ProfileOptions
 import cn.gdeiassistant.model.ProfileUpdateRequest
 import cn.gdeiassistant.model.UserProfileSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,15 +37,6 @@ data class ProfileDraftUiState(
     val locationSelection: ProfileLocationSelection? = null,
     val hometownSelection: ProfileLocationSelection? = null
 ) {
-    val majorOptions: List<String>
-        get() = ProfileFormSupport.majorOptionsFor(college)
-
-    val canSelectMajor: Boolean
-        get() = ProfileFormSupport.canSelectMajor(college)
-
-    val enrollmentOptions: List<String>
-        get() = listOf(ProfileFormSupport.UnselectedOption) + ProfileFormSupport.enrollmentOptions
-
     val isFormValid: Boolean
         get() = nickname.trim().isNotEmpty()
 }
@@ -52,6 +44,7 @@ data class ProfileDraftUiState(
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val profile: UserProfileSummary? = null,
+    val profileOptions: ProfileOptions = ProfileFormSupport.defaultOptions,
     val locationRegions: List<ProfileLocationRegion> = emptyList(),
     val isEditing: Boolean = false,
     val isSaving: Boolean = false,
@@ -92,21 +85,29 @@ class ProfileViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
 
             val profileDeferred = async { profileRepository.getProfile() }
+            val optionsDeferred = async { profileRepository.getProfileOptions() }
             val locationDeferred = async { profileRepository.getLocationRegions() }
 
             val profileResult = profileDeferred.await()
+            val optionsResult = optionsDeferred.await()
             val locationResult = locationDeferred.await()
             val fallbackUsername = sessionManager.currentUsername().orEmpty()
             val profile = profileResult.getOrNull() ?: UserProfileSummary(
                 username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) }
             )
+            val options = optionsResult.getOrDefault(_state.value.profileOptions)
 
             _state.update { current ->
                 current.copy(
                     isLoading = false,
                     profile = profile,
+                    profileOptions = options,
                     locationRegions = locationResult.getOrDefault(current.locationRegions),
-                    draft = if (current.isEditing) current.draft else draftStateFrom(profile),
+                    draft = if (current.isEditing) {
+                        sanitizeDraft(current.draft, options)
+                    } else {
+                        draftStateFrom(profile, options)
+                    },
                     error = profileResult.exceptionOrNull()?.message
                 )
             }
@@ -120,7 +121,7 @@ class ProfileViewModel @Inject constructor(
                 isEditing = true,
                 isSaving = false,
                 saveError = null,
-                draft = draftStateFrom(profile)
+                draft = draftStateFrom(profile, it.profileOptions)
             )
         }
     }
@@ -132,7 +133,7 @@ class ProfileViewModel @Inject constructor(
                 isEditing = false,
                 isSaving = false,
                 saveError = null,
-                draft = draftStateFrom(profile)
+                draft = draftStateFrom(profile, it.profileOptions)
             )
         }
     }
@@ -156,7 +157,7 @@ class ProfileViewModel @Inject constructor(
     fun selectCollege(value: String) {
         _state.update { current ->
             val normalizedCollege = ProfileFormSupport.normalizeSelection(value)
-            val majorOptions = ProfileFormSupport.majorOptionsFor(normalizedCollege)
+            val majorOptions = current.profileOptions.majorOptionsFor(normalizedCollege)
             current.copy(
                 draft = current.draft.copy(
                     college = normalizedCollege,
@@ -170,7 +171,7 @@ class ProfileViewModel @Inject constructor(
 
     fun selectMajor(value: String) {
         _state.update { current ->
-            if (!current.draft.canSelectMajor) {
+            if (!current.profileOptions.canSelectMajor(current.draft.college)) {
                 current.copy(saveError = context.getString(R.string.profile_select_college_first))
             } else {
                 current.copy(
@@ -209,21 +210,21 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun saveNickname(value: String) {
-        saveDraftUpdate { it.copy(nickname = value) }
+        saveDraftUpdate { draft, _ -> draft.copy(nickname = value) }
     }
 
     fun saveBio(value: String) {
-        saveDraftUpdate { it.copy(bio = value) }
+        saveDraftUpdate { draft, _ -> draft.copy(bio = value) }
     }
 
     fun saveBirthday(value: String) {
-        saveDraftUpdate { it.copy(birthday = value) }
+        saveDraftUpdate { draft, _ -> draft.copy(birthday = value) }
     }
 
     fun saveCollege(value: String) {
-        saveDraftUpdate { draft ->
+        saveDraftUpdate { draft, options ->
             val normalizedCollege = ProfileFormSupport.normalizeSelection(value)
-            val majorOptions = ProfileFormSupport.majorOptionsFor(normalizedCollege)
+            val majorOptions = options.majorOptionsFor(normalizedCollege)
             draft.copy(
                 college = normalizedCollege,
                 major = draft.major.takeIf { majorOptions.contains(it) }
@@ -233,8 +234,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun saveMajor(value: String) {
-        saveDraftUpdate { draft ->
-            if (!ProfileFormSupport.canSelectMajor(draft.college)) {
+        saveDraftUpdate { draft, options ->
+            if (!options.canSelectMajor(draft.college)) {
                 throw IllegalStateException(context.getString(R.string.profile_select_college_first))
             }
             draft.copy(major = ProfileFormSupport.normalizeSelection(value))
@@ -242,7 +243,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun saveEnrollment(value: String) {
-        saveDraftUpdate { draft ->
+        saveDraftUpdate { draft, _ ->
             draft.copy(
                 grade = if (value == ProfileFormSupport.UnselectedOption) "" else value
             )
@@ -250,7 +251,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun saveLocation(field: ProfileLocationField, selection: ProfileLocationSelection) {
-        saveDraftUpdate { draft ->
+        saveDraftUpdate { draft, _ ->
             when (field) {
                 ProfileLocationField.Location -> draft.copy(
                     location = selection.displayName,
@@ -284,27 +285,27 @@ class ProfileViewModel @Inject constructor(
                         isEditing = false,
                         isSaving = false,
                         saveError = null,
-                        draft = draftStateFrom(updatedProfile)
+                        draft = draftStateFrom(updatedProfile, it.profileOptions)
                     )
                 }
                 _events.emit(ProfileEvent.ShowMessage(context.getString(R.string.profile_info_saved)))
             }.onFailure { error ->
                 _state.update {
-                    it.copy(
-                        isSaving = false,
-                        saveError = error.message ?: context.getString(R.string.profile_info_save_failed)
-                    )
-                }
+                        it.copy(
+                            isSaving = false,
+                            saveError = error.message ?: context.getString(R.string.profile_info_save_failed)
+                        )
+                    }
             }
         }
     }
 
-    private fun saveDraftUpdate(transform: (ProfileDraftUiState) -> ProfileDraftUiState) {
+    private fun saveDraftUpdate(transform: (ProfileDraftUiState, ProfileOptions) -> ProfileDraftUiState) {
         val profile = _state.value.profile ?: return
         if (_state.value.isSaving) return
 
         val updatedDraft = runCatching {
-            transform(draftStateFrom(profile))
+            transform(draftStateFrom(profile, _state.value.profileOptions), _state.value.profileOptions)
         }.getOrElse { error ->
             _state.update {
                 it.copy(
@@ -330,7 +331,7 @@ class ProfileViewModel @Inject constructor(
                             isEditing = false,
                             isSaving = false,
                             saveError = null,
-                            draft = draftStateFrom(updatedProfile)
+                            draft = draftStateFrom(updatedProfile, it.profileOptions)
                         )
                     }
                     _events.emit(ProfileEvent.ShowMessage(context.getString(R.string.profile_info_saved)))
@@ -340,7 +341,7 @@ class ProfileViewModel @Inject constructor(
                         it.copy(
                             isSaving = false,
                             saveError = error.message ?: context.getString(R.string.profile_info_save_failed),
-                            draft = draftStateFrom(profile)
+                            draft = draftStateFrom(profile, it.profileOptions)
                         )
                     }
                 }
@@ -367,16 +368,30 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    private fun draftStateFrom(profile: UserProfileSummary): ProfileDraftUiState {
+    private fun draftStateFrom(profile: UserProfileSummary, options: ProfileOptions): ProfileDraftUiState {
         return ProfileDraftUiState(
             nickname = profile.nickname.orEmpty(),
-            college = profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption,
-            major = profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption,
+            college = profile.faculty?.takeIf(String::isNotBlank)
+                ?.takeIf { options.facultyOptions.contains(it) }
+                ?: ProfileFormSupport.UnselectedOption,
+            major = profile.major?.takeIf(String::isNotBlank)
+                ?.takeIf { options.majorOptionsFor(profile.faculty.orEmpty()).contains(it) }
+                ?: ProfileFormSupport.UnselectedOption,
             grade = profile.enrollment.orEmpty(),
             bio = profile.introduction.orEmpty(),
             birthday = profile.birthday.orEmpty(),
             location = profile.location.orEmpty(),
             hometown = profile.hometown.orEmpty()
+        )
+    }
+
+    private fun sanitizeDraft(draft: ProfileDraftUiState, options: ProfileOptions): ProfileDraftUiState {
+        val normalizedCollege = draft.college.takeIf { options.facultyOptions.contains(it) }
+            ?: ProfileFormSupport.UnselectedOption
+        val validMajors = options.majorOptionsFor(normalizedCollege)
+        return draft.copy(
+            college = normalizedCollege,
+            major = draft.major.takeIf { validMajors.contains(it) } ?: ProfileFormSupport.UnselectedOption
         )
     }
 }

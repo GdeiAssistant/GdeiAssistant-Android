@@ -347,6 +347,9 @@ object MockCommunityProvider {
     private fun MutableList<MockSecretPostRecord>.findById(id: String?): MockSecretPostRecord? =
         firstOrNull { it.id.toString() == id }
 
+    private fun MutableList<MockDatingProfileRecord>.findById(id: String?): MockDatingProfileRecord? =
+        firstOrNull { it.profileId.toString() == id }
+
     private fun MutableList<MockExpressPostRecord>.findById(id: String?): MockExpressPostRecord? =
         firstOrNull { it.id.toString() == id }
 
@@ -366,7 +369,7 @@ object MockCommunityProvider {
             avatarURL = "",
             username = MockUtils.MOCK_CURRENT_USERNAME,
             nickname = MockUtils.MOCK_PROFILE_NICKNAME,
-            faculty = 12,
+            faculty = 11,
             enrollment = 2023,
             major = "软件工程"
         ),
@@ -374,7 +377,7 @@ object MockCommunityProvider {
             avatarURL = "",
             username = "2023002003",
             nickname = "林学长",
-            faculty = 12,
+            faculty = 11,
             enrollment = 2023,
             major = "计算机科学与技术"
         ),
@@ -1022,6 +1025,30 @@ object MockCommunityProvider {
         return MockUtils.successDataJson(items)
     }
 
+    fun mockDatingProfileList(request: Request): String {
+        val area = request.pathValueAfter("area")?.toIntOrNull()
+        val items = mockDatingProfiles
+            .filter { it.state != 0 && (area == null || it.area == area) && it.username != MockUtils.MOCK_CURRENT_USERNAME }
+            .sortedByDescending { it.profileId }
+            .map { it.toDatingProfilePayload() }
+        return MockUtils.successDataJson(items)
+    }
+
+    fun mockDatingDetail(request: Request): String {
+        val profileId = request.itemIdFromPath() ?: return MockUtils.failureJson("缺少资料编号")
+        val profile = mockDatingProfiles.findById(profileId) ?: return MockUtils.failureJson("未找到卖室友资料")
+        val sentPick = mockDatingSentPicks.firstOrNull { it.profile.profileId.toString() == profileId }
+        val isMine = profile.username == MockUtils.MOCK_CURRENT_USERNAME
+        return MockUtils.successDataJson(
+            linkedMapOf(
+                "profile" to profile.toDatingProfilePayload(),
+                "pictureURL" to profile.pictureURL,
+                "isContactVisible" to (sentPick?.state == 1),
+                "isPickNotAvailable" to (isMine || sentPick != null)
+            )
+        )
+    }
+
     fun mockDatingSentPickList(request: Request): String {
         val items = mockDatingSentPicks
             .sortedByDescending { it.updatedAt }
@@ -1034,6 +1061,73 @@ object MockCommunityProvider {
             .filter { it.username == MockUtils.MOCK_CURRENT_USERNAME && it.state != 0 }
             .map { it.toDatingProfilePayload() }
         return MockUtils.successDataJson(items)
+    }
+
+    fun mockDatingPublish(request: Request): String {
+        val nickname = request.multipartField("nickname").orEmpty().ifBlank { MockUtils.MOCK_PROFILE_NICKNAME }
+        val grade = request.multipartField("grade")?.toIntOrNull() ?: 3
+        val faculty = request.multipartField("faculty").orEmpty().ifBlank { "计算机科学系" }
+        val hometown = request.multipartField("hometown").orEmpty().ifBlank { "广州" }
+        val content = request.multipartField("content").orEmpty().ifBlank { "新发布的卖室友资料" }
+        val area = request.multipartField("area")?.toIntOrNull() ?: 0
+        val qq = request.multipartField("qq").orEmpty()
+        val wechat = request.multipartField("wechat").orEmpty()
+        val id = (mockDatingProfiles.maxOfOrNull { it.profileId } ?: 8100) + 1
+        val pictureUrl = if (request.multipartImageCount() > 0) {
+            "https://picsum.photos/seed/gdei-dating-$id/960/1280"
+        } else {
+            ""
+        }
+        mockDatingProfiles.add(
+            0,
+            MockDatingProfileRecord(
+                profileId = id,
+                username = MockUtils.MOCK_CURRENT_USERNAME,
+                nickname = nickname,
+                grade = grade,
+                faculty = faculty,
+                hometown = hometown,
+                content = content,
+                qq = qq,
+                wechat = wechat,
+                area = area,
+                state = 1,
+                pictureURL = pictureUrl
+            )
+        )
+        return MockUtils.successJson("发布成功")
+    }
+
+    fun mockDatingPickSubmit(request: Request): String {
+        val fields = request.formFields()
+        val profileId = request.url.queryParameter("profileId")
+            ?: fields["profileId"]
+            ?: return MockUtils.failureJson("缺少资料编号")
+        val content = request.url.queryParameter("content")
+            ?: fields["content"]
+            ?: return MockUtils.failureJson("撩一下内容不能为空")
+        val trimmedContent = content.trim()
+        if (trimmedContent.isBlank()) return MockUtils.failureJson("撩一下内容不能为空")
+        if (trimmedContent.length > 50) return MockUtils.failureJson("文本内容超过限制")
+        val profile = mockDatingProfiles.findById(profileId) ?: return MockUtils.failureJson("未找到卖室友资料")
+        if (profile.username == MockUtils.MOCK_CURRENT_USERNAME) {
+            return MockUtils.failureJson("不能向自己发送请求")
+        }
+        if (mockDatingSentPicks.any { it.profile.profileId.toString() == profileId }) {
+            return MockUtils.failureJson("请勿重复发送请求")
+        }
+        mockDatingSentPicks.add(
+            0,
+            MockDatingPickRecord(
+                pickId = (mockDatingSentPicks.maxOfOrNull { it.pickId } ?: 9100) + 1,
+                profile = profile,
+                username = MockUtils.MOCK_CURRENT_USERNAME,
+                content = trimmedContent,
+                state = 0,
+                updatedAt = "刚刚"
+            )
+        )
+        return MockUtils.successJson("请求已发送")
     }
 
     fun mockDatingPickStateUpdate(request: Request): String {
