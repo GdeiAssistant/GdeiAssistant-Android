@@ -69,7 +69,10 @@ fun HomeScreen(navController: NavController) {
     val todayLabel = LocalDate.now()
         .format(DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.SIMPLIFIED_CHINESE))
 
-    LazyScreen(title = greetingText) {
+    LazyScreen(
+        title = greetingText,
+        showLoadingPlaceholder = state.isLoading
+    ) {
         item {
             GreetingHeader(
                 dateLabel = todayLabel,
