@@ -57,6 +57,8 @@ class ProfileThemeViewModelTest {
         val viewModel = ProfileThemeViewModel(context, settingsRepository)
         advanceUntilIdle()
 
+        viewModel.selectTheme("deep-indigo")
+        advanceUntilIdle()
         themeColorFlow.value = "deep-indigo"
         advanceUntilIdle()
 
