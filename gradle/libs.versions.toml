@@ -20,6 +20,8 @@ activity-compose = "1.10.1"
 navigation = "2.9.3"
 datastore = "1.2.0"
 immutable = "0.3.7"
+coroutines = "1.10.1"
+mockito-kotlin = "5.4.0"
 commons-codec = "1.17.0"
 jwtdecode = "1.2.0"
 androidx-junit = "1.1.5"
@@ -49,6 +51,8 @@ jwtdecode = { group = "com.auth0.android", name = "jwtdecode", version.ref = "jw
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-viewmodel-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
