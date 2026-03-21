@@ -1488,4 +1488,18 @@
     <!-- 共通 -->
     <string name="common_just_now">たった今</string>
 
+    <!-- Appearance -->
+    <string name="appearance_title">インターフェースと外観</string>
+    <string name="appearance_theme_label">テーマ</string>
+    <string name="appearance_theme_system">システムに従う</string>
+    <string name="appearance_theme_light">ライトモード</string>
+    <string name="appearance_theme_dark">ダークモード</string>
+    <string name="appearance_font_label">フォントサイズ</string>
+    <string name="appearance_font_small">小</string>
+    <string name="appearance_font_standard">標準</string>
+    <string name="appearance_font_large">大</string>
+    <string name="appearance_font_xlarge">特大</string>
+    <string name="appearance_font_preview">プレビュー：広東第二師範学院キャンパスアシスタント</string>
+    <string name="appearance_language_label">言語</string>
+
 </resources>

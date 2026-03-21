@@ -83,7 +83,7 @@ import cn.gdeiassistant.ui.profile.PrivacySettingsScreen
 import cn.gdeiassistant.ui.profile.AvatarEditScreen
 import cn.gdeiassistant.ui.profile.ProfileScreen
 import cn.gdeiassistant.ui.profile.ProfileSettingsScreen
-import cn.gdeiassistant.ui.profile.LanguagePickerScreen
+import cn.gdeiassistant.ui.profile.AppearanceScreen
 import cn.gdeiassistant.ui.photograph.PhotographDetailScreen
 import cn.gdeiassistant.ui.photograph.PhotographProfileScreen
 import cn.gdeiassistant.ui.photograph.PhotographPublishScreen
@@ -300,7 +300,9 @@ private fun NavGraphBuilder.accountGraph(navController: NavHostController) {
         composable(Routes.PROFILE_FEEDBACK) { FeedbackScreen(navController = navController) }
         composable(Routes.PROFILE_DELETE_ACCOUNT) { DeleteAccountScreen(navController = navController) }
         composable(Routes.PROFILE_SETTINGS) { ProfileSettingsScreen(navController = navController) }
-        composable(Routes.PROFILE_LANGUAGE) { LanguagePickerScreen(navController = navController) }
+        composable(Routes.APPEARANCE) {
+            AppearanceScreen(onBack = { navController.popBackStack() })
+        }
     }
 }
 

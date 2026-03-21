@@ -1489,4 +1489,18 @@
     <!-- General -->
     <string name="common_just_now">Just now</string>
 
+    <!-- Appearance -->
+    <string name="appearance_title">Interface &amp; Appearance</string>
+    <string name="appearance_theme_label">Theme</string>
+    <string name="appearance_theme_system">Follow System</string>
+    <string name="appearance_theme_light">Light Mode</string>
+    <string name="appearance_theme_dark">Dark Mode</string>
+    <string name="appearance_font_label">Font Size</string>
+    <string name="appearance_font_small">Small</string>
+    <string name="appearance_font_standard">Standard</string>
+    <string name="appearance_font_large">Large</string>
+    <string name="appearance_font_xlarge">Extra Large</string>
+    <string name="appearance_font_preview">Preview: GdeiAssistant Campus Helper</string>
+    <string name="appearance_language_label">Language</string>
+
 </resources>
