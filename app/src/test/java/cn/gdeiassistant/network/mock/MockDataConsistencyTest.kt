@@ -28,7 +28,7 @@ class MockDataConsistencyTest {
             assertFalse("name must not be blank: id=${item.id}", item.name.isBlank())
             assertFalse("description must not be blank: id=${item.id}", item.description.isBlank())
             assertFalse("price must not be blank: id=${item.id}", item.price.isBlank())
-            assertTrue("state must be 0, 1, or 2: id=${item.id}", item.state in 0..3)
+            assertTrue("state must be 0, 1, or 2: id=${item.id}", item.state in 0..2)
             assertFalse("publishTime must not be blank: id=${item.id}", item.publishTime.isBlank())
         }
     }
