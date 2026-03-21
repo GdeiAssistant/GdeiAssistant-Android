@@ -85,6 +85,30 @@ class SettingsRepository @Inject constructor(
         }
     }
 
+    val locale: Flow<String> =
+        appContext.settingsDataStore.data
+            .map { preferences -> preferences[KEY_LOCALE] ?: detectSystemLocale() }
+            .distinctUntilChanged()
+
+    suspend fun setLocale(locale: String) {
+        appContext.settingsDataStore.edit { preferences ->
+            preferences[KEY_LOCALE] = locale
+        }
+    }
+
+    private fun detectSystemLocale(): String {
+        val systemLang = java.util.Locale.getDefault().toLanguageTag()
+        return when {
+            systemLang.startsWith("zh-HK") || systemLang.startsWith("zh-Hant-HK") -> "zh-HK"
+            systemLang.startsWith("zh-TW") || systemLang.startsWith("zh-Hant-TW") || systemLang.startsWith("zh-Hant") -> "zh-TW"
+            systemLang.startsWith("zh") -> "zh-CN"
+            systemLang.startsWith("ja") -> "ja"
+            systemLang.startsWith("ko") -> "ko"
+            systemLang.startsWith("en") -> "en"
+            else -> "zh-CN"
+        }
+    }
+
     suspend fun setThemeColor(color: String) {
         appContext.settingsDataStore.edit { preferences ->
             preferences[KEY_THEME_COLOR] = color
@@ -121,6 +145,7 @@ class SettingsRepository @Inject constructor(
         private val KEY_MOCK_MODE_ENABLED = booleanPreferencesKey("is_mock_mode_enabled")
         private val KEY_SCHEDULE_BACKGROUND_URI = stringPreferencesKey("schedule_background_uri")
         private val KEY_THEME_COLOR = stringPreferencesKey("theme_color")
+        private val KEY_LOCALE = stringPreferencesKey("locale")
         private val KEY_NETWORK_ENVIRONMENT = stringPreferencesKey("network_environment")
         private const val SYNC_CACHE_PREFERENCES_NAME = "developer_settings_sync_cache"
         private const val SYNC_CACHE_KEY_MOCK_MODE_ENABLED = "is_mock_mode_enabled"

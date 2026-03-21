@@ -4,6 +4,7 @@ import cn.gdeiassistant.BuildConfig
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.network.AuthInterceptor
 import cn.gdeiassistant.network.BaseUrlOverrideInterceptor
+import cn.gdeiassistant.network.LocaleInterceptor
 import cn.gdeiassistant.network.MockInterceptor
 import cn.gdeiassistant.network.NetworkConstants
 import cn.gdeiassistant.network.ResponseInterceptor
@@ -51,12 +52,14 @@ object NetworkModule {
         sessionManager: SessionManager,
         baseUrlOverrideInterceptor: BaseUrlOverrideInterceptor,
         authInterceptor: AuthInterceptor,
-        responseInterceptor: ResponseInterceptor
+        responseInterceptor: ResponseInterceptor,
+        localeInterceptor: LocaleInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(NetworkConstants.CONNECT_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .cookieJar(sessionManager.cookieJar)
+        .addInterceptor(localeInterceptor)
         .addInterceptor(baseUrlOverrideInterceptor)
         .addInterceptor(MockInterceptor())
         .addInterceptor(authInterceptor)

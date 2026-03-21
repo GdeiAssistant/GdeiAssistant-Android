@@ -1405,6 +1405,7 @@
 
     <!-- 主题颜色 -->
     <string name="profile_theme_title">主题颜色</string>
+    <string name="profile_language_title">语言</string>
     <string name="profile_theme_subtitle">选择应用主题配色方案</string>
     <string name="profile_theme_current_label">当前主题</string>
     <string name="profile_theme_preview_hint">切换后会立即应用到整个应用，保留 Android 端的轻盈配色层级。</string>

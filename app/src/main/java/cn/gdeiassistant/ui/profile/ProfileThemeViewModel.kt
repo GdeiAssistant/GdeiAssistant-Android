@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ProfileThemeUiState(
-    val themeColor: String = SettingsRepository.DEFAULT_THEME_COLOR
+    val themeColor: String = SettingsRepository.DEFAULT_THEME_COLOR,
+    val locale: String? = null
 )
 
 sealed interface ProfileThemeEvent {
@@ -43,6 +44,17 @@ class ProfileThemeViewModel @Inject constructor(
             settingsRepository.themeColor.collectLatest { themeColor ->
                 _state.update { it.copy(themeColor = themeColor) }
             }
+        }
+        viewModelScope.launch {
+            settingsRepository.locale.collectLatest { locale ->
+                _state.update { it.copy(locale = locale) }
+            }
+        }
+    }
+
+    fun setLocale(locale: String) {
+        viewModelScope.launch {
+            runCatching { settingsRepository.setLocale(locale) }
         }
     }
 

@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Person
@@ -140,6 +141,9 @@ fun ProfileScreen(navController: NavHostController) {
         },
         ProfileMenuItem(Icons.Rounded.Palette, stringResource(R.string.profile_theme_title)) {
             navController.navigate(Routes.PROFILE_THEME)
+        },
+        ProfileMenuItem(Icons.Rounded.Language, stringResource(R.string.profile_language_title)) {
+            navController.navigate(Routes.PROFILE_LANGUAGE)
         },
         ProfileMenuItem(Icons.Rounded.Settings, stringResource(R.string.profile_settings_title)) {
             navController.navigate(Routes.PROFILE_SETTINGS)
