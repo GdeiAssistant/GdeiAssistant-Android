@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -186,13 +187,18 @@ private fun DetailRow(label: String, value: String) {
     }
 }
 
+@Composable
 private fun detailBadgeStyle(raw: String): Pair<Color, Color> {
     val score = raw.toDoubleOrNull()
-        ?: return Color(0xFFF1F2F6) to Color(0xFF30394A)
+        ?: return MaterialTheme.colorScheme.surfaceContainerHighest to MaterialTheme.colorScheme.onSurface
+    val green = Color(0xFF0E7A63)
+    val blue = Color(0xFF1764F6)
+    val amber = Color(0xFFB7791F)
+    val red = Color(0xFFC2412D)
     return when {
-        score >= 90 -> Color(0xFFE8FAF3) to Color(0xFF0E7A63)
-        score >= 80 -> Color(0xFFEFF6FF) to Color(0xFF1764F6)
-        score >= 60 -> Color(0xFFFFF4DE) to Color(0xFFB7791F)
-        else -> Color(0xFFFFECE8) to Color(0xFFC2412D)
+        score >= 90 -> green.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to green
+        score >= 80 -> blue.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to blue
+        score >= 60 -> amber.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to amber
+        else -> red.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to red
     }
 }

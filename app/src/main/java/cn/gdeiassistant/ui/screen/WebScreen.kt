@@ -72,14 +72,14 @@ import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.HeroCard
 import cn.gdeiassistant.ui.components.MetricChip
 
-private val WebBackground = Color(0xFFF2F7FF)
-private val WebBackgroundElevated = Color(0xFFE7F1FF)
-private val WebHeroStart = Color(0xFF1764F6)
-private val WebHeroEnd = Color(0xFF1CC69A)
-private val WebSurface = Color(0xFFFFFFFF)
-private val WebBorder = Color(0xFFD8E7FC)
-private val WebErrorSurface = Color(0xFFFFF4EE)
-private val WebErrorBorder = Color(0xFFF0C8B8)
+@Composable private fun webBackground(): Color = MaterialTheme.colorScheme.surface
+@Composable private fun webBackgroundElevated(): Color = MaterialTheme.colorScheme.surfaceContainerLow
+@Composable private fun webHeroStart(): Color = MaterialTheme.colorScheme.primary
+@Composable private fun webHeroEnd(): Color = MaterialTheme.colorScheme.tertiary
+@Composable private fun webSurface(): Color = MaterialTheme.colorScheme.surface
+@Composable private fun webBorder(): Color = MaterialTheme.colorScheme.outlineVariant
+@Composable private fun webErrorSurface(): Color = MaterialTheme.colorScheme.errorContainer
+@Composable private fun webErrorBorder(): Color = MaterialTheme.colorScheme.error.copy(alpha = 0.38f)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,10 +195,10 @@ fun WebScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            pageBackground = WebBackground,
-            pageBackgroundElevated = WebBackgroundElevated,
-            primaryGlow = WebHeroStart.copy(alpha = 0.14f),
-            secondaryGlow = WebHeroEnd.copy(alpha = 0.14f)
+            pageBackground = webBackground(),
+            pageBackgroundElevated = webBackgroundElevated(),
+            primaryGlow = webHeroStart().copy(alpha = 0.14f),
+            secondaryGlow = webHeroEnd().copy(alpha = 0.14f)
         ) {
             Column(
                 modifier = Modifier
@@ -224,7 +224,7 @@ fun WebScreen(
                         subtitle = if (isLoading) "${progress.coerceIn(0, 100)}%" else null,
                         icon = Icons.Rounded.Refresh,
                         onClick = reloadInApp,
-                        tint = WebHeroStart,
+                        tint = webHeroStart(),
                         emphasized = isLoading,
                         modifier = Modifier.weight(1f)
                     )
@@ -233,7 +233,7 @@ fun WebScreen(
                         subtitle = if (!isValidUrl) stringResource(R.string.web_invalid_url) else null,
                         icon = Icons.Rounded.OpenInBrowser,
                         onClick = openInBrowser,
-                        tint = WebHeroEnd,
+                        tint = webHeroEnd(),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -249,7 +249,7 @@ fun WebScreen(
                                 icon = Icons.Rounded.Report,
                                 title = stringResource(R.string.web_empty_hint),
                                 message = stringResource(R.string.web_invalid_url),
-                                tint = WebHeroStart
+                                tint = webHeroStart()
                             )
                         }
 
@@ -260,7 +260,7 @@ fun WebScreen(
                                 message = stringResource(R.string.web_untrusted_message),
                                 primaryActionLabel = stringResource(R.string.web_open_browser),
                                 onPrimaryAction = openInBrowser,
-                                tint = WebHeroStart
+                                tint = webHeroStart()
                             )
                         }
 
@@ -273,8 +273,8 @@ fun WebScreen(
                                 onPrimaryAction = reloadInApp,
                                 secondaryActionLabel = stringResource(R.string.web_open_browser),
                                 onSecondaryAction = openInBrowser,
-                                surface = WebErrorSurface,
-                                border = WebErrorBorder,
+                                surface = webErrorSurface(),
+                                border = webErrorBorder(),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -426,8 +426,8 @@ private fun WebHeroCard(
 
     HeroCard(
         modifier = Modifier.fillMaxWidth(),
-        start = WebHeroStart,
-        end = WebHeroEnd
+        start = webHeroStart(),
+        end = webHeroEnd()
     ) {
         Row(
             modifier = Modifier.horizontalScroll(chipScrollState),
@@ -492,17 +492,17 @@ private fun WebCanvasCard(
     Card(
         modifier = Modifier.fillMaxSize(),
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(containerColor = WebSurface),
+        colors = CardDefaults.cardColors(containerColor = webSurface()),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, WebBorder)
+        border = BorderStroke(1.dp, webBorder())
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (isLoading) {
                 LinearProgressIndicator(
                     progress = { progress.coerceIn(0, 100) / 100f },
                     modifier = Modifier.fillMaxWidth(),
-                    color = WebHeroStart,
-                    trackColor = WebHeroStart.copy(alpha = 0.12f)
+                    color = webHeroStart(),
+                    trackColor = webHeroStart().copy(alpha = 0.12f)
                 )
             }
             Box(
@@ -524,9 +524,9 @@ private fun WebStateCard(
     onPrimaryAction: (() -> Unit)? = null,
     secondaryActionLabel: String? = null,
     onSecondaryAction: (() -> Unit)? = null,
-    surface: Color = WebSurface,
-    border: Color = WebBorder,
-    tint: Color = WebHeroStart
+    surface: Color = webSurface(),
+    border: Color = webBorder(),
+    tint: Color = webHeroStart()
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
