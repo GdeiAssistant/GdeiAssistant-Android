@@ -1407,23 +1407,7 @@
     <string name="profile_info_saved">Saved</string>
     <string name="profile_info_save_failed">Save failed</string>
 
-    <!-- Theme Colors -->
-    <string name="profile_theme_title">Theme Color</string>
     <string name="profile_language_title">Language</string>
-    <string name="profile_theme_subtitle">Choose an app color scheme</string>
-    <string name="profile_theme_current_label">Current theme</string>
-    <string name="profile_theme_preview_hint">Changes apply immediately across the entire app.</string>
-    <string name="profile_theme_selected">Active</string>
-    <string name="profile_theme_select_action">Tap to switch</string>
-    <string name="profile_theme_update_failed">Failed to switch theme</string>
-    <string name="theme_campus_green">Campus Green</string>
-    <string name="theme_classic_blue">Sky Blue</string>
-    <string name="theme_vivid_purple">Lavender</string>
-    <string name="theme_warm_orange">Vibrant Orange</string>
-    <string name="theme_fresh_teal">Fresh Teal</string>
-    <string name="theme_rose_pink">Rose Pink</string>
-    <string name="theme_deep_indigo">Deep Indigo</string>
-    <string name="theme_amber_gold">Amber Gold</string>
 
     <string name="discovery_title">Discover</string>
     <string name="discovery_badge">Community Square</string>
