@@ -1487,4 +1487,18 @@
     <!-- 通用 -->
     <string name="common_just_now">剛剛</string>
 
+    <!-- Appearance -->
+    <string name="appearance_title">介面和外觀</string>
+    <string name="appearance_theme_label">主題</string>
+    <string name="appearance_theme_system">跟隨系統</string>
+    <string name="appearance_theme_light">淺色模式</string>
+    <string name="appearance_theme_dark">深色模式</string>
+    <string name="appearance_font_label">字體大小</string>
+    <string name="appearance_font_small">小</string>
+    <string name="appearance_font_standard">標準</string>
+    <string name="appearance_font_large">大</string>
+    <string name="appearance_font_xlarge">超大</string>
+    <string name="appearance_font_preview">預覽：廣東第二師範學院校園助手</string>
+    <string name="appearance_language_label">語言</string>
+
 </resources>

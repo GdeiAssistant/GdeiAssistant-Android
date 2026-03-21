@@ -1488,4 +1488,18 @@
     <!-- 공통 -->
     <string name="common_just_now">방금</string>
 
+    <!-- Appearance -->
+    <string name="appearance_title">인터페이스 및 외관</string>
+    <string name="appearance_theme_label">테마</string>
+    <string name="appearance_theme_system">시스템 설정 따르기</string>
+    <string name="appearance_theme_light">라이트 모드</string>
+    <string name="appearance_theme_dark">다크 모드</string>
+    <string name="appearance_font_label">글꼴 크기</string>
+    <string name="appearance_font_small">작게</string>
+    <string name="appearance_font_standard">표준</string>
+    <string name="appearance_font_large">크게</string>
+    <string name="appearance_font_xlarge">매우 크게</string>
+    <string name="appearance_font_preview">미리보기: 광동제2사범학원 캠퍼스 도우미</string>
+    <string name="appearance_language_label">언어</string>
+
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import cn.gdeiassistant.data.UserPreferencesRepository
 
 private val LightColorScheme = lightColorScheme(
     primary = CampusGreenLightPrimary,
@@ -42,9 +43,14 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun GdeiAssistantTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: String = UserPreferencesRepository.THEME_SYSTEM,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeMode) {
+        UserPreferencesRepository.THEME_LIGHT -> false
+        UserPreferencesRepository.THEME_DARK -> true
+        else -> isSystemInDarkTheme()
+    }
     val colorScheme = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
