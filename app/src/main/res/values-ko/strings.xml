@@ -1407,22 +1407,6 @@
     <string name="profile_info_saved">저장되었습니다</string>
     <string name="profile_info_save_failed">저장 실패</string>
 
-    <!-- 테마 색상 -->
-    <string name="profile_theme_title">테마 색상</string>
-    <string name="profile_theme_subtitle">앱 테마 배색을 선택합니다</string>
-    <string name="profile_theme_current_label">현재 테마</string>
-    <string name="profile_theme_preview_hint">전환하면 전체 앱에 즉시 적용되며, Android의 경쾌한 배색 레이어를 유지합니다.</string>
-    <string name="profile_theme_selected">현재 사용 중</string>
-    <string name="profile_theme_select_action">탭하여 전환</string>
-    <string name="profile_theme_update_failed">테마 전환 실패</string>
-    <string name="theme_campus_green">캠퍼스 그린</string>
-    <string name="theme_classic_blue">스카이 블루</string>
-    <string name="theme_vivid_purple">라벤더</string>
-    <string name="theme_warm_orange">비타민 오렌지</string>
-    <string name="theme_fresh_teal">프레시 틸</string>
-    <string name="theme_rose_pink">에너지 핑크</string>
-    <string name="theme_deep_indigo">딥 인디고</string>
-    <string name="theme_amber_gold">앰버 골드</string>
 
     <string name="discovery_title">발견</string>
     <string name="discovery_badge">커뮤니티 광장</string>

@@ -1407,22 +1407,6 @@
     <string name="profile_info_saved">保存しました</string>
     <string name="profile_info_save_failed">保存に失敗しました</string>
 
-    <!-- テーマカラー -->
-    <string name="profile_theme_title">テーマカラー</string>
-    <string name="profile_theme_subtitle">アプリのテーマ配色を選択</string>
-    <string name="profile_theme_current_label">現在のテーマ</string>
-    <string name="profile_theme_preview_hint">切り替え後はアプリ全体にすぐ反映されます。Android 向けの軽やかな配色レイヤーを保持しています。</string>
-    <string name="profile_theme_selected">現在有効</string>
-    <string name="profile_theme_select_action">タップして切替</string>
-    <string name="profile_theme_update_failed">テーマの切り替えに失敗しました</string>
-    <string name="theme_campus_green">キャンパスグリーン</string>
-    <string name="theme_classic_blue">スカイブルー</string>
-    <string name="theme_vivid_purple">ラベンダー</string>
-    <string name="theme_warm_orange">ビタミンオレンジ</string>
-    <string name="theme_fresh_teal">フレッシュティール</string>
-    <string name="theme_rose_pink">ローズピンク</string>
-    <string name="theme_deep_indigo">ディープインディゴ</string>
-    <string name="theme_amber_gold">アンバーゴールド</string>
 
     <string name="discovery_title">発見</string>
     <string name="discovery_badge">コミュニティ広場</string>

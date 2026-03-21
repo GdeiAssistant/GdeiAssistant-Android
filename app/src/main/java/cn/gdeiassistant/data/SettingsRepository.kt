@@ -51,13 +51,6 @@ class SettingsRepository @Inject constructor(
             .map { preferences -> preferences[KEY_SCHEDULE_BACKGROUND_URI] }
             .distinctUntilChanged()
 
-    val themeColor: Flow<String> =
-        appContext.settingsDataStore.data
-            .map { preferences ->
-                migrateThemeKey(preferences[KEY_THEME_COLOR] ?: DEFAULT_THEME_COLOR)
-            }
-            .distinctUntilChanged()
-
     val networkEnvironment: Flow<NetworkEnvironment> =
         appContext.settingsDataStore.data
             .map { preferences ->
@@ -109,12 +102,6 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun setThemeColor(color: String) {
-        appContext.settingsDataStore.edit { preferences ->
-            preferences[KEY_THEME_COLOR] = color
-        }
-    }
-
     suspend fun setNetworkEnvironment(environment: NetworkEnvironment) {
         appContext.settingsDataStore.edit { preferences ->
             preferences[KEY_NETWORK_ENVIRONMENT] = environment.storageValue
@@ -127,31 +114,15 @@ class SettingsRepository @Inject constructor(
         persistNetworkEnvironmentCache(networkEnvironment.first())
     }
 
-    private fun migrateThemeKey(stored: String): String = when (stored) {
-        "purple" -> "vivid-purple"
-        "blue" -> "classic-blue"
-        "green" -> "campus-green"
-        "orange" -> "warm-orange"
-        "pink" -> "rose-pink"
-        "teal" -> "fresh-teal"
-        "red" -> "rose-pink"
-        "indigo" -> "deep-indigo"
-        "gold" -> "amber-gold"
-        "cyan" -> "fresh-teal"
-        else -> stored
-    }
-
     companion object {
         private val KEY_MOCK_MODE_ENABLED = booleanPreferencesKey("is_mock_mode_enabled")
         private val KEY_SCHEDULE_BACKGROUND_URI = stringPreferencesKey("schedule_background_uri")
-        private val KEY_THEME_COLOR = stringPreferencesKey("theme_color")
         private val KEY_LOCALE = stringPreferencesKey("locale")
         private val KEY_NETWORK_ENVIRONMENT = stringPreferencesKey("network_environment")
         private const val SYNC_CACHE_PREFERENCES_NAME = "developer_settings_sync_cache"
         private const val SYNC_CACHE_KEY_MOCK_MODE_ENABLED = "is_mock_mode_enabled"
         private const val SYNC_CACHE_KEY_NETWORK_ENVIRONMENT = "network_environment"
         private const val DEFAULT_MOCK_MODE_ENABLED = false
-        const val DEFAULT_THEME_COLOR = "campus-green"
 
         @Volatile
         private var mockModeEnabledCache: Boolean = DEFAULT_MOCK_MODE_ENABLED
