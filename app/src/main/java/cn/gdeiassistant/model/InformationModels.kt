@@ -64,6 +64,12 @@ enum class UserDataExportState(val code: Int) {
     }
 }
 
+@Immutable
+data class Festival(
+    val name: String?,
+    val description: List<String>?
+) : Serializable
+
 fun newsSourceLabel(type: Int): String {
     return when (type) {
         1 -> "学校要闻"

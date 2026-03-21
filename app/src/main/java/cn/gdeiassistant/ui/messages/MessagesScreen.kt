@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Campaign
+import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.HorizontalDivider
@@ -46,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AnnouncementItem
+import cn.gdeiassistant.model.Festival
 import cn.gdeiassistant.model.InteractionMessage
 import cn.gdeiassistant.model.SchoolNews
 import cn.gdeiassistant.model.newsSourceLabel
@@ -103,6 +105,11 @@ fun MessagesScreen(navController: NavHostController) {
                 onOpenAll = { navController.navigate(Routes.NOTICE_LIST) },
                 onOpenItem = { item -> navController.navigate(Routes.noticeDetail(item.id)) }
             )
+        }
+        state.festival?.let { festival ->
+            item {
+                FestivalCard(festival = festival)
+            }
         }
         item {
             InteractionSection(
@@ -302,6 +309,55 @@ private fun AnnouncementSection(
                     onClick = { onOpenItem(item) }
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun FestivalCard(festival: Festival) {
+    val tint = MaterialTheme.colorScheme.primary
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                color = tint.copy(alpha = 0.12f),
+                shape = AppShapes.small
+            ) {
+                Box(
+                    modifier = Modifier.padding(10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Celebration,
+                        contentDescription = null,
+                        tint = tint
+                    )
+                }
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = festival.name.orEmpty(),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Text(
+                    text = stringResource(R.string.messages_festival_badge),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        festival.description?.forEach { line ->
+            Text(
+                text = line,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
         }
     }
 }

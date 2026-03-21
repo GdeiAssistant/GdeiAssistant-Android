@@ -1,6 +1,7 @@
 package cn.gdeiassistant.data
 
 import cn.gdeiassistant.model.AnnouncementItem
+import cn.gdeiassistant.model.Festival
 import cn.gdeiassistant.network.api.AnnouncementApi
 import cn.gdeiassistant.network.safeApiCall
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +34,22 @@ class AnnouncementRepository @Inject constructor(
         }.mapCatching { dto ->
             mapAnnouncementItem(dto)
                 ?: throw IllegalStateException("未找到该公告")
+        }
+    }
+
+    suspend fun getFestival(): Result<Festival?> = withContext(Dispatchers.IO) {
+        safeApiCall {
+            announcementApi.getFestival()
+        }.map { dto ->
+            val name = dto?.name?.trim()
+            if (name.isNullOrBlank()) {
+                null
+            } else {
+                Festival(
+                    name = name,
+                    description = dto.description?.map { it.trim() }?.filter { it.isNotEmpty() }
+                )
+            }
         }
     }
 

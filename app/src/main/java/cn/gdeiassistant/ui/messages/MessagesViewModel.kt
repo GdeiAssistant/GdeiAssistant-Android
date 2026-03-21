@@ -8,6 +8,7 @@ import cn.gdeiassistant.data.AnnouncementRepository
 import cn.gdeiassistant.data.MessagesRepository
 import cn.gdeiassistant.data.NewsRepository
 import cn.gdeiassistant.model.AnnouncementItem
+import cn.gdeiassistant.model.Festival
 import cn.gdeiassistant.model.InteractionMessage
 import cn.gdeiassistant.model.SchoolNews
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,7 +32,8 @@ data class MessagesUiState(
     val announcementError: String? = null,
     val interactionItems: List<InteractionMessage> = emptyList(),
     val interactionError: String? = null,
-    val unreadCount: Int = 0
+    val unreadCount: Int = 0,
+    val festival: Festival? = null
 )
 
 sealed interface MessagesEvent {
@@ -63,11 +65,13 @@ class MessagesViewModel @Inject constructor(
             val announcementDeferred = async { announcementRepository.getAnnouncements(limit = 5) }
             val interactionDeferred = async { messagesRepository.getInteractionMessages(size = 10) }
             val unreadDeferred = async { messagesRepository.getUnreadCount() }
+            val festivalDeferred = async { announcementRepository.getFestival() }
 
             val newsResult = newsDeferred.await()
             val announcementResult = announcementDeferred.await()
             val interactionResult = interactionDeferred.await()
             val unreadResult = unreadDeferred.await()
+            val festivalResult = festivalDeferred.await()
 
             _state.update {
                 it.copy(
@@ -78,7 +82,8 @@ class MessagesViewModel @Inject constructor(
                     announcementError = announcementResult.exceptionOrNull()?.message,
                     interactionItems = interactionResult.getOrNull().orEmpty(),
                     interactionError = interactionResult.exceptionOrNull()?.message,
-                    unreadCount = unreadResult.getOrNull() ?: interactionResult.getOrNull()?.count { !it.isRead } ?: 0
+                    unreadCount = unreadResult.getOrNull() ?: interactionResult.getOrNull()?.count { !it.isRead } ?: 0,
+                    festival = festivalResult.getOrNull()
                 )
             }
         }
