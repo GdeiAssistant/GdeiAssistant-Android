@@ -61,16 +61,23 @@ import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
 
-private val LoginBackground = Brush.verticalGradient(
+@Composable
+private fun loginBackground(): Brush = Brush.verticalGradient(
     colors = listOf(
-        Color(0xFFF7F7FF),
-        Color(0xFFF1F3FF),
-        Color(0xFFEEF5FF)
+        MaterialTheme.colorScheme.surface,
+        MaterialTheme.colorScheme.surfaceContainerLow,
+        MaterialTheme.colorScheme.surfaceContainer
     )
 )
-private val LoginCardBorder = Color(0x1F3A235A)
-private val LoginMockTint = Color(0xFF5E35B1)
-private val LoginMockContainer = Color(0xFFF1EBFF)
+
+@Composable
+private fun loginCardBorder(): Color = MaterialTheme.colorScheme.outlineVariant
+
+@Composable
+private fun loginMockTint(): Color = MaterialTheme.colorScheme.tertiary
+
+@Composable
+private fun loginMockContainer(): Color = MaterialTheme.colorScheme.tertiaryContainer
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -112,7 +119,7 @@ private fun LoginContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(LoginBackground)
+            .background(loginBackground())
             .statusBarsPadding()
             .navigationBarsPadding()
             .imePadding()
@@ -158,7 +165,7 @@ private fun LoginHeader() {
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            LoginMockTint.copy(alpha = 0.16f),
+                            loginMockTint().copy(alpha = 0.16f),
                             MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
                         )
                     )
@@ -212,7 +219,7 @@ private fun LoginFormCard(
             .animateContentSize(),
         shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, LoginCardBorder)
+        border = androidx.compose.foundation.BorderStroke(1.dp, loginCardBorder())
     ) {
         Column(
             modifier = Modifier
@@ -320,7 +327,7 @@ private fun LoginMockCard(
             .animateContentSize(),
         shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, LoginCardBorder)
+        border = androidx.compose.foundation.BorderStroke(1.dp, loginCardBorder())
     ) {
         Column(
             modifier = Modifier
@@ -336,13 +343,13 @@ private fun LoginMockCard(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(LoginMockContainer),
+                        .background(loginMockContainer()),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.DataObject,
                         contentDescription = null,
-                        tint = LoginMockTint
+                        tint = loginMockTint()
                     )
                 }
                 Spacer(modifier = Modifier.width(14.dp))
@@ -377,14 +384,14 @@ private fun LoginMockCard(
             ) {
                 Surface(
                     shape = AppShapes.button,
-                    color = LoginMockContainer,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, LoginMockTint.copy(alpha = 0.14f))
+                    color = loginMockContainer(),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, loginMockTint().copy(alpha = 0.14f))
                 ) {
                     Text(
                         text = stringResource(R.string.login_mock_account_hint),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = LoginMockTint
+                        color = loginMockTint()
                     )
                 }
             }
