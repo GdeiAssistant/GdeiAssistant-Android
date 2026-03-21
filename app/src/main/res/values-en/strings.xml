@@ -618,6 +618,9 @@
     <string name="marketplace_metric_type">Category</string>
     <string name="marketplace_metric_count">For Sale</string>
     <string name="marketplace_filter_all">All Categories</string>
+    <string name="marketplace_search_label">Search items by keyword</string>
+    <string name="marketplace_search_action">Search Items</string>
+    <string name="marketplace_search_clear_action">Clear Search</string>
     <string name="marketplace_my_items_title">My Items</string>
     <string name="marketplace_my_items_subtitle">Manage active and past listings</string>
     <string name="marketplace_publish_title">List Item</string>

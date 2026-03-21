@@ -617,6 +617,9 @@
     <string name="marketplace_metric_type">分類</string>
     <string name="marketplace_metric_count">在售</string>
     <string name="marketplace_filter_all">全部分類</string>
+    <string name="marketplace_search_label">搜尋商品關鍵字</string>
+    <string name="marketplace_search_action">搜尋商品</string>
+    <string name="marketplace_search_clear_action">清空搜尋</string>
     <string name="marketplace_my_items_title">個人中心</string>
     <string name="marketplace_my_items_subtitle">管理出售中與歷史狀態</string>
     <string name="marketplace_publish_title">發佈商品</string>

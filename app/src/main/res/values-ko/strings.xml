@@ -618,6 +618,9 @@
     <string name="marketplace_metric_type">분류</string>
     <string name="marketplace_metric_count">판매 중</string>
     <string name="marketplace_filter_all">전체 분류</string>
+    <string name="marketplace_search_label">상품 키워드 검색</string>
+    <string name="marketplace_search_action">상품 검색</string>
+    <string name="marketplace_search_clear_action">검색 지우기</string>
     <string name="marketplace_my_items_title">개인 센터</string>
     <string name="marketplace_my_items_subtitle">판매 중 및 기록 상태 관리</string>
     <string name="marketplace_publish_title">상품 등록</string>

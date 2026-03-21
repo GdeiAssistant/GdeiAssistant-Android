@@ -50,6 +50,8 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.MarketplaceDetail
 import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceItemState
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -110,6 +112,34 @@ fun MarketplaceScreen(navController: NavHostController) {
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+        item {
+            SectionCard(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = viewModel::updateQuery,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(text = stringResource(R.string.marketplace_search_label)) },
+                    singleLine = true
+                )
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = viewModel::refresh,
+                        enabled = !state.isLoading,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.marketplace_search_action))
+                    }
+                    Button(
+                        onClick = viewModel::clearQuery,
+                        enabled = state.query.isNotBlank(),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.marketplace_search_clear_action))
+                    }
+                }
             }
         }
         item {
