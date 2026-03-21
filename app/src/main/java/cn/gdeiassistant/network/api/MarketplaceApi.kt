@@ -26,6 +26,12 @@ interface MarketplaceApi {
         @Path("start") start: Int
     ): DataJsonResult<List<MarketplaceItemDto>>
 
+    @GET("api/ershou/keyword/{keyword}/start/{start}")
+    suspend fun searchItems(
+        @Path("keyword") keyword: String,
+        @Path("start") start: Int
+    ): DataJsonResult<List<MarketplaceItemDto>>
+
     @GET("api/ershou/item/id/{id}")
     suspend fun getItemDetail(
         @Path("id") id: String

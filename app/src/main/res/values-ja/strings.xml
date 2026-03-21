@@ -618,6 +618,9 @@
     <string name="marketplace_metric_type">カテゴリ</string>
     <string name="marketplace_metric_count">出品中</string>
     <string name="marketplace_filter_all">すべてのカテゴリ</string>
+    <string name="marketplace_search_label">商品のキーワードを検索</string>
+    <string name="marketplace_search_action">商品を検索</string>
+    <string name="marketplace_search_clear_action">検索をクリア</string>
     <string name="marketplace_my_items_title">マイページ</string>
     <string name="marketplace_my_items_subtitle">出品中と過去の状態を管理</string>
     <string name="marketplace_publish_title">商品を出品</string>

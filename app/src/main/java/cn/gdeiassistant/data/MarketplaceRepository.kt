@@ -46,11 +46,12 @@ class MarketplaceRepository @Inject constructor(
             .map { it.marketplaceTypeOptions() }
     }
 
-    suspend fun getItems(typeId: Int? = null): Result<List<MarketplaceItem>> = withContext(Dispatchers.IO) {
-        val result = if (typeId == null) {
-            safeApiCall { marketplaceApi.getItems(start = 0) }
-        } else {
-            safeApiCall { marketplaceApi.getItemsByType(type = typeId, start = 0) }
+    suspend fun getItems(typeId: Int? = null, keyword: String? = null): Result<List<MarketplaceItem>> = withContext(Dispatchers.IO) {
+        val normalizedKeyword = keyword?.trim().orEmpty()
+        val result = when {
+            normalizedKeyword.isNotBlank() -> safeApiCall { marketplaceApi.searchItems(keyword = normalizedKeyword, start = 0) }
+            typeId != null -> safeApiCall { marketplaceApi.getItemsByType(type = typeId, start = 0) }
+            else -> safeApiCall { marketplaceApi.getItems(start = 0) }
         }
         result.mapCatching { items ->
             items.orEmpty()

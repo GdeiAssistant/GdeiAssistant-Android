@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MarketplaceUiState(
+    val query: String = "",
     val typeOptions: List<MarketplaceTypeOption> = emptyList(),
     val selectedTypeId: Int? = null,
     val items: List<MarketplaceItem> = emptyList(),
@@ -57,9 +58,18 @@ class MarketplaceViewModel @Inject constructor(
         refresh()
     }
 
+    fun updateQuery(value: String) {
+        _state.update { it.copy(query = value) }
+    }
+
+    fun clearQuery() {
+        _state.update { it.copy(query = "") }
+        refresh()
+    }
+
     fun selectType(typeId: Int?) {
         if (_state.value.selectedTypeId == typeId) return
-        _state.update { it.copy(selectedTypeId = typeId) }
+        _state.update { it.copy(selectedTypeId = typeId, query = "") }
         refresh()
     }
 
@@ -68,7 +78,9 @@ class MarketplaceViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             val typeOptions = marketplaceRepository.getTypeOptions()
                 .getOrDefault(_state.value.typeOptions.ifEmpty { marketplaceRepository.currentTypeOptions() })
-            marketplaceRepository.getItems(_state.value.selectedTypeId)
+            val keyword = _state.value.query.trim().takeIf { it.isNotBlank() }
+            val typeId = if (keyword != null) null else _state.value.selectedTypeId
+            marketplaceRepository.getItems(typeId = typeId, keyword = keyword)
                 .onSuccess { items ->
                     _state.update { it.copy(typeOptions = typeOptions, items = items, isLoading = false, error = null) }
                 }

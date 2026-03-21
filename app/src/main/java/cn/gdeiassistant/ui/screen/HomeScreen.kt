@@ -149,7 +149,7 @@ private fun GreetingHeader(
             Text(
                 text = statsLine,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
             )
         }
     }
@@ -192,7 +192,7 @@ private fun TodayScheduleCard(
                             stringResource(R.string.home_today_schedule_count, courses.size)
                         },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 GhostButton(
@@ -213,7 +213,7 @@ private fun TodayScheduleCard(
                         Text(
                             text = err,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     items.isEmpty() -> {
@@ -235,7 +235,7 @@ private fun TodayScheduleCard(
                                 Text(
                                     text = stringResource(R.string.home_today_schedule_empty_body),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -289,7 +289,7 @@ private fun CourseRow(course: Schedule) {
             Text(
                 text = slotLabel,
                 style = MaterialTheme.typography.labelSmall,
-                color = onPrimary.copy(alpha = 0.7f)
+                color = onPrimary.copy(alpha = 0.85f)
             )
         }
         Box(
@@ -312,7 +312,7 @@ private fun CourseRow(course: Schedule) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
-                    color = onPrimary.copy(alpha = 0.7f),
+                    color = onPrimary.copy(alpha = 0.85f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
