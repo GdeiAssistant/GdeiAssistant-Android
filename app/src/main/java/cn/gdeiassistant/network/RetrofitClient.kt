@@ -6,6 +6,7 @@ import cn.gdeiassistant.event.GlobalEventManager
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import android.provider.Settings
 import okhttp3.Interceptor
 import javax.inject.Inject
 
@@ -19,6 +20,13 @@ class AuthInterceptor @Inject constructor(
         val request = chain.request().newBuilder().apply {
             sessionManager.currentToken()?.takeIf { it.isNotBlank() }?.let { token ->
                 addHeader("Authorization", "Bearer $token")
+            }
+            val deviceId = Settings.Secure.getString(
+                AppContextProvider.context.contentResolver,
+                Settings.Secure.ANDROID_ID
+            )
+            if (!deviceId.isNullOrBlank()) {
+                addHeader("X-Device-ID", deviceId)
             }
         }.build()
         return chain.proceed(request)

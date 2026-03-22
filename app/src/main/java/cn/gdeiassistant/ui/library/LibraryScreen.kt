@@ -131,11 +131,14 @@ fun LibraryScreen(navController: NavHostController) {
         item {
             SearchSection(
                 keyword = state.searchKeyword,
+                currentPage = state.currentPage,
                 totalPages = state.totalPages,
                 isSearching = state.isSearching,
                 onKeywordChange = viewModel::updateSearchKeyword,
                 onSearch = viewModel::search,
-                onClear = viewModel::clearSearch
+                onClear = viewModel::clearSearch,
+                onPreviousPage = viewModel::goToPreviousPage,
+                onNextPage = viewModel::goToNextPage
             )
         }
         if (!state.searchError.isNullOrBlank()) {
@@ -233,11 +236,14 @@ private fun LibraryOverviewCard(
 @Composable
 private fun SearchSection(
     keyword: String,
+    currentPage: Int,
     totalPages: Int,
     isSearching: Boolean,
     onKeywordChange: (String) -> Unit,
     onSearch: () -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -282,6 +288,30 @@ private fun SearchSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(
+                    onClick = onPreviousPage,
+                    enabled = currentPage > 1 && !isSearching
+                ) {
+                    Text(text = stringResource(R.string.library_page_previous))
+                }
+                Text(
+                    text = stringResource(R.string.library_page_indicator, currentPage, totalPages),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                TextButton(
+                    onClick = onNextPage,
+                    enabled = currentPage < totalPages && !isSearching
+                ) {
+                    Text(text = stringResource(R.string.library_page_next))
+                }
+            }
         }
     }
 }

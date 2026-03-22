@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 data class LibraryUiState(
     val searchKeyword: String = "",
+    val currentPage: Int = 1,
     val searchResults: List<CollectionSearchItem> = emptyList(),
     val borrowPassword: String = "",
     val borrowedItems: List<CollectionBorrowItem> = emptyList(),
@@ -79,7 +80,7 @@ class LibraryViewModel @Inject constructor(
                 null
             }
             val searchDeferred = if (currentState.searchKeyword.isNotBlank()) {
-                async { repository.searchCollections(keyword = currentState.searchKeyword, page = 1) }
+                async { repository.searchCollections(keyword = currentState.searchKeyword, page = currentState.currentPage) }
             } else {
                 null
             }
@@ -102,12 +103,34 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun search() {
+        _state.update { it.copy(currentPage = 1) }
+        searchPage(1)
+    }
+
+    fun goToPreviousPage() {
+        val current = _state.value.currentPage
+        if (current > 1) {
+            _state.update { it.copy(currentPage = current - 1) }
+            searchPage(current - 1)
+        }
+    }
+
+    fun goToNextPage() {
+        val current = _state.value.currentPage
+        if (current < _state.value.totalPages) {
+            _state.update { it.copy(currentPage = current + 1) }
+            searchPage(current + 1)
+        }
+    }
+
+    private fun searchPage(page: Int) {
         val keyword = _state.value.searchKeyword.trim()
         if (keyword.isBlank()) {
             _state.update {
                 it.copy(
                     searchResults = emptyList(),
                     totalPages = 0,
+                    currentPage = 1,
                     searchError = null
                 )
             }
@@ -115,12 +138,12 @@ class LibraryViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _state.update { it.copy(isSearching = true, searchError = null) }
-            repository.searchCollections(keyword = keyword, page = 1)
-                .onSuccess { page ->
+            repository.searchCollections(keyword = keyword, page = page)
+                .onSuccess { result ->
                     _state.update {
                         it.copy(
-                            searchResults = page.items,
-                            totalPages = page.sumPage,
+                            searchResults = result.items,
+                            totalPages = result.sumPage,
                             isSearching = false,
                             searchError = null
                         )
@@ -136,6 +159,7 @@ class LibraryViewModel @Inject constructor(
         _state.update {
             it.copy(
                 searchKeyword = "",
+                currentPage = 1,
                 searchResults = emptyList(),
                 totalPages = 0,
                 searchError = null

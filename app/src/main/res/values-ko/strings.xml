@@ -1186,6 +1186,9 @@
     <string name="library_collection_result_title">검색 결과</string>
     <string name="library_collection_result_subtitle">총 %1$d 건 표시</string>
     <string name="library_collection_result_pages">총 %1$d 페이지 결과</string>
+    <string name="library_page_previous">이전 페이지</string>
+    <string name="library_page_next">다음 페이지</string>
+    <string name="library_page_indicator">%1$d / %2$d 페이지</string>
     <string name="library_collection_detail_title">소장 상세</string>
     <string name="library_collection_detail_badge">소장 정보</string>
     <string name="library_collection_detail_loading">소장 상세 로딩 중…</string>
