@@ -1186,6 +1186,9 @@
     <string name="library_collection_result_title">検索結果</string>
     <string name="library_collection_result_subtitle">%1$d 件の結果を表示</string>
     <string name="library_collection_result_pages">全 %1$d ページ</string>
+    <string name="library_page_previous">前のページ</string>
+    <string name="library_page_next">次のページ</string>
+    <string name="library_page_indicator">%1$d / %2$d ページ</string>
     <string name="library_collection_detail_title">蔵書詳細</string>
     <string name="library_collection_detail_badge">蔵書情報</string>
     <string name="library_collection_detail_loading">蔵書詳細を読み込み中…</string>
