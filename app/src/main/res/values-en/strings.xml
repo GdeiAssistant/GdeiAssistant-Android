@@ -1530,5 +1530,7 @@
     <string name="network_error_generic">Network error. Please check your connection.</string>
     <string name="network_error_request_failed">Request failed</string>
     <string name="network_error_server">Server error: %d</string>
+    <string name="accessibility_selected">Selected</string>
+    <string name="accessibility_not_selected">Not selected</string>
 
 </resources>

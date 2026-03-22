@@ -1528,5 +1528,7 @@
     <string name="network_error_generic">網絡異常，請檢查網絡連接</string>
     <string name="network_error_request_failed">請求失敗</string>
     <string name="network_error_server">伺服器錯誤: %d</string>
+    <string name="accessibility_selected">已選擇</string>
+    <string name="accessibility_not_selected">未選擇</string>
 
 </resources>

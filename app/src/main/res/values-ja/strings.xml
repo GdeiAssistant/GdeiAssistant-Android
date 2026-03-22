@@ -1529,5 +1529,7 @@
     <string name="network_error_generic">ネットワークエラーです。接続を確認してください</string>
     <string name="network_error_request_failed">リクエストに失敗しました</string>
     <string name="network_error_server">サーバーエラー: %d</string>
+    <string name="accessibility_selected">選択済み</string>
+    <string name="accessibility_not_selected">未選択</string>
 
 </resources>
