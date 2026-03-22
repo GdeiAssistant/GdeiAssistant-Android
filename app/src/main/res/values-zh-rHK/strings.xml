@@ -1501,4 +1501,29 @@
     <string name="appearance_font_preview">預覽：廣東第二師範學院校園助手</string>
     <string name="appearance_language_label">語言</string>
 
+    <!-- Locale-aware strings -->
+    <string name="home_date_format">M月d日 EEEE</string>
+    <string name="notification_channel_service">系統公告</string>
+    <string name="language_picker_title">語言 / Language</string>
+    <string name="news_error_missing_id">缺少新聞編號</string>
+    <string name="news_source_important">學校要聞</string>
+    <string name="news_source_department">院部通知</string>
+    <string name="news_source_announcement">通知公告</string>
+    <string name="news_source_academic">學術動態</string>
+    <string name="news_source_default">新聞</string>
+
+    <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">未能獲取伺服器公鑰</string>
+    <string name="charge_error_no_payment_info">伺服器未返回付款資訊</string>
+    <string name="charge_error_empty_payment_data">付款資訊為空</string>
+    <string name="charge_error_empty_payment_signature">付款簽名為空</string>
+    <string name="charge_error_parse_failed">付款資訊解析失敗</string>
+    <string name="charge_error_login_required">請先登入</string>
+
+    <!-- Network error messages -->
+    <string name="network_error_forbidden">權限不足</string>
+    <string name="network_error_generic">網絡異常，請檢查網絡連接</string>
+    <string name="network_error_request_failed">請求失敗</string>
+    <string name="network_error_server">伺服器錯誤: %d</string>
+
 </resources>
