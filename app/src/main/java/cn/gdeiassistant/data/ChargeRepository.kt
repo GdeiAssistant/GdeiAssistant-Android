@@ -32,7 +32,7 @@ class ChargeRepository @Inject constructor(
             val serverPublicKey = safeApiCall { chargeApi.getServerPublicKey() }
                 .getOrElse { return@withContext Result.failure(it) }
                 ?.takeIf { it.isNotBlank() }
-                ?: return@withContext Result.failure(IllegalStateException("未获取到服务端公钥"))
+                ?: return@withContext Result.failure(IllegalStateException(context.getString(R.string.charge_error_no_server_public_key)))
 
             val requestValidateToken = context.getString(R.string.request_validate_token)
             val nonce = UUID.randomUUID().toString().replace("-", "")
@@ -74,21 +74,21 @@ class ChargeRepository @Inject constructor(
                     clientRSASignature = clientSignature
                 )
             }.getOrElse { return@withContext Result.failure(it) }
-                ?: return@withContext Result.failure(IllegalStateException("服务端未返回支付信息"))
+                ?: return@withContext Result.failure(IllegalStateException(context.getString(R.string.charge_error_no_payment_info)))
 
             val encryptedData = encryptedResponse.data
                 ?.takeIf { it.isNotBlank() }
-                ?: return@withContext Result.failure(IllegalStateException("支付信息为空"))
+                ?: return@withContext Result.failure(IllegalStateException(context.getString(R.string.charge_error_empty_payment_data)))
             val encryptedSignature = encryptedResponse.signature
                 ?.takeIf { it.isNotBlank() }
-                ?: return@withContext Result.failure(IllegalStateException("支付签名为空"))
+                ?: return@withContext Result.failure(IllegalStateException(context.getString(R.string.charge_error_empty_payment_signature)))
 
             val chargeJson = String(
                 ChargeCrypto.decryptWithAes(aesKey, Base64.decode(encryptedData, Base64.NO_WRAP)),
                 Charsets.UTF_8
             )
             val charge = Gson().fromJson(chargeJson, Charge::class.java)
-                ?: return@withContext Result.failure(IllegalStateException("支付信息解析失败"))
+                ?: return@withContext Result.failure(IllegalStateException(context.getString(R.string.charge_error_parse_failed)))
             val expectedSignature = ChargeCrypto.sha1Hex(Gson().toJson(charge))
             val actualSignature = String(
                 ChargeCrypto.decryptWithPublicKey(
@@ -110,7 +110,7 @@ class ChargeRepository @Inject constructor(
 
     private fun requireToken(): String {
         val token = sessionManager.currentToken()
-        if (token.isNullOrBlank()) throw IllegalStateException("请先登录")
+        if (token.isNullOrBlank()) throw IllegalStateException(context.getString(R.string.charge_error_login_required))
         return token
     }
 

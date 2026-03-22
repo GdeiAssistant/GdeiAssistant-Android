@@ -1502,4 +1502,29 @@
     <string name="appearance_font_preview">プレビュー：広東第二師範学院キャンパスアシスタント</string>
     <string name="appearance_language_label">言語</string>
 
+    <!-- Locale-aware strings -->
+    <string name="home_date_format">M月d日 EEEE</string>
+    <string name="notification_channel_service">システム通知</string>
+    <string name="language_picker_title">言語 / Language</string>
+    <string name="news_error_missing_id">ニュースIDがありません</string>
+    <string name="news_source_important">大学ニュース</string>
+    <string name="news_source_department">学部通知</string>
+    <string name="news_source_announcement">お知らせ</string>
+    <string name="news_source_academic">学術動態</string>
+    <string name="news_source_default">ニュース</string>
+
+    <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">サーバー公開鍵を取得できませんでした</string>
+    <string name="charge_error_no_payment_info">サーバーから決済情報が返されませんでした</string>
+    <string name="charge_error_empty_payment_data">決済情報が空です</string>
+    <string name="charge_error_empty_payment_signature">決済署名が空です</string>
+    <string name="charge_error_parse_failed">決済情報の解析に失敗しました</string>
+    <string name="charge_error_login_required">先にログインしてください</string>
+
+    <!-- Network error messages -->
+    <string name="network_error_forbidden">権限がありません</string>
+    <string name="network_error_generic">ネットワークエラーです。接続を確認してください</string>
+    <string name="network_error_request_failed">リクエストに失敗しました</string>
+    <string name="network_error_server">サーバーエラー: %d</string>
+
 </resources>

@@ -1502,4 +1502,29 @@
     <string name="appearance_font_preview">预览：广东第二师范学院校园助手</string>
     <string name="appearance_language_label">语言</string>
 
+    <!-- Locale-aware strings -->
+    <string name="home_date_format">M月d日 EEEE</string>
+    <string name="notification_channel_service">系统公告</string>
+    <string name="language_picker_title">语言 / Language</string>
+    <string name="news_error_missing_id">缺少新闻编号</string>
+    <string name="news_source_important">学校要闻</string>
+    <string name="news_source_department">院部通知</string>
+    <string name="news_source_announcement">通知公告</string>
+    <string name="news_source_academic">学术动态</string>
+    <string name="news_source_default">新闻</string>
+
+    <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">未获取到服务端公钥</string>
+    <string name="charge_error_no_payment_info">服务端未返回支付信息</string>
+    <string name="charge_error_empty_payment_data">支付信息为空</string>
+    <string name="charge_error_empty_payment_signature">支付签名为空</string>
+    <string name="charge_error_parse_failed">支付信息解析失败</string>
+    <string name="charge_error_login_required">请先登录</string>
+
+    <!-- Network error messages -->
+    <string name="network_error_forbidden">权限不足</string>
+    <string name="network_error_generic">网络异常，请检查网络连接</string>
+    <string name="network_error_request_failed">请求失败</string>
+    <string name="network_error_server">服务器错误: %d</string>
+
 </resources>

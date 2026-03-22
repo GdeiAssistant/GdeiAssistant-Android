@@ -1,6 +1,9 @@
 package cn.gdeiassistant.model
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.res.stringResource
+import cn.gdeiassistant.R
 import java.io.Serializable
 
 @Immutable
@@ -70,12 +73,13 @@ data class Festival(
     val description: List<String>?
 ) : Serializable
 
+@Composable
 fun newsSourceLabel(type: Int): String {
     return when (type) {
-        1 -> "学校要闻"
-        2 -> "院部通知"
-        3 -> "通知公告"
-        4 -> "学术动态"
-        else -> "新闻"
+        1 -> stringResource(R.string.news_source_important)
+        2 -> stringResource(R.string.news_source_department)
+        3 -> stringResource(R.string.news_source_announcement)
+        4 -> stringResource(R.string.news_source_academic)
+        else -> stringResource(R.string.news_source_default)
     }
 }

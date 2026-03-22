@@ -1,11 +1,13 @@
 package cn.gdeiassistant
 
 import android.app.Application
+import cn.gdeiassistant.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.network.AppContextProvider
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +23,7 @@ class GdeiAssistantApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppContextProvider.init(this)
         applicationScope.launch {
             settingsRepository.initializeSyncCache()
         }
@@ -29,7 +32,7 @@ class GdeiAssistantApplication : Application() {
 
     fun createServiceForegroundNotificationChannel() {
         val channelId = "service"
-        val channelName = "系统公告"
+        val channelName = getString(R.string.notification_channel_service)
         val channel = NotificationChannel(
             channelId,
             channelName,

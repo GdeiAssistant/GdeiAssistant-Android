@@ -37,7 +37,6 @@ import cn.gdeiassistant.ui.theme.AppShapes
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 private val SectionStartTimes = mapOf(
     0 to "08:00", 1 to "10:00", 2 to "14:00",
@@ -66,8 +65,9 @@ fun HomeScreen(navController: NavController) {
     } else {
         stringResource(R.string.home_greeting_without_name, greeting)
     }
+    val datePattern = stringResource(R.string.home_date_format)
     val todayLabel = LocalDate.now()
-        .format(DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.SIMPLIFIED_CHINESE))
+        .format(DateTimeFormatter.ofPattern(datePattern))
 
     LazyScreen(
         title = greetingText,

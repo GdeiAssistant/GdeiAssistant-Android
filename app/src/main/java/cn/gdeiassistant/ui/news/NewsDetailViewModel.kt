@@ -1,8 +1,10 @@
 package cn.gdeiassistant.ui.news
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.NewsRepository
 import cn.gdeiassistant.model.SchoolNews
 import cn.gdeiassistant.ui.navigation.Routes
@@ -23,7 +25,8 @@ data class NewsDetailUiState(
 @HiltViewModel
 class NewsDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository,
+    private val application: Application
 ) : ViewModel() {
 
     private val newsId: String = savedStateHandle.get<String>(Routes.NEWS_DETAIL_ID).orEmpty()
@@ -40,7 +43,7 @@ class NewsDetailViewModel @Inject constructor(
             _state.value = NewsDetailUiState(
                 isLoading = false,
                 detail = null,
-                error = "缺少新闻编号"
+                error = application.getString(R.string.news_error_missing_id)
             )
             return
         }
