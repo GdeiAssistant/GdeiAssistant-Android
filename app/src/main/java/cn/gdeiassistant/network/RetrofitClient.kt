@@ -42,14 +42,14 @@ class ResponseInterceptor @Inject constructor(
             val message = parseMessageFromBody(bodyStr)
             sessionManager.clearTokens()
             GlobalEventManager.emit(GlobalEvent.Unauthorized)
-            throw AppException(message ?: NetworkConstants.MESSAGE_LOGIN_EXPIRED, NetworkConstants.HTTP_UNAUTHORIZED)
+            throw AppException(message ?: NetworkConstants.messageLoginExpired(), NetworkConstants.HTTP_UNAUTHORIZED)
         }
 
         if (!response.isSuccessful) {
             val bodyStr = response.peekBody(64 * 1024).string()
             val message = parseMessageFromBody(bodyStr)
-            GlobalEventManager.emit(GlobalEvent.ShowToast(message ?: "请求失败"))
-            throw AppException(message ?: "请求失败", response.code)
+            GlobalEventManager.emit(GlobalEvent.ShowToast(message ?: NetworkConstants.messageRequestFailed()))
+            throw AppException(message ?: NetworkConstants.messageRequestFailed(), response.code)
         }
 
         return response

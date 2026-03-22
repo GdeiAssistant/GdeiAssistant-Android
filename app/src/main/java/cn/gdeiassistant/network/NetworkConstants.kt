@@ -1,5 +1,7 @@
 package cn.gdeiassistant.network
 
+import cn.gdeiassistant.R
+
 /**
  * 网络层常量：HTTP 状态码与超时时间，避免魔法数字。
  */
@@ -14,11 +16,20 @@ object NetworkConstants {
     /** 读写超时（秒） */
     const val READ_WRITE_TIMEOUT_SECONDS = 20
 
-    /** 401 时兜底提示（网络层无 Context，与 strings.login_expired_toast 保持一致） */
-    const val MESSAGE_LOGIN_EXPIRED = "登录已过期，请重新登录"
+    /* ---- localised error messages resolved via AppContextProvider ---- */
 
-    const val MESSAGE_FORBIDDEN = "权限不足"
-    const val MESSAGE_NETWORK_ERROR = "网络异常，请检查网络连接"
-    const val MESSAGE_REQUEST_FAILED = "请求失败"
-    const val MESSAGE_SERVER_ERROR = "服务器错误: %d"
+    fun messageLoginExpired(): String =
+        AppContextProvider.context.getString(R.string.login_expired_toast)
+
+    fun messageForbidden(): String =
+        AppContextProvider.context.getString(R.string.network_error_forbidden)
+
+    fun messageNetworkError(): String =
+        AppContextProvider.context.getString(R.string.network_error_generic)
+
+    fun messageRequestFailed(): String =
+        AppContextProvider.context.getString(R.string.network_error_request_failed)
+
+    fun messageServerError(code: Int): String =
+        AppContextProvider.context.getString(R.string.network_error_server, code)
 }

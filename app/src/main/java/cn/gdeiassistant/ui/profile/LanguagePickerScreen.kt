@@ -18,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.components.LazyScreen
 import kotlinx.coroutines.launch
 
@@ -45,7 +47,7 @@ fun LanguagePickerScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
 
     LazyScreen(
-        title = "语言 / Language",
+        title = stringResource(R.string.language_picker_title),
         onBack = navController::popBackStack
     ) {
         languageOptions.forEach { option ->

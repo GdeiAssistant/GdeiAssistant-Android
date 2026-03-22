@@ -1502,4 +1502,29 @@
     <string name="appearance_font_preview">미리보기: 광동제2사범학원 캠퍼스 도우미</string>
     <string name="appearance_language_label">언어</string>
 
+    <!-- Locale-aware strings -->
+    <string name="home_date_format">M월 d일 EEEE</string>
+    <string name="notification_channel_service">시스템 공지</string>
+    <string name="language_picker_title">언어 / Language</string>
+    <string name="news_error_missing_id">뉴스 ID가 없습니다</string>
+    <string name="news_source_important">학교 뉴스</string>
+    <string name="news_source_department">학부 공지</string>
+    <string name="news_source_announcement">공지사항</string>
+    <string name="news_source_academic">학술 활동</string>
+    <string name="news_source_default">뉴스</string>
+
+    <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">서버 공개키를 가져오지 못했습니다</string>
+    <string name="charge_error_no_payment_info">서버에서 결제 정보를 반환하지 않았습니다</string>
+    <string name="charge_error_empty_payment_data">결제 정보가 비어 있습니다</string>
+    <string name="charge_error_empty_payment_signature">결제 서명이 비어 있습니다</string>
+    <string name="charge_error_parse_failed">결제 정보 분석에 실패했습니다</string>
+    <string name="charge_error_login_required">먼저 로그인하세요</string>
+
+    <!-- Network error messages -->
+    <string name="network_error_forbidden">권한이 부족합니다</string>
+    <string name="network_error_generic">네트워크 오류입니다. 연결을 확인해 주세요</string>
+    <string name="network_error_request_failed">요청에 실패했습니다</string>
+    <string name="network_error_server">서버 오류: %d</string>
+
 </resources>

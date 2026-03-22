@@ -1503,4 +1503,29 @@
     <string name="appearance_font_preview">Preview: GdeiAssistant Campus Helper</string>
     <string name="appearance_language_label">Language</string>
 
+    <!-- Locale-aware strings -->
+    <string name="home_date_format">EEEE, MMM d</string>
+    <string name="notification_channel_service">System Announcements</string>
+    <string name="language_picker_title">Language</string>
+    <string name="news_error_missing_id">Missing news ID</string>
+    <string name="news_source_important">University News</string>
+    <string name="news_source_department">Department Notices</string>
+    <string name="news_source_announcement">Announcements</string>
+    <string name="news_source_academic">Academic Activities</string>
+    <string name="news_source_default">News</string>
+
+    <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">Failed to obtain server public key</string>
+    <string name="charge_error_no_payment_info">Server did not return payment info</string>
+    <string name="charge_error_empty_payment_data">Payment data is empty</string>
+    <string name="charge_error_empty_payment_signature">Payment signature is empty</string>
+    <string name="charge_error_parse_failed">Failed to parse payment info</string>
+    <string name="charge_error_login_required">Please log in first</string>
+
+    <!-- Network error messages -->
+    <string name="network_error_forbidden">Access denied</string>
+    <string name="network_error_generic">Network error. Please check your connection.</string>
+    <string name="network_error_request_failed">Request failed</string>
+    <string name="network_error_server">Server error: %d</string>
+
 </resources>
