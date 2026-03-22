@@ -20,7 +20,7 @@ interface ChargeApi {
     @POST("api/card/charge")
     suspend fun submitCharge(
         @Header("Version-Code") versionCode: String,
-        @Header("Client-Type") clientType: String,
+        @Header("X-Client-Type") clientType: String,
         @Header("User-Agent") userAgent: String,
         @Field("amount") amount: String,
         @Field("token") token: String,

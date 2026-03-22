@@ -1186,6 +1186,9 @@
     <string name="library_collection_result_title">Search Results</string>
     <string name="library_collection_result_subtitle">Showing %1$d results</string>
     <string name="library_collection_result_pages">%1$d pages of results</string>
+    <string name="library_page_previous">Previous</string>
+    <string name="library_page_next">Next</string>
+    <string name="library_page_indicator">Page %1$d / %2$d</string>
     <string name="library_collection_detail_title">Collection Details</string>
     <string name="library_collection_detail_badge">Collection Info</string>
     <string name="library_collection_detail_loading">Loading collection details…</string>
