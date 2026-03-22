@@ -50,7 +50,7 @@ private suspend inline fun <Response, ResultType> safeResultCall(
         } else {
             Result.failure(
                 AppException(
-                    errorMessage(response) ?: NetworkConstants.MESSAGE_REQUEST_FAILED,
+                    errorMessage(response) ?: NetworkConstants.messageRequestFailed(),
                     errorCode(response) ?: -1
                 )
             )
@@ -60,13 +60,13 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     } catch (e: HttpException) {
         val message = e.response()?.errorBody()?.string()?.let { parseMessageFromErrorBody(it) }
             ?: when (e.code()) {
-                NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.MESSAGE_LOGIN_EXPIRED
-                NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.MESSAGE_FORBIDDEN
-                else -> NetworkConstants.MESSAGE_SERVER_ERROR.format(e.code())
+                NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.messageLoginExpired()
+                NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.messageForbidden()
+                else -> NetworkConstants.messageServerError(e.code())
             }
         Result.failure(AppException(message, e.code()))
     } catch (e: IOException) {
-        Result.failure(AppException(NetworkConstants.MESSAGE_NETWORK_ERROR, -1))
+        Result.failure(AppException(NetworkConstants.messageNetworkError(), -1))
     } catch (e: Exception) {
         Result.failure(e)
     }
