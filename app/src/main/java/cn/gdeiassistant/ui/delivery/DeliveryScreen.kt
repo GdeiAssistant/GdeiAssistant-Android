@@ -92,17 +92,6 @@ fun DeliveryScreen(navController: NavHostController) {
                 )
             }
         }
-        item {
-            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DeliveryFilter.entries.forEach { filter ->
-                    FilterChip(
-                        selected = state.selectedFilter == filter,
-                        onClick = { viewModel.selectFilter(filter) },
-                        label = { Text(text = deliveryFilterLabel(filter)) }
-                    )
-                }
-            }
-        }
         if (!state.error.isNullOrBlank()) {
             item {
                 StatusBanner(
@@ -114,7 +103,7 @@ fun DeliveryScreen(navController: NavHostController) {
         }
         when {
             state.isLoading && state.orders.isEmpty() -> item { DeliveryLoadingPane() }
-            state.visibleOrders.isEmpty() -> item {
+            state.orders.isEmpty() -> item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -128,7 +117,7 @@ fun DeliveryScreen(navController: NavHostController) {
                 }
             }
             else -> {
-                items(state.visibleOrders, key = { it.orderId }) { order ->
+                items(state.orders, key = { it.orderId }) { order ->
                     DeliveryOrderCard(
                         order = order,
                         onClick = { navController.navigate(Routes.deliveryDetail(order.orderId)) }
