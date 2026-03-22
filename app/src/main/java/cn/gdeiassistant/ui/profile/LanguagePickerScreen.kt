@@ -83,7 +83,7 @@ private fun LanguageRow(
             .semantics {
                 role = Role.RadioButton
                 this.selected = selected
-                stateDescription = if (selected) "Selected" else "Not selected"
+                stateDescription = stringResource(if (selected) R.string.accessibility_selected else R.string.accessibility_not_selected)
             }
             .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 16.dp),

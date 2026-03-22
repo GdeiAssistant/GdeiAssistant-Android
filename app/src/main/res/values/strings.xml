@@ -1529,5 +1529,7 @@
     <string name="network_error_generic">网络异常，请检查网络连接</string>
     <string name="network_error_request_failed">请求失败</string>
     <string name="network_error_server">服务器错误: %d</string>
+    <string name="accessibility_selected">已选择</string>
+    <string name="accessibility_not_selected">未选择</string>
 
 </resources>

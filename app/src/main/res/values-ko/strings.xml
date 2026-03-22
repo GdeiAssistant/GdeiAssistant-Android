@@ -1529,5 +1529,7 @@
     <string name="network_error_generic">네트워크 오류입니다. 연결을 확인해 주세요</string>
     <string name="network_error_request_failed">요청에 실패했습니다</string>
     <string name="network_error_server">서버 오류: %d</string>
+    <string name="accessibility_selected">선택됨</string>
+    <string name="accessibility_not_selected">선택 안 됨</string>
 
 </resources>
