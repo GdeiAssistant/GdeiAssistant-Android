@@ -16,6 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -45,7 +49,13 @@ fun BentoCard(
         )
         .clip(AppShapes.card)
         .background(containerColor)
-        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+        .then(
+            if (onClick != null)
+                Modifier
+                    .semantics { role = Role.Button }
+                    .clickable { onClick() }
+            else Modifier
+        )
         .padding(contentPadding)
 
     Column(modifier = cardModifier) {
@@ -322,6 +332,10 @@ fun TextTabSelector(
                     modifier = Modifier
                         .weight(1f)
                         .clip(AppShapes.small)
+                        .semantics {
+                            role = Role.Tab
+                            this.selected = selected
+                        }
                         .clickable { onSelect(index) }
                         .padding(horizontal = 8.dp, vertical = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
