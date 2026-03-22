@@ -77,13 +77,14 @@ private fun LanguageRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
+    val stateDesc = stringResource(if (selected) R.string.accessibility_selected else R.string.accessibility_not_selected)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .semantics {
                 role = Role.RadioButton
                 this.selected = selected
-                stateDescription = stringResource(if (selected) R.string.accessibility_selected else R.string.accessibility_not_selected)
+                stateDescription = stateDesc
             }
             .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 16.dp),
