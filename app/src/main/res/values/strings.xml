@@ -1185,6 +1185,9 @@
     <string name="library_collection_result_title">检索结果</string>
     <string name="library_collection_result_subtitle">共展示 %1$d 条结果</string>
     <string name="library_collection_result_pages">共 %1$d 页结果</string>
+    <string name="library_page_previous">上一页</string>
+    <string name="library_page_next">下一页</string>
+    <string name="library_page_indicator">第 %1$d / %2$d 页</string>
     <string name="library_collection_detail_title">馆藏详情</string>
     <string name="library_collection_detail_badge">馆藏信息</string>
     <string name="library_collection_detail_loading">正在加载馆藏详情…</string>
