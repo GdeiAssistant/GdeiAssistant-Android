@@ -35,13 +35,9 @@ enum class DeliveryMineTab {
 data class DeliveryUiState(
     val orders: List<DeliveryOrder> = emptyList(),
     val mine: DeliveryMineSummary = DeliveryMineSummary(emptyList(), emptyList()),
-    val selectedFilter: DeliveryFilter = DeliveryFilter.ALL,
     val isLoading: Boolean = true,
     val error: String? = null
-) {
-    val visibleOrders: List<DeliveryOrder>
-        get() = orders.filterBy(selectedFilter)
-}
+)
 
 data class DeliveryDetailUiState(
     val detail: DeliveryOrderDetail? = null,
@@ -95,10 +91,6 @@ class DeliveryViewModel @Inject constructor(
 
     init {
         refresh()
-    }
-
-    fun selectFilter(filter: DeliveryFilter) {
-        _state.update { it.copy(selectedFilter = filter) }
     }
 
     fun refresh() {
