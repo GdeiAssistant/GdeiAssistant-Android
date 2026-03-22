@@ -27,8 +27,10 @@ jwtdecode = "1.2.0"
 androidx-junit = "1.1.5"
 coil = "2.7.0"
 security-crypto = "1.1.0-alpha06"
+appcompat = "1.7.0"
 
 [libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
