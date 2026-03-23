@@ -1,7 +1,5 @@
 package cn.gdeiassistant.data
 
-import android.content.Context
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.SecretComment
 import cn.gdeiassistant.model.SecretDetail
 import cn.gdeiassistant.model.SecretDraft
@@ -13,7 +11,6 @@ import cn.gdeiassistant.network.api.SecretCommentDto
 import cn.gdeiassistant.network.api.SecretPostDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -27,7 +24,6 @@ import javax.inject.Singleton
 
 @Singleton
 class SecretRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val secretApi: SecretApi
 ) {
 
@@ -57,18 +53,12 @@ class SecretRepository @Inject constructor(
                 val detailDeferred = async { safeApiCall { secretApi.getDetail(id) } }
                 val commentsDeferred = async { safeApiCall { secretApi.getComments(id) } }
                 val dto = detailDeferred.await().getOrThrow()
-                    ?: error(context.getString(R.string.secret_detail_missing))
+                    ?: error("Secret detail not found")
                 val comments = commentsDeferred.await().getOrNull()
                     ?: dto.secretCommentList.orEmpty()
                 SecretDetail(
                     post = mapPost(dto),
-                    content = dto.content.orEmpty().ifBlank {
-                        if (dto.type == 0) {
-                            context.getString(R.string.secret_default_content_empty)
-                        } else {
-                            context.getString(R.string.secret_default_voice_hint)
-                        }
-                    },
+                    content = dto.content.orEmpty(),
                     comments = comments.map(::mapComment)
                 )
             }
@@ -97,20 +87,14 @@ class SecretRepository @Inject constructor(
 
     private fun mapPost(dto: SecretPostDto): SecretPost {
         val type = dto.type ?: 0
-        val content = dto.content.orEmpty().ifBlank {
-            dto.voiceURL.orEmpty().ifBlank { context.getString(R.string.secret_default_content_empty) }
-        }
+        val content = dto.content.orEmpty().ifBlank { dto.voiceURL.orEmpty() }
         return SecretPost(
             id = (dto.id ?: System.nanoTime()).toString(),
-            username = dto.username.orEmpty().ifBlank { context.getString(R.string.secret_default_anonymous) },
+            username = dto.username.orEmpty(),
             themeId = (dto.theme ?: 1).coerceIn(1, 12),
-            title = if (type == 0) {
-                content.take(18).ifBlank { context.getString(R.string.secret_text_badge) }
-            } else {
-                context.getString(R.string.secret_voice_badge)
-            },
-            summary = if (type == 0) content.take(48) else context.getString(R.string.secret_default_summary_voice),
-            createdAt = buildCreatedAt(dto.publishTime.orEmpty(), dto.timer ?: 0),
+            title = if (type == 0) content.take(18) else "",
+            summary = if (type == 0) content.take(48) else "",
+            createdAt = dto.publishTime.orEmpty(),
             likeCount = dto.likeCount ?: 0,
             commentCount = dto.commentCount ?: 0,
             isLiked = (dto.liked ?: 0) == 1,
@@ -124,16 +108,11 @@ class SecretRepository @Inject constructor(
     private fun mapComment(dto: SecretCommentDto): SecretComment {
         return SecretComment(
             id = (dto.id ?: System.nanoTime()).toString(),
-            authorName = dto.username.orEmpty().ifBlank { context.getString(R.string.secret_default_anonymous) },
-            content = dto.comment.orEmpty().ifBlank { context.getString(R.string.secret_default_comment_empty) },
-            createdAt = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
+            authorName = dto.username.orEmpty(),
+            content = dto.comment.orEmpty(),
+            createdAt = dto.publishTime.orEmpty(),
             avatarTheme = (dto.avatarTheme ?: 1).coerceIn(1, 12)
         )
-    }
-
-    private fun buildCreatedAt(publishTime: String, timer: Int): String {
-        val base = publishTime.ifBlank { context.getString(R.string.common_just_now) }
-        return if (timer == 1) "$base · ${context.getString(R.string.secret_timer_hint)}" else base
     }
 
     private fun String.toPlainBody(): RequestBody = toRequestBody("text/plain".toMediaTypeOrNull())
@@ -141,7 +120,7 @@ class SecretRepository @Inject constructor(
     private fun SecretVoiceDraft.toVoicePart(): MultipartBody.Part {
         return MultipartBody.Part.createFormData(
             "voice",
-            fileName.ifBlank { context.getString(R.string.secret_publish_default_voice_name) },
+            fileName.ifBlank { "voice_post" },
             bytes.toRequestBody(mimeType.toMediaTypeOrNull())
         )
     }

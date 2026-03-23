@@ -1,7 +1,5 @@
 package cn.gdeiassistant.data
 
-import android.content.Context
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.ExpressCommentItem
 import cn.gdeiassistant.model.ExpressDraft
 import cn.gdeiassistant.model.ExpressGender
@@ -12,7 +10,6 @@ import cn.gdeiassistant.network.api.ExpressCommentDto
 import cn.gdeiassistant.network.api.ExpressPostDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -20,7 +17,6 @@ import javax.inject.Singleton
 
 @Singleton
 class ExpressRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val expressApi: ExpressApi
 ) {
 
@@ -51,11 +47,11 @@ class ExpressRepository @Inject constructor(
     suspend fun getDetail(id: String): Result<ExpressPostDetail> = withContext(Dispatchers.IO) {
         safeApiCall { expressApi.getDetail(id) }
             .mapCatching { dto ->
-                val item = dto ?: error(context.getString(R.string.express_detail_missing))
+                val item = dto ?: error("Express detail not found")
                 ExpressPostDetail(
                     post = mapPost(item),
                     realName = item.realname?.trim()?.ifBlank { null },
-                    content = item.content.orEmpty().ifBlank { context.getString(R.string.express_default_content) }
+                    content = item.content.orEmpty()
                 )
             }
     }
@@ -96,16 +92,13 @@ class ExpressRepository @Inject constructor(
     }
 
     private fun mapPost(dto: ExpressPostDto): ExpressPost {
-        val preview = dto.content.orEmpty()
-            .ifBlank { context.getString(R.string.express_default_content) }
-            .take(72)
+        val preview = dto.content.orEmpty().take(72)
         return ExpressPost(
             id = dto.id?.toString() ?: System.nanoTime().toString(),
-            nickname = dto.nickname.orEmpty()
-                .ifBlank { dto.username.orEmpty().ifBlank { context.getString(R.string.express_default_author) } },
-            targetName = dto.name.orEmpty().ifBlank { context.getString(R.string.express_default_target) },
+            nickname = dto.nickname.orEmpty().ifBlank { dto.username.orEmpty() },
+            targetName = dto.name.orEmpty(),
             contentPreview = preview,
-            publishTime = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
+            publishTime = dto.publishTime.orEmpty(),
             likeCount = dto.likeCount ?: 0,
             commentCount = dto.commentCount ?: 0,
             guessCount = dto.guessSum ?: 0,
@@ -120,10 +113,9 @@ class ExpressRepository @Inject constructor(
     private fun mapComment(dto: ExpressCommentDto): ExpressCommentItem {
         return ExpressCommentItem(
             id = dto.id?.toString() ?: System.nanoTime().toString(),
-            authorName = dto.nickname.orEmpty()
-                .ifBlank { dto.username.orEmpty().ifBlank { context.getString(R.string.express_default_comment_author) } },
-            content = dto.comment.orEmpty().ifBlank { context.getString(R.string.express_default_comment) },
-            publishTime = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) }
+            authorName = dto.nickname.orEmpty().ifBlank { dto.username.orEmpty() },
+            content = dto.comment.orEmpty(),
+            publishTime = dto.publishTime.orEmpty()
         )
     }
 }

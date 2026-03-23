@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.SecretRepository
+import cn.gdeiassistant.data.mapper.SecretDisplayMapper
 import cn.gdeiassistant.model.SecretDraft
 import cn.gdeiassistant.model.SecretDraftMode
 import cn.gdeiassistant.model.SecretPost
@@ -43,7 +44,8 @@ sealed interface SecretPublishEvent {
 
 @HiltViewModel
 class SecretViewModel @Inject constructor(
-    private val secretRepository: SecretRepository
+    private val secretRepository: SecretRepository,
+    private val displayMapper: SecretDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SecretUiState())
@@ -58,8 +60,8 @@ class SecretViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             val postsDeferred = async { secretRepository.getPosts() }
             val mineDeferred = async { secretRepository.getMyPosts() }
-            val postsResult = postsDeferred.await()
-            val myPostsResult = mineDeferred.await()
+            val postsResult = postsDeferred.await().map { displayMapper.applyPostDefaults(it) }
+            val myPostsResult = mineDeferred.await().map { displayMapper.applyPostDefaults(it) }
             val error = postsResult.exceptionOrNull()?.message ?: myPostsResult.exceptionOrNull()?.message
             _state.update {
                 it.copy(

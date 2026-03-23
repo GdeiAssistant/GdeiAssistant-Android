@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.SecretRepository
+import cn.gdeiassistant.data.mapper.SecretDisplayMapper
 import cn.gdeiassistant.model.SecretDetail
 import cn.gdeiassistant.ui.navigation.Routes
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -36,7 +37,8 @@ sealed interface SecretDetailEvent {
 class SecretDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
-    private val secretRepository: SecretRepository
+    private val secretRepository: SecretRepository,
+    private val displayMapper: SecretDisplayMapper
 ) : ViewModel() {
 
     private val postId: String = savedStateHandle.get<String>(Routes.SECRET_POST_ID).orEmpty()
@@ -59,6 +61,7 @@ class SecretDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             secretRepository.getDetail(postId)
+                .map { displayMapper.applyDetailDefaults(it) }
                 .onSuccess { detail ->
                     _state.update {
                         it.copy(
