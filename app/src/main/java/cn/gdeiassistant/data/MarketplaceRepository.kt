@@ -74,10 +74,9 @@ class MarketplaceRepository @Inject constructor(
                     item = item,
                     condition = currentProfileOptions().marketplaceTypeTitle(detail.secondhandItem.type),
                     description = detail.secondhandItem.description.orEmpty(),
-                    contactHint = buildContactHint(
-                        qq = detail.secondhandItem.qq,
-                        phone = detail.secondhandItem.phone
-                    ),
+                    contactHint = "",
+                    contactQQ = detail.secondhandItem.qq?.trim()?.ifBlank { null },
+                    contactPhone = detail.secondhandItem.phone?.trim()?.ifBlank { null },
                     sellerUsername = profile?.username ?: detail.secondhandItem.username,
                     sellerNickname = profile?.nickname?.trim()?.ifBlank { null },
                     sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),

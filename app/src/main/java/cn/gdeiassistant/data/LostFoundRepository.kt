@@ -71,7 +71,10 @@ class LostFoundRepository @Inject constructor(
                 LostFoundDetail(
                     item = item,
                     description = itemDto.description.orEmpty(),
-                    contactHint = buildContactHint(itemDto.qq, itemDto.wechat, itemDto.phone),
+                    contactHint = "",
+                    contactQQ = itemDto.qq?.trim()?.ifBlank { null },
+                    contactWechat = itemDto.wechat?.trim()?.ifBlank { null },
+                    contactPhone = itemDto.phone?.trim()?.ifBlank { null },
                     statusText = "",
                     ownerUsername = detail.profile?.username ?: itemDto.username,
                     ownerNickname = detail.profile?.nickname?.trim()?.ifBlank { null },

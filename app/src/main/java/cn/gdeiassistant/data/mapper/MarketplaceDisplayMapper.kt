@@ -33,10 +33,11 @@ class MarketplaceDisplayMapper @Inject constructor(
     }
 
     fun applyDetailDefaults(detail: MarketplaceDetail): MarketplaceDetail {
+        val formattedContact = buildContactHint(detail.contactQQ, detail.contactPhone)
         return detail.copy(
             item = applyItemDefaults(detail.item),
             description = detail.description.ifBlank { textResolver.getString(R.string.marketplace_description_empty) },
-            contactHint = detail.contactHint.ifBlank { textResolver.getString(R.string.marketplace_contact_private) },
+            contactHint = formattedContact.ifBlank { textResolver.getString(R.string.marketplace_contact_private) },
             sellerGrade = detail.sellerGrade ?: detail.sellerEnrollment?.let {
                 textResolver.getString(R.string.marketplace_seller_grade_suffix, it)
             }
