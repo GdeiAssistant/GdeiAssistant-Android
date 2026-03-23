@@ -140,7 +140,7 @@ class DatingDetailViewModel @Inject constructor(
                         it.copy(
                             detail = null,
                             isLoading = false,
-                            error = error.message
+                            error = context.getString(R.string.dating_detail_load_failed)
                         )
                     }
                 }
@@ -248,8 +248,9 @@ class DatingPublishViewModel @Inject constructor(
                         _events.emit(DatingModuleEvent.ShowMessage(context.getString(R.string.dating_publish_success)))
                         _events.emit(DatingModuleEvent.Submitted)
                     }.onFailure { error ->
-                        _state.update { it.copy(isSubmitting = false, error = error.message) }
-                        emitMessage(error.message ?: context.getString(R.string.dating_publish_failed))
+                        val msg = context.getString(R.string.dating_publish_failed)
+                        _state.update { it.copy(isSubmitting = false, error = msg) }
+                        emitMessage(msg)
                     }
                 }
             }

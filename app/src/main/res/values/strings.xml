@@ -935,6 +935,7 @@
     <string name="dating_publish_wechat_too_long">微信不能超过 20 个字符</string>
     <string name="dating_publish_success">资料发布成功</string>
     <string name="dating_publish_failed">资料发布失败</string>
+    <string name="dating_detail_load_failed">加载资料失败</string>
     <string name="dating_publish_read_failed">读取图片失败</string>
     <string name="dating_loading_title">正在加载</string>
     <string name="dating_loading_hint">正在同步卖室友资料和互动状态…</string>

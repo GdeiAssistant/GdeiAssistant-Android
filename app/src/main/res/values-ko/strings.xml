@@ -936,6 +936,7 @@
     <string name="dating_publish_wechat_too_long">위챗은 20자를 초과할 수 없습니다</string>
     <string name="dating_publish_success">프로필이 등록되었습니다</string>
     <string name="dating_publish_failed">프로필 등록 실패</string>
+    <string name="dating_detail_load_failed">프로필 로드 실패</string>
     <string name="dating_publish_read_failed">이미지 읽기 실패</string>
     <string name="dating_loading_title">로딩 중</string>
     <string name="dating_loading_hint">룸메이트 소개 프로필 및 소통 상태 동기화 중…</string>
