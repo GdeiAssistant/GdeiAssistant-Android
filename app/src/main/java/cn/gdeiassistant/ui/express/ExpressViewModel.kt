@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.ExpressRepository
+import cn.gdeiassistant.data.mapper.ExpressDisplayMapper
 import cn.gdeiassistant.model.ExpressCommentItem
 import cn.gdeiassistant.model.ExpressDraft
 import cn.gdeiassistant.model.ExpressGender
@@ -65,7 +66,8 @@ sealed interface ExpressPublishEvent {
 
 @HiltViewModel
 class ExpressViewModel @Inject constructor(
-    private val expressRepository: ExpressRepository
+    private val expressRepository: ExpressRepository,
+    private val displayMapper: ExpressDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ExpressUiState())
@@ -90,8 +92,8 @@ class ExpressViewModel @Inject constructor(
             val keyword = _state.value.query.trim().takeIf { it.isNotBlank() }
             val postsDeferred = async { expressRepository.getPosts(keyword = keyword) }
             val mineDeferred = async { expressRepository.getMyPosts() }
-            val postsResult = postsDeferred.await()
-            val myPostsResult = mineDeferred.await()
+            val postsResult = postsDeferred.await().map { displayMapper.applyPostDefaults(it) }
+            val myPostsResult = mineDeferred.await().map { displayMapper.applyPostDefaults(it) }
             val error = postsResult.exceptionOrNull()?.message ?: myPostsResult.exceptionOrNull()?.message
             _state.update {
                 it.copy(
@@ -109,7 +111,8 @@ class ExpressViewModel @Inject constructor(
 class ExpressDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
-    private val expressRepository: ExpressRepository
+    private val expressRepository: ExpressRepository,
+    private val displayMapper: ExpressDisplayMapper
 ) : ViewModel() {
 
     private val postId: String = savedStateHandle.get<String>(Routes.EXPRESS_POST_ID).orEmpty()
@@ -133,8 +136,8 @@ class ExpressDetailViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             val detailDeferred = async { expressRepository.getDetail(postId) }
             val commentsDeferred = async { expressRepository.getComments(postId) }
-            val detailResult = detailDeferred.await()
-            val commentsResult = commentsDeferred.await()
+            val detailResult = detailDeferred.await().map { displayMapper.applyDetailDefaults(it) }
+            val commentsResult = commentsDeferred.await().map { displayMapper.applyCommentDefaults(it) }
             detailResult
                 .onSuccess { detail ->
                     _state.update {
@@ -244,7 +247,8 @@ class ExpressDetailViewModel @Inject constructor(
 
 @HiltViewModel
 class ExpressProfileViewModel @Inject constructor(
-    private val expressRepository: ExpressRepository
+    private val expressRepository: ExpressRepository,
+    private val displayMapper: ExpressDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ExpressProfileUiState())
@@ -258,6 +262,7 @@ class ExpressProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             expressRepository.getMyPosts()
+                .map { displayMapper.applyPostDefaults(it) }
                 .onSuccess { items ->
                     _state.update { it.copy(items = items, isLoading = false, error = null) }
                 }

@@ -3,6 +3,7 @@ package cn.gdeiassistant.ui.secret
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.SecretRepository
+import cn.gdeiassistant.data.mapper.SecretDisplayMapper
 import cn.gdeiassistant.model.SecretPost
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ data class SecretProfileUiState(
 
 @HiltViewModel
 class SecretProfileViewModel @Inject constructor(
-    private val secretRepository: SecretRepository
+    private val secretRepository: SecretRepository,
+    private val displayMapper: SecretDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SecretProfileUiState())
@@ -34,6 +36,7 @@ class SecretProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             secretRepository.getMyPosts()
+                .map { displayMapper.applyPostDefaults(it) }
                 .onSuccess { items ->
                     _state.update { it.copy(items = items, isLoading = false, error = null) }
                 }
