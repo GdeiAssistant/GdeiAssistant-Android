@@ -161,9 +161,10 @@ class DatingDetailViewModel @Inject constructor(
                             _events.emit(DatingModuleEvent.ShowMessage(context.getString(R.string.dating_pick_success)))
                             refresh()
                         }
-                        .onFailure { error ->
-                            _state.update { it.copy(isSubmitting = false, error = error.message) }
-                            emitMessage(error.message ?: context.getString(R.string.dating_pick_failed))
+                        .onFailure { _ ->
+                            val msg = context.getString(R.string.dating_pick_failed)
+                            _state.update { it.copy(isSubmitting = false, error = msg) }
+                            emitMessage(msg)
                         }
                 }
             }

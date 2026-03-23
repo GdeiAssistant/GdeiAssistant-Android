@@ -109,11 +109,9 @@ class DatingViewModel @Inject constructor(
                     )
                     refresh()
                 }
-                .onFailure { error ->
+                .onFailure { _ ->
                     _events.emit(
-                        DatingEvent.ShowMessage(
-                            error.message ?: context.getString(R.string.dating_toast_failed)
-                        )
+                        DatingEvent.ShowMessage(context.getString(R.string.dating_toast_failed))
                     )
                 }
         }
@@ -126,11 +124,9 @@ class DatingViewModel @Inject constructor(
                     _events.emit(DatingEvent.ShowMessage(context.getString(R.string.dating_toast_hidden)))
                     refresh()
                 }
-                .onFailure { error ->
+                .onFailure { _ ->
                     _events.emit(
-                        DatingEvent.ShowMessage(
-                            error.message ?: context.getString(R.string.dating_toast_hide_failed)
-                        )
+                        DatingEvent.ShowMessage(context.getString(R.string.dating_toast_hide_failed))
                     )
             }
         }
