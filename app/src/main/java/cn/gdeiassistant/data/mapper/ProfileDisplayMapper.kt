@@ -23,7 +23,8 @@ class ProfileDisplayMapper @Inject constructor(
             timeText = record.timeText.ifBlank { textResolver.getString(R.string.common_just_now) },
             ip = record.ip.ifBlank { textResolver.getString(R.string.profile_login_unknown_ip) },
             area = record.area.ifBlank { textResolver.getString(R.string.profile_login_unknown_area) },
-            statusText = record.statusText.ifBlank { textResolver.getString(R.string.profile_login_status_success) }
+            statusText = record.statusText.ifBlank { textResolver.getString(R.string.profile_login_status_success) },
+            device = record.device.ifBlank { textResolver.getString(R.string.profile_login_unknown_device) }
         )
     }
 

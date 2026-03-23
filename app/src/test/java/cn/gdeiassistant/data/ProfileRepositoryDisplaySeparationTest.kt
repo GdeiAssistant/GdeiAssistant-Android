@@ -62,8 +62,8 @@ class ProfileRepositoryDisplaySeparationTest {
         assertNull(status.rawValue)
         // note should be default empty, not a localized string
         assertTrue("note should be empty for raw domain data", status.note.isEmpty())
-        // maskedValue defaults to "未绑定" from the model default
-        assertEquals("未绑定", status.maskedValue)
+        // maskedValue defaults to empty string (display mapper adds localized fallback)
+        assertTrue("maskedValue should be empty for raw domain data", status.maskedValue.isEmpty())
     }
 
     @Test

@@ -1334,6 +1334,7 @@
     <string name="profile_login_status_success">ログイン成功</string>
     <string name="profile_login_unknown_ip">IP 不明</string>
     <string name="profile_login_unknown_area">地域不明</string>
+    <string name="profile_login_unknown_device">不明なデバイス</string>
     <string name="profile_phone_area_label">国 / 地域</string>
     <string name="profile_phone_input_label">電話番号</string>
     <string name="profile_phone_required">電話番号を入力してください</string>

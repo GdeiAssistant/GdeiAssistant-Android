@@ -1334,6 +1334,7 @@
     <string name="profile_login_status_success">로그인 성공</string>
     <string name="profile_login_unknown_ip">IP 미상</string>
     <string name="profile_login_unknown_area">지역 미상</string>
+    <string name="profile_login_unknown_device">알 수 없는 기기</string>
     <string name="profile_phone_area_label">국가 또는 지역</string>
     <string name="profile_phone_input_label">전화번호</string>
     <string name="profile_phone_required">전화번호를 입력해 주세요</string>
