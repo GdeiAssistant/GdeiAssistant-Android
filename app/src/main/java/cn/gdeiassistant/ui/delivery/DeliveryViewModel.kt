@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DeliveryRepository
+import cn.gdeiassistant.data.mapper.DeliveryDisplayMapper
 import cn.gdeiassistant.model.DeliveryDraft
 import cn.gdeiassistant.model.DeliveryMineSummary
 import cn.gdeiassistant.model.DeliveryOrder
@@ -83,7 +84,8 @@ private fun List<DeliveryOrder>.filterBy(filter: DeliveryFilter): List<DeliveryO
 
 @HiltViewModel
 class DeliveryViewModel @Inject constructor(
-    private val deliveryRepository: DeliveryRepository
+    private val deliveryRepository: DeliveryRepository,
+    private val displayMapper: DeliveryDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DeliveryUiState())
@@ -100,8 +102,8 @@ class DeliveryViewModel @Inject constructor(
                 .onSuccess { (orders, mine) ->
                     _state.update {
                         it.copy(
-                            orders = orders,
-                            mine = mine,
+                            orders = displayMapper.applyOrderDefaults(orders),
+                            mine = displayMapper.applyMineSummaryDefaults(mine),
                             isLoading = false,
                             error = null
                         )
@@ -118,7 +120,8 @@ class DeliveryViewModel @Inject constructor(
 class DeliveryDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
-    private val deliveryRepository: DeliveryRepository
+    private val deliveryRepository: DeliveryRepository,
+    private val displayMapper: DeliveryDisplayMapper
 ) : ViewModel() {
 
     private val orderId: String = savedStateHandle.get<String>(Routes.DELIVERY_ORDER_ID).orEmpty()
@@ -142,7 +145,7 @@ class DeliveryDetailViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             deliveryRepository.getDetail(orderId)
                 .onSuccess { detail ->
-                    _state.update { it.copy(detail = detail, isLoading = false, isSubmitting = false, error = null) }
+                    _state.update { it.copy(detail = displayMapper.applyDetailDefaults(detail), isLoading = false, isSubmitting = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(detail = null, isLoading = false, isSubmitting = false, error = error.message) }
@@ -184,7 +187,8 @@ class DeliveryDetailViewModel @Inject constructor(
 
 @HiltViewModel
 class DeliveryMineViewModel @Inject constructor(
-    private val deliveryRepository: DeliveryRepository
+    private val deliveryRepository: DeliveryRepository,
+    private val displayMapper: DeliveryDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DeliveryMineUiState())
@@ -207,7 +211,7 @@ class DeliveryMineViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             deliveryRepository.getMine()
                 .onSuccess { summary ->
-                    _state.update { it.copy(summary = summary, isLoading = false, error = null) }
+                    _state.update { it.copy(summary = displayMapper.applyMineSummaryDefaults(summary), isLoading = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(summary = DeliveryMineSummary(emptyList(), emptyList()), isLoading = false, error = error.message) }
@@ -259,14 +263,16 @@ class DeliveryPublishViewModel @Inject constructor(
                 viewModelScope.launch {
                     _state.update { it.copy(isSubmitting = true) }
                     deliveryRepository.publish(
-                        DeliveryDraft(
+                        draft = DeliveryDraft(
                             pickupPlace = trimmedPickupPlace,
                             pickupNumber = trimmedPickupNumber,
                             phone = trimmedPhone,
                             price = reward,
                             address = trimmedAddress,
                             remarks = trimmedRemarks
-                        )
+                        ),
+                        taskName = context.getString(R.string.delivery_task_name),
+                        defaultPickupCode = context.getString(R.string.delivery_default_pickup_code)
                     )
                         .onSuccess {
                             _state.update { it.copy(isSubmitting = false) }

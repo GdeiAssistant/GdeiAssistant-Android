@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.TopicRepository
+import cn.gdeiassistant.data.mapper.TopicDisplayMapper
 import cn.gdeiassistant.model.TopicDraft
 import cn.gdeiassistant.model.TopicPost
 import cn.gdeiassistant.model.TopicPostDetail
@@ -62,7 +63,8 @@ sealed interface TopicPublishEvent {
 
 @HiltViewModel
 class TopicViewModel @Inject constructor(
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val displayMapper: TopicDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TopicUiState())
@@ -89,12 +91,13 @@ class TopicViewModel @Inject constructor(
             val mineDeferred = async { topicRepository.getMyPosts() }
             val postsResult = postsDeferred.await()
             val myPostsResult = mineDeferred.await()
-            val posts = postsResult.getOrDefault(emptyList())
+            val posts = displayMapper.applyPostDefaults(postsResult.getOrDefault(emptyList()))
+            val myPosts = displayMapper.applyPostDefaults(myPostsResult.getOrDefault(emptyList()))
             val error = postsResult.exceptionOrNull()?.message ?: myPostsResult.exceptionOrNull()?.message
             _state.update {
                 it.copy(
                     posts = posts,
-                    myPosts = myPostsResult.getOrDefault(emptyList()),
+                    myPosts = myPosts,
                     imageCount = posts.sumOf { item -> item.imageCount },
                     isLoading = false,
                     error = error
@@ -108,7 +111,8 @@ class TopicViewModel @Inject constructor(
 class TopicDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val displayMapper: TopicDisplayMapper
 ) : ViewModel() {
 
     private val postId: String = savedStateHandle.get<String>(Routes.TOPIC_POST_ID).orEmpty()
@@ -134,7 +138,7 @@ class TopicDetailViewModel @Inject constructor(
                 .onSuccess { detail ->
                     _state.update {
                         it.copy(
-                            detail = detail,
+                            detail = displayMapper.applyDetailDefaults(detail),
                             isLoading = false,
                             isSubmittingLike = false,
                             error = null
@@ -173,7 +177,8 @@ class TopicDetailViewModel @Inject constructor(
 
 @HiltViewModel
 class TopicProfileViewModel @Inject constructor(
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val displayMapper: TopicDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TopicProfileUiState())
@@ -188,7 +193,7 @@ class TopicProfileViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             topicRepository.getMyPosts()
                 .onSuccess { items ->
-                    _state.update { it.copy(items = items, isLoading = false, error = null) }
+                    _state.update { it.copy(items = displayMapper.applyPostDefaults(items), isLoading = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(items = emptyList(), isLoading = false, error = error.message) }

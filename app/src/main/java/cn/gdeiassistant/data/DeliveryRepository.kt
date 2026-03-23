@@ -1,7 +1,5 @@
 package cn.gdeiassistant.data
 
-import android.content.Context
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.DeliveryDraft
 import cn.gdeiassistant.model.DeliveryMineSummary
 import cn.gdeiassistant.model.DeliveryOrder
@@ -15,7 +13,6 @@ import cn.gdeiassistant.network.api.DeliveryOrderDto
 import cn.gdeiassistant.network.api.DeliveryTradeDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -25,7 +22,6 @@ import javax.inject.Singleton
 
 @Singleton
 class DeliveryRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val deliveryApi: DeliveryApi
 ) {
 
@@ -59,7 +55,7 @@ class DeliveryRepository @Inject constructor(
     suspend fun getDetail(orderId: String): Result<DeliveryOrderDetail> = withContext(Dispatchers.IO) {
         safeApiCall { deliveryApi.getDetail(orderId) }
             .mapCatching { dto ->
-                val detail = dto ?: throw IllegalStateException(context.getString(R.string.delivery_detail_missing))
+                val detail = dto ?: throw IllegalStateException("Delivery detail not found")
                 mapDetail(detail)
             }
     }
@@ -76,11 +72,11 @@ class DeliveryRepository @Inject constructor(
         safeJsonResultCall { deliveryApi.deleteOrder(orderId) }
     }
 
-    suspend fun publish(draft: DeliveryDraft): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun publish(draft: DeliveryDraft, taskName: String, defaultPickupCode: String): Result<Unit> = withContext(Dispatchers.IO) {
         safeJsonResultCall {
             deliveryApi.publish(
-                name = context.getString(R.string.delivery_task_name),
-                number = draft.pickupNumber.ifBlank { context.getString(R.string.delivery_default_pickup_code) },
+                name = taskName,
+                number = draft.pickupNumber.ifBlank { defaultPickupCode },
                 phone = draft.phone,
                 price = String.format("%.2f", draft.price),
                 company = draft.pickupPlace,
@@ -98,7 +94,7 @@ class DeliveryRepository @Inject constructor(
     }
 
     private fun mapDetail(dto: DeliveryDetailDto): DeliveryOrderDetail {
-        val order = dto.order ?: throw IllegalStateException(context.getString(R.string.delivery_detail_missing))
+        val order = dto.order ?: throw IllegalStateException("Delivery detail not found")
         return DeliveryOrderDetail(
             order = mapOrder(order),
             detailType = dto.detailType ?: 1,
@@ -109,16 +105,16 @@ class DeliveryRepository @Inject constructor(
     private fun mapOrder(dto: DeliveryOrderDto): DeliveryOrder {
         return DeliveryOrder(
             orderId = dto.orderId?.toString() ?: System.nanoTime().toString(),
-            username = dto.username.orEmpty().ifBlank { context.getString(R.string.delivery_default_username) },
-            taskName = dto.name.orEmpty().ifBlank { context.getString(R.string.delivery_task_name) },
-            pickupCode = dto.number.orEmpty().ifBlank { context.getString(R.string.delivery_default_pickup_code) },
-            contactPhone = dto.phone.orEmpty().ifBlank { context.getString(R.string.delivery_default_phone_mask) },
+            username = dto.username.orEmpty(),
+            taskName = dto.name.orEmpty(),
+            pickupCode = dto.number.orEmpty(),
+            contactPhone = dto.phone.orEmpty(),
             price = dto.price ?: 0.0,
-            company = dto.company.orEmpty().ifBlank { context.getString(R.string.delivery_default_company) },
-            address = dto.address.orEmpty().ifBlank { context.getString(R.string.delivery_default_address) },
+            company = dto.company.orEmpty(),
+            address = dto.address.orEmpty(),
             state = DeliveryOrderState.fromRemote(dto.state),
             remarks = dto.remarks.orEmpty(),
-            orderTime = dto.orderTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) }
+            orderTime = dto.orderTime.orEmpty()
         )
     }
 
@@ -126,8 +122,8 @@ class DeliveryRepository @Inject constructor(
         return DeliveryTrade(
             tradeId = dto.tradeId?.toString() ?: System.nanoTime().toString(),
             orderId = dto.orderId?.toString() ?: "",
-            createTime = dto.createTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
-            username = dto.username.orEmpty().ifBlank { context.getString(R.string.delivery_default_runner) },
+            createTime = dto.createTime.orEmpty(),
+            username = dto.username.orEmpty(),
             state = dto.state ?: 0
         )
     }

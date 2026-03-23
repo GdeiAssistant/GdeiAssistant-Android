@@ -54,7 +54,7 @@ class TopicRepository @Inject constructor(
     suspend fun getDetail(id: String): Result<TopicPostDetail> = withContext(Dispatchers.IO) {
         safeApiCall { topicApi.getDetail(id) }
             .mapCatching { dto ->
-                val item = dto ?: error(context.getString(R.string.topic_detail_missing))
+                val item = dto ?: error("Topic detail not found")
                 val post = mapPost(item)
                 val explicitImages = item.imageUrls.orEmpty().filter { it.isNotBlank() }
                 val imageUrls = if (explicitImages.isNotEmpty()) {
@@ -64,7 +64,7 @@ class TopicRepository @Inject constructor(
                 }
                 TopicPostDetail(
                     post = post.copy(firstImageUrl = post.firstImageUrl ?: imageUrls.firstOrNull()),
-                    content = item.content.orEmpty().ifBlank { context.getString(R.string.topic_default_content) },
+                    content = item.content.orEmpty(),
                     imageUrls = if (imageUrls.isEmpty()) listOfNotNull(post.firstImageUrl) else imageUrls
                 )
             }
@@ -98,16 +98,16 @@ class TopicRepository @Inject constructor(
     }
 
     private fun mapPost(dto: TopicPostDto): TopicPost {
-        val content = dto.content.orEmpty().ifBlank { context.getString(R.string.topic_default_content) }
+        val content = dto.content.orEmpty()
         val imageUrls = dto.imageUrls.orEmpty().filter { it.isNotBlank() }
         val firstImage = dto.firstImageUrl?.trim()?.ifBlank { null } ?: imageUrls.firstOrNull()
         val imageCount = maxOf(dto.count ?: 0, imageUrls.size, if (firstImage == null) 0 else 1)
         return TopicPost(
             id = dto.id?.toString() ?: System.nanoTime().toString(),
-            topic = dto.topic.orEmpty().ifBlank { context.getString(R.string.topic_default_name) },
+            topic = dto.topic.orEmpty(),
             contentPreview = content.take(64),
-            authorName = dto.username.orEmpty().ifBlank { context.getString(R.string.topic_default_author) },
-            publishedAt = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
+            authorName = dto.username.orEmpty(),
+            publishedAt = dto.publishTime.orEmpty(),
             likeCount = dto.likeCount ?: 0,
             imageCount = imageCount,
             firstImageUrl = firstImage,
