@@ -1333,6 +1333,7 @@
     <string name="profile_login_status_success">登录成功</string>
     <string name="profile_login_unknown_ip">IP 未知</string>
     <string name="profile_login_unknown_area">地区未知</string>
+    <string name="profile_login_unknown_device">未知设备</string>
     <string name="profile_phone_area_label">国家或地区</string>
     <string name="profile_phone_input_label">手机号</string>
     <string name="profile_phone_required">请输入手机号</string>

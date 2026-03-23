@@ -44,7 +44,7 @@ data class PhoneAttribution(
 data class ContactBindingStatus(
     val isBound: Boolean = false,
     val rawValue: String? = null,
-    val maskedValue: String = "未绑定",
+    val maskedValue: String = "",
     val note: String = "",
     val countryCode: Int? = null,
     val username: String? = null
@@ -59,7 +59,7 @@ data class FeedbackSubmission(
 
 fun maskPhone(phone: String?): String {
     val normalized = phone?.trim().orEmpty()
-    if (normalized.isBlank()) return "未绑定"
+    if (normalized.isBlank()) return ""
     return when {
         normalized.length >= 11 -> {
             "${normalized.take(3)}****${normalized.takeLast(4)}"
@@ -73,7 +73,7 @@ fun maskPhone(phone: String?): String {
 
 fun maskEmail(email: String?): String {
     val normalized = email?.trim().orEmpty()
-    if (normalized.isBlank()) return "未绑定"
+    if (normalized.isBlank()) return ""
     val parts = normalized.split("@")
     if (parts.size != 2) return normalized
     val local = parts[0]
@@ -91,7 +91,7 @@ fun displayDeviceName(rawValue: String?): String {
         lowercased.contains("ipad") -> "iPad"
         lowercased.contains("iphone") || lowercased.contains("ios") -> "iPhone"
         lowercased.contains("android") -> "Android"
-        value.isBlank() -> "未知设备"
+        value.isBlank() -> ""
         else -> value
     }
 }
