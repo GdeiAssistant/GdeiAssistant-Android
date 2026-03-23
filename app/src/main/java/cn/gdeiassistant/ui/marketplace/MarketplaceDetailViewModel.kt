@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.MarketplaceRepository
+import cn.gdeiassistant.data.mapper.MarketplaceDisplayMapper
 import cn.gdeiassistant.model.MarketplaceDetail
 import cn.gdeiassistant.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ data class MarketplaceDetailUiState(
 class MarketplaceDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val marketplaceRepository: MarketplaceRepository,
+    private val displayMapper: MarketplaceDisplayMapper,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -49,6 +51,7 @@ class MarketplaceDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             marketplaceRepository.getItemDetail(itemId)
+                .map { displayMapper.applyDetailDefaults(it) }
                 .onSuccess { detail ->
                     _state.update { it.copy(detail = detail, isLoading = false, error = null) }
                 }

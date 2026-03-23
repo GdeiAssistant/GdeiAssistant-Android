@@ -3,7 +3,6 @@ package cn.gdeiassistant.data
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.LostFoundDetail
 import cn.gdeiassistant.model.LostFoundDraft
 import cn.gdeiassistant.model.LostFoundEditableItem
@@ -63,25 +62,17 @@ class LostFoundRepository @Inject constructor(
     suspend fun getItemDetail(id: String): Result<LostFoundDetail> = withContext(Dispatchers.IO) {
         safeApiCall { lostFoundApi.getItemDetail(id) }
             .mapCatching { dto ->
-                val detail = dto ?: throw IllegalStateException(context.getString(R.string.lost_found_detail_missing))
-                val itemDto = detail.item ?: throw IllegalStateException(context.getString(R.string.lost_found_detail_missing))
+                val detail = dto ?: throw IllegalStateException("Item detail not found")
+                val itemDto = detail.item ?: throw IllegalStateException("Item detail not found")
                 val item = mapItem(itemDto)
                 val images = itemDto.pictureURL.orEmpty().filter { it.isNotBlank() }.ifEmpty {
                     listOfNotNull(safeApiCall { lostFoundApi.getItemPreview(id) }.getOrNull())
                 }
                 LostFoundDetail(
                     item = item,
-                    description = itemDto.description.orEmpty().ifBlank {
-                        context.getString(R.string.lost_found_description_empty)
-                    },
-                    contactHint = buildContactHint(itemDto.qq, itemDto.wechat, itemDto.phone).ifBlank {
-                        context.getString(R.string.lost_found_contact_private)
-                    },
-                    statusText = when (item.state) {
-                        LostFoundItemState.ACTIVE -> context.getString(R.string.lost_found_status_active)
-                        LostFoundItemState.RESOLVED -> context.getString(R.string.lost_found_status_resolved)
-                        LostFoundItemState.SYSTEM_DELETED -> context.getString(R.string.lost_found_status_deleted)
-                    },
+                    description = itemDto.description.orEmpty(),
+                    contactHint = buildContactHint(itemDto.qq, itemDto.wechat, itemDto.phone),
+                    statusText = "",
                     ownerUsername = detail.profile?.username ?: itemDto.username,
                     ownerNickname = detail.profile?.nickname?.trim()?.ifBlank { null },
                     ownerAvatarUrl = detail.profile?.avatarURL?.trim()?.ifBlank { null },
@@ -97,8 +88,12 @@ class LostFoundRepository @Inject constructor(
                 val profileDeferred = async { profileRepository.getProfile() }
                 val dto = summaryDeferred.await().getOrThrow()
                 val profile = profileDeferred.await().getOrNull()
-                val summary = dto ?: throw IllegalStateException(context.getString(R.string.lost_found_profile_empty))
-                val header = context.toCommunityProfileHeader(profile)
+                val summary = dto ?: throw IllegalStateException("Profile summary not found")
+                val header = buildCommunityProfileHeader(
+                    profile = profile,
+                    defaultDisplayName = "",
+                    defaultHeadline = ""
+                )
                 LostFoundPersonalSummary(
                     nickname = header.displayName,
                     avatarUrl = header.avatarUrl,
@@ -130,11 +125,11 @@ class LostFoundRepository @Inject constructor(
     suspend fun getEditableItem(id: String): Result<LostFoundEditableItem> = withContext(Dispatchers.IO) {
         safeApiCall { lostFoundApi.getProfileSummary() }
             .mapCatching { dto ->
-                val summary = dto ?: throw IllegalStateException(context.getString(R.string.lost_found_profile_empty))
+                val summary = dto ?: throw IllegalStateException("Profile summary not found")
                 val item = sequenceOf(summary.lost, summary.found, summary.didfound)
                     .flatMap { it.orEmpty().asSequence() }
                     .firstOrNull { it.id?.toString() == id }
-                    ?: throw IllegalStateException(context.getString(R.string.lost_found_edit_missing))
+                    ?: throw IllegalStateException("Editable item not found")
                 LostFoundEditableItem(
                     id = (item.id ?: id.toLongOrNull() ?: System.nanoTime()).toString(),
                     title = item.name.orEmpty(),
@@ -173,12 +168,12 @@ class LostFoundRepository @Inject constructor(
     private fun mapItem(dto: LostFoundItemDto): LostFoundItem {
         return LostFoundItem(
             id = (dto.id ?: System.nanoTime()).toString(),
-            title = dto.name.orEmpty().ifBlank { context.getString(R.string.lost_found_default_title) },
+            title = dto.name.orEmpty(),
             type = LostFoundType.fromRemote(dto.lostType),
             itemTypeId = dto.itemType ?: 0,
-            summary = dto.description.orEmpty().ifBlank { context.getString(R.string.lost_found_default_summary) }.take(56),
-            location = dto.location.orEmpty().ifBlank { context.getString(R.string.lost_found_default_location) },
-            createdAt = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
+            summary = dto.description.orEmpty().take(56),
+            location = dto.location.orEmpty(),
+            createdAt = dto.publishTime.orEmpty(),
             state = LostFoundItemState.fromRemote(dto.state),
             previewImageUrl = dto.pictureURL.orEmpty().firstOrNull { it.isNotBlank() }
         )
@@ -186,16 +181,16 @@ class LostFoundRepository @Inject constructor(
 
     private fun buildContactHint(qq: String?, wechat: String?, phone: String?): String {
         return listOfNotNull(
-            qq?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.lost_found_contact_qq, it) },
-            wechat?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.lost_found_contact_wechat, it) },
-            phone?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.lost_found_contact_phone, it) }
+            qq?.trim()?.takeIf { it.isNotBlank() },
+            wechat?.trim()?.takeIf { it.isNotBlank() },
+            phone?.trim()?.takeIf { it.isNotBlank() }
         ).joinToString(" / ")
     }
 
     private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
         val mimeType = context.contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.lost_found_publish_read_failed))
+            ?: throw IllegalStateException("Failed to read image")
         val fileName = queryDisplayName(uri).ifBlank { "lost-found-${UUID.randomUUID()}.jpg" }
         return MultipartBody.Part.createFormData(
             "image$index",
