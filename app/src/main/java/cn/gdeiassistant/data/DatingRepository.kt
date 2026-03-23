@@ -3,7 +3,6 @@ package cn.gdeiassistant.data
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.DatingArea
 import cn.gdeiassistant.model.DatingMyPost
 import cn.gdeiassistant.model.DatingPickStatus
@@ -36,6 +35,8 @@ class DatingRepository @Inject constructor(
     private val datingApi: DatingApi,
     private val sessionManager: SessionManager
 ) {
+    // Note: Context is retained only for Uri/ContentResolver operations (toPart, queryDisplayName).
+    // All display-text formatting has been moved to DatingDisplayMapper.
 
     suspend fun getProfiles(area: DatingArea): Result<List<DatingProfileCard>> = withContext(Dispatchers.IO) {
         safeApiCall { datingApi.getProfiles(area = area.remoteValue, start = 0) }
@@ -109,11 +110,11 @@ class DatingRepository @Inject constructor(
     private fun mapProfileCard(dto: DatingProfileDto): DatingProfileCard {
         return DatingProfileCard(
             id = dto.profileId?.toString() ?: UUID.randomUUID().toString(),
-            nickname = dto.nickname.orEmpty().ifBlank { context.getString(R.string.dating_default_anonymous) },
-            grade = gradeText(dto.grade),
-            faculty = dto.faculty.orEmpty().ifBlank { context.getString(R.string.dating_default_faculty_empty) },
-            hometown = dto.hometown.orEmpty().ifBlank { context.getString(R.string.dating_default_hometown_empty) },
-            content = dto.content.orEmpty().ifBlank { context.getString(R.string.dating_default_sent_message) },
+            nickname = dto.nickname.orEmpty().trim(),
+            grade = dto.grade?.toString().orEmpty(),
+            faculty = dto.faculty.orEmpty().trim(),
+            hometown = dto.hometown.orEmpty().trim(),
+            content = dto.content.orEmpty().trim(),
             area = DatingArea.fromRemote(dto.area),
             imageUrl = dto.pictureURL?.trim()?.ifBlank { null },
             isMine = dto.username?.trim() == sessionManager.currentUsername()
@@ -142,10 +143,10 @@ class DatingRepository @Inject constructor(
         val profile = dto.roommateProfile
         return DatingReceivedPick(
             id = dto.pickId?.toString() ?: UUID.randomUUID().toString(),
-            senderName = profile?.nickname.orEmpty()
-                .ifBlank { dto.username.orEmpty().ifBlank { context.getString(R.string.dating_default_anonymous) } },
-            content = dto.content.orEmpty().ifBlank { context.getString(R.string.dating_default_received_message) },
-            time = context.getString(R.string.dating_default_recent_update),
+            senderName = profile?.nickname.orEmpty().trim()
+                .ifBlank { dto.username.orEmpty().trim() },
+            content = dto.content.orEmpty().trim(),
+            time = "",
             status = DatingPickStatus.fromRemote(dto.state),
             avatarUrl = profile?.pictureURL?.trim()?.ifBlank { null }
         )
@@ -155,8 +156,8 @@ class DatingRepository @Inject constructor(
         val profile = dto.roommateProfile
         return DatingSentPick(
             id = dto.pickId?.toString() ?: UUID.randomUUID().toString(),
-            targetName = profile?.nickname.orEmpty().ifBlank { context.getString(R.string.dating_default_anonymous) },
-            content = dto.content.orEmpty().ifBlank { context.getString(R.string.dating_default_sent_message) },
+            targetName = profile?.nickname.orEmpty().trim(),
+            content = dto.content.orEmpty().trim(),
             status = DatingPickStatus.fromRemote(dto.state),
             targetQq = profile?.qq?.trim()?.ifBlank { null },
             targetWechat = profile?.wechat?.trim()?.ifBlank { null },
@@ -167,31 +168,21 @@ class DatingRepository @Inject constructor(
     private fun mapMyPost(dto: DatingProfileDto): DatingMyPost {
         return DatingMyPost(
             id = dto.profileId?.toString() ?: UUID.randomUUID().toString(),
-            name = dto.nickname.orEmpty().ifBlank { context.getString(R.string.dating_default_anonymous) },
+            name = dto.nickname.orEmpty().trim(),
             imageUrl = dto.pictureURL?.trim()?.ifBlank { null },
-            publishTime = context.getString(R.string.dating_default_posted),
-            grade = gradeText(dto.grade),
-            faculty = dto.faculty.orEmpty().ifBlank { context.getString(R.string.dating_default_faculty_empty) },
-            hometown = dto.hometown.orEmpty().ifBlank { context.getString(R.string.dating_default_hometown_empty) },
+            publishTime = "",
+            grade = dto.grade?.toString().orEmpty(),
+            faculty = dto.faculty.orEmpty().trim(),
+            hometown = dto.hometown.orEmpty().trim(),
             area = DatingArea.fromRemote(dto.area),
             state = dto.state ?: 1
         )
     }
 
-    private fun gradeText(value: Int?): String {
-        return when (value) {
-            1 -> context.getString(R.string.dating_grade_one)
-            2 -> context.getString(R.string.dating_grade_two)
-            3 -> context.getString(R.string.dating_grade_three)
-            4 -> context.getString(R.string.dating_grade_four)
-            else -> context.getString(R.string.dating_grade_unknown)
-        }
-    }
-
     private fun Uri.toPart(): MultipartBody.Part {
         val mimeType = context.contentResolver.getType(this)?.ifBlank { null } ?: "image/jpeg"
         val bytes = context.contentResolver.openInputStream(this)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.dating_publish_read_failed))
+            ?: throw IllegalStateException("Failed to read image data")
         return MultipartBody.Part.createFormData(
             "image",
             queryDisplayName(this).ifBlank { "dating-${UUID.randomUUID()}.jpg" },

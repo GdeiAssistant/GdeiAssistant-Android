@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DatingRepository
+import cn.gdeiassistant.data.mapper.DatingDisplayMapper
 import cn.gdeiassistant.model.DatingMyPost
 import cn.gdeiassistant.model.DatingPickStatus
 import cn.gdeiassistant.model.DatingReceivedPick
@@ -44,6 +45,7 @@ sealed interface DatingEvent {
 class DatingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val datingRepository: DatingRepository,
+    private val datingDisplayMapper: DatingDisplayMapper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -70,9 +72,9 @@ class DatingViewModel @Inject constructor(
                 .onSuccess { (received, sent, posts) ->
                     _state.update {
                         it.copy(
-                            receivedItems = received,
-                            sentItems = sent,
-                            myPosts = posts,
+                            receivedItems = datingDisplayMapper.applyReceivedPickDefaults(received),
+                            sentItems = datingDisplayMapper.applySentPickDefaults(sent),
+                            myPosts = datingDisplayMapper.applyMyPostDefaults(posts),
                             isLoading = false,
                             error = null
                         )

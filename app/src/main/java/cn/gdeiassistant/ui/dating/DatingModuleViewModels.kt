@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DatingRepository
 import cn.gdeiassistant.data.ProfileOptionsRepository
+import cn.gdeiassistant.data.mapper.DatingDisplayMapper
 import cn.gdeiassistant.model.DatingArea
 import cn.gdeiassistant.model.DatingProfileCard
 import cn.gdeiassistant.model.DatingProfileDetail
@@ -53,7 +54,8 @@ sealed interface DatingModuleEvent {
 
 @HiltViewModel
 class DatingFeedViewModel @Inject constructor(
-    private val datingRepository: DatingRepository
+    private val datingRepository: DatingRepository,
+    private val datingDisplayMapper: DatingDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DatingFeedUiState())
@@ -78,7 +80,7 @@ class DatingFeedViewModel @Inject constructor(
                 .onSuccess { profiles ->
                     _state.update {
                         it.copy(
-                            profiles = profiles,
+                            profiles = datingDisplayMapper.applyCardDefaults(profiles),
                             isLoading = false,
                             error = null
                         )
@@ -101,7 +103,8 @@ class DatingFeedViewModel @Inject constructor(
 class DatingDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
-    private val datingRepository: DatingRepository
+    private val datingRepository: DatingRepository,
+    private val datingDisplayMapper: DatingDisplayMapper
 ) : ViewModel() {
 
     private val profileId: String = savedStateHandle.get<String>(Routes.DATING_PROFILE_ID).orEmpty()
@@ -130,7 +133,7 @@ class DatingDetailViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             datingRepository.getProfileDetail(profileId)
                 .onSuccess { detail ->
-                    _state.update { it.copy(detail = detail, isLoading = false, error = null) }
+                    _state.update { it.copy(detail = datingDisplayMapper.applyDetailDefaults(detail), isLoading = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update {
