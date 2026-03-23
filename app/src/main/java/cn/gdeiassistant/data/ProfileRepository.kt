@@ -160,12 +160,7 @@ class ProfileRepository @Inject constructor(
                 ContactBindingStatus(
                     isBound = normalized != null,
                     rawValue = normalized,
-                    maskedValue = maskEmail(normalized),
-                    note = if (normalized == null) {
-                        context.getString(R.string.profile_email_unbound_note)
-                    } else {
-                        context.getString(R.string.profile_email_bound_note)
-                    }
+                    maskedValue = maskEmail(normalized)
                 )
             }
     }
@@ -251,8 +246,8 @@ class ProfileRepository @Inject constructor(
                 items.orEmpty().map { dto ->
                     LoginRecordItem(
                         id = dto.id?.toString() ?: System.nanoTime().toString(),
-                        timeText = dto.time.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
-                        ip = dto.ip.orEmpty().ifBlank { context.getString(R.string.profile_login_unknown_ip) },
+                        timeText = dto.time.orEmpty(),
+                        ip = dto.ip.orEmpty(),
                         area = listOfNotNull(
                             dto.area?.takeIf { it.isNotBlank() },
                             listOf(dto.country, dto.province, dto.city)
@@ -260,9 +255,9 @@ class ProfileRepository @Inject constructor(
                                 .filter { it.isNotBlank() }
                                 .joinToString(" ")
                                 .takeIf { it.isNotBlank() }
-                        ).firstOrNull() ?: context.getString(R.string.profile_login_unknown_area),
+                        ).firstOrNull().orEmpty(),
                         device = displayDeviceName(dto.network),
-                        statusText = context.getString(R.string.profile_login_status_success)
+                        statusText = ""
                     )
                 }
             }
@@ -277,7 +272,7 @@ class ProfileRepository @Inject constructor(
                             id = code,
                             code = code,
                             flag = dto.flag.orEmpty(),
-                            name = dto.name.orEmpty().ifBlank { context.getString(R.string.profile_phone_unknown_area) }
+                            name = dto.name.orEmpty()
                         )
                     }
                 }
@@ -306,9 +301,7 @@ class ProfileRepository @Inject constructor(
         safeJsonResultCall { profileApi.unbindPhone() }
             .map {
                 ContactBindingStatus(
-                    isBound = false,
-                    maskedValue = context.getString(R.string.profile_binding_unbound),
-                    note = context.getString(R.string.profile_phone_unbound_note)
+                    isBound = false
                 )
             }
     }
@@ -323,8 +316,7 @@ class ProfileRepository @Inject constructor(
                 ContactBindingStatus(
                     isBound = true,
                     rawValue = email,
-                    maskedValue = maskEmail(email),
-                    note = context.getString(R.string.profile_email_bound_note)
+                    maskedValue = maskEmail(email)
                 )
             }
     }
@@ -333,9 +325,7 @@ class ProfileRepository @Inject constructor(
         safeJsonResultCall { profileApi.unbindEmail() }
             .map {
                 ContactBindingStatus(
-                    isBound = false,
-                    maskedValue = context.getString(R.string.profile_binding_unbound),
-                    note = context.getString(R.string.profile_email_unbound_note)
+                    isBound = false
                 )
             }
     }
@@ -362,13 +352,6 @@ class ProfileRepository @Inject constructor(
             isBound = phone != null,
             rawValue = phone,
             maskedValue = maskPhone(phone),
-            note = if (phone == null) {
-                context.getString(R.string.profile_phone_unbound_note)
-            } else if (dto?.code != null) {
-                context.getString(R.string.profile_phone_bound_note_with_code, dto.code)
-            } else {
-                context.getString(R.string.profile_phone_bound_note)
-            },
             countryCode = dto?.code,
             username = dto?.username
         )

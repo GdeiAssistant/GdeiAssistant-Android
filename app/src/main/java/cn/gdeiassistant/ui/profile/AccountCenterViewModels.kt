@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.ProfileRepository
 import cn.gdeiassistant.data.SessionManager
+import cn.gdeiassistant.data.mapper.ProfileDisplayMapper
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.model.ContactBindingStatus
 import cn.gdeiassistant.model.FeedbackSubmission
@@ -216,7 +217,8 @@ data class LoginRecordsUiState(
 
 @HiltViewModel
 class LoginRecordsViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val displayMapper: ProfileDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginRecordsUiState())
@@ -231,7 +233,7 @@ class LoginRecordsViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             profileRepository.getLoginRecords()
                 .onSuccess { records ->
-                    _state.update { it.copy(items = records, isLoading = false, error = null) }
+                    _state.update { it.copy(items = displayMapper.applyLoginRecordDefaults(records), isLoading = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(items = emptyList(), isLoading = false, error = error.message) }
@@ -257,7 +259,8 @@ sealed interface BindPhoneEvent {
 @HiltViewModel
 class BindPhoneViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val displayMapper: ProfileDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BindPhoneUiState())
@@ -275,19 +278,18 @@ class BindPhoneViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             val attributionsResult = profileRepository.getPhoneAttributions()
             val statusResult = profileRepository.getPhoneStatus()
-            val attributions = attributionsResult.getOrDefault(emptyList())
+            val attributions = displayMapper.applyPhoneAttributionDefaults(
+                attributionsResult.getOrDefault(emptyList())
+            )
+            val rawStatus = statusResult.getOrDefault(ContactBindingStatus())
+            val status = displayMapper.applyBindingNote(rawStatus, ProfileDisplayMapper.BindingType.PHONE)
             val selectedCode = statusResult.getOrNull()?.countryCode
                 ?: attributions.firstOrNull { it.code == 86 }?.code
                 ?: attributions.firstOrNull()?.code
                 ?: 86
             _state.update {
                 it.copy(
-                    status = statusResult.getOrDefault(
-                        ContactBindingStatus(
-                            maskedValue = context.getString(R.string.profile_binding_unbound),
-                            note = context.getString(R.string.profile_phone_unbound_note)
-                        )
-                    ),
+                    status = status,
                     attributions = attributions,
                     selectedAttributionCode = selectedCode,
                     isLoading = false,
@@ -343,7 +345,7 @@ class BindPhoneViewModel @Inject constructor(
                 phone = normalizedPhone,
                 randomCode = normalizedCode
             ).onSuccess { status ->
-                _state.update { it.copy(status = status, isSubmitting = false, error = null) }
+                _state.update { it.copy(status = displayMapper.applyBindingNote(status, ProfileDisplayMapper.BindingType.PHONE), isSubmitting = false, error = null) }
                 _events.emit(BindPhoneEvent.ShowMessage(context.getString(R.string.profile_phone_bind_success)))
             }.onFailure { error ->
                 _state.update { it.copy(isSubmitting = false, error = error.message) }
@@ -361,7 +363,7 @@ class BindPhoneViewModel @Inject constructor(
             _state.update { it.copy(isSubmitting = true) }
             profileRepository.unbindPhone()
                 .onSuccess { status ->
-                    _state.update { it.copy(status = status, isSubmitting = false, error = null) }
+                    _state.update { it.copy(status = displayMapper.applyBindingNote(status, ProfileDisplayMapper.BindingType.PHONE), isSubmitting = false, error = null) }
                     _events.emit(BindPhoneEvent.ShowMessage(context.getString(R.string.profile_phone_unbind_success)))
                 }
                 .onFailure { error ->
@@ -397,7 +399,8 @@ sealed interface BindEmailEvent {
 @HiltViewModel
 class BindEmailViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val displayMapper: ProfileDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BindEmailUiState())
@@ -415,7 +418,7 @@ class BindEmailViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             profileRepository.getEmailStatus()
                 .onSuccess { status ->
-                    _state.update { it.copy(status = status, isLoading = false, error = null) }
+                    _state.update { it.copy(status = displayMapper.applyBindingNote(status, ProfileDisplayMapper.BindingType.EMAIL), isLoading = false, error = null) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isLoading = false, error = error.message) }
@@ -462,7 +465,7 @@ class BindEmailViewModel @Inject constructor(
             _state.update { it.copy(isSubmitting = true) }
             profileRepository.bindEmail(normalizedEmail, normalizedCode)
                 .onSuccess { status ->
-                    _state.update { it.copy(status = status, isSubmitting = false, error = null) }
+                    _state.update { it.copy(status = displayMapper.applyBindingNote(status, ProfileDisplayMapper.BindingType.EMAIL), isSubmitting = false, error = null) }
                     _events.emit(BindEmailEvent.ShowMessage(context.getString(R.string.profile_email_bind_success)))
                 }
                 .onFailure { error ->
@@ -481,7 +484,7 @@ class BindEmailViewModel @Inject constructor(
             _state.update { it.copy(isSubmitting = true) }
             profileRepository.unbindEmail()
                 .onSuccess { status ->
-                    _state.update { it.copy(status = status, isSubmitting = false, error = null) }
+                    _state.update { it.copy(status = displayMapper.applyBindingNote(status, ProfileDisplayMapper.BindingType.EMAIL), isSubmitting = false, error = null) }
                     _events.emit(BindEmailEvent.ShowMessage(context.getString(R.string.profile_email_unbind_success)))
                 }
                 .onFailure { error ->
