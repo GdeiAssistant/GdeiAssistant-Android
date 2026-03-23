@@ -5,6 +5,7 @@ import cn.gdeiassistant.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.LostFoundRepository
+import cn.gdeiassistant.data.mapper.LostFoundDisplayMapper
 import cn.gdeiassistant.model.LostFoundItem
 import cn.gdeiassistant.model.LostFoundPersonalSummary
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -44,7 +45,8 @@ sealed interface LostFoundProfileEvent {
 @HiltViewModel
 class LostFoundProfileViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val lostFoundRepository: LostFoundRepository
+    private val lostFoundRepository: LostFoundRepository,
+    private val displayMapper: LostFoundDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LostFoundProfileUiState())
@@ -65,6 +67,7 @@ class LostFoundProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             lostFoundRepository.getProfileSummary()
+                .map { displayMapper.applyPersonalSummaryDefaults(it) }
                 .onSuccess { summary ->
                     _state.update { it.copy(summary = summary, isLoading = false, error = null) }
                 }

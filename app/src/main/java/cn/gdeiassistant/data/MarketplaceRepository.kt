@@ -3,7 +3,6 @@ package cn.gdeiassistant.data
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.MarketplaceDetail
 import cn.gdeiassistant.model.MarketplaceDraft
 import cn.gdeiassistant.model.MarketplaceEditableItem
@@ -14,7 +13,6 @@ import cn.gdeiassistant.model.MarketplaceTypeOption
 import cn.gdeiassistant.model.MarketplaceUpdateDraft
 import cn.gdeiassistant.network.api.MarketplaceApi
 import cn.gdeiassistant.network.api.MarketplaceItemDto
-import cn.gdeiassistant.network.api.MarketplaceProfileDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -64,9 +62,9 @@ class MarketplaceRepository @Inject constructor(
     suspend fun getItemDetail(id: String): Result<MarketplaceDetail> = withContext(Dispatchers.IO) {
         safeApiCall { marketplaceApi.getItemDetail(id) }
             .mapCatching { dto ->
-                val detail = dto ?: throw IllegalStateException(context.getString(R.string.marketplace_detail_missing))
+                val detail = dto ?: throw IllegalStateException("Item detail not found")
                 val item = mapItem(
-                    detail.secondhandItem ?: throw IllegalStateException(context.getString(R.string.marketplace_detail_missing))
+                    detail.secondhandItem ?: throw IllegalStateException("Item detail not found")
                 )
                 val profile = detail.profile
                 val images = detail.secondhandItem.pictureURL.orEmpty().filter { it.isNotBlank() }.ifEmpty {
@@ -75,20 +73,16 @@ class MarketplaceRepository @Inject constructor(
                 MarketplaceDetail(
                     item = item,
                     condition = currentProfileOptions().marketplaceTypeTitle(detail.secondhandItem.type),
-                    description = detail.secondhandItem.description.orEmpty().ifBlank {
-                        context.getString(R.string.marketplace_description_empty)
-                    },
+                    description = detail.secondhandItem.description.orEmpty(),
                     contactHint = buildContactHint(
                         qq = detail.secondhandItem.qq,
                         phone = detail.secondhandItem.phone
-                    ).ifBlank { context.getString(R.string.marketplace_contact_private) },
+                    ),
                     sellerUsername = profile?.username ?: detail.secondhandItem.username,
                     sellerNickname = profile?.nickname?.trim()?.ifBlank { null },
                     sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),
                     sellerMajor = profile?.major?.trim()?.ifBlank { null },
-                    sellerGrade = profile?.enrollment?.let {
-                        context.getString(R.string.marketplace_seller_grade_suffix, it)
-                    },
+                    sellerEnrollment = profile?.enrollment,
                     imageUrls = images
                 )
             }
@@ -101,8 +95,12 @@ class MarketplaceRepository @Inject constructor(
                 val profileDeferred = async { profileRepository.getProfile() }
                 val dto = summaryDeferred.await().getOrThrow()
                 val profile = profileDeferred.await().getOrNull()
-                val summary = dto ?: throw IllegalStateException(context.getString(R.string.marketplace_profile_empty))
-                val header = context.toCommunityProfileHeader(profile)
+                val summary = dto ?: throw IllegalStateException("Profile summary not found")
+                val header = buildCommunityProfileHeader(
+                    profile = profile,
+                    defaultDisplayName = "",
+                    defaultHeadline = ""
+                )
                 MarketplacePersonalSummary(
                     nickname = header.displayName,
                     avatarUrl = header.avatarUrl,
@@ -118,11 +116,11 @@ class MarketplaceRepository @Inject constructor(
     suspend fun getEditableItem(id: String): Result<MarketplaceEditableItem> = withContext(Dispatchers.IO) {
         safeApiCall { marketplaceApi.getProfileSummary() }
             .mapCatching { dto ->
-                val summary = dto ?: throw IllegalStateException(context.getString(R.string.marketplace_profile_empty))
+                val summary = dto ?: throw IllegalStateException("Profile summary not found")
                 val item = sequenceOf(summary.doing, summary.sold, summary.off)
                     .flatMap { it.orEmpty().asSequence() }
                     .firstOrNull { it.id?.toString() == id }
-                    ?: throw IllegalStateException(context.getString(R.string.marketplace_edit_missing))
+                    ?: throw IllegalStateException("Editable item not found")
                 MarketplaceEditableItem(
                     id = (item.id ?: id.toLongOrNull() ?: System.nanoTime()).toString(),
                     title = item.name.orEmpty(),
@@ -174,12 +172,12 @@ class MarketplaceRepository @Inject constructor(
     private fun mapItem(dto: MarketplaceItemDto): MarketplaceItem {
         return MarketplaceItem(
             id = (dto.id ?: System.nanoTime()).toString(),
-            title = dto.name.orEmpty().ifBlank { context.getString(R.string.marketplace_default_title) },
+            title = dto.name.orEmpty(),
             price = dto.price?.toDoubleOrNull() ?: 0.0,
-            summary = dto.description.orEmpty().ifBlank { context.getString(R.string.marketplace_default_summary) }.take(60),
-            sellerName = dto.username.orEmpty().ifBlank { context.getString(R.string.marketplace_default_seller) },
-            postedAt = dto.publishTime.orEmpty().ifBlank { context.getString(R.string.marketplace_default_posted_at) },
-            location = dto.location.orEmpty().ifBlank { context.getString(R.string.marketplace_default_location) },
+            summary = dto.description.orEmpty().take(60),
+            sellerName = dto.username.orEmpty(),
+            postedAt = dto.publishTime.orEmpty(),
+            location = dto.location.orEmpty(),
             state = MarketplaceItemState.fromRemote(dto.state),
             tags = listOf(currentProfileOptions().marketplaceTypeTitle(dto.type)),
             previewImageUrl = dto.pictureURL.orEmpty().firstOrNull { it.isNotBlank() }
@@ -188,15 +186,15 @@ class MarketplaceRepository @Inject constructor(
 
     private fun buildContactHint(qq: String?, phone: String?): String {
         return listOfNotNull(
-            qq?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.marketplace_contact_qq, it) },
-            phone?.trim()?.takeIf { it.isNotBlank() }?.let { context.getString(R.string.marketplace_contact_phone, it) }
+            qq?.trim()?.takeIf { it.isNotBlank() },
+            phone?.trim()?.takeIf { it.isNotBlank() }
         ).joinToString(" / ")
     }
 
     private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
         val mimeType = context.contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.marketplace_publish_read_failed))
+            ?: throw IllegalStateException("Failed to read image")
         val fileName = queryDisplayName(uri).ifBlank { "marketplace-${UUID.randomUUID()}.jpg" }
         return MultipartBody.Part.createFormData(
             "image$index",

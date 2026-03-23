@@ -5,6 +5,7 @@ import cn.gdeiassistant.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.MarketplaceRepository
+import cn.gdeiassistant.data.mapper.MarketplaceDisplayMapper
 import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceItemState
 import cn.gdeiassistant.model.MarketplacePersonalSummary
@@ -45,7 +46,8 @@ sealed interface MarketplaceProfileEvent {
 @HiltViewModel
 class MarketplaceProfileViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val marketplaceRepository: MarketplaceRepository
+    private val marketplaceRepository: MarketplaceRepository,
+    private val displayMapper: MarketplaceDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MarketplaceProfileUiState())
@@ -66,6 +68,7 @@ class MarketplaceProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             marketplaceRepository.getProfileSummary()
+                .map { displayMapper.applyPersonalSummaryDefaults(it) }
                 .onSuccess { summary ->
                     _state.update { it.copy(summary = summary, isLoading = false, error = null) }
                 }

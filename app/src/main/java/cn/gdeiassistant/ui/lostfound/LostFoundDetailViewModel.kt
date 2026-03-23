@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.LostFoundRepository
+import cn.gdeiassistant.data.mapper.LostFoundDisplayMapper
 import cn.gdeiassistant.model.LostFoundDetail
 import cn.gdeiassistant.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ data class LostFoundDetailUiState(
 class LostFoundDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val lostFoundRepository: LostFoundRepository,
+    private val displayMapper: LostFoundDisplayMapper,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -49,6 +51,7 @@ class LostFoundDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             lostFoundRepository.getItemDetail(itemId)
+                .map { displayMapper.applyDetailDefaults(it) }
                 .onSuccess { detail ->
                     _state.update { it.copy(detail = detail, isLoading = false, error = null) }
                 }

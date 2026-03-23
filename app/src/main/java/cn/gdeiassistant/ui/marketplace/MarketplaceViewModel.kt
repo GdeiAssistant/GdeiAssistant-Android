@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.MarketplaceRepository
+import cn.gdeiassistant.data.mapper.MarketplaceDisplayMapper
 import cn.gdeiassistant.model.MarketplaceDraft
 import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceTypeOption
@@ -43,7 +44,8 @@ sealed interface MarketplacePublishEvent {
 
 @HiltViewModel
 class MarketplaceViewModel @Inject constructor(
-    private val marketplaceRepository: MarketplaceRepository
+    private val marketplaceRepository: MarketplaceRepository,
+    private val displayMapper: MarketplaceDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -81,6 +83,7 @@ class MarketplaceViewModel @Inject constructor(
             val keyword = _state.value.query.trim().takeIf { it.isNotBlank() }
             val typeId = if (keyword != null) null else _state.value.selectedTypeId
             marketplaceRepository.getItems(typeId = typeId, keyword = keyword)
+                .map { displayMapper.applyItemDefaults(it) }
                 .onSuccess { items ->
                     _state.update { it.copy(typeOptions = typeOptions, items = items, isLoading = false, error = null) }
                 }

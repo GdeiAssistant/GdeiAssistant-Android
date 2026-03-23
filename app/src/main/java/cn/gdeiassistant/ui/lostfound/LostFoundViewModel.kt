@@ -3,6 +3,7 @@ package cn.gdeiassistant.ui.lostfound
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.LostFoundRepository
+import cn.gdeiassistant.data.mapper.LostFoundDisplayMapper
 import cn.gdeiassistant.model.LostFoundItem
 import cn.gdeiassistant.model.LostFoundType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +34,8 @@ data class LostFoundUiState(
 
 @HiltViewModel
 class LostFoundViewModel @Inject constructor(
-    private val lostFoundRepository: LostFoundRepository
+    private val lostFoundRepository: LostFoundRepository,
+    private val displayMapper: LostFoundDisplayMapper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LostFoundUiState(isLoading = true))
@@ -51,6 +53,7 @@ class LostFoundViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             lostFoundRepository.getItems()
+                .map { displayMapper.applyItemDefaults(it) }
                 .onSuccess { items ->
                     _state.update { it.copy(items = items, isLoading = false, error = null) }
                 }

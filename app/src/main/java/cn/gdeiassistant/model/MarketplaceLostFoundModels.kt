@@ -51,6 +51,7 @@ data class MarketplaceDetail(
     val sellerCollege: String? = null,
     val sellerMajor: String? = null,
     val sellerGrade: String? = null,
+    val sellerEnrollment: Int? = null,
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 
