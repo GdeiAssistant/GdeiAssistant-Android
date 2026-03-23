@@ -33,10 +33,11 @@ class LostFoundDisplayMapper @Inject constructor(
     }
 
     fun applyDetailDefaults(detail: LostFoundDetail): LostFoundDetail {
+        val formattedContact = buildContactHint(detail.contactQQ, detail.contactWechat, detail.contactPhone)
         return detail.copy(
             item = applyItemDefaults(detail.item),
             description = detail.description.ifBlank { textResolver.getString(R.string.lost_found_description_empty) },
-            contactHint = detail.contactHint.ifBlank { textResolver.getString(R.string.lost_found_contact_private) },
+            contactHint = formattedContact.ifBlank { textResolver.getString(R.string.lost_found_contact_private) },
             statusText = detail.statusText.ifBlank { resolveStatusText(detail.item.state) }
         )
     }
