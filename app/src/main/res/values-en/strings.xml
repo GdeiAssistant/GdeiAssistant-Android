@@ -936,6 +936,7 @@
     <string name="dating_publish_wechat_too_long">WeChat cannot exceed 20 characters</string>
     <string name="dating_publish_success">Profile published</string>
     <string name="dating_publish_failed">Failed to publish profile</string>
+    <string name="dating_detail_load_failed">Failed to load profile</string>
     <string name="dating_publish_read_failed">Failed to read photo</string>
     <string name="dating_loading_title">Loading</string>
     <string name="dating_loading_hint">Syncing profiles and interaction status…</string>

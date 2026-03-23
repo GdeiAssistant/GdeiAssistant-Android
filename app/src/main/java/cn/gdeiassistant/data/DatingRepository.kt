@@ -50,7 +50,7 @@ class DatingRepository @Inject constructor(
     suspend fun getProfileDetail(id: String): Result<DatingProfileDetail> = withContext(Dispatchers.IO) {
         safeApiCall { datingApi.getProfileDetail(id) }
             .mapCatching { dto ->
-                val profileDto = dto?.profile ?: throw IllegalStateException("未找到卖室友资料")
+                val profileDto = dto?.profile ?: throw NoSuchElementException("dating_profile_not_found")
                 mapProfileDetail(profileDto, dto)
             }
     }
@@ -182,7 +182,7 @@ class DatingRepository @Inject constructor(
     private fun Uri.toPart(): MultipartBody.Part {
         val mimeType = context.contentResolver.getType(this)?.ifBlank { null } ?: "image/jpeg"
         val bytes = context.contentResolver.openInputStream(this)?.use { it.readBytes() }
-            ?: throw IllegalStateException("Failed to read image data")
+            ?: throw IllegalStateException("image_read_failed")
         return MultipartBody.Part.createFormData(
             "image",
             queryDisplayName(this).ifBlank { "dating-${UUID.randomUUID()}.jpg" },
