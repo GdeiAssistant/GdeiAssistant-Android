@@ -19,8 +19,11 @@ interface SecretApi {
         @Path("size") size: Int
     ): DataJsonResult<List<SecretPostDto>>
 
-    @GET("api/secret/profile")
-    suspend fun getMyPosts(): DataJsonResult<List<SecretPostDto>>
+    @GET("api/secret/profile/start/{start}/size/{size}")
+    suspend fun getMyPosts(
+        @Path("start") start: Int,
+        @Path("size") size: Int
+    ): DataJsonResult<List<SecretPostDto>>
 
     @GET("api/secret/id/{id}")
     suspend fun getDetail(

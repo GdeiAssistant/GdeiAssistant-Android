@@ -37,8 +37,8 @@ class SecretRepository @Inject constructor(
             }
     }
 
-    suspend fun getMyPosts(): Result<List<SecretPost>> = withContext(Dispatchers.IO) {
-        safeApiCall { secretApi.getMyPosts() }
+    suspend fun getMyPosts(start: Int = 0, size: Int = 20): Result<List<SecretPost>> = withContext(Dispatchers.IO) {
+        safeApiCall { secretApi.getMyPosts(start = start, size = size) }
             .mapCatching { items ->
                 items.orEmpty()
                     .filter { (it.state ?: 0) != 2 }
