@@ -313,6 +313,9 @@
     <string name="charge_amount_empty">충전 금액을 입력하세요</string>
     <string name="charge_amount_invalid">충전 금액이 유효하지 않습니다</string>
     <string name="charge_amount_range">충전 금액은 1~500 위안 사이여야 합니다</string>
+    <string name="charge_password_empty">충전을 확인하려면 비밀번호를 입력하세요</string>
+    <string name="charge_password_hint">계정 비밀번호</string>
+    <string name="charge_password_label">본인 인증</string>
     <string name="charge_agreement">결제 서비스 약관</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">충전 요청 제출 중…</string>

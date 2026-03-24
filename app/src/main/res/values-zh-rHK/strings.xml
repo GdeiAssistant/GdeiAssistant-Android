@@ -312,6 +312,9 @@
     <string name="charge_amount_empty">充值金額不能為空</string>
     <string name="charge_amount_invalid">充值金額不合法</string>
     <string name="charge_amount_range">充值金額需在 1 到 500 元之間</string>
+    <string name="charge_password_empty">請輸入帳號密碼以確認充值</string>
+    <string name="charge_password_hint">帳號密碼</string>
+    <string name="charge_password_label">身份驗證</string>
     <string name="charge_agreement">繳費服務條款</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">正在提交充值請求…</string>
