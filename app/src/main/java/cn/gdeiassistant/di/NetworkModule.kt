@@ -7,6 +7,8 @@ import cn.gdeiassistant.network.BaseUrlOverrideInterceptor
 import cn.gdeiassistant.network.LocaleInterceptor
 import cn.gdeiassistant.network.MockInterceptor
 import cn.gdeiassistant.network.NetworkConstants
+import cn.gdeiassistant.network.NetworkLoggingInterceptor
+import cn.gdeiassistant.network.RequestIdInterceptor
 import cn.gdeiassistant.network.ResponseInterceptor
 import cn.gdeiassistant.network.api.AnnouncementApi
 import cn.gdeiassistant.network.api.AuthApi
@@ -48,8 +50,18 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideRequestIdInterceptor(): RequestIdInterceptor = RequestIdInterceptor()
+
+    @Provides
+    @Singleton
+    fun provideNetworkLoggingInterceptor(): NetworkLoggingInterceptor = NetworkLoggingInterceptor()
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
         sessionManager: SessionManager,
+        requestIdInterceptor: RequestIdInterceptor,
+        networkLoggingInterceptor: NetworkLoggingInterceptor,
         baseUrlOverrideInterceptor: BaseUrlOverrideInterceptor,
         authInterceptor: AuthInterceptor,
         responseInterceptor: ResponseInterceptor,
@@ -59,11 +71,13 @@ object NetworkModule {
         .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .cookieJar(sessionManager.cookieJar)
-        .addInterceptor(localeInterceptor)
-        .addInterceptor(baseUrlOverrideInterceptor)
-        .addInterceptor(MockInterceptor())
-        .addInterceptor(authInterceptor)
-        .addInterceptor(responseInterceptor)
+        .addInterceptor(requestIdInterceptor)        // 1. Assign X-Request-ID before anything else
+        .addInterceptor(localeInterceptor)           // 2. Add Accept-Language
+        .addInterceptor(baseUrlOverrideInterceptor)  // 3. Rewrite base URL for environment
+        .addInterceptor(networkLoggingInterceptor)   // 4. Log request+response timing
+        .addInterceptor(MockInterceptor())           // 5. Short-circuit with mock data if enabled
+        .addInterceptor(authInterceptor)             // 6. Attach Bearer token
+        .addInterceptor(responseInterceptor)         // 7. Handle HTTP errors
         .build()
 
     @Provides
