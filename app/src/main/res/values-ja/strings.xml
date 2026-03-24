@@ -313,6 +313,9 @@
     <string name="charge_amount_empty">チャージ金額を入力してください</string>
     <string name="charge_amount_invalid">チャージ金額が正しくありません</string>
     <string name="charge_amount_range">チャージ金額は 1〜500 元の範囲で入力してください</string>
+    <string name="charge_password_empty">チャージを確認するためにパスワードを入力してください</string>
+    <string name="charge_password_hint">アカウントパスワード</string>
+    <string name="charge_password_label">本人確認</string>
     <string name="charge_agreement">決済サービス利用規約</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">チャージリクエストを送信中…</string>
