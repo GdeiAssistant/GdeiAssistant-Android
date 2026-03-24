@@ -555,7 +555,7 @@ private fun PaymentPage(
                             val domain = cookie.domain.orEmpty()
                             if (domain.isNotBlank() && allowedCookieDomains.any { allowed ->
                                     domain.equals(allowed, ignoreCase = true)
-                                            || domain.endsWith(allowed, ignoreCase = true)
+                                            || (allowed.startsWith(".") && (domain.equals(allowed.removePrefix("."), ignoreCase = true) || domain.endsWith(allowed, ignoreCase = true)))
                                 }) {
                                 val cookieString = buildString {
                                     append(cookie.name.orEmpty())
@@ -571,6 +571,9 @@ private fun PaymentPage(
 
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
+                        settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                        settings.allowFileAccess = false
+                        settings.allowContentAccess = false
                         settings.loadsImagesAutomatically = true
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
