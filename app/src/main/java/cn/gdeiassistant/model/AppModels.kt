@@ -16,12 +16,6 @@ data class Book(
 ) : Serializable
 
 @Immutable
-data class EncryptedData(
-    val data: String? = null,
-    val signature: String? = null
-)
-
-@Immutable
 data class CheckUpgradeResult(
     val downloadURL: String? = null,
     val versionInfo: String? = null,

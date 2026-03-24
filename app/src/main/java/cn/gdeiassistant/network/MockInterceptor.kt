@@ -109,7 +109,6 @@ class MockInterceptor : Interceptor {
             path.contains("api/library/detail") -> MockCampusProvider.mockCollectionDetail(request)
             path.contains("api/library/borrow") -> MockCampusProvider.mockCollectionBorrow(request)
             path.contains("api/library/renew") -> MockCampusProvider.mockCollectionRenew(request)
-            path.contains("api/encryption/rsa/publickey") -> MockCampusProvider.mockServerPublicKey(request)
             path.contains("api/card/charge") -> MockCampusProvider.mockCharge(request)
             else -> null
         }

@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 data class ChargeUiState(
     val amount: String = "",
+    val password: String = "",
     val isLoading: Boolean = false,
     val isSubmitting: Boolean = false,
     val error: UiText? = null,
@@ -35,7 +36,7 @@ data class ChargeUiState(
         get() = cardInfo?.cardNumber?.takeIf { it.isNotBlank() } ?: "—"
 
     val canSubmit: Boolean
-        get() = amount.toIntOrNull()?.let { it in 1..500 } == true && !isSubmitting && !isLoading
+        get() = amount.toIntOrNull()?.let { it in 1..500 } == true && password.isNotBlank() && !isSubmitting && !isLoading
 }
 
 sealed class ChargeEvent {
@@ -62,6 +63,10 @@ class ChargeViewModel @Inject constructor(
         _state.update { it.copy(amount = value.filter(Char::isDigit).take(3), error = null) }
     }
 
+    fun updatePassword(value: String) {
+        _state.update { it.copy(password = value, error = null) }
+    }
+
     fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -86,6 +91,7 @@ class ChargeViewModel @Inject constructor(
 
     fun submitCharge() {
         val amount = state.value.amount.toIntOrNull()
+        val password = state.value.password
         when {
             state.value.amount.isBlank() -> _state.update {
                 it.copy(error = UiText.StringResource(R.string.charge_amount_empty))
@@ -99,10 +105,14 @@ class ChargeViewModel @Inject constructor(
                 it.copy(error = UiText.StringResource(R.string.charge_amount_range))
             }
 
+            password.isBlank() -> _state.update {
+                it.copy(error = UiText.StringResource(R.string.charge_password_empty))
+            }
+
             else -> {
                 viewModelScope.launch {
                     _state.update { it.copy(isSubmitting = true, error = null) }
-                    repository.submitCharge(amount).fold(
+                    repository.submitCharge(amount, password).fold(
                         onSuccess = { charge ->
                             val paymentUrl = charge.alipayURL.orEmpty()
                             if (paymentUrl.isBlank()) {
