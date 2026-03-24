@@ -38,6 +38,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CertificatePinner
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -66,10 +68,25 @@ object NetworkModule {
         authInterceptor: AuthInterceptor,
         responseInterceptor: ResponseInterceptor,
         localeInterceptor: LocaleInterceptor
-    ): OkHttpClient = OkHttpClient.Builder()
+    ): OkHttpClient {
+        val prodHost = runCatching {
+            BuildConfig.BASE_URL.toHttpUrl().host
+        }.getOrDefault("gdeiassistant.cn")
+
+        val certificatePinner = CertificatePinner.Builder()
+            // TODO: 替换为服务端证书实际的 SHA-256 指纹，可通过以下命令获取：
+            // openssl s_client -connect <host>:443 | openssl x509 -pubkey -noout |
+            //   openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+            .add(prodHost, "sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=")
+            // 备用指纹（证书轮换时使用）
+            .add(prodHost, "sha256/CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=")
+            .build()
+
+        return OkHttpClient.Builder()
         .connectTimeout(NetworkConstants.CONNECT_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
+        .certificatePinner(certificatePinner)
         .cookieJar(sessionManager.cookieJar)
         .addInterceptor(requestIdInterceptor)        // 1. Assign X-Request-ID before anything else
         .addInterceptor(localeInterceptor)           // 2. Add Accept-Language
@@ -79,6 +96,7 @@ object NetworkModule {
         .addInterceptor(authInterceptor)             // 6. Attach Bearer token
         .addInterceptor(responseInterceptor)         // 7. Handle HTTP errors
         .build()
+    }
 
     @Provides
     @Singleton

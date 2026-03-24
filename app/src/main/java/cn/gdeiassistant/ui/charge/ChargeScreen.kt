@@ -91,6 +91,7 @@ fun ChargeScreen(navController: NavHostController) {
         onNavigateBack = navController::popBackStack,
         onRefresh = viewModel::refresh,
         onAmountChange = viewModel::updateAmount,
+        onPasswordChange = viewModel::updatePassword,
         onSubmit = viewModel::submitCharge,
         onExitPayment = viewModel::clearPaymentPage
     )
@@ -102,6 +103,7 @@ private fun ChargeContent(
     onNavigateBack: () -> Unit,
     onRefresh: () -> Unit,
     onAmountChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onExitPayment: () -> Unit
 ) {
@@ -194,6 +196,7 @@ private fun ChargeContent(
             ChargeFormCard(
                 state = state,
                 onAmountChange = onAmountChange,
+                onPasswordChange = onPasswordChange,
                 onSubmit = onSubmit
             )
         }
@@ -354,6 +357,7 @@ private fun ChargeMetricCard(
 private fun ChargeFormCard(
     state: ChargeUiState,
     onAmountChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
@@ -394,6 +398,22 @@ private fun ChargeFormCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(
+            text = stringResource(R.string.charge_password_label),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        OutlinedTextField(
+            value = state.password,
+            onValueChange = onPasswordChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.charge_password_hint)) },
+            singleLine = true,
+            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
         Spacer(modifier = Modifier.height(16.dp))
         TintButton(
@@ -525,9 +545,18 @@ private fun PaymentPage(
                         val cookieManager = CookieManager.getInstance()
                         cookieManager.setAcceptCookie(true)
                         cookieManager.removeAllCookies(null)
+                        val allowedCookieDomains = setOf(
+                            "alipay.com", ".alipay.com",
+                            "alipayobjects.com", ".alipayobjects.com",
+                            "epay.gdei.edu.cn", ".epay.gdei.edu.cn",
+                            "ecard.gdei.edu.cn", ".ecard.gdei.edu.cn"
+                        )
                         session.cookieList.orEmpty().forEach { cookie ->
                             val domain = cookie.domain.orEmpty()
-                            if (domain.isNotBlank()) {
+                            if (domain.isNotBlank() && allowedCookieDomains.any { allowed ->
+                                    domain.equals(allowed, ignoreCase = true)
+                                            || domain.endsWith(allowed, ignoreCase = true)
+                                }) {
                                 val cookieString = buildString {
                                     append(cookie.name.orEmpty())
                                     append('=')
@@ -609,6 +638,8 @@ private fun PaymentPage(
     }
 }
 
+private val ALLOWED_EXTERNAL_SCHEMES = setOf("alipays", "alipay", "weixin", "wechat")
+
 private fun handlePossibleExternalUrl(
     context: Context,
     targetUrl: String,
@@ -618,9 +649,14 @@ private fun handlePossibleExternalUrl(
     return if (targetUrl.startsWith("http://") || targetUrl.startsWith("https://")) {
         false
     } else {
-        runCatching {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl)))
-        }.onFailure {
+        val scheme = Uri.parse(targetUrl).scheme?.lowercase().orEmpty()
+        if (scheme in ALLOWED_EXTERNAL_SCHEMES) {
+            runCatching {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl)))
+            }.onFailure {
+                onFailed()
+            }
+        } else {
             onFailed()
         }
         true

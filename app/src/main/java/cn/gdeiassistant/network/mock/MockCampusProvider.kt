@@ -1,15 +1,9 @@
 package cn.gdeiassistant.network.mock
 
-import android.util.Base64
-import cn.gdeiassistant.model.Charge
-import cn.gdeiassistant.model.Cookie
 import cn.gdeiassistant.network.mock.MockUtils.formFields
 import cn.gdeiassistant.network.mock.MockUtils.getString
 import cn.gdeiassistant.network.mock.MockUtils.jsonObjectBody
-import cn.gdeiassistant.util.ChargeCrypto
-import com.google.gson.Gson
 import okhttp3.Request
-import java.security.KeyPair
 
 /** Mock provider for campus card, charge, book, datacenter (electricity/yellowpages). */
 object MockCampusProvider {
@@ -35,8 +29,6 @@ object MockCampusProvider {
     )
 
     // ── Mock data ───────────────────────────────────────────────────────────
-
-    val mockChargeKeyPair: KeyPair by lazy { ChargeCrypto.generateRsaKeyPair() }
 
     val mockYellowPageTypes = listOf(
         MockYellowPageTypeRecord(1, "教学服务"),
@@ -189,46 +181,11 @@ object MockCampusProvider {
         return """{"success":true,"code":200,"message":"","data":{"data":[$dataPayload],"type":[$typePayload]}}"""
     }
 
-    fun mockServerPublicKey(request: Request): String = """
-        {"success":true,"code":200,"message":"","data":"${Base64.encodeToString(mockChargeKeyPair.public.encoded, Base64.NO_WRAP)}"}
-    """.trimIndent()
-
     fun mockCharge(request: Request): String {
         val fields = request.formFields()
-        val encryptedAesKey = fields["clientAESKey"] ?: return MockUtils.failureJson("缺少密钥信息")
-        return runCatching {
-            val aesKey = ChargeCrypto.decryptWithPrivateKey(
-                mockChargeKeyPair.private.encoded,
-                Base64.decode(encryptedAesKey, Base64.NO_WRAP)
-            )
-            val amount = fields["amount"].orEmpty().ifBlank { "0" }
-            val charge = Charge(
-                alipayURL = "https://gdeiassistant.cn/?mockCharge=$amount",
-                cookieList = listOf(
-                    Cookie(
-                        name = "mock_charge_session",
-                        value = "session_${System.currentTimeMillis()}",
-                        domain = "gdeiassistant.cn"
-                    )
-                )
-            )
-            val chargeJson = Gson().toJson(charge)
-            val encryptedPayload = Base64.encodeToString(
-                ChargeCrypto.encryptWithAes(aesKey, chargeJson.toByteArray(Charsets.UTF_8)),
-                Base64.NO_WRAP
-            )
-            val signature = Base64.encodeToString(
-                ChargeCrypto.encryptWithPrivateKey(
-                    mockChargeKeyPair.private.encoded,
-                    ChargeCrypto.sha1Hex(chargeJson).toByteArray(Charsets.UTF_8)
-                ),
-                Base64.NO_WRAP
-            )
-            """
-                {"success":true,"code":200,"message":"","data":{"data":"$encryptedPayload","signature":"$signature"}}
-            """.trimIndent()
-        }.getOrElse {
-            MockUtils.failureJson(it.message ?: "模拟充值失败")
-        }
+        val amount = fields["amount"].orEmpty().ifBlank { "0" }
+        val password = fields["password"].orEmpty()
+        if (password.isBlank()) return MockUtils.failureJson("密码不能为空")
+        return """{"success":true,"code":200,"message":"","data":{"alipayURL":"https://gdeiassistant.cn/?mockCharge=$amount","cookieList":[{"name":"mock_charge_session","value":"session_${System.currentTimeMillis()}","domain":"gdeiassistant.cn"}]}}"""
     }
 }

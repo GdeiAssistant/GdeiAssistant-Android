@@ -312,6 +312,9 @@
     <string name="charge_amount_empty">充值金额不能为空</string>
     <string name="charge_amount_invalid">充值金额不合法</string>
     <string name="charge_amount_range">充值金额需在 1 到 500 元之间</string>
+    <string name="charge_password_empty">请输入账号密码以确认充值</string>
+    <string name="charge_password_hint">账号密码</string>
+    <string name="charge_password_label">身份验证</string>
     <string name="charge_agreement">缴费服务条款</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">正在提交充值请求…</string>
@@ -1519,12 +1522,7 @@
     <string name="news_source_default">新闻</string>
 
     <!-- Charge error strings -->
-    <string name="charge_error_no_server_public_key">未获取到服务端公钥</string>
     <string name="charge_error_no_payment_info">服务端未返回支付信息</string>
-    <string name="charge_error_empty_payment_data">支付信息为空</string>
-    <string name="charge_error_empty_payment_signature">支付签名为空</string>
-    <string name="charge_error_parse_failed">支付信息解析失败</string>
-    <string name="charge_error_login_required">请先登录</string>
 
     <!-- Network error messages -->
     <string name="network_error_forbidden">权限不足</string>
