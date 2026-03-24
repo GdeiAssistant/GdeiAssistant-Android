@@ -5,6 +5,7 @@ import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceItemState
 import cn.gdeiassistant.network.api.MarketplaceApi
 import cn.gdeiassistant.network.api.MarketplaceItemDto
+import cn.gdeiassistant.network.api.ProfileApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -110,6 +111,75 @@ class MarketplaceSearchTest {
         val keyword = "   "
         val normalizedKeyword = keyword.trim()
         assertTrue(normalizedKeyword.isBlank())
+    }
+
+    // ---------------------------------------------------------------
+    // Repository-level contract assertions
+    // ---------------------------------------------------------------
+
+    private fun createRepository(): MarketplaceRepository = MarketplaceRepository(
+        context = mock(),
+        marketplaceApi = marketplaceApi,
+        profileRepository = mock(),
+        profileOptionsRepository = ProfileOptionsRepository(mock<ProfileApi>())
+    )
+
+    @Test
+    fun repositoryRoutesKeywordSearchToSearchEndpoint() = runTest(testDispatcher) {
+        whenever(marketplaceApi.searchItems(keyword = "笔记本", start = 0))
+            .thenReturn(successResponse)
+
+        val result = createRepository().getItems(keyword = "笔记本")
+
+        assertTrue(result.isSuccess)
+        verify(marketplaceApi).searchItems(keyword = "笔记本", start = 0)
+        verify(marketplaceApi, never()).getItems(start = any())
+        verify(marketplaceApi, never()).getItemsByType(type = any(), start = any())
+    }
+
+    @Test
+    fun repositoryRoutesTypeFilterToTypeEndpoint() = runTest(testDispatcher) {
+        whenever(marketplaceApi.getItemsByType(type = 3, start = 0))
+            .thenReturn(successResponse)
+
+        val result = createRepository().getItems(typeId = 3)
+
+        assertTrue(result.isSuccess)
+        verify(marketplaceApi).getItemsByType(type = 3, start = 0)
+        verify(marketplaceApi, never()).getItems(start = any())
+        verify(marketplaceApi, never()).searchItems(keyword = any(), start = any())
+    }
+
+    @Test
+    fun repositoryFiltersOutNonSellingItems() = runTest(testDispatcher) {
+        val mixed = DataJsonResult(
+            success = true, code = 200,
+            data = listOf(
+                sellingDto.copy(id = 1, state = 1),  // SELLING  — should be kept
+                sellingDto.copy(id = 2, state = 0),  // not selling — should be filtered
+                sellingDto.copy(id = 3, state = 2),  // off — should be filtered
+            )
+        )
+        whenever(marketplaceApi.getItems(start = 0)).thenReturn(mixed)
+
+        val result = createRepository().getItems()
+
+        assertTrue(result.isSuccess)
+        val items = result.getOrThrow()
+        assertEquals(1, items.size)
+        assertEquals("1", items.first().id)
+    }
+
+    @Test
+    fun repositoryReturnsEmptyListWhenApiReturnsEmptyData() = runTest(testDispatcher) {
+        whenever(marketplaceApi.getItems(start = 0)).thenReturn(
+            DataJsonResult(success = true, code = 200, data = emptyList())
+        )
+
+        val result = createRepository().getItems()
+
+        assertTrue(result.isSuccess)
+        assertTrue(result.getOrThrow().isEmpty())
     }
 
     @Test
