@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import cn.gdeiassistant.BuildConfig
 import cn.gdeiassistant.network.NetworkEnvironment
+import cn.gdeiassistant.model.AppLocaleSupport
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -80,26 +81,17 @@ class SettingsRepository @Inject constructor(
 
     val locale: Flow<String> =
         appContext.settingsDataStore.data
-            .map { preferences -> preferences[KEY_LOCALE] ?: detectSystemLocale() }
+            .map { preferences -> AppLocaleSupport.normalizeLocale(preferences[KEY_LOCALE] ?: detectSystemLocale()) }
             .distinctUntilChanged()
 
     suspend fun setLocale(locale: String) {
         appContext.settingsDataStore.edit { preferences ->
-            preferences[KEY_LOCALE] = locale
+            preferences[KEY_LOCALE] = AppLocaleSupport.normalizeLocale(locale)
         }
     }
 
     private fun detectSystemLocale(): String {
-        val systemLang = java.util.Locale.getDefault().toLanguageTag()
-        return when {
-            systemLang.startsWith("zh-HK") || systemLang.startsWith("zh-Hant-HK") -> "zh-HK"
-            systemLang.startsWith("zh-TW") || systemLang.startsWith("zh-Hant-TW") || systemLang.startsWith("zh-Hant") -> "zh-TW"
-            systemLang.startsWith("zh") -> "zh-CN"
-            systemLang.startsWith("ja") -> "ja"
-            systemLang.startsWith("ko") -> "ko"
-            systemLang.startsWith("en") -> "en"
-            else -> "zh-CN"
-        }
+        return AppLocaleSupport.detectSystemLocale()
     }
 
     suspend fun setNetworkEnvironment(environment: NetworkEnvironment) {

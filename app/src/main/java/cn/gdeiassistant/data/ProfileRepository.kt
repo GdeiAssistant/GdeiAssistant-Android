@@ -12,6 +12,7 @@ import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
 import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.ProfileLocationCity
+import cn.gdeiassistant.model.ProfileLocationCatalog
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
 import cn.gdeiassistant.model.ProfileLocationState
@@ -60,18 +61,22 @@ class ProfileRepository @Inject constructor(
     suspend fun getProfile(): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
         safeApiCall { profileApi.getUserProfile() }.mapCatching { dto ->
             val profile = dto ?: throw IllegalStateException("暂无个人资料")
+            val profileOptions = profileOptionsRepository.currentOptions()
             UserProfileSummary(
                 username = profile.username.orEmpty(),
                 nickname = profile.nickname,
                 avatar = profile.avatar,
-                faculty = profile.faculty?.label,
-                facultyCode = profile.faculty?.code,
-                major = profile.major?.label,
-                majorCode = profile.major?.code,
+                faculty = profileOptions.facultyNameFor(profile.facultyCode),
+                facultyCode = profile.facultyCode,
+                major = profileOptions.majorLabelFor(
+                    faculty = profileOptions.facultyNameFor(profile.facultyCode).orEmpty(),
+                    majorCode = profile.majorCode.orEmpty()
+                ),
+                majorCode = profile.majorCode,
                 enrollment = profile.enrollment,
-                location = profile.location?.displayName,
+                location = profile.location?.toSelection()?.displayName,
                 locationSelection = profile.location?.toSelection(),
-                hometown = profile.hometown?.displayName,
+                hometown = profile.hometown?.toSelection()?.displayName,
                 hometownSelection = profile.hometown?.toSelection(),
                 introduction = profile.introduction,
                 birthday = profile.birthday,
@@ -434,13 +439,28 @@ class ProfileRepository @Inject constructor(
     }
 
     private fun cn.gdeiassistant.network.api.ProfileLocationValueDto.toSelection(): ProfileLocationSelection? {
-        val normalizedRegion = region?.trim().orEmpty()
+        val normalizedRegion = regionCode?.trim().orEmpty()
         if (normalizedRegion.isEmpty()) return null
-        return ProfileLocationSelection(
-            displayName = displayName?.trim().orEmpty(),
+        val normalizedState = stateCode?.trim().orEmpty()
+        val normalizedCity = cityCode?.trim().orEmpty()
+        val displayName = resolveLocationDisplayName(
             regionCode = normalizedRegion,
-            stateCode = state?.trim().orEmpty(),
-            cityCode = city?.trim().orEmpty()
+            stateCode = normalizedState,
+            cityCode = normalizedCity
+        )
+        return ProfileLocationSelection(
+            displayName = displayName,
+            regionCode = normalizedRegion,
+            stateCode = normalizedState,
+            cityCode = normalizedCity
+        )
+    }
+
+    private fun resolveLocationDisplayName(regionCode: String, stateCode: String, cityCode: String): String {
+        return ProfileLocationCatalog.displayName(
+            regionCode = regionCode,
+            stateCode = stateCode,
+            cityCode = cityCode
         )
     }
 

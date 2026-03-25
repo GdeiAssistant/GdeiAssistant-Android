@@ -47,10 +47,23 @@ internal fun mapProfileOptions(
     dto: cn.gdeiassistant.network.api.ProfileOptionsDto,
     fallbackOptions: ProfileOptions = ProfileFormSupport.defaultOptions
 ): ProfileOptions {
-    val faculties = dto.faculties.orEmpty().mapNotNull(::mapProfileFacultyOption)
-    val marketplaceItemTypes = dto.marketplaceItemTypes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
-    val lostFoundItemTypes = dto.lostFoundItemTypes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
-    val lostFoundModes = dto.lostFoundModes.orEmpty().mapNotNull(::mapProfileDictionaryOption)
+    val fallbackFacultyByCode = fallbackOptions.faculties.associateBy { it.code }
+    val fallbackMarketplaceByCode = fallbackOptions.marketplaceItemTypes.associateBy { it.code }
+    val fallbackLostFoundByCode = fallbackOptions.lostFoundItemTypes.associateBy { it.code }
+    val fallbackLostFoundModeByCode = fallbackOptions.lostFoundModes.associateBy { it.code }
+
+    val faculties = dto.faculties.orEmpty().mapNotNull { option ->
+        mapProfileFacultyOption(option, fallbackFacultyByCode[option.code])
+    }
+    val marketplaceItemTypes = dto.marketplaceItemTypes.orEmpty().mapNotNull { option ->
+        mapProfileDictionaryOption(option, fallbackMarketplaceByCode[option.code])
+    }
+    val lostFoundItemTypes = dto.lostFoundItemTypes.orEmpty().mapNotNull { option ->
+        mapProfileDictionaryOption(option, fallbackLostFoundByCode[option.code])
+    }
+    val lostFoundModes = dto.lostFoundModes.orEmpty().mapNotNull { option ->
+        mapProfileDictionaryOption(option, fallbackLostFoundModeByCode[option.code])
+    }
 
     return ProfileOptions(
         faculties = faculties.ifEmpty { fallbackOptions.faculties },
@@ -60,15 +73,23 @@ internal fun mapProfileOptions(
     )
 }
 
-internal fun mapProfileFacultyOption(dto: ProfileFacultyOptionDto): ProfileFacultyOption? {
+internal fun mapProfileFacultyOption(
+    dto: ProfileFacultyOptionDto,
+    fallbackOption: ProfileFacultyOption? = null
+): ProfileFacultyOption? {
     val optionCode = dto.code ?: return null
-    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() }
+        ?: fallbackOption?.label
+        ?: return null
+    val fallbackMajorsByCode = fallbackOption?.majors.orEmpty().associateBy { it.code }
+    val unselectedMajor = fallbackMajorsByCode["unselected"]
+        ?: ProfileMajorOption(code = "unselected", label = ProfileFormSupport.UnselectedOption)
     val optionMajors = dto.majors.orEmpty()
-        .mapNotNull(::mapProfileMajorOption)
-        .ifEmpty { listOf(ProfileMajorOption(code = "unselected", label = ProfileFormSupport.UnselectedOption)) }
+        .mapNotNull { option -> mapProfileMajorOption(option, fallbackMajorsByCode[option.code?.trim()]) }
+        .ifEmpty { fallbackOption?.majors ?: listOf(unselectedMajor) }
         .let { normalized ->
-            if (normalized.firstOrNull()?.label == ProfileFormSupport.UnselectedOption) normalized
-            else listOf(ProfileMajorOption(code = "unselected", label = ProfileFormSupport.UnselectedOption)) + normalized
+            if (normalized.firstOrNull()?.code == "unselected") normalized
+            else listOf(unselectedMajor) + normalized
         }
     return ProfileFacultyOption(
         code = optionCode,
@@ -77,14 +98,24 @@ internal fun mapProfileFacultyOption(dto: ProfileFacultyOptionDto): ProfileFacul
     )
 }
 
-internal fun mapProfileMajorOption(dto: ProfileMajorOptionDto): ProfileMajorOption? {
+internal fun mapProfileMajorOption(
+    dto: ProfileMajorOptionDto,
+    fallbackOption: ProfileMajorOption? = null
+): ProfileMajorOption? {
     val optionCode = dto.code?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
-    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() }
+        ?: fallbackOption?.label
+        ?: return null
     return ProfileMajorOption(code = optionCode, label = optionLabel)
 }
 
-internal fun mapProfileDictionaryOption(dto: ProfileDictionaryOptionDto): ProfileDictionaryOption? {
+internal fun mapProfileDictionaryOption(
+    dto: ProfileDictionaryOptionDto,
+    fallbackOption: ProfileDictionaryOption? = null
+): ProfileDictionaryOption? {
     val optionCode = dto.code ?: return null
-    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() }
+        ?: fallbackOption?.label
+        ?: return null
     return ProfileDictionaryOption(code = optionCode, label = optionLabel)
 }

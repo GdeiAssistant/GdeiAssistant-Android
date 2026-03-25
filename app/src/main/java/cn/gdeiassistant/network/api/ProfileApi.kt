@@ -2,6 +2,12 @@ package cn.gdeiassistant.network.api
 
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.JsonResult
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import com.google.gson.annotations.JsonAdapter
+import com.google.gson.reflect.TypeToken
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -139,8 +145,8 @@ data class UserProfileDto(
     val username: String? = null,
     val nickname: String? = null,
     val avatar: String? = null,
-    val faculty: ProfileValueLabelIntDto? = null,
-    val major: ProfileValueLabelStringDto? = null,
+    val facultyCode: Int? = null,
+    val majorCode: String? = null,
     val enrollment: String? = null,
     val location: ProfileLocationValueDto? = null,
     val hometown: ProfileLocationValueDto? = null,
@@ -150,21 +156,10 @@ data class UserProfileDto(
     val age: Int? = null
 )
 
-data class ProfileValueLabelIntDto(
-    val code: Int? = null,
-    val label: String? = null
-)
-
-data class ProfileValueLabelStringDto(
-    val code: String? = null,
-    val label: String? = null
-)
-
 data class ProfileLocationValueDto(
-    val region: String? = null,
-    val state: String? = null,
-    val city: String? = null,
-    val displayName: String? = null
+    val regionCode: String? = null,
+    val stateCode: String? = null,
+    val cityCode: String? = null
 )
 
 data class PhoneStatusDto(
@@ -260,17 +255,20 @@ data class ProfileLocationRegionDto(
     val stateMap: Map<String, ProfileLocationStateDto>? = null
 )
 
+@JsonAdapter(ProfileDictionaryOptionDtoAdapter::class)
 data class ProfileDictionaryOptionDto(
     val code: Int? = null,
     val label: String? = null
 )
 
+@JsonAdapter(ProfileFacultyOptionDtoAdapter::class)
 data class ProfileFacultyOptionDto(
     val code: Int? = null,
     val label: String? = null,
     val majors: List<ProfileMajorOptionDto>? = null
 )
 
+@JsonAdapter(ProfileMajorOptionDtoAdapter::class)
 data class ProfileMajorOptionDto(
     val code: String? = null,
     val label: String? = null
@@ -282,3 +280,50 @@ data class ProfileOptionsDto(
     val lostFoundItemTypes: List<ProfileDictionaryOptionDto>? = null,
     val lostFoundModes: List<ProfileDictionaryOptionDto>? = null
 )
+
+class ProfileDictionaryOptionDtoAdapter : JsonDeserializer<ProfileDictionaryOptionDto> {
+    override fun deserialize(json: JsonElement?, typeOfT: java.lang.reflect.Type?, context: JsonDeserializationContext?): ProfileDictionaryOptionDto {
+        if (json == null || json.isJsonNull) return ProfileDictionaryOptionDto()
+        if (json.isJsonPrimitive) {
+            return ProfileDictionaryOptionDto(code = json.asInt, label = null)
+        }
+
+        val jsonObject = json.asJsonObject
+        return ProfileDictionaryOptionDto(
+            code = jsonObject.get("code")?.takeUnless { it.isJsonNull }?.asInt,
+            label = jsonObject.get("label")?.takeUnless { it.isJsonNull }?.asString
+        )
+    }
+}
+
+class ProfileMajorOptionDtoAdapter : JsonDeserializer<ProfileMajorOptionDto> {
+    override fun deserialize(json: JsonElement?, typeOfT: java.lang.reflect.Type?, context: JsonDeserializationContext?): ProfileMajorOptionDto {
+        if (json == null || json.isJsonNull) return ProfileMajorOptionDto()
+        if (json.isJsonPrimitive) {
+            return ProfileMajorOptionDto(code = json.asString, label = null)
+        }
+
+        val jsonObject = json.asJsonObject
+        return ProfileMajorOptionDto(
+            code = jsonObject.get("code")?.takeUnless { it.isJsonNull }?.asString,
+            label = jsonObject.get("label")?.takeUnless { it.isJsonNull }?.asString
+        )
+    }
+}
+
+class ProfileFacultyOptionDtoAdapter : JsonDeserializer<ProfileFacultyOptionDto> {
+    override fun deserialize(json: JsonElement?, typeOfT: java.lang.reflect.Type?, context: JsonDeserializationContext?): ProfileFacultyOptionDto {
+        if (json == null || json.isJsonNull || !json.isJsonObject) {
+            throw JsonParseException("Invalid profile faculty option")
+        }
+
+        val jsonObject = json.asJsonObject
+        val majorsType = object : TypeToken<List<ProfileMajorOptionDto>>() {}.type
+
+        return ProfileFacultyOptionDto(
+            code = jsonObject.get("code")?.takeUnless { it.isJsonNull }?.asInt,
+            label = jsonObject.get("label")?.takeUnless { it.isJsonNull }?.asString,
+            majors = context?.deserialize(jsonObject.get("majors"), majorsType)
+        )
+    }
+}
