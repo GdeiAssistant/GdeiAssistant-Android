@@ -1,9 +1,9 @@
 package cn.gdeiassistant.network.mock
 
-import cn.gdeiassistant.data.ProfileLocationMockCatalog
+import cn.gdeiassistant.model.AppLocaleSupport
+import cn.gdeiassistant.model.LocalizedProfileCatalog
 import cn.gdeiassistant.model.ProfileFormSupport
-import cn.gdeiassistant.model.lostFoundItemTypeTitles
-import cn.gdeiassistant.model.marketplaceTypeTitles
+import cn.gdeiassistant.model.ProfileLocationCatalog
 import cn.gdeiassistant.network.mock.MockUtils.formFields
 import cn.gdeiassistant.network.mock.MockUtils.getBoolean
 import cn.gdeiassistant.network.mock.MockUtils.getInteger
@@ -82,7 +82,7 @@ object MockProfileProvider {
 
     // ── Mock data ───────────────────────────────────────────────────────────
 
-    val mockProfileLocationRegions = ProfileLocationMockCatalog.regions.map { region ->
+    val mockProfileLocationRegions = ProfileLocationCatalog.regions.map { region ->
         MockProfileLocationRegionRecord(
             code = region.code,
             name = region.name,
@@ -101,7 +101,7 @@ object MockProfileProvider {
         )
     }
 
-    var mockProfileSummary = MockProfileSummaryRecord(
+    private val baseMockProfileSummary = MockProfileSummaryRecord(
         username = MockUtils.MOCK_CURRENT_USERNAME,
         nickname = MockUtils.MOCK_PROFILE_NICKNAME,
         avatar = "",
@@ -124,6 +124,8 @@ object MockProfileProvider {
         age = 21
     )
 
+    var mockProfileSummary = baseMockProfileSummary
+
     var mockPrivacySettings = MockPrivacyRecord()
 
     var mockUserDataExportState: Int = 0
@@ -142,33 +144,34 @@ object MockProfileProvider {
         return mockProfileSummary.nickname.trim().ifBlank { MockUtils.MOCK_PROFILE_NICKNAME }
     }
 
-    fun currentMockAnonymousName(): String = "匿名同学 F"
+    fun currentMockAnonymousName(): String {
+        return localizedMockText(
+            simplifiedChinese = "匿名同学 F",
+            traditionalChinese = "匿名同學 F",
+            english = "Anonymous Student F",
+            japanese = "匿名の学生 F",
+            korean = "익명 학생 F",
+            locale = AppLocaleSupport.currentLocale()
+        )
+    }
 
     private fun MockProfileSummaryRecord.toPayload(): Map<String, Any?> {
         return linkedMapOf(
             "username" to username,
             "nickname" to nickname,
             "avatar" to avatar,
-            "faculty" to linkedMapOf(
-                "code" to facultyCode,
-                "label" to faculty
-            ),
-            "major" to linkedMapOf(
-                "code" to majorCode,
-                "label" to major
-            ),
+            "facultyCode" to facultyCode,
+            "majorCode" to majorCode,
             "enrollment" to enrollment,
             "location" to linkedMapOf(
-                "region" to locationRegion,
-                "state" to locationState,
-                "city" to locationCity,
-                "displayName" to location
+                "regionCode" to locationRegion,
+                "stateCode" to locationState,
+                "cityCode" to locationCity
             ),
             "hometown" to linkedMapOf(
-                "region" to hometownRegion,
-                "state" to hometownState,
-                "city" to hometownCity,
-                "displayName" to hometown
+                "regionCode" to hometownRegion,
+                "stateCode" to hometownState,
+                "cityCode" to hometownCity
             ),
             "introduction" to introduction,
             "birthday" to birthday,
@@ -222,8 +225,9 @@ object MockProfileProvider {
     // ── Mock endpoints ──────────────────────────────────────────────────────
 
     fun mockUserProfile(request: Request): String {
+        val locale = request.requestLocale()
         return MockUtils.successDataJson(
-            data = mockProfileSummary.toPayload(),
+            data = localizedProfileSummary(locale).toPayload(),
             message = "success"
         )
     }
@@ -236,27 +240,16 @@ object MockProfileProvider {
     }
 
     fun mockProfileOptions(request: Request): String {
-        val faculties = ProfileFormSupport.defaultOptions.faculties.map { option ->
+        val options = LocalizedProfileCatalog.catalogForLocale(request.requestLocale()).defaultOptions
+        val faculties = options.faculties.map { option ->
             linkedMapOf(
                 "code" to option.code,
-                "label" to option.label,
-                "majors" to option.majors.map { major ->
-                    linkedMapOf(
-                        "code" to major.code,
-                        "label" to major.label
-                    )
-                }
+                "majors" to option.majors.map { major -> major.code }
             )
         }
-        val marketplaceItemTypes = marketplaceTypeTitles.mapIndexed { index, label ->
-            linkedMapOf("code" to index, "label" to label)
-        }
-        val lostFoundItemTypes = lostFoundItemTypeTitles.mapIndexed { index, label ->
-            linkedMapOf("code" to index, "label" to label)
-        }
-        val lostFoundModes = listOf("寻物启事", "失物招领").mapIndexed { index, label ->
-            linkedMapOf("code" to index, "label" to label)
-        }
+        val marketplaceItemTypes = options.marketplaceItemTypes.map { option -> option.code }
+        val lostFoundItemTypes = options.lostFoundItemTypes.map { option -> option.code }
+        val lostFoundModes = options.lostFoundModes.map { option -> option.code }
         return MockUtils.successDataJson(
             data = linkedMapOf(
                 "faculties" to faculties,
@@ -316,9 +309,9 @@ object MockProfileProvider {
     fun mockUpdateFaculty(request: Request): String {
         val facultyCode = request.jsonObjectBody()?.getInteger("faculty")
             ?: return MockUtils.failureJson("缺少院系信息")
-        val options = ProfileFormSupport.defaultOptions
-        val facultyName = options.facultyNameFor(facultyCode)
-            ?: return MockUtils.failureJson("院系信息不存在")
+        val locale = request.requestLocale()
+        val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
+        val facultyName = options.facultyNameFor(facultyCode) ?: return MockUtils.failureJson("院系信息不存在")
         val majorOptions = options.majorOptionsFor(facultyName)
         mockProfileSummary = mockProfileSummary.copy(
             faculty = if (facultyName == ProfileFormSupport.UnselectedOption) "" else facultyName,
@@ -334,14 +327,88 @@ object MockProfileProvider {
     fun mockUpdateMajor(request: Request): String {
         val majorCode = request.jsonObjectBody()?.getString("major")?.trim()
             ?: return MockUtils.failureJson("缺少专业信息")
-        val majorLabel = ProfileFormSupport.defaultOptions
-            .majorLabelFor(mockProfileSummary.faculty, majorCode)
+        val locale = request.requestLocale()
+        val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
+        val currentFacultyLabel = options.facultyNameFor(mockProfileSummary.facultyCode).orEmpty()
+        val majorLabel = options
+            .majorLabelFor(currentFacultyLabel, majorCode)
             ?: return MockUtils.failureJson("专业信息不存在")
         mockProfileSummary = mockProfileSummary.copy(
             major = majorLabel,
             majorCode = majorCode
         )
         return MockUtils.successJson("已保存")
+    }
+
+    private fun localizedProfileSummary(locale: String): MockProfileSummaryRecord {
+        val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
+        val facultyLabel = options.facultyNameFor(mockProfileSummary.facultyCode).orEmpty()
+        val majorLabel = options.majorLabelFor(facultyLabel, mockProfileSummary.majorCode).orEmpty()
+        return mockProfileSummary.copy(
+            faculty = facultyLabel,
+            major = majorLabel,
+            nickname = localizedMockText(
+                simplifiedChinese = MockUtils.MOCK_PROFILE_NICKNAME,
+                traditionalChinese = "林知遠",
+                english = "Lin Zhiyuan",
+                japanese = "リン・ジーユエン",
+                korean = "린즈위안",
+                locale = locale
+            ),
+            location = localizedMockText(
+                simplifiedChinese = "中国 广东 广州",
+                traditionalChinese = "中國 廣東 廣州",
+                english = "China Guangdong Guangzhou",
+                japanese = "中国 広東 広州",
+                korean = "중국 광둥 광저우",
+                locale = locale
+            ),
+            hometown = localizedMockText(
+                simplifiedChinese = "中国 广东 汕头",
+                traditionalChinese = "中國 廣東 汕頭",
+                english = "China Guangdong Shantou",
+                japanese = "中国 広東 汕頭",
+                korean = "중국 광둥 산터우",
+                locale = locale
+            ),
+            introduction = localizedMockText(
+                simplifiedChinese = "喜欢做实用的小工具，也在准备 iOS 开发实习。",
+                traditionalChinese = "喜歡做實用的小工具，也在準備 iOS 開發實習。",
+                english = "Enjoys building practical tools and is preparing for an iOS development internship.",
+                japanese = "実用的な小さなツールを作るのが好きで、iOS 開発インターンの準備もしています。",
+                korean = "실용적인 작은 도구를 만드는 것을 좋아하고, iOS 개발 인턴을 준비하고 있습니다.",
+                locale = locale
+            ),
+            ipArea = localizedMockText(
+                simplifiedChinese = "广东",
+                traditionalChinese = "廣東",
+                english = "Guangdong",
+                japanese = "広東",
+                korean = "광둥",
+                locale = locale
+            )
+        )
+    }
+
+    private fun Request.requestLocale(): String {
+        return AppLocaleSupport.normalizeLocale(header("Accept-Language"))
+    }
+
+    private fun localizedMockText(
+        simplifiedChinese: String,
+        traditionalChinese: String,
+        english: String,
+        japanese: String,
+        korean: String,
+        locale: String
+    ): String {
+        return when (AppLocaleSupport.normalizeLocale(locale)) {
+            "zh-HK", "zh-TW" -> traditionalChinese
+            "en" -> english
+            "ja" -> japanese
+            "ko" -> korean
+            else -> simplifiedChinese
+        }
     }
 
     fun mockUpdateEnrollment(request: Request): String {
