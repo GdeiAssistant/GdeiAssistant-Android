@@ -2,6 +2,7 @@ package cn.gdeiassistant.model
 
 import androidx.compose.runtime.Immutable
 import java.io.Serializable
+import java.util.Locale
 
 @Immutable
 data class PrivacySettings(
@@ -33,11 +34,36 @@ data class PhoneAttribution(
     val flag: String,
     val name: String
 ) : Serializable {
+    fun displayName(locale: Locale = Locale.getDefault()): String {
+        val localizedName = regionCode?.let { Locale("", it).getDisplayCountry(locale) }.orEmpty()
+        if (localizedName.isNotBlank()) {
+            return localizedName
+        }
+        return name.ifBlank { "+$code" }
+    }
+
     val displayText: String
-        get() = listOf(flag.takeIf { it.isNotBlank() }, name)
+        get() = listOf(flag.takeIf { it.isNotBlank() }, displayName())
             .filterNotNull()
             .joinToString(" ")
             .plus(" (+$code)")
+
+    private val regionCode: String?
+        get() {
+            val codePoints = flag.codePoints().toArray()
+            if (codePoints.size != 2) {
+                return null
+            }
+            val builder = StringBuilder()
+            codePoints.forEach { codePoint ->
+                val asciiValue = codePoint - 127397
+                if (asciiValue !in 'A'.code..'Z'.code) {
+                    return null
+                }
+                builder.append(asciiValue.toChar())
+            }
+            return builder.toString()
+        }
 }
 
 @Immutable

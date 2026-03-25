@@ -1340,6 +1340,9 @@
     <string name="profile_login_unknown_area">지역 미상</string>
     <string name="profile_login_unknown_device">알 수 없는 기기</string>
     <string name="profile_phone_area_label">국가 또는 지역</string>
+    <string name="profile_phone_area_picker_title">국제 지역번호 선택</string>
+    <string name="profile_phone_area_search_label">국가, 지역 또는 번호 검색</string>
+    <string name="profile_phone_area_search_empty">일치하는 지역번호가 없습니다</string>
     <string name="profile_phone_input_label">전화번호</string>
     <string name="profile_phone_required">전화번호를 입력해 주세요</string>
     <string name="profile_phone_code_sent">인증코드가 전송되었습니다</string>

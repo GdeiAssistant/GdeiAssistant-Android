@@ -5,18 +5,21 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudDownload
@@ -33,12 +36,13 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.WarningAmber
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -47,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -112,7 +117,13 @@ fun DownloadDataScreen(navController: NavHostController) {
                 ),
                 title = stringResource(R.string.profile_download_data_title),
                 subtitle = stringResource(R.string.profile_download_data_subtitle),
-                body = state.message,
+                body = stringResource(
+                    when (state.exportState) {
+                        UserDataExportState.NOT_EXPORTED -> R.string.profile_export_state_idle
+                        UserDataExportState.EXPORTING -> R.string.profile_export_state_exporting
+                        UserDataExportState.EXPORTED -> R.string.profile_export_state_exported
+                    }
+                ),
                 icon = Icons.Rounded.CloudDownload,
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -367,7 +378,7 @@ fun BindPhoneScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var phone by rememberSaveable { mutableStateOf("") }
     var code by rememberSaveable { mutableStateOf("") }
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var showAreaCodeSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
@@ -412,15 +423,15 @@ fun BindPhoneScreen(navController: NavHostController) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                AttributionDropdown(
-                    expanded = expanded,
-                    selected = state.attributions.firstOrNull { it.code == state.selectedAttributionCode },
-                    options = state.attributions,
-                    onExpandedChange = { expanded = it },
-                    onSelect = {
-                        expanded = false
-                        viewModel.selectAttribution(it.code)
-                    }
+                OutlinedTextField(
+                    value = state.attributions.firstOrNull { it.code == state.selectedAttributionCode }?.displayText.orEmpty(),
+                    onValueChange = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showAreaCodeSheet = true },
+                    readOnly = true,
+                    shape = RoundedCornerShape(16.dp),
+                    label = { Text(text = stringResource(R.string.profile_phone_area_label)) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
@@ -470,6 +481,18 @@ fun BindPhoneScreen(navController: NavHostController) {
                 }
             }
         }
+    }
+
+    if (showAreaCodeSheet) {
+        BindPhoneAreaCodeSheet(
+            attributions = state.attributions,
+            selectedCode = state.selectedAttributionCode,
+            onDismiss = { showAreaCodeSheet = false },
+            onSelect = { attribution ->
+                viewModel.selectAttribution(attribution.code)
+                showAreaCodeSheet = false
+            }
+        )
     }
 }
 
@@ -958,34 +981,83 @@ private fun BindingStatusCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AttributionDropdown(
-    expanded: Boolean,
-    selected: PhoneAttribution?,
-    options: List<PhoneAttribution>,
-    onExpandedChange: (Boolean) -> Unit,
+private fun BindPhoneAreaCodeSheet(
+    attributions: List<PhoneAttribution>,
+    selectedCode: Int,
+    onDismiss: () -> Unit,
     onSelect: (PhoneAttribution) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        OutlinedTextField(
-            value = selected?.displayText.orEmpty(),
-            onValueChange = {},
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val filteredAttributions = remember(attributions, searchQuery) {
+        val normalizedQuery = searchQuery.trim()
+        if (normalizedQuery.isBlank()) {
+            attributions
+        } else {
+            attributions.filter { attribution ->
+                attribution.displayName().contains(normalizedQuery, ignoreCase = true) ||
+                    attribution.name.contains(normalizedQuery, ignoreCase = true) ||
+                    attribution.code.toString().contains(normalizedQuery.removePrefix("+"))
+            }
+        }
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onExpandedChange(true) },
-            readOnly = true,
-            shape = RoundedCornerShape(16.dp),
-            label = { Text(text = stringResource(R.string.profile_phone_area_label)) }
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) }
+                .padding(horizontal = 24.dp, vertical = 8.dp)
         ) {
-            options.forEach { attribution ->
-                DropdownMenuItem(
-                    text = { Text(text = attribution.displayText) },
-                    onClick = { onSelect(attribution) }
+            Text(
+                text = stringResource(R.string.profile_phone_area_picker_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                label = { Text(text = stringResource(R.string.profile_phone_area_search_label)) },
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            if (filteredAttributions.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.profile_phone_area_search_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp),
+                    contentPadding = PaddingValues(bottom = 24.dp)
+                ) {
+                    items(filteredAttributions, key = { it.code }) { attribution ->
+                        ListItem(
+                            headlineContent = {
+                                Text(
+                                    text = attribution.displayText,
+                                    fontWeight = if (attribution.code == selectedCode) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            supportingContent = if (attribution.code == selectedCode) {
+                                { Text(text = stringResource(R.string.profile_selected_badge)) }
+                            } else {
+                                null
+                            },
+                            modifier = Modifier.clickable { onSelect(attribution) }
+                        )
+                    }
+                }
             }
         }
     }

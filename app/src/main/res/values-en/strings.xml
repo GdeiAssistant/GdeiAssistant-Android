@@ -1340,6 +1340,9 @@
     <string name="profile_login_unknown_area">Region unknown</string>
     <string name="profile_login_unknown_device">Unknown device</string>
     <string name="profile_phone_area_label">Country or region</string>
+    <string name="profile_phone_area_picker_title">Choose area code</string>
+    <string name="profile_phone_area_search_label">Search by country, region or code</string>
+    <string name="profile_phone_area_search_empty">No matching area code found</string>
     <string name="profile_phone_input_label">Phone number</string>
     <string name="profile_phone_required">Please enter phone number</string>
     <string name="profile_phone_code_sent">Verification code sent</string>
