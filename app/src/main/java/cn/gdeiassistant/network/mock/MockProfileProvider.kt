@@ -22,10 +22,18 @@ object MockProfileProvider {
         val nickname: String,
         val avatar: String,
         val faculty: String,
+        val facultyCode: Int,
         val major: String,
+        val majorCode: String,
         val enrollment: String,
         val location: String,
+        val locationRegion: String,
+        val locationState: String,
+        val locationCity: String,
         val hometown: String,
+        val hometownRegion: String,
+        val hometownState: String,
+        val hometownCity: String,
         val introduction: String,
         val birthday: String,
         val ipArea: String,
@@ -98,10 +106,18 @@ object MockProfileProvider {
         nickname = MockUtils.MOCK_PROFILE_NICKNAME,
         avatar = "",
         faculty = "计算机科学系",
+        facultyCode = 11,
         major = "软件工程",
+        majorCode = "software_engineering",
         enrollment = "2023",
         location = "中国 广东 广州",
+        locationRegion = "CN",
+        locationState = "44",
+        locationCity = "1",
         hometown = "中国 广东 汕头",
+        hometownRegion = "CN",
+        hometownState = "44",
+        hometownCity = "5",
         introduction = "喜欢做实用的小工具，也在准备 iOS 开发实习。",
         birthday = "2004-09-16",
         ipArea = "广东",
@@ -133,11 +149,27 @@ object MockProfileProvider {
             "username" to username,
             "nickname" to nickname,
             "avatar" to avatar,
-            "faculty" to faculty,
-            "major" to major,
+            "faculty" to linkedMapOf(
+                "code" to facultyCode,
+                "label" to faculty
+            ),
+            "major" to linkedMapOf(
+                "code" to majorCode,
+                "label" to major
+            ),
             "enrollment" to enrollment,
-            "location" to location,
-            "hometown" to hometown,
+            "location" to linkedMapOf(
+                "region" to locationRegion,
+                "state" to locationState,
+                "city" to locationCity,
+                "displayName" to location
+            ),
+            "hometown" to linkedMapOf(
+                "region" to hometownRegion,
+                "state" to hometownState,
+                "city" to hometownCity,
+                "displayName" to hometown
+            ),
             "introduction" to introduction,
             "birthday" to birthday,
             "ipArea" to ipArea,
@@ -208,7 +240,12 @@ object MockProfileProvider {
             linkedMapOf(
                 "code" to option.code,
                 "label" to option.label,
-                "majors" to option.majors
+                "majors" to option.majors.map { major ->
+                    linkedMapOf(
+                        "code" to major.code,
+                        "label" to major.label
+                    )
+                }
             )
         }
         val marketplaceItemTypes = marketplaceTypeTitles.mapIndexed { index, label ->
@@ -285,15 +322,25 @@ object MockProfileProvider {
         val majorOptions = options.majorOptionsFor(facultyName)
         mockProfileSummary = mockProfileSummary.copy(
             faculty = if (facultyName == ProfileFormSupport.UnselectedOption) "" else facultyName,
-            major = mockProfileSummary.major.takeIf { majorOptions.contains(it) } ?: ""
+            facultyCode = facultyCode,
+            major = mockProfileSummary.major.takeIf { majorOptions.contains(it) } ?: "",
+            majorCode = mockProfileSummary.majorCode.takeIf { code ->
+                options.majorLabelFor(facultyName, code)?.let(majorOptions::contains) == true
+            } ?: ""
         )
         return MockUtils.successJson("已保存")
     }
 
     fun mockUpdateMajor(request: Request): String {
-        val major = request.jsonObjectBody()?.getString("major")?.trim()
+        val majorCode = request.jsonObjectBody()?.getString("major")?.trim()
             ?: return MockUtils.failureJson("缺少专业信息")
-        mockProfileSummary = mockProfileSummary.copy(major = major)
+        val majorLabel = ProfileFormSupport.defaultOptions
+            .majorLabelFor(mockProfileSummary.faculty, majorCode)
+            ?: return MockUtils.failureJson("专业信息不存在")
+        mockProfileSummary = mockProfileSummary.copy(
+            major = majorLabel,
+            majorCode = majorCode
+        )
         return MockUtils.successJson("已保存")
     }
 
@@ -306,14 +353,26 @@ object MockProfileProvider {
     fun mockUpdateLocation(request: Request): String {
         val displayName = locationDisplayNameFromRequest(request)
             ?: return MockUtils.failureJson("缺少所在地信息")
+        val body = request.jsonObjectBody()
         mockProfileSummary = mockProfileSummary.copy(location = displayName)
+            .copy(
+                locationRegion = body?.getString("region")?.trim().orEmpty(),
+                locationState = body?.getString("state")?.trim().orEmpty(),
+                locationCity = body?.getString("city")?.trim().orEmpty()
+            )
         return MockUtils.successJson("已保存")
     }
 
     fun mockUpdateHometown(request: Request): String {
         val displayName = locationDisplayNameFromRequest(request)
             ?: return MockUtils.failureJson("缺少家乡信息")
+        val body = request.jsonObjectBody()
         mockProfileSummary = mockProfileSummary.copy(hometown = displayName)
+            .copy(
+                hometownRegion = body?.getString("region")?.trim().orEmpty(),
+                hometownState = body?.getString("state")?.trim().orEmpty(),
+                hometownCity = body?.getString("city")?.trim().orEmpty()
+            )
         return MockUtils.successJson("已保存")
     }
 

@@ -3,10 +3,12 @@ package cn.gdeiassistant.data
 import cn.gdeiassistant.model.ProfileDictionaryOption
 import cn.gdeiassistant.model.ProfileFacultyOption
 import cn.gdeiassistant.model.ProfileFormSupport
+import cn.gdeiassistant.model.ProfileMajorOption
 import cn.gdeiassistant.model.ProfileOptions
 import cn.gdeiassistant.network.api.ProfileApi
 import cn.gdeiassistant.network.api.ProfileDictionaryOptionDto
 import cn.gdeiassistant.network.api.ProfileFacultyOptionDto
+import cn.gdeiassistant.network.api.ProfileMajorOptionDto
 import cn.gdeiassistant.network.safeApiCall
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,18 +64,23 @@ internal fun mapProfileFacultyOption(dto: ProfileFacultyOptionDto): ProfileFacul
     val optionCode = dto.code ?: return null
     val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
     val optionMajors = dto.majors.orEmpty()
-        .map(String::trim)
-        .filter(String::isNotEmpty)
-        .ifEmpty { listOf(ProfileFormSupport.UnselectedOption) }
+        .mapNotNull(::mapProfileMajorOption)
+        .ifEmpty { listOf(ProfileMajorOption(code = "unselected", label = ProfileFormSupport.UnselectedOption)) }
         .let { normalized ->
-            if (normalized.firstOrNull() == ProfileFormSupport.UnselectedOption) normalized
-            else listOf(ProfileFormSupport.UnselectedOption) + normalized
+            if (normalized.firstOrNull()?.label == ProfileFormSupport.UnselectedOption) normalized
+            else listOf(ProfileMajorOption(code = "unselected", label = ProfileFormSupport.UnselectedOption)) + normalized
         }
     return ProfileFacultyOption(
         code = optionCode,
         label = optionLabel,
         majors = optionMajors
     )
+}
+
+internal fun mapProfileMajorOption(dto: ProfileMajorOptionDto): ProfileMajorOption? {
+    val optionCode = dto.code?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    val optionLabel = dto.label?.trim().takeIf { !it.isNullOrEmpty() } ?: return null
+    return ProfileMajorOption(code = optionCode, label = optionLabel)
 }
 
 internal fun mapProfileDictionaryOption(dto: ProfileDictionaryOptionDto): ProfileDictionaryOption? {

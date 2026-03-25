@@ -139,15 +139,32 @@ data class UserProfileDto(
     val username: String? = null,
     val nickname: String? = null,
     val avatar: String? = null,
-    val faculty: String? = null,
-    val major: String? = null,
+    val faculty: ProfileValueLabelIntDto? = null,
+    val major: ProfileValueLabelStringDto? = null,
     val enrollment: String? = null,
-    val location: String? = null,
-    val hometown: String? = null,
+    val location: ProfileLocationValueDto? = null,
+    val hometown: ProfileLocationValueDto? = null,
     val introduction: String? = null,
     val birthday: String? = null,
     val ipArea: String? = null,
     val age: Int? = null
+)
+
+data class ProfileValueLabelIntDto(
+    val code: Int? = null,
+    val label: String? = null
+)
+
+data class ProfileValueLabelStringDto(
+    val code: String? = null,
+    val label: String? = null
+)
+
+data class ProfileLocationValueDto(
+    val region: String? = null,
+    val state: String? = null,
+    val city: String? = null,
+    val displayName: String? = null
 )
 
 data class PhoneStatusDto(
@@ -251,7 +268,12 @@ data class ProfileDictionaryOptionDto(
 data class ProfileFacultyOptionDto(
     val code: Int? = null,
     val label: String? = null,
-    val majors: List<String>? = null
+    val majors: List<ProfileMajorOptionDto>? = null
+)
+
+data class ProfileMajorOptionDto(
+    val code: String? = null,
+    val label: String? = null
 )
 
 data class ProfileOptionsDto(

@@ -369,19 +369,26 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun draftStateFrom(profile: UserProfileSummary, options: ProfileOptions): ProfileDraftUiState {
+        val normalizedCollege = profile.faculty?.takeIf(String::isNotBlank)
+            ?.takeIf { options.facultyOptions.contains(it) }
+            ?: ProfileFormSupport.UnselectedOption
+        val restoredMajor = profile.majorCode
+            ?.let { options.majorLabelFor(normalizedCollege, it) }
+            ?.takeIf { options.majorOptionsFor(normalizedCollege).contains(it) }
+            ?: profile.major?.takeIf(String::isNotBlank)
+                ?.takeIf { options.majorOptionsFor(normalizedCollege).contains(it) }
+                ?: ProfileFormSupport.UnselectedOption
         return ProfileDraftUiState(
             nickname = profile.nickname.orEmpty(),
-            college = profile.faculty?.takeIf(String::isNotBlank)
-                ?.takeIf { options.facultyOptions.contains(it) }
-                ?: ProfileFormSupport.UnselectedOption,
-            major = profile.major?.takeIf(String::isNotBlank)
-                ?.takeIf { options.majorOptionsFor(profile.faculty.orEmpty()).contains(it) }
-                ?: ProfileFormSupport.UnselectedOption,
+            college = normalizedCollege,
+            major = restoredMajor,
             grade = profile.enrollment.orEmpty(),
             bio = profile.introduction.orEmpty(),
             birthday = profile.birthday.orEmpty(),
             location = profile.location.orEmpty(),
-            hometown = profile.hometown.orEmpty()
+            hometown = profile.hometown.orEmpty(),
+            locationSelection = profile.locationSelection,
+            hometownSelection = profile.hometownSelection
         )
     }
 

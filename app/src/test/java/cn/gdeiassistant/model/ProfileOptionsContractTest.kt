@@ -15,6 +15,8 @@ class ProfileOptionsContractTest {
             listOf("未选择", "汉语言文学", "历史学", "秘书学"),
             options.majorOptionsFor("中文系")
         )
+        assertEquals("secretarial_studies", options.majorCodeFor("中文系", "秘书学"))
+        assertEquals("秘书学", options.majorLabelFor("中文系", "secretarial_studies"))
         assertNull(options.facultyNameFor(999))
     }
 
