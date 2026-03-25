@@ -85,7 +85,7 @@ class MockInterceptor : Interceptor {
         val path = request.url.encodedPath
         return when {
             path.contains("api/spare/query") -> MockAcademicProvider.mockSpareRoomList(request)
-            path.contains("api/kaoyan/query") -> MockAcademicProvider.mockGraduateExam(request)
+            path.contains("api/graduate-exam/query") -> MockAcademicProvider.mockGraduateExam(request)
             path.contains("api/gradequery") || path.contains("api/grade/query") || path.contains("api/grade") ->
                 MockAcademicProvider.mockGrade(request)
             path.contains("api/schedulequery") || path.contains("api/schedule/query") || path.contains("api/schedule") ->

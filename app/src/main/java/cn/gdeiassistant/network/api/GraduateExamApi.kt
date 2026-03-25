@@ -6,7 +6,7 @@ import retrofit2.http.POST
 
 interface GraduateExamApi {
 
-    @POST("api/kaoyan/query")
+    @POST("api/graduate-exam/query")
     suspend fun queryScore(
         @Body body: GraduateExamQueryDto
     ): DataJsonResult<GraduateExamScoreDto>
