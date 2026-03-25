@@ -64,11 +64,15 @@ class ProfileRepository @Inject constructor(
                 username = profile.username.orEmpty(),
                 nickname = profile.nickname,
                 avatar = profile.avatar,
-                faculty = profile.faculty,
-                major = profile.major,
+                faculty = profile.faculty?.label,
+                facultyCode = profile.faculty?.code,
+                major = profile.major?.label,
+                majorCode = profile.major?.code,
                 enrollment = profile.enrollment,
-                location = profile.location,
-                hometown = profile.hometown,
+                location = profile.location?.displayName,
+                locationSelection = profile.location?.toSelection(),
+                hometown = profile.hometown?.displayName,
+                hometownSelection = profile.hometown?.toSelection(),
                 introduction = profile.introduction,
                 birthday = profile.birthday,
                 ipArea = profile.ipArea,
@@ -109,8 +113,10 @@ class ProfileRepository @Inject constructor(
             }.getOrThrow()
 
             ProfileFormSupport.normalizeOptionalSelection(request.major)?.let { major ->
+                val majorCode = profileOptions.majorCodeFor(normalizedCollege, major)
+                    ?: throw IllegalStateException("当前专业“$major”暂不支持同步到服务端，请重新选择")
                 safeJsonResultCall {
-                    profileApi.updateMajor(MajorUpdateDto(major = major))
+                    profileApi.updateMajor(MajorUpdateDto(major = majorCode))
                 }.getOrThrow()
             }
 
@@ -424,6 +430,17 @@ class ProfileRepository @Inject constructor(
             region = regionCode,
             state = selection?.stateCode?.trim()?.takeIf(String::isNotEmpty),
             city = selection?.cityCode?.trim()?.takeIf(String::isNotEmpty)
+        )
+    }
+
+    private fun cn.gdeiassistant.network.api.ProfileLocationValueDto.toSelection(): ProfileLocationSelection? {
+        val normalizedRegion = region?.trim().orEmpty()
+        if (normalizedRegion.isEmpty()) return null
+        return ProfileLocationSelection(
+            displayName = displayName?.trim().orEmpty(),
+            regionCode = normalizedRegion,
+            stateCode = state?.trim().orEmpty(),
+            cityCode = city?.trim().orEmpty()
         )
     }
 
