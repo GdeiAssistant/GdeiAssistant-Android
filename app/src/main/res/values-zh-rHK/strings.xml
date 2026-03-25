@@ -1339,6 +1339,9 @@
     <string name="profile_login_unknown_area">地區未知</string>
     <string name="profile_login_unknown_device">未知裝置</string>
     <string name="profile_phone_area_label">國家或地區</string>
+    <string name="profile_phone_area_picker_title">選擇國際區號</string>
+    <string name="profile_phone_area_search_label">搜尋國家、地區或區號</string>
+    <string name="profile_phone_area_search_empty">找不到符合的區號</string>
     <string name="profile_phone_input_label">手機號</string>
     <string name="profile_phone_required">請輸入手機號</string>
     <string name="profile_phone_code_sent">驗證碼已發送</string>

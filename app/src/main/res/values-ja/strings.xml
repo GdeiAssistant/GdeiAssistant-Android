@@ -1340,6 +1340,9 @@
     <string name="profile_login_unknown_area">地域不明</string>
     <string name="profile_login_unknown_device">不明なデバイス</string>
     <string name="profile_phone_area_label">国 / 地域</string>
+    <string name="profile_phone_area_picker_title">国際電話番号の市外局番を選択</string>
+    <string name="profile_phone_area_search_label">国 / 地域または番号で検索</string>
+    <string name="profile_phone_area_search_empty">一致する市外局番が見つかりません</string>
     <string name="profile_phone_input_label">電話番号</string>
     <string name="profile_phone_required">電話番号を入力してください</string>
     <string name="profile_phone_code_sent">認証コードが送信されました</string>

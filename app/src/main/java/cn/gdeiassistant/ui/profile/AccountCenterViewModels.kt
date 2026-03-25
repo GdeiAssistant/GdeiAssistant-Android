@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.ProfileRepository
 import cn.gdeiassistant.data.SessionManager
+import cn.gdeiassistant.data.mapper.PhoneAttributionCatalog
 import cn.gdeiassistant.data.mapper.ProfileDisplayMapper
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.model.ContactBindingStatus
@@ -33,7 +34,6 @@ data class DownloadDataUiState(
     val exportState: UserDataExportState = UserDataExportState.NOT_EXPORTED,
     val isLoading: Boolean = true,
     val isSubmitting: Boolean = false,
-    val message: String = "",
     val error: String? = null
 )
 
@@ -68,7 +68,6 @@ class DownloadDataViewModel @Inject constructor(
                             exportState = exportState,
                             isLoading = false,
                             isSubmitting = false,
-                            message = exportMessage(exportState),
                             error = null
                         )
                     }
@@ -78,8 +77,7 @@ class DownloadDataViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             isSubmitting = false,
-                            error = error.message,
-                            message = exportMessage(it.exportState)
+                            error = error.message
                         )
                     }
                 }
@@ -95,8 +93,7 @@ class DownloadDataViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             exportState = UserDataExportState.EXPORTING,
-                            isSubmitting = false,
-                            message = exportMessage(UserDataExportState.EXPORTING)
+                            isSubmitting = false
                         )
                     }
                     _events.emit(DownloadDataEvent.ShowMessage(context.getString(R.string.profile_export_started)))
@@ -119,7 +116,6 @@ class DownloadDataViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             exportState = UserDataExportState.EXPORTED,
-                            message = exportMessage(UserDataExportState.EXPORTED),
                             error = null
                         )
                     }
@@ -135,13 +131,6 @@ class DownloadDataViewModel @Inject constructor(
         }
     }
 
-    private fun exportMessage(state: UserDataExportState): String {
-        return when (state) {
-            UserDataExportState.NOT_EXPORTED -> context.getString(R.string.profile_export_state_idle)
-            UserDataExportState.EXPORTING -> context.getString(R.string.profile_export_state_exporting)
-            UserDataExportState.EXPORTED -> context.getString(R.string.profile_export_state_exported)
-        }
-    }
 }
 
 data class PrivacySettingsUiState(
@@ -276,10 +265,14 @@ class BindPhoneViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
+            val bundledAttributions = PhoneAttributionCatalog.load(context)
             val attributionsResult = profileRepository.getPhoneAttributions()
             val statusResult = profileRepository.getPhoneStatus()
             val attributions = displayMapper.applyPhoneAttributionDefaults(
-                attributionsResult.getOrDefault(emptyList())
+                PhoneAttributionCatalog.mergeAndSort(
+                    primary = bundledAttributions,
+                    overlay = attributionsResult.getOrDefault(emptyList())
+                )
             )
             val rawStatus = statusResult.getOrDefault(ContactBindingStatus())
             val status = displayMapper.applyBindingNote(rawStatus, ProfileDisplayMapper.BindingType.PHONE)
