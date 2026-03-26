@@ -1542,5 +1542,16 @@
     <string name="accessibility_not_selected">未選擇</string>
     <string name="cet_check_code_load_failed">驗證碼載入失敗</string>
     <string name="messages_interaction_default_content">你有一條新的互動消息</string>
+    <string name="profile_data_missing">暫無個人資料</string>
+    <string name="profile_sync_unsupported_college">當前院系「%1$s」暫不支援同步到伺服器，請使用系統支援的院系名稱</string>
+    <string name="profile_sync_unsupported_major">當前專業「%1$s」暫不支援同步到伺服器，請重新選擇</string>
+    <string name="profile_export_file_unavailable">暫無可下載的資料檔案</string>
+    <string name="profile_enrollment_parse_failed">入學年份「%1$s」無法解析為伺服器需要的年份</string>
+    <string name="profile_birthday_invalid">生日「%1$s」格式無效，請重新選擇</string>
+    <string name="electricity_no_data">暫無電費資料</string>
+    <string name="data_center_fallback_building">宿舍樓</string>
+    <string name="data_center_fallback_department">學院資訊暫缺</string>
+    <string name="yellow_page_fallback_category">黃頁分類</string>
+    <string name="yellow_page_fallback_section">未知部門</string>
 
 </resources>

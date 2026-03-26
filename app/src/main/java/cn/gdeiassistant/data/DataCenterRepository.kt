@@ -1,11 +1,14 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
 import cn.gdeiassistant.model.ElectricityBill
 import cn.gdeiassistant.model.ElectricityQuery
 import cn.gdeiassistant.model.YellowPageCategory
 import cn.gdeiassistant.model.YellowPageEntry
 import cn.gdeiassistant.network.api.DataCenterApi
 import cn.gdeiassistant.network.safeApiCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -13,6 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DataCenterRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val dataCenterApi: DataCenterApi
 ) {
 
@@ -24,13 +28,15 @@ class DataCenterRepository @Inject constructor(
                 year = query.year
             )
         }.mapCatching { dto ->
-            val bill = dto ?: throw IllegalStateException("暂无电费数据")
+            val bill = dto ?: throw IllegalStateException(context.getString(R.string.electricity_no_data))
             ElectricityBill(
                 year = bill.year ?: 0,
-                buildingNumber = bill.buildingNumber?.trim().orEmpty().ifBlank { "宿舍楼" },
+                buildingNumber = bill.buildingNumber?.trim().orEmpty()
+                    .ifBlank { context.getString(R.string.data_center_fallback_building) },
                 roomNumber = (bill.roomNumber ?: 0).toString(),
                 peopleNumber = (bill.peopleNumber ?: 0).toString(),
-                department = bill.department?.trim().orEmpty().ifBlank { "学院暂缺" },
+                department = bill.department?.trim().orEmpty()
+                    .ifBlank { context.getString(R.string.data_center_fallback_department) },
                 usedElectricAmount = "%.2f".format(bill.usedElectricAmount ?: 0.0),
                 freeElectricAmount = "%.2f".format(bill.freeElectricAmount ?: 0.0),
                 feeBasedElectricAmount = "%.2f".format(bill.feeBasedElectricAmount ?: 0.0),
@@ -57,7 +63,8 @@ class DataCenterRepository @Inject constructor(
                     visitedCodes += code
                     categories += YellowPageCategory(
                         id = code.toString(),
-                        name = type.typeName?.trim().orEmpty().ifBlank { "黄页分类" },
+                        name = type.typeName?.trim().orEmpty()
+                            .ifBlank { context.getString(R.string.yellow_page_fallback_category) },
                         items = entries.map(::mapYellowPageEntry)
                     )
                 }
@@ -66,7 +73,8 @@ class DataCenterRepository @Inject constructor(
                     if (code in visitedCodes) return@forEach
                     categories += YellowPageCategory(
                         id = code.toString(),
-                        name = grouped[code]?.firstOrNull()?.typeName?.trim().orEmpty().ifBlank { "黄页分类" },
+                        name = grouped[code]?.firstOrNull()?.typeName?.trim().orEmpty()
+                            .ifBlank { context.getString(R.string.yellow_page_fallback_category) },
                         items = grouped[code].orEmpty().map(::mapYellowPageEntry)
                     )
                 }
@@ -78,7 +86,8 @@ class DataCenterRepository @Inject constructor(
     private fun mapYellowPageEntry(dto: cn.gdeiassistant.network.api.YellowPageEntryDto): YellowPageEntry {
         return YellowPageEntry(
             id = (dto.id ?: System.nanoTime()).toString(),
-            section = dto.section?.trim().orEmpty().ifBlank { "未知部门" },
+            section = dto.section?.trim().orEmpty()
+                .ifBlank { context.getString(R.string.yellow_page_fallback_section) },
             campus = dto.campus?.trim().orEmpty(),
             majorPhone = dto.majorPhone?.trim().orEmpty(),
             minorPhone = dto.minorPhone?.trim().orEmpty(),

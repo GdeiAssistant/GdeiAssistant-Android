@@ -381,9 +381,9 @@ private fun ProfileAccountCard(
                 ProfileLocationField.Location -> stringResource(R.string.profile_country_region_picker_title)
                 ProfileLocationField.Hometown -> stringResource(R.string.profile_hometown_picker_title)
             },
-            currentDisplay = when (field) {
-                ProfileLocationField.Location -> profile.location
-                ProfileLocationField.Hometown -> profile.hometown
+            currentSelection = when (field) {
+                ProfileLocationField.Location -> profile.locationSelection
+                ProfileLocationField.Hometown -> profile.hometownSelection
             },
             regions = state.locationRegions,
             onDismiss = { activeLocationField = null },
@@ -1122,21 +1122,31 @@ private fun ProfileBirthdayPickerDialog(
 @Composable
 private fun ProfileLocationPickerSheet(
     title: String,
-    currentDisplay: String?,
+    currentSelection: ProfileLocationSelection?,
     regions: List<ProfileLocationRegion>,
     onDismiss: () -> Unit,
     onConfirm: (ProfileLocationSelection) -> Unit
 ) {
-    val initialSelection = remember(regions, currentDisplay) {
-        resolveLocationSelection(regions = regions, displayName = currentDisplay)
+    val initialSelection = remember(regions, currentSelection) {
+        currentSelection?.takeIf { selection ->
+            val region = regions.firstOrNull { it.code == selection.regionCode } ?: return@takeIf false
+            if (selection.stateCode.isBlank()) {
+                return@takeIf true
+            }
+            val state = region.states.firstOrNull { it.code == selection.stateCode } ?: return@takeIf false
+            if (selection.cityCode.isBlank()) {
+                return@takeIf true
+            }
+            state.cities.any { city -> city.code == selection.cityCode }
+        }
     }
-    var selectedRegionCode by remember(regions, currentDisplay) {
+    var selectedRegionCode by remember(regions, currentSelection) {
         mutableStateOf(initialSelection?.regionCode ?: regions.firstOrNull()?.code.orEmpty())
     }
-    var selectedStateCode by remember(regions, currentDisplay) {
+    var selectedStateCode by remember(regions, currentSelection) {
         mutableStateOf(initialSelection?.stateCode.orEmpty())
     }
-    var selectedCityCode by remember(regions, currentDisplay) {
+    var selectedCityCode by remember(regions, currentSelection) {
         mutableStateOf(initialSelection?.cityCode.orEmpty())
     }
 
@@ -1164,7 +1174,7 @@ private fun ProfileLocationPickerSheet(
         }
     }
 
-    val currentSelection = remember(currentRegion, currentState, currentCity) {
+    val selectedLocation = remember(currentRegion, currentState, currentCity) {
         currentRegion?.let { region ->
             ProfileLocationSelection(
                 displayName = ProfileFormSupport.makeLocationDisplay(
@@ -1220,7 +1230,7 @@ private fun ProfileLocationPickerSheet(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         AnimatedContent(
-                            targetState = currentSelection?.displayName.orEmpty(),
+                            targetState = selectedLocation?.displayName.orEmpty(),
                             label = "profileLocationSelection"
                         ) { value ->
                             Text(
@@ -1273,8 +1283,8 @@ private fun ProfileLocationPickerSheet(
                 )
                 ProfileTintButton(
                     text = stringResource(R.string.profile_confirm_action),
-                    onClick = { currentSelection?.let(onConfirm) },
-                    enabled = currentSelection != null,
+                    onClick = { selectedLocation?.let(onConfirm) },
+                    enabled = selectedLocation != null,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -1293,56 +1303,4 @@ private data class ProfileMenuItem(
 private fun displayText(value: String?, fallback: String): String {
     val trimmed = value?.trim().orEmpty()
     return if (trimmed.isEmpty()) fallback else trimmed
-}
-
-private fun resolveLocationSelection(
-    regions: List<ProfileLocationRegion>,
-    displayName: String?
-): ProfileLocationSelection? {
-    val target = normalizeLocationDisplayName(displayName)
-    if (target.isEmpty()) {
-        return null
-    }
-    regions.forEach { region ->
-        region.states.forEach { state ->
-            state.cities.forEach { city ->
-                val candidate = ProfileFormSupport.makeLocationDisplay(region.name, state.name, city.name)
-                if (normalizeLocationDisplayName(candidate) == target) {
-                    return ProfileLocationSelection(
-                        displayName = candidate,
-                        regionCode = region.code,
-                        stateCode = state.code,
-                        cityCode = city.code
-                    )
-                }
-            }
-            val candidate = ProfileFormSupport.makeLocationDisplay(region.name, state.name, "")
-            if (normalizeLocationDisplayName(candidate) == target) {
-                return ProfileLocationSelection(
-                    displayName = candidate,
-                    regionCode = region.code,
-                    stateCode = state.code,
-                    cityCode = ""
-                )
-            }
-        }
-        if (normalizeLocationDisplayName(region.name) == target) {
-            return ProfileLocationSelection(
-                displayName = region.name,
-                regionCode = region.code,
-                stateCode = "",
-                cityCode = ""
-            )
-        }
-    }
-    return null
-}
-
-private fun normalizeLocationDisplayName(value: String?): String {
-    return value
-        ?.trim()
-        .orEmpty()
-        .replace(" ", "")
-        .replace("\u3000", "")
-        .replace(Regex("[\\x{1F1E6}-\\x{1F1FF}]"), "")
 }

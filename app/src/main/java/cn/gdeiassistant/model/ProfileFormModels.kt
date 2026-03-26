@@ -7,21 +7,28 @@ import java.util.Calendar
 @Immutable
 data class ProfileLocationCity(
     val code: String,
-    val name: String
+    val name: String,
+    val latinName: String? = null,
+    val localizedNames: Map<String, String>? = null
 ) : Serializable
 
 @Immutable
 data class ProfileLocationState(
     val code: String,
     val name: String,
-    val cities: List<ProfileLocationCity>
+    val cities: List<ProfileLocationCity>,
+    val latinName: String? = null,
+    val localizedNames: Map<String, String>? = null
 ) : Serializable
 
 @Immutable
 data class ProfileLocationRegion(
     val code: String,
     val name: String,
-    val states: List<ProfileLocationState>
+    val states: List<ProfileLocationState>,
+    val latinName: String? = null,
+    val localizedNames: Map<String, String>? = null,
+    val iso: String? = null
 ) : Serializable
 
 @Immutable
@@ -168,8 +175,14 @@ object ProfileFormSupport {
             return (2014..currentYear).map(Int::toString)
         }
 
-    fun makeLocationDisplay(region: String, state: String, city: String): String {
-        return listOf(region, state, city)
+    fun makeLocationDisplay(
+        region: String,
+        state: String,
+        city: String,
+        locale: String = AppLocaleSupport.currentLocale()
+    ): String {
+        val normalizedLocale = AppLocaleSupport.normalizeLocale(locale)
+        val parts = listOf(region, state, city)
             .map(String::trim)
             .filter(String::isNotEmpty)
             .fold(mutableListOf<String>()) { result, item ->
@@ -178,7 +191,12 @@ object ProfileFormSupport {
                 }
                 result
             }
-            .joinToString(" ")
+
+        return if (normalizedLocale == "en" || normalizedLocale == "ja" || normalizedLocale == "ko") {
+            parts.asReversed().joinToString(", ")
+        } else {
+            parts.joinToString(" ")
+        }
     }
 
     fun normalizeSelection(value: String): String {

@@ -19,6 +19,7 @@ import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.data.UserPreferencesRepository
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 settingsRepository.locale.collect { locale ->
+                    AppLocaleSupport.setCurrentLocale(locale)
                     val currentAppLocales = AppCompatDelegate.getApplicationLocales()
                     val newLocales = LocaleListCompat.forLanguageTags(locale)
                     if (currentAppLocales != newLocales) {
