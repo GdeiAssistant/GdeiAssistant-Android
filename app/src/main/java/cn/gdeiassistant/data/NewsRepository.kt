@@ -1,11 +1,13 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
 import androidx.annotation.StringRes
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.SchoolNews
 import cn.gdeiassistant.network.api.NoticeApi
 import cn.gdeiassistant.network.api.NewsItemDto
 import cn.gdeiassistant.network.safeApiCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -21,6 +23,7 @@ data class NewsCategory(
 
 @Singleton
 class NewsRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val noticeApi: NoticeApi
 ) {
 
@@ -44,7 +47,7 @@ class NewsRepository @Inject constructor(
             noticeApi.queryNewsDetail(id)
         }.mapCatching { dto ->
             dto?.toSchoolNews()
-                ?: throw IllegalStateException("新闻详情不存在")
+                ?: throw IllegalStateException(context.getString(R.string.news_detail_not_found))
         }
     }
 

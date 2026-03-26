@@ -1,8 +1,11 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Cet
 import cn.gdeiassistant.network.api.CetApi
 import cn.gdeiassistant.network.safeApiCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -10,13 +13,14 @@ import javax.inject.Singleton
 
 @Singleton
 class CetRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val cetApi: CetApi,
     private val sessionManager: SessionManager
 ) {
 
     private fun requireToken(): String {
         val token = sessionManager.currentToken()
-        if (token.isNullOrBlank()) throw IllegalStateException("请先登录")
+        if (token.isNullOrBlank()) throw IllegalStateException(context.getString(R.string.common_login_required))
         return token
     }
 
@@ -28,7 +32,7 @@ class CetRepository @Inject constructor(
                     if (!data.isNullOrBlank()) {
                         Result.success(data)
                     } else {
-                        Result.failure(Exception("验证码加载失败"))
+                        Result.failure(Exception(context.getString(R.string.cet_check_code_load_failed)))
                     }
                 },
                 onFailure = { Result.failure(it) }
@@ -55,7 +59,7 @@ class CetRepository @Inject constructor(
                 )
             }.fold(
                 onSuccess = { data ->
-                    if (data != null) Result.success(data) else Result.failure(Exception("暂无成绩数据"))
+                    if (data != null) Result.success(data) else Result.failure(Exception(context.getString(R.string.cet_no_data)))
                 },
                 onFailure = { Result.failure(it) }
             )

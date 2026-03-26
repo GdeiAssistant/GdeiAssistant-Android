@@ -1,9 +1,12 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Festival
 import cn.gdeiassistant.network.api.AnnouncementApi
 import cn.gdeiassistant.network.safeApiCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -11,6 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AnnouncementRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val announcementApi: AnnouncementApi
 ) {
 
@@ -33,7 +37,7 @@ class AnnouncementRepository @Inject constructor(
             announcementApi.queryAnnouncementDetail(id = id)
         }.mapCatching { dto ->
             mapAnnouncementItem(dto)
-                ?: throw IllegalStateException("未找到该公告")
+                ?: throw IllegalStateException(context.getString(R.string.notice_detail_not_found))
         }
     }
 

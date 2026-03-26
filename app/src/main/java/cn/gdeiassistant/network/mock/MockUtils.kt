@@ -1,5 +1,6 @@
 package cn.gdeiassistant.network.mock
 
+import cn.gdeiassistant.model.AppLocaleSupport
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import okhttp3.Request
@@ -34,6 +35,27 @@ object MockUtils {
 
     fun failureJson(message: String): String =
         """{"success":false,"code":500,"message":"$message","data":null}"""
+
+    fun Request.requestLocale(): String {
+        return AppLocaleSupport.normalizeLocale(header("Accept-Language"))
+    }
+
+    fun localizedText(
+        locale: String,
+        simplifiedChinese: String,
+        english: String,
+        traditionalChinese: String = simplifiedChinese,
+        japanese: String = english,
+        korean: String = english
+    ): String {
+        return when (AppLocaleSupport.normalizeLocale(locale)) {
+            "zh-HK", "zh-TW" -> traditionalChinese
+            "en" -> english
+            "ja" -> japanese
+            "ko" -> korean
+            else -> simplifiedChinese
+        }
+    }
 
     fun escapeJson(value: String?): String {
         return value.orEmpty()
