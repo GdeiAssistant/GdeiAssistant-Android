@@ -1543,5 +1543,16 @@
     <string name="accessibility_not_selected">선택 안 됨</string>
     <string name="cet_check_code_load_failed">인증 코드를 불러오지 못했습니다</string>
     <string name="messages_interaction_default_content">새 소통 메시지가 도착했습니다</string>
+    <string name="profile_data_missing">개인 프로필이 없습니다</string>
+    <string name="profile_sync_unsupported_college">현재 학과 “%1$s”은(는) 서버 동기화를 지원하지 않습니다. 지원되는 학과명을 사용해 주세요</string>
+    <string name="profile_sync_unsupported_major">현재 전공 “%1$s”은(는) 서버 동기화를 지원하지 않습니다. 다시 선택해 주세요</string>
+    <string name="profile_export_file_unavailable">다운로드할 수 있는 데이터 파일이 아직 없습니다</string>
+    <string name="profile_enrollment_parse_failed">입학 연도 “%1$s”을(를) 서버 형식으로 변환할 수 없습니다</string>
+    <string name="profile_birthday_invalid">생일 “%1$s” 형식이 올바르지 않습니다. 다시 선택해 주세요</string>
+    <string name="electricity_no_data">전기요금 데이터가 없습니다</string>
+    <string name="data_center_fallback_building">기숙사동</string>
+    <string name="data_center_fallback_department">학과 정보 없음</string>
+    <string name="yellow_page_fallback_category">캠퍼스 전화번호부</string>
+    <string name="yellow_page_fallback_section">알 수 없는 부서</string>
 
 </resources>

@@ -159,6 +159,9 @@ object MockAcademicProvider {
 
     fun mockSpareRoomList(request: Request): String {
         val locale = request.requestLocale()
+        val zoneOptions = spareZoneOptions(locale)
+        val typeOptions = spareTypeOptions(locale)
+        val classOptions = spareClassNumberOptions(locale)
         val query = runCatching {
             Gson().fromJson(request.bodyUtf8(), MockSpareQueryRequest::class.java)
         }.getOrNull() ?: MockSpareQueryRequest()
@@ -166,14 +169,14 @@ object MockAcademicProvider {
             val zoneName = if ((query.zone ?: 0) == 0) {
                 room.zone
             } else {
-                spareZoneOptions.firstOrNull { it.value == query.zone }?.label ?: room.zone
+                zoneOptions.firstOrNull { it.value == query.zone }?.label ?: room.zone
             }
             val roomType = if ((query.type ?: 0) == 0) {
                 room.type
             } else {
-                spareTypeOptions.firstOrNull { it.value == query.type }?.label ?: room.type
+                typeOptions.firstOrNull { it.value == query.type }?.label ?: room.type
             }
-            val section = spareClassNumberOptions.firstOrNull { it.value == (query.classNumber ?: 0) }?.label
+            val section = classOptions.firstOrNull { it.value == (query.classNumber ?: 0) }?.label
                 ?: academicText(locale, "第1,2节", "Periods 1-2", "第1,2節", "1-2限", "1-2교시")
             """{"number":"${room.number}","name":"${MockUtils.escapeJson(room.name)}","type":"${MockUtils.escapeJson(roomType)}","zone":"${MockUtils.escapeJson(zoneName)}","classSeating":"${room.classSeating + index * 6}","section":"${MockUtils.escapeJson(section)}","examSeating":"${room.examSeating + index * 4}"}"""
         }.joinToString(",")

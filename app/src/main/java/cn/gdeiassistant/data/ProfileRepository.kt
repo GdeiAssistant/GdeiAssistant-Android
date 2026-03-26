@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AvatarState
+import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.model.ContactBindingStatus
 import cn.gdeiassistant.model.FeedbackSubmission
 import cn.gdeiassistant.model.LoginRecordItem
@@ -60,7 +61,7 @@ class ProfileRepository @Inject constructor(
 
     suspend fun getProfile(): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
         safeApiCall { profileApi.getUserProfile() }.mapCatching { dto ->
-            val profile = dto ?: throw IllegalStateException("暂无个人资料")
+            val profile = dto ?: throw IllegalStateException(context.getString(R.string.profile_data_missing))
             val profileOptions = profileOptionsRepository.currentOptions()
             UserProfileSummary(
                 username = profile.username.orEmpty(),
@@ -87,11 +88,12 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun getLocationRegions(): Result<List<ProfileLocationRegion>> = withContext(Dispatchers.IO) {
+        val locale = AppLocaleSupport.currentLocale()
         safeApiCall { profileApi.getLocationRegions() }
             .mapCatching { regions ->
                 regions.orEmpty()
-                    .mapNotNull { it.toDomain() }
-                    .sortedWith(profileLocationRegionComparator)
+                    .mapNotNull { it.toDomain(locale) }
+                    .sortedWith(profileLocationRegionComparator(locale))
             }
     }
 
@@ -107,7 +109,9 @@ class ProfileRepository @Inject constructor(
                 profileOptionsRepository.currentOptions()
             }
             val facultyCode = profileOptions.facultyCodeFor(normalizedCollege)
-                ?: throw IllegalStateException("当前院系“$normalizedCollege”暂不支持同步到服务端，请使用系统支持的院系名称")
+                ?: throw IllegalStateException(
+                    context.getString(R.string.profile_sync_unsupported_college, normalizedCollege)
+                )
 
             safeJsonResultCall {
                 profileApi.updateNickname(NicknameUpdateDto(nickname = normalizedNickname))
@@ -119,7 +123,9 @@ class ProfileRepository @Inject constructor(
 
             ProfileFormSupport.normalizeOptionalSelection(request.major)?.let { major ->
                 val majorCode = profileOptions.majorCodeFor(normalizedCollege, major)
-                    ?: throw IllegalStateException("当前专业“$major”暂不支持同步到服务端，请重新选择")
+                    ?: throw IllegalStateException(
+                        context.getString(R.string.profile_sync_unsupported_major, major)
+                    )
                 safeJsonResultCall {
                     profileApi.updateMajor(MajorUpdateDto(major = majorCode))
                 }.getOrThrow()
@@ -189,7 +195,7 @@ class ProfileRepository @Inject constructor(
         safeApiCall { profileApi.downloadUserData() }
             .mapCatching { url ->
                 url?.trim()?.takeIf(String::isNotBlank)
-                    ?: throw IllegalStateException("暂无可下载的数据文件")
+                    ?: throw IllegalStateException(context.getString(R.string.profile_export_file_unavailable))
             }
     }
 
@@ -368,36 +374,39 @@ class ProfileRepository @Inject constructor(
         )
     }
 
-    private fun ProfileLocationRegionDto.toDomain(): ProfileLocationRegion? {
+    private fun ProfileLocationRegionDto.toDomain(locale: String): ProfileLocationRegion? {
         val regionCode = sanitize(code) ?: return null
-        val regionName = sanitize(name) ?: sanitize(aliasesName) ?: return null
+        val fallbackName = sanitize(name) ?: sanitize(aliasesName) ?: regionCode
         return ProfileLocationRegion(
             code = regionCode,
-            name = regionName,
+            name = ProfileLocationCatalog.localizeRegionName(regionCode, fallbackName, locale),
             states = stateMap.orEmpty()
                 .values
-                .mapNotNull { it.toDomain() }
-                .sortedWith(profileLocationStateComparator)
+                .mapNotNull { it.toDomain(regionCode, locale) }
+                .sortedWith(profileLocationStateComparator(locale))
         )
     }
 
-    private fun ProfileLocationStateDto.toDomain(): ProfileLocationState? {
+    private fun ProfileLocationStateDto.toDomain(regionCode: String, locale: String): ProfileLocationState? {
         val stateCode = sanitize(code) ?: return null
-        val stateName = sanitize(name) ?: sanitize(aliasesName) ?: return null
+        val fallbackName = sanitize(name) ?: sanitize(aliasesName) ?: stateCode
         return ProfileLocationState(
             code = stateCode,
-            name = stateName,
+            name = ProfileLocationCatalog.localizeStateName(regionCode, stateCode, fallbackName, locale),
             cities = cityMap.orEmpty()
                 .values
-                .mapNotNull { it.toDomain() }
-                .sortedWith(profileLocationCityComparator)
+                .mapNotNull { it.toDomain(regionCode, stateCode, locale) }
+                .sortedWith(profileLocationCityComparator(locale))
         )
     }
 
-    private fun ProfileLocationCityDto.toDomain(): ProfileLocationCity? {
+    private fun ProfileLocationCityDto.toDomain(regionCode: String, stateCode: String, locale: String): ProfileLocationCity? {
         val cityCode = sanitize(code) ?: return null
-        val cityName = sanitize(name) ?: sanitize(aliasesName) ?: return null
-        return ProfileLocationCity(code = cityCode, name = cityName)
+        val fallbackName = sanitize(name) ?: sanitize(aliasesName) ?: cityCode
+        return ProfileLocationCity(
+            code = cityCode,
+            name = ProfileLocationCatalog.localizeCityName(regionCode, stateCode, cityCode, fallbackName, locale)
+        )
     }
 
     private fun sanitize(value: String?): String? {
@@ -407,9 +416,13 @@ class ProfileRepository @Inject constructor(
     private fun enrollmentYearFrom(grade: String): Int? {
         val normalizedGrade = ProfileFormSupport.normalizeOptionalSelection(grade) ?: return null
         val matchedYear = Regex("\\d{4}").find(normalizedGrade)?.value
-            ?: throw IllegalStateException("入学年份“$normalizedGrade”无法解析为服务端需要的年份")
+            ?: throw IllegalStateException(
+                context.getString(R.string.profile_enrollment_parse_failed, normalizedGrade)
+            )
         return matchedYear.toIntOrNull()
-            ?: throw IllegalStateException("入学年份“$normalizedGrade”无法解析为服务端需要的年份")
+            ?: throw IllegalStateException(
+                context.getString(R.string.profile_enrollment_parse_failed, normalizedGrade)
+            )
     }
 
     private fun birthdayDtoFrom(birthday: String): BirthdayUpdateDto? {
@@ -417,13 +430,17 @@ class ProfileRepository @Inject constructor(
         if (normalizedBirthday.isEmpty()) return null
         val parts = normalizedBirthday.split("-")
         if (parts.size != 3) {
-            throw IllegalStateException("生日“$normalizedBirthday”格式无效，请重新选择")
+            throw IllegalStateException(
+                context.getString(R.string.profile_birthday_invalid, normalizedBirthday)
+            )
         }
         val year = parts[0].toIntOrNull()
         val month = parts[1].toIntOrNull()
         val date = parts[2].toIntOrNull()
         if (year == null || month == null || date == null) {
-            throw IllegalStateException("生日“$normalizedBirthday”格式无效，请重新选择")
+            throw IllegalStateException(
+                context.getString(R.string.profile_birthday_invalid, normalizedBirthday)
+            )
         }
         return BirthdayUpdateDto(year = year, month = month, date = date)
     }
@@ -460,7 +477,8 @@ class ProfileRepository @Inject constructor(
         return ProfileLocationCatalog.displayName(
             regionCode = regionCode,
             stateCode = stateCode,
-            cityCode = cityCode
+            cityCode = cityCode,
+            locale = AppLocaleSupport.currentLocale()
         )
     }
 
@@ -496,15 +514,23 @@ class ProfileRepository @Inject constructor(
 
     private companion object {
         private val chineseCollator: Collator = Collator.getInstance(Locale.CHINA)
+        private fun collatorFor(locale: String): Collator {
+            val normalized = AppLocaleSupport.normalizeLocale(locale)
+            return if (normalized.startsWith("zh")) {
+                chineseCollator
+            } else {
+                Collator.getInstance(AppLocaleSupport.localeObject(normalized))
+            }
+        }
 
-        val profileLocationRegionComparator = Comparator<ProfileLocationRegion> { left, right ->
-            chineseCollator.compare(left.name, right.name)
+        fun profileLocationRegionComparator(locale: String) = Comparator<ProfileLocationRegion> { left, right ->
+            collatorFor(locale).compare(left.name, right.name)
         }
-        val profileLocationStateComparator = Comparator<ProfileLocationState> { left, right ->
-            chineseCollator.compare(left.name, right.name)
+        fun profileLocationStateComparator(locale: String) = Comparator<ProfileLocationState> { left, right ->
+            collatorFor(locale).compare(left.name, right.name)
         }
-        val profileLocationCityComparator = Comparator<ProfileLocationCity> { left, right ->
-            chineseCollator.compare(left.name, right.name)
+        fun profileLocationCityComparator(locale: String) = Comparator<ProfileLocationCity> { left, right ->
+            collatorFor(locale).compare(left.name, right.name)
         }
     }
 

@@ -1538,5 +1538,16 @@
     <string name="accessibility_not_selected">未选择</string>
     <string name="cet_check_code_load_failed">验证码加载失败</string>
     <string name="messages_interaction_default_content">你有一条新的互动消息</string>
+    <string name="profile_data_missing">暂无个人资料</string>
+    <string name="profile_sync_unsupported_college">当前院系“%1$s”暂不支持同步到服务端，请使用系统支持的院系名称</string>
+    <string name="profile_sync_unsupported_major">当前专业“%1$s”暂不支持同步到服务端，请重新选择</string>
+    <string name="profile_export_file_unavailable">暂无可下载的数据文件</string>
+    <string name="profile_enrollment_parse_failed">入学年份“%1$s”无法解析为服务端需要的年份</string>
+    <string name="profile_birthday_invalid">生日“%1$s”格式无效，请重新选择</string>
+    <string name="electricity_no_data">暂无电费数据</string>
+    <string name="data_center_fallback_building">宿舍楼</string>
+    <string name="data_center_fallback_department">学院暂缺</string>
+    <string name="yellow_page_fallback_category">黄页分类</string>
+    <string name="yellow_page_fallback_section">未知部门</string>
 
 </resources>

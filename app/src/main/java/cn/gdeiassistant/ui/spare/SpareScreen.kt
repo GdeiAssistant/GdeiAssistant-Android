@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.model.SpareOption
 import cn.gdeiassistant.model.SpareRoomItem
 import cn.gdeiassistant.model.spareClassNumberOptions
@@ -72,6 +74,14 @@ fun SpareScreen(navController: NavHostController) {
     val viewModel: SpareViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val query = state.query
+    val locale = AppLocaleSupport.normalizeLocale(
+        LocalContext.current.resources.configuration.locales.get(0)?.toLanguageTag()
+    )
+    val zoneOptions = remember(locale) { spareZoneOptions(locale) }
+    val weekdayOptions = remember(locale) { spareWeekdayOptions(locale) }
+    val typeOptions = remember(locale) { spareTypeOptions(locale) }
+    val weekTypeOptions = remember(locale) { spareWeekTypeOptions(locale) }
+    val classNumberOptions = remember(locale) { spareClassNumberOptions(locale) }
 
     LazyScreen(
         title = stringResource(R.string.spare_title),
@@ -108,15 +118,15 @@ fun SpareScreen(navController: NavHostController) {
                 ) {
                     SpareDropdownField(
                         title = stringResource(R.string.spare_zone_label),
-                        value = spareZoneOptions.labelFor(query.zone),
-                        options = spareZoneOptions,
+                        value = zoneOptions.labelFor(query.zone),
+                        options = zoneOptions,
                         onSelect = viewModel::updateZone,
                         modifier = Modifier.weight(1f)
                     )
                     SpareDropdownField(
                         title = stringResource(R.string.spare_weekday_label),
-                        value = spareWeekdayOptions.labelFor(state.selectedWeekday),
-                        options = spareWeekdayOptions,
+                        value = weekdayOptions.labelFor(state.selectedWeekday),
+                        options = weekdayOptions,
                         onSelect = viewModel::updateWeekday,
                         modifier = Modifier.weight(1f)
                     )
@@ -126,8 +136,8 @@ fun SpareScreen(navController: NavHostController) {
 
                 SpareDropdownField(
                     title = stringResource(R.string.spare_type_label),
-                    value = spareTypeOptions.labelFor(query.type),
-                    options = spareTypeOptions,
+                    value = typeOptions.labelFor(query.type),
+                    options = typeOptions,
                     onSelect = viewModel::updateType
                 )
 
@@ -167,15 +177,15 @@ fun SpareScreen(navController: NavHostController) {
                 ) {
                     SpareDropdownField(
                         title = stringResource(R.string.spare_week_type_label),
-                        value = spareWeekTypeOptions.labelFor(query.weekType),
-                        options = spareWeekTypeOptions,
+                        value = weekTypeOptions.labelFor(query.weekType),
+                        options = weekTypeOptions,
                         onSelect = viewModel::updateWeekType,
                         modifier = Modifier.weight(1f)
                     )
                     SpareDropdownField(
                         title = stringResource(R.string.spare_class_number_label),
-                        value = spareClassNumberOptions.labelFor(query.classNumber),
-                        options = spareClassNumberOptions,
+                        value = classNumberOptions.labelFor(query.classNumber),
+                        options = classNumberOptions,
                         onSelect = viewModel::updateClassNumber,
                         modifier = Modifier.weight(1f)
                     )
@@ -186,12 +196,12 @@ fun SpareScreen(navController: NavHostController) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     SpareMetricCard(
                         label = stringResource(R.string.spare_metric_zone),
-                        value = spareZoneOptions.labelFor(query.zone),
+                        value = zoneOptions.labelFor(query.zone),
                         modifier = Modifier.weight(1f)
                     )
                     SpareMetricCard(
                         label = stringResource(R.string.spare_metric_time),
-                        value = spareClassNumberOptions.labelFor(query.classNumber),
+                        value = classNumberOptions.labelFor(query.classNumber),
                         modifier = Modifier.weight(1f)
                     )
                     SpareMetricCard(
@@ -262,8 +272,8 @@ fun SpareScreen(navController: NavHostController) {
                     SpareResultState.Ready -> {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             SpareResultHeader(
-                                zoneLabel = spareZoneOptions.labelFor(query.zone),
-                                typeLabel = spareTypeOptions.labelFor(query.type),
+                                zoneLabel = zoneOptions.labelFor(query.zone),
+                                typeLabel = typeOptions.labelFor(query.type),
                                 count = state.items.size
                             )
                             state.items.forEach { item ->

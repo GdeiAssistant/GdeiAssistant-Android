@@ -1544,5 +1544,16 @@
     <string name="accessibility_not_selected">Not selected</string>
     <string name="cet_check_code_load_failed">Failed to load captcha</string>
     <string name="messages_interaction_default_content">You have a new interaction message</string>
+    <string name="profile_data_missing">No profile data available</string>
+    <string name="profile_sync_unsupported_college">The college “%1$s” is not supported for server sync. Please choose a supported college.</string>
+    <string name="profile_sync_unsupported_major">The major “%1$s” is not supported for server sync. Please choose again.</string>
+    <string name="profile_export_file_unavailable">No downloadable data file is available yet</string>
+    <string name="profile_enrollment_parse_failed">The enrollment year “%1$s” could not be converted to the server format</string>
+    <string name="profile_birthday_invalid">The birthday “%1$s” is invalid. Please choose it again.</string>
+    <string name="electricity_no_data">No electricity data is available</string>
+    <string name="data_center_fallback_building">Dorm Building</string>
+    <string name="data_center_fallback_department">Department unavailable</string>
+    <string name="yellow_page_fallback_category">Yellow Pages</string>
+    <string name="yellow_page_fallback_section">Unknown Department</string>
 
 </resources>

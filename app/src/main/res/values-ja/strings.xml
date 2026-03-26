@@ -1543,5 +1543,16 @@
     <string name="accessibility_not_selected">未選択</string>
     <string name="cet_check_code_load_failed">認証コードの読み込みに失敗しました</string>
     <string name="messages_interaction_default_content">新しいインタラクションメッセージがあります</string>
+    <string name="profile_data_missing">個人プロフィールがありません</string>
+    <string name="profile_sync_unsupported_college">学部「%1$s」はサーバー同期に対応していません。対応している学部名を使用してください</string>
+    <string name="profile_sync_unsupported_major">専攻「%1$s」はサーバー同期に対応していません。もう一度選択してください</string>
+    <string name="profile_export_file_unavailable">ダウンロードできるデータファイルはまだありません</string>
+    <string name="profile_enrollment_parse_failed">入学年度「%1$s」をサーバーが必要とする形式に変換できませんでした</string>
+    <string name="profile_birthday_invalid">生年月日「%1$s」の形式が無効です。もう一度選択してください</string>
+    <string name="electricity_no_data">電気料金データはありません</string>
+    <string name="data_center_fallback_building">寮棟</string>
+    <string name="data_center_fallback_department">学部情報なし</string>
+    <string name="yellow_page_fallback_category">電話帳カテゴリ</string>
+    <string name="yellow_page_fallback_section">不明な部署</string>
 
 </resources>

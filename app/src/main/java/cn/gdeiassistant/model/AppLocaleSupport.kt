@@ -5,6 +5,9 @@ import java.util.Locale
 object AppLocaleSupport {
     const val fallbackLocale: String = "zh-CN"
 
+    @Volatile
+    private var currentLocaleOverride: String? = null
+
     fun normalizeLocale(locale: String?): String {
         val normalized = locale
             ?.trim()
@@ -35,6 +38,14 @@ object AppLocaleSupport {
     }
 
     fun currentLocale(): String {
-        return detectSystemLocale()
+        return currentLocaleOverride ?: detectSystemLocale()
+    }
+
+    fun setCurrentLocale(locale: String?) {
+        currentLocaleOverride = locale?.let(::normalizeLocale)
+    }
+
+    fun localeObject(locale: String? = currentLocale()): Locale {
+        return Locale.forLanguageTag(normalizeLocale(locale))
     }
 }

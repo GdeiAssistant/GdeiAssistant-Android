@@ -15,4 +15,15 @@ class AppLocaleSupportTest {
         assertEquals("ja", AppLocaleSupport.normalizeLocale("ja-JP"))
         assertEquals("ko", AppLocaleSupport.normalizeLocale("ko-KR"))
     }
+
+    @Test
+    fun currentLocalePrefersAppliedAppLocaleOverSystemLocale() {
+        try {
+            AppLocaleSupport.setCurrentLocale("en-US")
+            assertEquals("en", AppLocaleSupport.currentLocale())
+            assertEquals("en", AppLocaleSupport.localeObject().language)
+        } finally {
+            AppLocaleSupport.setCurrentLocale(null)
+        }
+    }
 }
