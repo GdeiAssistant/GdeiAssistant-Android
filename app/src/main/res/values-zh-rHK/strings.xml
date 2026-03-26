@@ -1496,6 +1496,7 @@
     <string name="secret_publish_theme_4">夜色靛</string>
 
     <!-- 通用 -->
+    <string name="common_login_required">請先登入</string>
     <string name="common_just_now">剛剛</string>
 
     <!-- Appearance -->
@@ -1517,6 +1518,7 @@
     <string name="notification_channel_service">系統公告</string>
     <string name="language_picker_title">語言 / Language</string>
     <string name="news_error_missing_id">缺少新聞編號</string>
+    <string name="news_detail_not_found">找不到新聞內容</string>
     <string name="news_source_important">學校要聞</string>
     <string name="news_source_department">院部通知</string>
     <string name="news_source_announcement">通知公告</string>
@@ -1538,5 +1540,7 @@
     <string name="network_error_server">伺服器錯誤: %d</string>
     <string name="accessibility_selected">已選擇</string>
     <string name="accessibility_not_selected">未選擇</string>
+    <string name="cet_check_code_load_failed">驗證碼載入失敗</string>
+    <string name="messages_interaction_default_content">你有一條新的互動消息</string>
 
 </resources>

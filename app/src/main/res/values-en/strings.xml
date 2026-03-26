@@ -1498,6 +1498,7 @@
     <string name="secret_publish_theme_4">Night Indigo</string>
 
     <!-- General -->
+    <string name="common_login_required">Please log in first</string>
     <string name="common_just_now">Just now</string>
 
     <!-- Appearance -->
@@ -1519,6 +1520,7 @@
     <string name="notification_channel_service">System Announcements</string>
     <string name="language_picker_title">Language</string>
     <string name="news_error_missing_id">Missing news ID</string>
+    <string name="news_detail_not_found">News detail not found</string>
     <string name="news_source_important">University News</string>
     <string name="news_source_department">Department Notices</string>
     <string name="news_source_announcement">Announcements</string>
@@ -1540,5 +1542,7 @@
     <string name="network_error_server">Server error: %d</string>
     <string name="accessibility_selected">Selected</string>
     <string name="accessibility_not_selected">Not selected</string>
+    <string name="cet_check_code_load_failed">Failed to load captcha</string>
+    <string name="messages_interaction_default_content">You have a new interaction message</string>
 
 </resources>

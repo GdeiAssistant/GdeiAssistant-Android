@@ -1,11 +1,14 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Card
 import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.CardQueryResult
 import cn.gdeiassistant.network.api.CardApi
 import cn.gdeiassistant.network.api.CardQueryBody
 import cn.gdeiassistant.network.safeApiCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -18,6 +21,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class CardRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val cardApi: CardApi,
     private val sessionManager: SessionManager
 ) {
@@ -25,7 +29,7 @@ class CardRepository @Inject constructor(
     private suspend fun requireToken(): String {
         val token = sessionManager.currentToken()
         if (token.isNullOrBlank()) {
-            throw IllegalStateException("请先登录")
+            throw IllegalStateException(context.getString(R.string.common_login_required))
         }
         return token
     }
@@ -57,7 +61,7 @@ class CardRepository @Inject constructor(
         try {
             val token = requireToken()
             val result = safeApiCall { cardApi.reportLost(token, cardPassword) }
-            if (result.isSuccess) Result.success(Unit) else Result.failure(Exception("挂失失败"))
+            if (result.isSuccess) Result.success(Unit) else Result.failure(Exception(context.getString(R.string.lost_failed)))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -72,9 +76,9 @@ class CardRepository @Inject constructor(
         return records.groupBy { card ->
             try {
                 val date = sdfInput.parse(card.tradeTime.orEmpty())
-                if (date != null) sdfMonth.format(date) else "未知月份"
+                if (date != null) sdfMonth.format(date) else context.getString(R.string.card_month_unknown)
             } catch (_: Exception) {
-                "未知月份"
+                context.getString(R.string.card_month_unknown)
             }
         }
     }

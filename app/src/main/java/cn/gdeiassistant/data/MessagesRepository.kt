@@ -1,9 +1,12 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
 import cn.gdeiassistant.model.InteractionMessage
 import cn.gdeiassistant.network.api.MessageApi
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -11,6 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MessagesRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val messageApi: MessageApi
 ) {
 
@@ -29,9 +33,9 @@ class MessagesRepository @Inject constructor(
                         id = id.ifBlank { "${title.hashCode()}-${content.hashCode()}" },
                         module = dto.module?.trim(),
                         type = dto.type?.trim(),
-                        title = title.ifBlank { "互动消息" },
-                        content = content.ifBlank { "你有一条新的互动消息" },
-                        createdAt = dto.createdAt?.trim().orEmpty().ifBlank { "刚刚" },
+                        title = title.ifBlank { context.getString(R.string.messages_interaction_title) },
+                        content = content.ifBlank { context.getString(R.string.messages_interaction_default_content) },
+                        createdAt = dto.createdAt?.trim().orEmpty().ifBlank { context.getString(R.string.common_just_now) },
                         isRead = dto.isRead == true,
                         targetType = dto.targetType?.trim(),
                         targetId = dto.targetId?.trim(),
@@ -55,4 +59,3 @@ class MessagesRepository @Inject constructor(
         safeJsonResultCall { messageApi.markAllRead() }
     }
 }
-

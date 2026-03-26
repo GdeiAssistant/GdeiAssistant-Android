@@ -1497,6 +1497,7 @@
     <string name="secret_publish_theme_4">ナイトインディゴ</string>
 
     <!-- 共通 -->
+    <string name="common_login_required">先にログインしてください</string>
     <string name="common_just_now">たった今</string>
 
     <!-- Appearance -->
@@ -1518,6 +1519,7 @@
     <string name="notification_channel_service">システム通知</string>
     <string name="language_picker_title">言語 / Language</string>
     <string name="news_error_missing_id">ニュースIDがありません</string>
+    <string name="news_detail_not_found">ニュース詳細が見つかりません</string>
     <string name="news_source_important">大学ニュース</string>
     <string name="news_source_department">学部通知</string>
     <string name="news_source_announcement">お知らせ</string>
@@ -1539,5 +1541,7 @@
     <string name="network_error_server">サーバーエラー: %d</string>
     <string name="accessibility_selected">選択済み</string>
     <string name="accessibility_not_selected">未選択</string>
+    <string name="cet_check_code_load_failed">認証コードの読み込みに失敗しました</string>
+    <string name="messages_interaction_default_content">新しいインタラクションメッセージがあります</string>
 
 </resources>

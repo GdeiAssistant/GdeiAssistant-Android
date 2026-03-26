@@ -1,8 +1,10 @@
 package cn.gdeiassistant.ui.notice
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.AnnouncementRepository
 import cn.gdeiassistant.model.AnnouncementItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,8 @@ data class NoticeDetailUiState(
 @HiltViewModel
 class NoticeDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val announcementRepository: AnnouncementRepository
+    private val announcementRepository: AnnouncementRepository,
+    private val application: Application
 ) : ViewModel() {
 
     private val noticeId = savedStateHandle.get<String>("noticeId").orEmpty()
@@ -37,7 +40,7 @@ class NoticeDetailViewModel @Inject constructor(
     private fun load() {
         if (noticeId.isBlank()) {
             _state.update {
-                it.copy(isLoading = false, error = "未找到该公告")
+                it.copy(isLoading = false, error = application.getString(R.string.notice_detail_not_found))
             }
             return
         }
