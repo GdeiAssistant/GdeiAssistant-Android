@@ -6,11 +6,11 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
-val devBaseUrl = providers.gradleProperty("GDEI_BASE_URL_DEV").orNull ?: "http://10.0.2.2:8080/"
+val devBaseUrl = providers.gradleProperty("GDEI_BASE_URL_DEV").orNull ?: "http://10.0.2.2:8080/api/"
 val stagingBaseUrl = providers.gradleProperty("GDEI_BASE_URL_STAGING").orNull
-    ?: "https://gdeiassistant.azurewebsites.net/"
+    ?: "https://gdeiassistant.azurewebsites.net/api/"
 val prodBaseUrl = providers.gradleProperty("GDEI_BASE_URL_PROD").orNull
-    ?: "https://gdeiassistant.azurewebsites.net/"
+    ?: "https://gdeiassistant.azurewebsites.net/api/"
 
 android {
     namespace = "cn.gdeiassistant"
