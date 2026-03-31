@@ -19,6 +19,14 @@ class NetworkEnvironmentTest {
     }
 
     @Test
+    fun normalizeApiBaseUrlStripsOptionalApiSuffixAndKeepsTrailingSlash() {
+        assertEquals("https://gdeiassistant.azurewebsites.net/", normalizeApiBaseUrl("https://gdeiassistant.azurewebsites.net"))
+        assertEquals("https://gdeiassistant.azurewebsites.net/", normalizeApiBaseUrl("https://gdeiassistant.azurewebsites.net/"))
+        assertEquals("https://gdeiassistant.azurewebsites.net/", normalizeApiBaseUrl("https://gdeiassistant.azurewebsites.net/api"))
+        assertEquals("https://gdeiassistant.azurewebsites.net/", normalizeApiBaseUrl("https://gdeiassistant.azurewebsites.net/api/"))
+    }
+
+    @Test
     fun defaultBaseUrlsResolveApiRoutesWithoutDuplicatingApiPrefix() {
         NetworkEnvironment.entries.forEach { environment ->
             val resolved = environment.httpUrl.resolve("api/auth/login")

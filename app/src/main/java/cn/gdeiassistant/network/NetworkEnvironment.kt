@@ -4,22 +4,36 @@ import cn.gdeiassistant.BuildConfig
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
+internal fun normalizeApiBaseUrl(rawBaseUrl: String): String {
+    val trimmed = rawBaseUrl.trim()
+    val withoutTrailingSlash = trimmed.removeSuffix("/")
+    val rootBaseUrl = if (withoutTrailingSlash.endsWith("/api", ignoreCase = true)) {
+        withoutTrailingSlash.removeSuffix("/api")
+    } else {
+        withoutTrailingSlash
+    }
+
+    return "$rootBaseUrl/"
+}
+
 enum class NetworkEnvironment(
     val storageValue: String,
-    val baseUrl: String
+    rawBaseUrl: String
 ) {
     DEV(
         storageValue = "dev",
-        baseUrl = BuildConfig.BASE_URL_DEV
+        rawBaseUrl = BuildConfig.BASE_URL_DEV
     ),
     STAGING(
         storageValue = "staging",
-        baseUrl = BuildConfig.BASE_URL_STAGING
+        rawBaseUrl = BuildConfig.BASE_URL_STAGING
     ),
     PROD(
         storageValue = "prod",
-        baseUrl = BuildConfig.BASE_URL_PROD
+        rawBaseUrl = BuildConfig.BASE_URL_PROD
     );
+
+    val baseUrl: String = normalizeApiBaseUrl(rawBaseUrl)
 
     val httpUrl: HttpUrl
         get() = baseUrl.toHttpUrl()
