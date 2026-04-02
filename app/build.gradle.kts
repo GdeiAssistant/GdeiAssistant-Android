@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -10,7 +9,7 @@ val devBaseUrl = providers.gradleProperty("GDEI_BASE_URL_DEV").orNull ?: "http:/
 val stagingBaseUrl = providers.gradleProperty("GDEI_BASE_URL_STAGING").orNull
     ?: "https://gdeiassistant.azurewebsites.net/"
 val prodBaseUrl = providers.gradleProperty("GDEI_BASE_URL_PROD").orNull
-    ?: "https://gdeiassistant.azurewebsites.net/"
+    ?: "https://gdeiassistant.cn/"
 
 android {
     namespace = "cn.gdeiassistant"
@@ -59,9 +58,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
