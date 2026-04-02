@@ -105,8 +105,11 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.okhttp.mockwebserver)
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.espresso.core)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
 
 configurations.configureEach {

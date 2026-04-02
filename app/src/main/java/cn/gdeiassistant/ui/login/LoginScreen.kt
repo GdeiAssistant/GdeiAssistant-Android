@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -266,7 +267,9 @@ private fun LoginFormCard(
             OutlinedTextField(
                 value = state.username,
                 onValueChange = onUsernameChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("login.username"),
                 label = { Text(text = stringResource(R.string.login_username_hint)) },
                 singleLine = true,
                 enabled = !state.isLoading,
@@ -281,7 +284,9 @@ private fun LoginFormCard(
             OutlinedTextField(
                 value = state.password,
                 onValueChange = onPasswordChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("login.password"),
                 label = { Text(text = stringResource(R.string.login_password_hint)) },
                 singleLine = true,
                 enabled = !state.isLoading,
@@ -373,7 +378,8 @@ private fun LoginMockCard(
                 }
                 Switch(
                     checked = enabled,
-                    onCheckedChange = onToggle
+                    onCheckedChange = onToggle,
+                    modifier = Modifier.testTag("login.mock.toggle")
                 )
             }
 
@@ -409,7 +415,9 @@ private fun LoginActionButton(
     Surface(
         onClick = onClick,
         enabled = enabled && !loading,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("login.submit"),
         shape = AppShapes.button,
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
         border = androidx.compose.foundation.BorderStroke(
