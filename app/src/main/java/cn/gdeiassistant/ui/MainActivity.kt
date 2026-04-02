@@ -23,10 +23,17 @@ import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        const val EXTRA_UI_USE_MOCK = "cn.gdeiassistant.extra.UI_USE_MOCK"
+        const val EXTRA_UI_LOCALE = "cn.gdeiassistant.extra.UI_LOCALE"
+        const val EXTRA_UI_CLEAR_SESSION = "cn.gdeiassistant.extra.UI_CLEAR_SESSION"
+    }
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -42,6 +49,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         actionBar?.hide()
+
+        val uiTestUseMock = intent?.getBooleanExtra(EXTRA_UI_USE_MOCK, false) == true
+        val uiTestLocale = intent?.getStringExtra(EXTRA_UI_LOCALE)?.trim().orEmpty()
+        val uiTestClearSession = intent?.getBooleanExtra(EXTRA_UI_CLEAR_SESSION, false) == true
+
+        if (uiTestClearSession) {
+            sessionManager.clearTokens()
+        }
+        if (uiTestUseMock || uiTestLocale.isNotEmpty()) {
+            runBlocking {
+                if (uiTestUseMock) {
+                    settingsRepository.setMockModeEnabled(true)
+                }
+                if (uiTestLocale.isNotEmpty()) {
+                    settingsRepository.setLocale(uiTestLocale)
+                }
+            }
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
