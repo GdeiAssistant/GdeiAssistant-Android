@@ -159,6 +159,9 @@ GdeiAssistant-Android/
 
 - Android Studio 最新稳定版
 - JDK 17
+- Gradle 9.3.1
+- Android Gradle Plugin 9.1.0
+- Kotlin 2.3.20
 - Android SDK 35
 - Android 8.0 及以上设备或模拟器
 
@@ -199,6 +202,23 @@ app/build/outputs/apk/debug/app-debug.apk
 
 - `mock` 模式：适合本地开发、UI 联调、回归验证
 - `remote` 模式：适合连接真实后端接口进行联调
+
+### 6. 远程接口环境
+
+应用内远程接口默认按 `dev / staging / prod` 三套环境运行：
+
+- `dev`：`http://10.0.2.2:8080/`（Android 模拟器本地联调）
+- `staging`：`https://gdeiassistant.azurewebsites.net/`
+- `prod`：`https://gdeiassistant.cn/`
+
+也可以在 Gradle 命令行覆盖：
+
+```bash
+./gradlew :app:assembleDebug \
+  -PGDEI_BASE_URL_DEV=http://10.0.2.2:8080/ \
+  -PGDEI_BASE_URL_STAGING=https://gdeiassistant.azurewebsites.net/ \
+  -PGDEI_BASE_URL_PROD=https://gdeiassistant.cn/
+```
 
 ## 后端接口位置
 

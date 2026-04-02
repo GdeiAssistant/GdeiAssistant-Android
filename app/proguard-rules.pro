@@ -61,6 +61,10 @@
 # OkHttp / Okio 常见 warn 忽略（R8 已内置大部分规则）
 -dontwarn okhttp3.**
 -dontwarn okio.**
+-dontwarn com.google.errorprone.annotations.CanIgnoreReturnValue
+-dontwarn com.google.errorprone.annotations.CheckReturnValue
+-dontwarn com.google.errorprone.annotations.Immutable
+-dontwarn com.google.errorprone.annotations.RestrictedApi
 
 # 保留注解信息（Retrofit / Gson / Compose 等依赖）
 -keepattributes *Annotation*

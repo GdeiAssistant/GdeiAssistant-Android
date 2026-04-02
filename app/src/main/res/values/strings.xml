@@ -1527,7 +1527,12 @@
     <string name="news_source_default">新闻</string>
 
     <!-- Charge error strings -->
+    <string name="charge_error_no_server_public_key">未能获取服务器公钥</string>
     <string name="charge_error_no_payment_info">服务端未返回支付信息</string>
+    <string name="charge_error_empty_payment_data">支付信息为空</string>
+    <string name="charge_error_empty_payment_signature">支付签名为空</string>
+    <string name="charge_error_parse_failed">支付信息解析失败</string>
+    <string name="charge_error_login_required">请先登录</string>
 
     <!-- Network error messages -->
     <string name="network_error_forbidden">权限不足</string>
