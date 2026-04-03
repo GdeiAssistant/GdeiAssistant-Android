@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -110,6 +111,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cn.gdeiassistant.R
+import kotlinx.coroutines.flow.first
 
 private object AppNavGraphs {
     const val SERVICE = "service_graph"
@@ -128,10 +130,18 @@ fun GdeiAssistantApp(
     val startDestination = if (hasActiveSession) Routes.HOME else Routes.LOGIN
 
     LaunchedEffect(initialRoute) {
-        when (initialRoute) {
+        val route = initialRoute?.trim().orEmpty()
+        if (route.isEmpty() || route == startDestination) {
+            return@LaunchedEffect
+        }
+
+        navController.currentBackStackEntryFlow.first()
+
+        when (route) {
             "grade" -> navController.navigate(Routes.GRADE)
             "schedule" -> navController.navigate(Routes.SCHEDULE)
             "webview" -> navController.navigate(Routes.WEB_VIEW_BASE)
+            else -> navController.navigate(route)
         }
     }
 
@@ -176,6 +186,7 @@ fun GdeiAssistantApp(
                         )
                         NavigationBarItem(
                             selected = selected,
+                            modifier = Modifier.testTag("tab.${destination.route}"),
                             onClick = {
                                 if (!selected) {
                                     navController.navigate(destination.route) {
