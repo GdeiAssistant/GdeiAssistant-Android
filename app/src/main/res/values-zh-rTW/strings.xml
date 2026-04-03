@@ -1385,6 +1385,7 @@
     <string name="profile_settings_mock_title">本機模擬資料</string>
     <string name="profile_settings_mock_subtitle">開啟後優先使用 Mock 攔截器回傳本機範例資料</string>
     <string name="profile_settings_environment_title">介面環境</string>
+    <string name="profile_language_title">語言</string>
     <string name="profile_settings_environment_subtitle">真實介面支援 dev / staging / prod 三檔切換，便於本機聯調和灰度驗證</string>
     <string name="profile_settings_environment_release_subtitle">當前為非偵錯建置，僅展示當前環境訊息</string>
     <string name="profile_settings_environment_endpoint_title">當前服務位址</string>

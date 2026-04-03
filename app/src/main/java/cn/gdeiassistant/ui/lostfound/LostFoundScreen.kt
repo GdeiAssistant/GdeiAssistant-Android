@@ -431,10 +431,11 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                 }
                 item {
                     AnimatedContent(
-                        targetState = state.selectedTab,
+                        targetState = state.selectedTab to state.visibleItems,
                         label = "lost_found_profile_tab"
-                    ) {
-                        if (state.visibleItems.isEmpty()) {
+                    ) { contentState ->
+                        val visibleItems = contentState.second
+                        if (visibleItems.isEmpty()) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -448,7 +449,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                             }
                         } else {
                             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                state.visibleItems.forEach { item ->
+                                visibleItems.forEach { item ->
                                     LostFoundProfileCard(
                                         item = item,
                                         tab = state.selectedTab,

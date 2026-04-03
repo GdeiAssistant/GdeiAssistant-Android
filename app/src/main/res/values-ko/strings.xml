@@ -1386,6 +1386,7 @@
     <string name="profile_settings_mock_title">로컬 시뮬레이션 데이터</string>
     <string name="profile_settings_mock_subtitle">활성화하면 Mock 인터셉터가 로컬 샘플 데이터를 우선 반환합니다</string>
     <string name="profile_settings_environment_title">API 환경</string>
+    <string name="profile_language_title">언어</string>
     <string name="profile_settings_environment_subtitle">실제 API는 dev / staging / prod 세 단계 전환을 지원하여 로컬 연동 및 회색 검증에 편리합니다</string>
     <string name="profile_settings_environment_release_subtitle">현재 비디버그 빌드이며, 현재 환경 정보만 표시됩니다</string>
     <string name="profile_settings_environment_endpoint_title">현재 서비스 주소</string>

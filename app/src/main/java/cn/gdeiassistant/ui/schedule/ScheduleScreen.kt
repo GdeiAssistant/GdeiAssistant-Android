@@ -426,18 +426,19 @@ private fun TodayAgendaCard(
         )
         Spacer(modifier = Modifier.height(14.dp))
         AnimatedContent(
-            targetState = Triple(isCurrentWeek, selectedWeek, courses.size),
+            targetState = Triple(isCurrentWeek, selectedWeek, courses),
             label = "schedule_focus_courses"
-        ) {
+        ) { contentState ->
+            val currentCourses = contentState.third
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (courses.isEmpty()) {
+                if (currentCourses.isEmpty()) {
                     Text(
                         text = if (isCurrentWeek) emptyCurrentText else emptyOtherText,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    courses.forEach { course ->
+                    currentCourses.forEach { course ->
                         FocusCourseRow(course = course, onClick = { onCourseClick(course) })
                     }
                 }

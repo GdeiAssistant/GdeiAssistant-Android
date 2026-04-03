@@ -36,7 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -75,7 +75,7 @@ fun SpareScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val query = state.query
     val locale = AppLocaleSupport.normalizeLocale(
-        LocalContext.current.resources.configuration.locales.get(0)?.toLanguageTag()
+        LocalConfiguration.current.locales.get(0)?.toLanguageTag()
     )
     val zoneOptions = remember(locale) { spareZoneOptions(locale) }
     val weekdayOptions = remember(locale) { spareWeekdayOptions(locale) }

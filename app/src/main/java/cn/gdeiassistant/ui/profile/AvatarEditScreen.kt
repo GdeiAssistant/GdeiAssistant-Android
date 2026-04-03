@@ -90,12 +90,12 @@ fun AvatarEditScreen(navController: NavHostController) {
         item {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 AnimatedContent(
-                    targetState = state.previewModel?.toString().orEmpty(),
+                    targetState = state.previewModel,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "avatar-preview"
-                ) {
+                ) { previewModel ->
                     ProfileAvatar(
-                        imageModel = state.previewModel,
+                        imageModel = previewModel,
                         fallbackLabel = state.fallbackLabel,
                         size = 132.dp
                     )

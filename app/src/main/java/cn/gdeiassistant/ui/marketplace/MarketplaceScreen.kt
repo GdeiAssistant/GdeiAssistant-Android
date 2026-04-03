@@ -442,10 +442,11 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                 }
                 item {
                     AnimatedContent(
-                        targetState = state.selectedTab,
+                        targetState = state.selectedTab to state.visibleItems,
                         label = "marketplace_profile_tab"
-                    ) {
-                        if (state.visibleItems.isEmpty()) {
+                    ) { contentState ->
+                        val visibleItems = contentState.second
+                        if (visibleItems.isEmpty()) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -459,7 +460,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                             }
                         } else {
                             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                state.visibleItems.forEach { item ->
+                                visibleItems.forEach { item ->
                                     MarketplaceProfileCard(
                                         item = item,
                                         tab = state.selectedTab,
