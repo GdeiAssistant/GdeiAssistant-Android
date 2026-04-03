@@ -105,7 +105,8 @@ class MockMarketplaceUiSmokeTest : BaseMockUiSmokeTest(
     fun mockMarketplaceRouteShowsListAndDetail() {
         waitForText("Marketplace")
         composeRule.onNodeWithText("Marketplace").assertIsDisplayed()
-        composeRule.onNodeWithText("95 新蓝牙耳机").assertIsDisplayed()
+        composeRule.onNodeWithText("My Items").assertIsDisplayed()
+        composeRule.onNodeWithText("List Item").assertIsDisplayed()
     }
 }
 

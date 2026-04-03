@@ -120,6 +120,17 @@ private object AppNavGraphs {
     const val INFORMATION = "information_graph"
 }
 
+private fun resolveUiTestInitialRoute(route: String): String? = when (route) {
+    "grade", Routes.GRADE -> Routes.GRADE
+    "schedule", Routes.SCHEDULE -> Routes.SCHEDULE
+    "webview", Routes.WEB_VIEW_BASE -> Routes.WEB_VIEW_BASE
+    Routes.HOME -> Routes.HOME
+    Routes.MESSAGES -> Routes.MESSAGES
+    Routes.PROFILE -> Routes.PROFILE
+    Routes.MARKETPLACE -> Routes.MARKETPLACE
+    else -> null
+}
+
 @Composable
 fun GdeiAssistantApp(
     navController: NavHostController = rememberNavController(),
@@ -130,8 +141,8 @@ fun GdeiAssistantApp(
     val startDestination = if (hasActiveSession) Routes.HOME else Routes.LOGIN
 
     LaunchedEffect(initialRoute) {
-        val route = initialRoute?.trim().orEmpty()
-        if (route.isEmpty() || route == startDestination) {
+        val route = resolveUiTestInitialRoute(initialRoute?.trim().orEmpty()) ?: return@LaunchedEffect
+        if (route == startDestination) {
             return@LaunchedEffect
         }
 

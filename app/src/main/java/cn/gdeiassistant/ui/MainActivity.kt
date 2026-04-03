@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import cn.gdeiassistant.BuildConfig
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.data.UserPreferencesRepository
@@ -53,12 +54,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         actionBar?.hide()
 
-        val uiTestUseMock = intent?.getBooleanExtra(EXTRA_UI_USE_MOCK, false) == true
-        val uiTestLocale = intent?.getStringExtra(EXTRA_UI_LOCALE)?.trim().orEmpty()
-        val uiTestClearSession = intent?.getBooleanExtra(EXTRA_UI_CLEAR_SESSION, false) == true
-        val uiTestInitialRoute = intent?.getStringExtra(EXTRA_UI_INITIAL_ROUTE)?.trim().orEmpty()
-        val uiTestSeedToken = intent?.getStringExtra(EXTRA_UI_SEED_TOKEN)?.trim().orEmpty()
-        val uiTestSeedUsername = intent?.getStringExtra(EXTRA_UI_SEED_USERNAME)?.trim().orEmpty()
+        val uiTestUseMock = BuildConfig.DEBUG && intent?.getBooleanExtra(EXTRA_UI_USE_MOCK, false) == true
+        val uiTestLocale = if (BuildConfig.DEBUG) {
+            intent?.getStringExtra(EXTRA_UI_LOCALE)?.trim().orEmpty()
+        } else {
+            ""
+        }
+        val uiTestClearSession = BuildConfig.DEBUG && intent?.getBooleanExtra(EXTRA_UI_CLEAR_SESSION, false) == true
+        val uiTestInitialRoute = if (BuildConfig.DEBUG) {
+            intent?.getStringExtra(EXTRA_UI_INITIAL_ROUTE)?.trim().orEmpty()
+        } else {
+            ""
+        }
+        val uiTestSeedToken = if (BuildConfig.DEBUG) {
+            intent?.getStringExtra(EXTRA_UI_SEED_TOKEN)?.trim().orEmpty()
+        } else {
+            ""
+        }
+        val uiTestSeedUsername = if (BuildConfig.DEBUG) {
+            intent?.getStringExtra(EXTRA_UI_SEED_USERNAME)?.trim().orEmpty()
+        } else {
+            ""
+        }
 
         if (uiTestClearSession) {
             sessionManager.clearTokens()
