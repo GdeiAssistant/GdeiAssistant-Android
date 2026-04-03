@@ -33,6 +33,9 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_UI_USE_MOCK = "cn.gdeiassistant.extra.UI_USE_MOCK"
         const val EXTRA_UI_LOCALE = "cn.gdeiassistant.extra.UI_LOCALE"
         const val EXTRA_UI_CLEAR_SESSION = "cn.gdeiassistant.extra.UI_CLEAR_SESSION"
+        const val EXTRA_UI_INITIAL_ROUTE = "cn.gdeiassistant.extra.UI_INITIAL_ROUTE"
+        const val EXTRA_UI_SEED_TOKEN = "cn.gdeiassistant.extra.UI_SEED_TOKEN"
+        const val EXTRA_UI_SEED_USERNAME = "cn.gdeiassistant.extra.UI_SEED_USERNAME"
     }
 
     @Inject
@@ -53,9 +56,18 @@ class MainActivity : ComponentActivity() {
         val uiTestUseMock = intent?.getBooleanExtra(EXTRA_UI_USE_MOCK, false) == true
         val uiTestLocale = intent?.getStringExtra(EXTRA_UI_LOCALE)?.trim().orEmpty()
         val uiTestClearSession = intent?.getBooleanExtra(EXTRA_UI_CLEAR_SESSION, false) == true
+        val uiTestInitialRoute = intent?.getStringExtra(EXTRA_UI_INITIAL_ROUTE)?.trim().orEmpty()
+        val uiTestSeedToken = intent?.getStringExtra(EXTRA_UI_SEED_TOKEN)?.trim().orEmpty()
+        val uiTestSeedUsername = intent?.getStringExtra(EXTRA_UI_SEED_USERNAME)?.trim().orEmpty()
 
         if (uiTestClearSession) {
             sessionManager.clearTokens()
+        }
+        if (uiTestSeedToken.isNotEmpty()) {
+            sessionManager.saveToken(
+                accessToken = uiTestSeedToken,
+                username = uiTestSeedUsername.ifBlank { "gdeiassistant" }
+            )
         }
         if (uiTestUseMock || uiTestLocale.isNotEmpty()) {
             runBlocking {
@@ -95,7 +107,10 @@ class MainActivity : ComponentActivity() {
                 )
             ) {
                 GdeiAssistantTheme(themeMode = themeMode) {
-                    GdeiAssistantApp(hasActiveSession = hasActiveSession)
+                    GdeiAssistantApp(
+                        initialRoute = uiTestInitialRoute.ifBlank { null },
+                        hasActiveSession = hasActiveSession
+                    )
                 }
             }
         }
