@@ -1386,6 +1386,7 @@
     <string name="profile_settings_mock_title">ローカルシミュレーションデータ</string>
     <string name="profile_settings_mock_subtitle">有効にすると Mock インターセプタがローカルサンプルデータを優先的に返します</string>
     <string name="profile_settings_environment_title">API環境</string>
+    <string name="profile_language_title">言語</string>
     <string name="profile_settings_environment_subtitle">本番APIは dev / staging / prod の3段階切り替えをサポートし、ローカル連携やグレーリリース検証に便利です</string>
     <string name="profile_settings_environment_release_subtitle">現在はデバッグビルドではないため、現在の環境情報のみ表示しています</string>
     <string name="profile_settings_environment_endpoint_title">現在のサービスアドレス</string>
