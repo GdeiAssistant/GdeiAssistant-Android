@@ -50,6 +50,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    private val placeholderCertificatePins = setOf(
+        "sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+        "sha256/CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC="
+    )
+
     @Provides
     @Singleton
     fun provideRequestIdInterceptor(): RequestIdInterceptor = RequestIdInterceptor()
@@ -69,33 +74,42 @@ object NetworkModule {
         responseInterceptor: ResponseInterceptor,
         localeInterceptor: LocaleInterceptor
     ): OkHttpClient {
-        val prodHost = runCatching {
+        val apiHost = runCatching {
             BuildConfig.BASE_URL.toHttpUrl().host
         }.getOrDefault("gdeiassistant.cn")
 
-        val certificatePinner = CertificatePinner.Builder()
-            // TODO: 替换为服务端证书实际的 SHA-256 指纹，可通过以下命令获取：
-            // openssl s_client -connect <host>:443 | openssl x509 -pubkey -noout |
-            //   openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
-            .add(prodHost, "sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=")
-            // 备用指纹（证书轮换时使用）
-            .add(prodHost, "sha256/CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=")
-            .build()
+        val builder = OkHttpClient.Builder()
+            .connectTimeout(NetworkConstants.CONNECT_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
+            .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
+            .cookieJar(sessionManager.cookieJar)
+            .addInterceptor(requestIdInterceptor)        // 1. Assign X-Request-ID before anything else
+            .addInterceptor(localeInterceptor)           // 2. Add Accept-Language
+            .addInterceptor(baseUrlOverrideInterceptor)  // 3. Rewrite base URL for environment
+            .addInterceptor(networkLoggingInterceptor)   // 4. Log request+response timing
+            .addInterceptor(MockInterceptor())           // 5. Short-circuit with mock data if enabled
+            .addInterceptor(authInterceptor)             // 6. Attach Bearer token
+            .addInterceptor(responseInterceptor)         // 7. Handle HTTP errors
 
-        return OkHttpClient.Builder()
-        .connectTimeout(NetworkConstants.CONNECT_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
-        .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
-        .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
-        .certificatePinner(certificatePinner)
-        .cookieJar(sessionManager.cookieJar)
-        .addInterceptor(requestIdInterceptor)        // 1. Assign X-Request-ID before anything else
-        .addInterceptor(localeInterceptor)           // 2. Add Accept-Language
-        .addInterceptor(baseUrlOverrideInterceptor)  // 3. Rewrite base URL for environment
-        .addInterceptor(networkLoggingInterceptor)   // 4. Log request+response timing
-        .addInterceptor(MockInterceptor())           // 5. Short-circuit with mock data if enabled
-        .addInterceptor(authInterceptor)             // 6. Attach Bearer token
-        .addInterceptor(responseInterceptor)         // 7. Handle HTTP errors
-        .build()
+        buildCertificatePinner(apiHost)?.let(builder::certificatePinner)
+        return builder.build()
+    }
+
+    private fun buildCertificatePinner(host: String): CertificatePinner? {
+        val pins = BuildConfig.CERTIFICATE_PINS
+            .split(",", ";", "\n", "\t", " ")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .map { pin -> if (pin.startsWith("sha256/")) pin else "sha256/$pin" }
+            .filterNot { it in placeholderCertificatePins }
+
+        if (pins.isEmpty()) {
+            return null
+        }
+
+        return CertificatePinner.Builder().apply {
+            pins.forEach { add(host, it) }
+        }.build()
     }
 
     @Provides
