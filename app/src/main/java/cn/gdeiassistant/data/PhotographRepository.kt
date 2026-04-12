@@ -110,7 +110,6 @@ class PhotographRepository @Inject constructor(
             photographApi.publish(
                 title = title.toRequestBody(),
                 content = content.toRequestBody(),
-                count = images.size.toString().toRequestBody(),
                 type = category.publishType.toString().toRequestBody(),
                 images = parts
             )

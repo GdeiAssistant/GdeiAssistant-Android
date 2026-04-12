@@ -67,7 +67,6 @@ interface PhotographApi {
     suspend fun publish(
         @Part("title") title: RequestBody,
         @Part("content") content: RequestBody,
-        @Part("count") count: RequestBody,
         @Part("type") type: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): JsonResult
