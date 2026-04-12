@@ -20,6 +20,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val DELIVERY_PLACEHOLDER_PICKUP_CODE = "00000000000"
+
 @Singleton
 class DeliveryRepository @Inject constructor(
     private val deliveryApi: DeliveryApi
@@ -72,11 +74,11 @@ class DeliveryRepository @Inject constructor(
         safeJsonResultCall { deliveryApi.deleteOrder(orderId) }
     }
 
-    suspend fun publish(draft: DeliveryDraft, taskName: String, defaultPickupCode: String): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun publish(draft: DeliveryDraft, taskName: String): Result<Unit> = withContext(Dispatchers.IO) {
         safeJsonResultCall {
             deliveryApi.publish(
                 name = taskName,
-                number = draft.pickupNumber.ifBlank { defaultPickupCode },
+                number = draft.pickupNumber.ifBlank { DELIVERY_PLACEHOLDER_PICKUP_CODE },
                 phone = draft.phone,
                 price = String.format("%.2f", draft.price),
                 company = draft.pickupPlace,
