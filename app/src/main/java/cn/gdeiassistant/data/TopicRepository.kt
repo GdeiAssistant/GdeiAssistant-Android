@@ -79,7 +79,6 @@ class TopicRepository @Inject constructor(
             topicApi.publish(
                 topic = draft.topic.trim().toPlainBody(),
                 content = draft.content.trim().toPlainBody(),
-                count = images.size.toString().toPlainBody(),
                 images = images.mapIndexed { index, uri -> uriToPart(uri = uri, index = index + 1) }
             )
         }
@@ -121,7 +120,7 @@ class TopicRepository @Inject constructor(
             ?: throw IllegalStateException(context.getString(R.string.topic_publish_read_failed))
         val fileName = queryDisplayName(uri).ifBlank { "topic-${UUID.randomUUID()}.jpg" }
         return MultipartBody.Part.createFormData(
-            "image$index",
+            "images",
             fileName,
             bytes.toRequestBody(mimeType.toMediaTypeOrNull())
         )
