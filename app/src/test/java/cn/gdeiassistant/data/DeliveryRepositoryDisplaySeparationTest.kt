@@ -1,17 +1,85 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.model.DeliveryDraft
 import cn.gdeiassistant.model.DeliveryOrder
 import cn.gdeiassistant.model.DeliveryOrderState
 import cn.gdeiassistant.model.DeliveryTrade
+import cn.gdeiassistant.model.JsonResult
+import cn.gdeiassistant.network.api.DeliveryApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 /**
  * Verifies that DeliveryRepository returns raw domain data without display strings.
  * Display formatting is now the responsibility of DeliveryDisplayMapper in the UI layer.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class DeliveryRepositoryDisplaySeparationTest {
+
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var deliveryApi: DeliveryApi
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        deliveryApi = mock()
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun publishUsesStablePlaceholderPickupCodeForBlankDraftValue() = runTest(testDispatcher) {
+        whenever(
+            deliveryApi.publish(
+                name = "代收",
+                number = "00000000000",
+                phone = "13800138000",
+                price = "5.50",
+                company = "菜鸟驿站",
+                address = "南苑5栋307",
+                remarks = "轻拿轻放"
+            )
+        ).thenReturn(JsonResult(success = true))
+
+        val repository = DeliveryRepository(deliveryApi)
+        val result = repository.publish(
+            draft = DeliveryDraft(
+                pickupPlace = "菜鸟驿站",
+                pickupNumber = "",
+                phone = "13800138000",
+                price = 5.5,
+                address = "南苑5栋307",
+                remarks = "轻拿轻放"
+            ),
+            taskName = "代收"
+        )
+
+        assertTrue(result.isSuccess)
+        verify(deliveryApi).publish(
+            name = "代收",
+            number = "00000000000",
+            phone = "13800138000",
+            price = "5.50",
+            company = "菜鸟驿站",
+            address = "南苑5栋307",
+            remarks = "轻拿轻放"
+        )
+    }
 
     @Test
     fun deliveryOrderWithNullFieldsReturnsEmptyStringsNotDisplayText() {

@@ -271,8 +271,7 @@ class DeliveryPublishViewModel @Inject constructor(
                             address = trimmedAddress,
                             remarks = trimmedRemarks
                         ),
-                        taskName = context.getString(R.string.delivery_task_name),
-                        defaultPickupCode = context.getString(R.string.delivery_default_pickup_code)
+                        taskName = context.getString(R.string.delivery_task_name)
                     )
                         .onSuccess {
                             _state.update { it.copy(isSubmitting = false) }
