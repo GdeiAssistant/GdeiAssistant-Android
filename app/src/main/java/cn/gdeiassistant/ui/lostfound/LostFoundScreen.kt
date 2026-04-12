@@ -434,6 +434,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                         targetState = state.selectedTab to state.visibleItems,
                         label = "lost_found_profile_tab"
                     ) { contentState ->
+                        val selectedTab = contentState.first
                         val visibleItems = contentState.second
                         if (visibleItems.isEmpty()) {
                             Box(
@@ -452,7 +453,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                                 visibleItems.forEach { item ->
                                     LostFoundProfileCard(
                                         item = item,
-                                        tab = state.selectedTab,
+                                        tab = selectedTab,
                                         onOpen = { navController.navigate(Routes.lostFoundDetail(item.id)) },
                                         onEdit = { navController.navigate(Routes.lostFoundEdit(item.id)) },
                                         onRequestMarkDidFound = { pendingMarkItemId = item.id }

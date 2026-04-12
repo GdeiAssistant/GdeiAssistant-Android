@@ -429,11 +429,12 @@ private fun TodayAgendaCard(
             targetState = Triple(isCurrentWeek, selectedWeek, courses),
             label = "schedule_focus_courses"
         ) { contentState ->
+            val contentIsCurrentWeek = contentState.first
             val currentCourses = contentState.third
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (currentCourses.isEmpty()) {
                     Text(
-                        text = if (isCurrentWeek) emptyCurrentText else emptyOtherText,
+                        text = if (contentIsCurrentWeek) emptyCurrentText else emptyOtherText,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

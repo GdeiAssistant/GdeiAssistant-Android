@@ -445,6 +445,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                         targetState = state.selectedTab to state.visibleItems,
                         label = "marketplace_profile_tab"
                     ) { contentState ->
+                        val selectedTab = contentState.first
                         val visibleItems = contentState.second
                         if (visibleItems.isEmpty()) {
                             Box(
@@ -463,7 +464,7 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
                                 visibleItems.forEach { item ->
                                     MarketplaceProfileCard(
                                         item = item,
-                                        tab = state.selectedTab,
+                                        tab = selectedTab,
                                         onOpen = { navController.navigate(Routes.marketplaceDetail(item.id)) },
                                         onEdit = { navController.navigate(Routes.marketplaceEdit(item.id)) },
                                         onRequestStateChange = { request ->

@@ -14,12 +14,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class UpgradeService : LifecycleService() {
 
     @Inject lateinit var upgradeApi: UpgradeApi
+
+    private val logger = Logger.getLogger(UpgradeService::class.java.name)
 
     override fun onCreate() { super.onCreate() }
 
@@ -62,7 +66,9 @@ class UpgradeService : LifecycleService() {
                         })
                     }
                 }
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Upgrade check failed", e)
+            }
             stopSelf()
         }
     }
