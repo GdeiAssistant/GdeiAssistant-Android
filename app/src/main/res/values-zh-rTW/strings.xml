@@ -1159,7 +1159,7 @@
     <string name="photograph_publish_failed">發佈失敗</string>
     <string name="photograph_publish_title_required">請輸入標題</string>
     <string name="photograph_publish_title_limit">標題不能超過 25 個字</string>
-    <string name="photograph_publish_content_limit">內容不能超過 150 個字</string>
+    <string name="photograph_publish_content_limit">內容不能超過 50 個字</string>
     <string name="photograph_publish_image_required">請至少選擇一張圖片</string>
     <string name="photograph_publish_image_limit">最多上傳 4 張圖片</string>
     <string name="photograph_publish_read_failed">讀取圖片失敗</string>

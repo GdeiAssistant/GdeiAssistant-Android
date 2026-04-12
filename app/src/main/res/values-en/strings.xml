@@ -1160,7 +1160,7 @@
     <string name="photograph_publish_failed">Failed to publish</string>
     <string name="photograph_publish_title_required">Please enter a title</string>
     <string name="photograph_publish_title_limit">Title cannot exceed 25 characters</string>
-    <string name="photograph_publish_content_limit">Content cannot exceed 150 characters</string>
+    <string name="photograph_publish_content_limit">Content cannot exceed 50 characters</string>
     <string name="photograph_publish_image_required">Please select at least one photo</string>
     <string name="photograph_publish_image_limit">Maximum 4 photos allowed</string>
     <string name="photograph_publish_read_failed">Failed to read photo</string>

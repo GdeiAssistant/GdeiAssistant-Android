@@ -1160,7 +1160,7 @@
     <string name="photograph_publish_failed">投稿に失敗しました</string>
     <string name="photograph_publish_title_required">タイトルを入力してください</string>
     <string name="photograph_publish_title_limit">タイトルは25文字以内で入力してください</string>
-    <string name="photograph_publish_content_limit">内容は150文字以内で入力してください</string>
+    <string name="photograph_publish_content_limit">内容は50文字以内で入力してください</string>
     <string name="photograph_publish_image_required">画像を1枚以上選択してください</string>
     <string name="photograph_publish_image_limit">画像は最大4枚までアップロードできます</string>
     <string name="photograph_publish_read_failed">画像の読み込みに失敗しました</string>
