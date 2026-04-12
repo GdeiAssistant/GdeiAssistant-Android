@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val PHOTOGRAPH_CONTENT_MAX_LENGTH = 50
+
 data class PhotographUiState(
     val selectedCategory: PhotographCategory = PhotographCategory.CAMPUS,
     val stats: PhotographStats = PhotographStats(0, 0, 0),
@@ -255,7 +257,7 @@ class PhotographPublishViewModel @Inject constructor(
         when {
             trimmedTitle.isBlank() -> emitMessage(context.getString(R.string.photograph_publish_title_required))
             trimmedTitle.length > 25 -> emitMessage(context.getString(R.string.photograph_publish_title_limit))
-            trimmedContent.length > 150 -> emitMessage(context.getString(R.string.photograph_publish_content_limit))
+            trimmedContent.length > PHOTOGRAPH_CONTENT_MAX_LENGTH -> emitMessage(context.getString(R.string.photograph_publish_content_limit))
             _state.value.images.isEmpty() -> emitMessage(context.getString(R.string.photograph_publish_image_required))
             _state.value.images.size > 4 -> emitMessage(context.getString(R.string.photograph_publish_image_limit))
             else -> {

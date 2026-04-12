@@ -1160,7 +1160,7 @@
     <string name="photograph_publish_failed">등록 실패</string>
     <string name="photograph_publish_title_required">제목을 입력해 주세요</string>
     <string name="photograph_publish_title_limit">제목은 25자를 초과할 수 없습니다</string>
-    <string name="photograph_publish_content_limit">내용은 150자를 초과할 수 없습니다</string>
+    <string name="photograph_publish_content_limit">내용은 50자를 초과할 수 없습니다</string>
     <string name="photograph_publish_image_required">이미지를 최소 1장 선택해 주세요</string>
     <string name="photograph_publish_image_limit">최대 4장까지 업로드할 수 있습니다</string>
     <string name="photograph_publish_read_failed">이미지 읽기 실패</string>

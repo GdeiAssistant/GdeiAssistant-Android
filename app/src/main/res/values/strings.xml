@@ -1159,7 +1159,7 @@
     <string name="photograph_publish_failed">发布失败</string>
     <string name="photograph_publish_title_required">请输入标题</string>
     <string name="photograph_publish_title_limit">标题不能超过 25 个字</string>
-    <string name="photograph_publish_content_limit">内容不能超过 150 个字</string>
+    <string name="photograph_publish_content_limit">内容不能超过 50 个字</string>
     <string name="photograph_publish_image_required">请至少选择一张图片</string>
     <string name="photograph_publish_image_limit">最多上传 4 张图片</string>
     <string name="photograph_publish_read_failed">读取图片失败</string>
