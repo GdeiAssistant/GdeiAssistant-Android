@@ -46,7 +46,6 @@ interface TopicApi {
     suspend fun publish(
         @Part("topic") topic: RequestBody,
         @Part("content") content: RequestBody,
-        @Part("count") count: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): JsonResult
 
