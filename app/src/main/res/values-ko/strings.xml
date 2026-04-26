@@ -35,10 +35,10 @@
     <string name="login_secure_hint">토큰은 로컬 보안 저장소에 저장되며, 이후 인증 및 자동 갱신에 사용됩니다.</string>
     <string name="login_channel_badge">통합 인증</string>
     <string name="login_feature_ready">연동 완료</string>
-    <string name="login_mock_title">Mock 시뮬레이션</string>
-    <string name="login_mock_enabled_subtitle">현재 로그인은 로컬 mock 데이터를 사용합니다</string>
-    <string name="login_mock_disabled_subtitle">비활성화 시 실제 API를 사용합니다</string>
-    <string name="login_mock_account_hint">Mock 계정: gdeiassistant　비밀번호: gdeiassistant</string>
+    <string name="login_mock_title">로컬 데모 데이터</string>
+    <string name="login_mock_enabled_subtitle">현재 로그인은 로컬 데모 데이터를 사용합니다</string>
+    <string name="login_mock_disabled_subtitle">비활성화하면 현재 서비스 환경을 사용합니다</string>
+    <string name="login_mock_account_hint">로컬 데모 로그인은 화면 검증과 데모 표시 전용입니다</string>
     <string name="privacy_policy">개인정보 처리방침</string>
 
     <!-- 2.0 공통 -->
@@ -282,11 +282,11 @@
     <string name="about_support_email">support@gdeiassistant.cn</string>
     <string name="about_architecture_title">현재 기술 스택</string>
     <string name="about_architecture_summary">Compose UI、Material 3、MVVM/UDF、StateFlow、Retrofit、OkHttp、Kotlin Coroutines。</string>
-    <string name="about_developer_title">개발자 설정</string>
-    <string name="about_mock_mode_title">로컬 시뮬레이션 데이터 활성화 (Mock Mode)</string>
-    <string name="about_mock_mode_desc">활성화하면 앱이 로컬 시뮬레이션 데이터를 우선 사용하여 디버깅 및 데모에 편리합니다.</string>
-    <string name="about_mock_mode_restart_hint">전환 후 앱을 재시작하여 네트워크 레이어와 페이지 상태를 완전히 새로고침하는 것을 권장합니다.</string>
-    <string name="about_mock_mode_toast">전환 완료, 앱 재시작을 권장합니다</string>
+    <string name="about_developer_title">데이터 소스 설정</string>
+    <string name="about_mock_mode_title">로컬 데모 데이터 활성화</string>
+    <string name="about_mock_mode_desc">활성화하면 앱이 화면 검증과 데모 표시를 위해 로컬 데모 데이터를 우선 사용합니다.</string>
+    <string name="about_mock_mode_restart_hint">전환 후 앱을 재시작하여 요청과 화면 상태를 완전히 새로고침하세요.</string>
+    <string name="about_mock_mode_toast">데이터 소스가 변경되었습니다. 앱을 재시작한 뒤 계속 이용하세요</string>
     <string name="about_checking">업데이트 확인 중…</string>
     <string name="about_update_none">업그레이드 인터페이스에서 사용 가능한 버전 정보를 반환하지 않았습니다</string>
     <string name="about_open_failed">외부 링크를 열 수 없습니다</string>
@@ -295,8 +295,8 @@
     <string name="about_metric_version">현재 버전</string>
     <string name="about_metric_build">내부 빌드</string>
     <string name="about_metric_source">데이터 출처</string>
-    <string name="about_data_source_live">온라인 API</string>
-    <string name="about_data_source_mock">로컬 시뮬레이션</string>
+    <string name="about_data_source_live">온라인 서비스</string>
+    <string name="about_data_source_mock">로컬 데모</string>
 
     <!-- 충전 -->
     <string name="charge_title">캠퍼스 카드 충전</string>
@@ -1382,13 +1382,13 @@
     <string name="profile_feedback_success">피드백이 제출되었습니다</string>
     <string name="profile_feedback_failed">피드백 제출 실패</string>
     <string name="profile_settings_general_title">일반 설정</string>
-    <string name="profile_settings_entry_subtitle">버전 정보 확인 및 개발 스위치 관리</string>
-    <string name="profile_settings_mock_title">로컬 시뮬레이션 데이터</string>
-    <string name="profile_settings_mock_subtitle">활성화하면 Mock 인터셉터가 로컬 샘플 데이터를 우선 반환합니다</string>
-    <string name="profile_settings_environment_title">API 환경</string>
+    <string name="profile_settings_entry_subtitle">버전 정보를 확인하고 데이터 소스 설정을 관리합니다</string>
+    <string name="profile_settings_mock_title">로컬 데모 데이터</string>
+    <string name="profile_settings_mock_subtitle">활성화하면 화면 검증과 데모 표시를 위해 로컬 데모 데이터를 우선 사용합니다</string>
+    <string name="profile_settings_environment_title">서비스 환경</string>
     <string name="profile_language_title">언어</string>
-    <string name="profile_settings_environment_subtitle">실제 API는 dev / staging / prod 세 단계 전환을 지원하여 로컬 연동 및 회색 검증에 편리합니다</string>
-    <string name="profile_settings_environment_release_subtitle">현재 비디버그 빌드이며, 현재 환경 정보만 표시됩니다</string>
+    <string name="profile_settings_environment_subtitle">현재 서비스 환경과 서비스 주소 정보를 확인할 수 있습니다</string>
+    <string name="profile_settings_environment_release_subtitle">현재 빌드에서는 연결된 서비스 환경 정보만 표시됩니다</string>
     <string name="profile_settings_environment_endpoint_title">현재 서비스 주소</string>
     <string name="profile_settings_version_title">현재 버전</string>
     <string name="profile_settings_toggle_failed">설정 전환 실패</string>

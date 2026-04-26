@@ -35,10 +35,10 @@
     <string name="login_secure_hint">Token will be stored locally in secure storage for authentication and auto-refresh.</string>
     <string name="login_channel_badge">Unified Auth</string>
     <string name="login_feature_ready">Connected</string>
-    <string name="login_mock_title">Mock Mode</string>
-    <string name="login_mock_enabled_subtitle">Login will use local mock data</string>
-    <string name="login_mock_disabled_subtitle">Turning off will use production API</string>
-    <string name="login_mock_account_hint">Mock account: gdeiassistant\u0020Password: gdeiassistant</string>
+    <string name="login_mock_title">Local Demo Data</string>
+    <string name="login_mock_enabled_subtitle">This login will use local demo data</string>
+    <string name="login_mock_disabled_subtitle">Turning off will use the current service environment</string>
+    <string name="login_mock_account_hint">Local demo login is only for UI previews and demos</string>
     <string name="privacy_policy">Privacy Policy</string>
 
     <!-- 2.0 General -->
@@ -282,11 +282,11 @@
     <string name="about_support_email">support@gdeiassistant.cn</string>
     <string name="about_architecture_title">Tech Stack</string>
     <string name="about_architecture_summary">Compose UI, Material 3, MVVM/UDF, StateFlow, Retrofit, OkHttp, Kotlin Coroutines.</string>
-    <string name="about_developer_title">Developer Settings</string>
-    <string name="about_mock_mode_title">Enable local mock data (Mock Mode)</string>
-    <string name="about_mock_mode_desc">When enabled, the app uses local mock data for debugging and demos.</string>
-    <string name="about_mock_mode_restart_hint">Restart the app after switching to ensure all network and UI states refresh.</string>
-    <string name="about_mock_mode_toast">Switched — restart the app to take effect</string>
+    <string name="about_developer_title">Data Source Settings</string>
+    <string name="about_mock_mode_title">Enable Local Demo Data</string>
+    <string name="about_mock_mode_desc">When enabled, the app prefers local demo data for UI previews and demos.</string>
+    <string name="about_mock_mode_restart_hint">Restart the app after switching so requests and screen state refresh completely.</string>
+    <string name="about_mock_mode_toast">Data source updated. Restart the app before continuing.</string>
     <string name="about_checking">Checking for updates…</string>
     <string name="about_update_none">No available version info from the upgrade API</string>
     <string name="about_open_failed">Cannot open external link</string>
@@ -295,8 +295,8 @@
     <string name="about_metric_version">Version</string>
     <string name="about_metric_build">Build</string>
     <string name="about_metric_source">Data source</string>
-    <string name="about_data_source_live">Live API</string>
-    <string name="about_data_source_mock">Local Mock</string>
+    <string name="about_data_source_live">Online Service</string>
+    <string name="about_data_source_mock">Local Demo</string>
 
     <!-- Top Up -->
     <string name="charge_title">Top Up Campus Card</string>
@@ -1382,12 +1382,12 @@
     <string name="profile_feedback_success">Feedback submitted</string>
     <string name="profile_feedback_failed">Failed to submit feedback</string>
     <string name="profile_settings_general_title">General Settings</string>
-    <string name="profile_settings_entry_subtitle">View version info and manage developer switches</string>
-    <string name="profile_settings_mock_title">Local Mock Data</string>
-    <string name="profile_settings_mock_subtitle">When enabled, uses mock interceptor to return local sample data</string>
-    <string name="profile_settings_environment_title">API Environment</string>
-    <string name="profile_settings_environment_subtitle">Switch between dev / staging / prod for local debugging and canary testing</string>
-    <string name="profile_settings_environment_release_subtitle">Non-debug build. Only showing current environment info.</string>
+    <string name="profile_settings_entry_subtitle">View version info and manage data source settings</string>
+    <string name="profile_settings_mock_title">Local Demo Data</string>
+    <string name="profile_settings_mock_subtitle">When enabled, the app prefers local demo data for UI previews and demos</string>
+    <string name="profile_settings_environment_title">Service Environment</string>
+    <string name="profile_settings_environment_subtitle">View the current service environment and endpoint information</string>
+    <string name="profile_settings_environment_release_subtitle">This build only shows the connected service environment</string>
     <string name="profile_settings_environment_endpoint_title">Current Endpoint</string>
     <string name="profile_settings_version_title">Version</string>
     <string name="profile_settings_toggle_failed">Failed to toggle setting</string>
