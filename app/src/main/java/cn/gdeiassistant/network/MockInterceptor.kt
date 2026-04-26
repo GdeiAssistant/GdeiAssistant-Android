@@ -3,6 +3,7 @@ package cn.gdeiassistant.network
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.network.mock.MockAcademicProvider
 import cn.gdeiassistant.network.mock.MockAuthProvider
+import cn.gdeiassistant.network.mock.MockCampusCredentialProvider
 import cn.gdeiassistant.network.mock.MockCampusProvider
 import cn.gdeiassistant.network.mock.MockCommunityProvider
 import cn.gdeiassistant.network.mock.MockInfoProvider
@@ -46,6 +47,11 @@ class MockInterceptor : Interceptor {
     private fun routeProfile(request: Request): String? {
         val path = request.url.encodedPath
         return when {
+            path.contains("api/campus-credential/status") -> MockCampusCredentialProvider.mockStatus(request)
+            path.contains("api/campus-credential/consent") -> MockCampusCredentialProvider.mockConsent(request)
+            path.contains("api/campus-credential/revoke") -> MockCampusCredentialProvider.mockRevoke(request)
+            path.contains("api/campus-credential/quick-auth") -> MockCampusCredentialProvider.mockQuickAuth(request)
+            path.endsWith("/api/campus-credential") && request.method == "DELETE" -> MockCampusCredentialProvider.mockDelete(request)
             path.contains("api/user/profile") -> MockProfileProvider.mockUserProfile(request)
             path.contains("api/profile/locations") -> MockProfileProvider.mockLocationList(request)
             path.contains("api/profile/options") -> MockProfileProvider.mockProfileOptions(request)

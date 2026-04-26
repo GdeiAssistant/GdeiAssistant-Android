@@ -36,6 +36,7 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -752,6 +754,8 @@ fun ProfileSettingsScreen(navController: NavHostController) {
     val context = LocalContext.current
     val viewModel: ProfileSettingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var showRevokeConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { event ->
@@ -761,9 +765,45 @@ fun ProfileSettingsScreen(navController: NavHostController) {
         }
     }
 
+    if (showRevokeConfirmation) {
+        CampusCredentialConfirmationDialog(
+            title = stringResource(R.string.profile_settings_campus_credentials_revoke_title),
+            message = stringResource(R.string.profile_settings_campus_credentials_revoke_confirmation),
+            confirmText = stringResource(R.string.profile_settings_campus_credentials_revoke_action),
+            enabled = !state.isCampusCredentialActionRunning,
+            onDismiss = { showRevokeConfirmation = false },
+            onConfirm = {
+                showRevokeConfirmation = false
+                viewModel.revokeCampusCredentialConsent()
+            }
+        )
+    }
+
+    if (showDeleteConfirmation) {
+        CampusCredentialConfirmationDialog(
+            title = stringResource(R.string.profile_settings_campus_credentials_delete_title),
+            message = stringResource(R.string.profile_settings_campus_credentials_delete_confirmation),
+            confirmText = stringResource(R.string.profile_settings_campus_credentials_delete_action),
+            enabled = !state.isCampusCredentialActionRunning,
+            onDismiss = { showDeleteConfirmation = false },
+            onConfirm = {
+                showDeleteConfirmation = false
+                viewModel.deleteCampusCredential()
+            }
+        )
+    }
+
     LazyScreen(
         title = stringResource(R.string.profile_settings_title),
-        onBack = navController::popBackStack
+        onBack = navController::popBackStack,
+        actions = {
+            IconButton(
+                onClick = viewModel::refreshCampusCredentialStatus,
+                enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning
+            ) {
+                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+            }
+        }
     ) {
         item {
             SectionCard(modifier = Modifier.fillMaxWidth()) {
@@ -792,6 +832,14 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                     value = state.appVersion
                 )
             }
+        }
+        item {
+            CampusCredentialManagementCard(
+                state = state,
+                onToggleQuickAuth = viewModel::setQuickAuthEnabled,
+                onRevokeClick = { showRevokeConfirmation = true },
+                onDeleteClick = { showDeleteConfirmation = true }
+            )
         }
         item {
             SectionCard(
@@ -837,6 +885,173 @@ fun ProfileSettingsScreen(navController: NavHostController) {
             }
         }
     }
+}
+
+@Composable
+private fun CampusCredentialManagementCard(
+    state: ProfileSettingsUiState,
+    onToggleQuickAuth: (Boolean) -> Unit,
+    onRevokeClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    val status = state.campusCredentialStatus
+    val quickAuthActionText = if (status.quickAuthEnabled) {
+        stringResource(R.string.profile_settings_campus_credentials_quick_auth_disable_action)
+    } else {
+        stringResource(R.string.profile_settings_campus_credentials_quick_auth_enable_action)
+    }
+    val quickAuthSubtitle = if (status.quickAuthEnabled) {
+        stringResource(R.string.profile_settings_campus_credentials_quick_auth_enabled_subtitle)
+    } else {
+        stringResource(R.string.profile_settings_campus_credentials_quick_auth_disabled_subtitle)
+    }
+
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.profile_settings_campus_credentials_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.profile_settings_campus_credentials_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (state.isCampusCredentialLoading) {
+            Text(
+                text = stringResource(R.string.profile_settings_campus_credentials_loading),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        if (!state.campusCredentialError.isNullOrBlank()) {
+            StatusBanner(
+                title = stringResource(R.string.load_failed),
+                body = state.campusCredentialError.orEmpty(),
+                icon = Icons.Rounded.Security,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        SettingInfoRow(
+            title = stringResource(R.string.profile_settings_campus_credentials_consent_status_label),
+            value = stringResource(
+                if (status.hasActiveConsent) {
+                    R.string.profile_settings_campus_credentials_status_authorized
+                } else {
+                    R.string.profile_settings_campus_credentials_status_unauthorized
+                }
+            )
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingInfoRow(
+            title = stringResource(R.string.profile_settings_campus_credentials_saved_label),
+            value = stringResource(
+                if (status.hasSavedCredential) {
+                    R.string.profile_settings_campus_credentials_boolean_yes
+                } else {
+                    R.string.profile_settings_campus_credentials_boolean_no
+                }
+            )
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingInfoRow(
+            title = stringResource(R.string.profile_settings_campus_credentials_quick_auth_label),
+            value = stringResource(
+                if (status.quickAuthEnabled) {
+                    R.string.profile_settings_campus_credentials_quick_auth_on
+                } else {
+                    R.string.profile_settings_campus_credentials_quick_auth_off
+                }
+            )
+        )
+        status.maskedCampusAccount?.takeIf(String::isNotBlank)?.let { maskedAccount ->
+            Spacer(modifier = Modifier.height(10.dp))
+            SettingInfoRow(
+                title = stringResource(R.string.profile_settings_campus_credentials_account_label),
+                value = maskedAccount
+            )
+        }
+        status.consentedAt?.takeIf(String::isNotBlank)?.let { consentedAt ->
+            Spacer(modifier = Modifier.height(10.dp))
+            SettingInfoRow(
+                title = stringResource(R.string.profile_settings_campus_credentials_consented_at_label),
+                value = consentedAt
+            )
+        }
+        status.revokedAt?.takeIf(String::isNotBlank)?.let { revokedAt ->
+            Spacer(modifier = Modifier.height(10.dp))
+            SettingInfoRow(
+                title = stringResource(R.string.profile_settings_campus_credentials_revoked_at_label),
+                value = revokedAt
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        TintButton(
+            text = quickAuthActionText,
+            onClick = { onToggleQuickAuth(!status.quickAuthEnabled) },
+            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = quickAuthSubtitle,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        GhostButton(
+            text = stringResource(R.string.profile_settings_campus_credentials_revoke_action),
+            icon = Icons.Rounded.WarningAmber,
+            onClick = onRevokeClick,
+            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            modifier = Modifier.fillMaxWidth(),
+            borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.28f),
+            contentColor = MaterialTheme.colorScheme.tertiary
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        GhostButton(
+            text = stringResource(R.string.profile_settings_campus_credentials_delete_action),
+            icon = Icons.Rounded.DeleteForever,
+            onClick = onDeleteClick,
+            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            modifier = Modifier.fillMaxWidth(),
+            borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.28f),
+            contentColor = MaterialTheme.colorScheme.error
+        )
+    }
+}
+
+@Composable
+private fun CampusCredentialConfirmationDialog(
+    title: String,
+    message: String,
+    confirmText: String,
+    enabled: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = title) },
+        text = { Text(text = message) },
+        confirmButton = {
+            TextButton(onClick = onConfirm, enabled = enabled) {
+                Text(text = confirmText)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = enabled) {
+                Text(text = stringResource(R.string.profile_info_cancel))
+            }
+        }
+    )
 }
 
 @Composable

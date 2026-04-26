@@ -2,6 +2,8 @@ package cn.gdeiassistant.data
 
 import android.content.Context
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.CampusCredentialConsentMetadata
+import cn.gdeiassistant.model.LoginRequest
 import cn.gdeiassistant.model.UserLoginResult
 import cn.gdeiassistant.network.api.AuthApi
 import cn.gdeiassistant.network.safeApiCall
@@ -21,9 +23,22 @@ class AuthRepository @Inject constructor(
     private val sessionManager: SessionManager
 ) {
 
-    suspend fun login(username: String, password: String): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun login(
+        username: String,
+        password: String,
+        consentMetadata: CampusCredentialConsentMetadata? = null
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         safeApiCall {
-            authApi.login(mapOf("username" to username, "password" to password))
+            authApi.login(
+                LoginRequest(
+                    username = username,
+                    password = password,
+                    campusCredentialConsent = consentMetadata?.let { true },
+                    consentScene = consentMetadata?.scene,
+                    policyDate = consentMetadata?.policyDate,
+                    effectiveDate = consentMetadata?.effectiveDate
+                )
+            )
         }.mapCatching { response ->
             val data: UserLoginResult = response
                 ?: throw IllegalStateException(context.getString(R.string.service_unavailable))

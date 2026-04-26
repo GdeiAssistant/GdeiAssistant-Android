@@ -1,6 +1,7 @@
 package cn.gdeiassistant.network.api
 
 import cn.gdeiassistant.model.DataJsonResult
+import cn.gdeiassistant.model.LoginRequest
 import cn.gdeiassistant.model.UserLoginResult
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -12,6 +13,6 @@ interface AuthApi {
 
     @POST("api/auth/login")
     suspend fun login(
-        @Body body: Map<String, String>
+        @Body body: LoginRequest
     ): DataJsonResult<UserLoginResult>
 }

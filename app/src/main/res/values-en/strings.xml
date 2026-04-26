@@ -39,6 +39,9 @@
     <string name="login_mock_enabled_subtitle">This login will use local demo data</string>
     <string name="login_mock_disabled_subtitle">Turning off will use the current service environment</string>
     <string name="login_mock_account_hint">Local demo login is only for UI previews and demos</string>
+    <string name="login_campus_credential_consent_label">I have read and separately agree that the platform may process my campus account credentials within the necessary scope for campus authentication, quick authentication, campus data queries, and required session synchronization with school systems.</string>
+    <string name="login_campus_credential_consent_note">You can manage consent, delete saved credentials, or turn quick authentication on or off later in Settings.</string>
+    <string name="login_campus_credential_consent_required">Please agree to campus credential consent before logging in</string>
     <string name="privacy_policy">Privacy Policy</string>
 
     <!-- 2.0 General -->
@@ -1391,6 +1394,36 @@
     <string name="profile_settings_environment_endpoint_title">Current Endpoint</string>
     <string name="profile_settings_version_title">Version</string>
     <string name="profile_settings_toggle_failed">Failed to toggle setting</string>
+    <string name="profile_settings_campus_credentials_title">Campus Credential Management</string>
+    <string name="profile_settings_campus_credentials_subtitle">Review consent status, saved credentials, and quick authentication, and revoke consent or delete saved credentials at any time.</string>
+    <string name="profile_settings_campus_credentials_loading">Syncing campus credential status…</string>
+    <string name="profile_settings_campus_credentials_consent_status_label">Consent status</string>
+    <string name="profile_settings_campus_credentials_saved_label">Saved credential</string>
+    <string name="profile_settings_campus_credentials_quick_auth_label">Quick authentication</string>
+    <string name="profile_settings_campus_credentials_account_label">Campus account</string>
+    <string name="profile_settings_campus_credentials_consented_at_label">Consented at</string>
+    <string name="profile_settings_campus_credentials_revoked_at_label">Revoked at</string>
+    <string name="profile_settings_campus_credentials_status_authorized">Authorized</string>
+    <string name="profile_settings_campus_credentials_status_unauthorized">Not authorized</string>
+    <string name="profile_settings_campus_credentials_boolean_yes">Yes</string>
+    <string name="profile_settings_campus_credentials_boolean_no">No</string>
+    <string name="profile_settings_campus_credentials_quick_auth_on">Enabled</string>
+    <string name="profile_settings_campus_credentials_quick_auth_off">Disabled</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enable_action">Enable Quick Authentication</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disable_action">Disable Quick Authentication</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">Turning it off stops quick authentication or session synchronization based on saved credentials.</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">Active consent and a saved credential are required before enabling it. The backend will return a reason if the request is rejected.</string>
+    <string name="profile_settings_campus_credentials_revoke_title">Revoke Campus Credential Consent</string>
+    <string name="profile_settings_campus_credentials_revoke_action">Revoke Consent</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">Revoking consent stops future quick authentication or session synchronization based on saved campus credentials. Depending on backend safety settings, saved credentials may also be deleted.</string>
+    <string name="profile_settings_campus_credentials_delete_title">Delete Saved Campus Credential</string>
+    <string name="profile_settings_campus_credentials_delete_action">Delete Saved Credential</string>
+    <string name="profile_settings_campus_credentials_delete_confirmation">After deletion, schedule, grades, campus card, library, and similar queries may require logging in or authorizing again.</string>
+    <string name="profile_settings_campus_credentials_revoke_success">Consent revoked. The platform will stop quick authentication or session synchronization based on saved credentials.</string>
+    <string name="profile_settings_campus_credentials_delete_success">Saved campus credentials deleted. Schedule, grades, campus card, library, and similar queries may require logging in or authorizing again.</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_success">Quick authentication enabled</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_success">Quick authentication disabled</string>
+    <string name="profile_settings_campus_credentials_action_failed">Campus credential action failed. Please try again later.</string>
     <string name="profile_delete_title">Delete Account</string>
     <string name="profile_delete_entry_subtitle">Submit account deletion request and clear local session</string>
     <string name="profile_delete_warning_title">This action cannot be undone</string>
