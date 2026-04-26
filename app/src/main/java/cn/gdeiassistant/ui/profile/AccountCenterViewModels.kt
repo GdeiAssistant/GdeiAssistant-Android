@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.CampusCredentialRepository
 import cn.gdeiassistant.data.ProfileRepository
+import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.mapper.PhoneAttributionCatalog
 import cn.gdeiassistant.data.mapper.ProfileDisplayMapper
 import cn.gdeiassistant.data.SettingsRepository
