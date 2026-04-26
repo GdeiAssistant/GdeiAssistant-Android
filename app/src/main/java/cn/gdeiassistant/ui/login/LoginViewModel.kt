@@ -40,10 +40,14 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.isMockModeEnabled.collectLatest { enabled ->
                 _uiState.update { current ->
-                    current.copy(
-                        isMockModeEnabled = enabled,
-                        errorMessage = null
-                    )
+                    if (current.isMockModeEnabled == enabled) {
+                        current
+                    } else {
+                        current.copy(
+                            isMockModeEnabled = enabled,
+                            errorMessage = null
+                        )
+                    }
                 }
             }
         }
