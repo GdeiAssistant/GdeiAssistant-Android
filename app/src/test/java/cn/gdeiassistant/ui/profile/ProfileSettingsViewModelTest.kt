@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -55,19 +56,21 @@ class ProfileSettingsViewModelTest {
 
         whenever(settingsRepository.isMockModeEnabled).thenReturn(mockModeFlow)
         whenever(settingsRepository.networkEnvironment).thenReturn(networkEnvironmentFlow)
-        whenever(campusCredentialRepository.getCampusCredentialStatus()).thenReturn(Result.success(defaultStatus))
-        whenever(campusCredentialRepository.revokeCampusCredentialConsent()).thenReturn(
-            Result.success(defaultStatus.copy(hasActiveConsent = false, hasSavedCredential = false, quickAuthEnabled = false))
-        )
-        whenever(campusCredentialRepository.deleteCampusCredential()).thenReturn(
-            Result.success(defaultStatus.copy(hasActiveConsent = false, hasSavedCredential = false, quickAuthEnabled = false))
-        )
-        whenever(campusCredentialRepository.setQuickAuthEnabled(true)).thenReturn(
-            Result.failure(IllegalStateException("Missing active consent"))
-        )
-        whenever(campusCredentialRepository.setQuickAuthEnabled(false)).thenReturn(
-            Result.success(defaultStatus.copy(quickAuthEnabled = false))
-        )
+        runBlocking {
+            whenever(campusCredentialRepository.getCampusCredentialStatus()).thenReturn(Result.success(defaultStatus))
+            whenever(campusCredentialRepository.revokeCampusCredentialConsent()).thenReturn(
+                Result.success(defaultStatus.copy(hasActiveConsent = false, hasSavedCredential = false, quickAuthEnabled = false))
+            )
+            whenever(campusCredentialRepository.deleteCampusCredential()).thenReturn(
+                Result.success(defaultStatus.copy(hasActiveConsent = false, hasSavedCredential = false, quickAuthEnabled = false))
+            )
+            whenever(campusCredentialRepository.setQuickAuthEnabled(true)).thenReturn(
+                Result.failure(IllegalStateException("Missing active consent"))
+            )
+            whenever(campusCredentialRepository.setQuickAuthEnabled(false)).thenReturn(
+                Result.success(defaultStatus.copy(quickAuthEnabled = false))
+            )
+        }
         whenever(context.getString(R.string.profile_settings_toggle_failed)).thenReturn("切换失败")
         whenever(context.getString(R.string.profile_settings_campus_credentials_revoke_success)).thenReturn("授权已撤回")
         whenever(context.getString(R.string.profile_settings_campus_credentials_delete_success)).thenReturn("凭证已删除")
