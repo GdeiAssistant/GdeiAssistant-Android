@@ -819,14 +819,16 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                     title = stringResource(R.string.profile_settings_mock_title),
                     subtitle = stringResource(R.string.profile_settings_mock_subtitle),
                     checked = state.isMockModeEnabled,
-                    enabled = !state.isBackendTargetChanging,
+                    enabled = !state.isBackendTargetChanging && !state.isCampusCredentialActionRunning,
                     onCheckedChange = viewModel::setMockModeEnabled
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
                 SettingEnvironmentRow(
                     selectedEnvironment = state.networkEnvironment,
                     baseUrl = state.environmentBaseUrl,
-                    enabled = state.canChangeNetworkEnvironment && !state.isBackendTargetChanging,
+                    enabled = state.canChangeNetworkEnvironment &&
+                        !state.isBackendTargetChanging &&
+                        !state.isCampusCredentialActionRunning,
                     onEnvironmentSelected = viewModel::setNetworkEnvironment
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))

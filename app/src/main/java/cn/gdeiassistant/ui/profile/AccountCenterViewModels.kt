@@ -21,6 +21,7 @@ import cn.gdeiassistant.model.UserDataExportState
 import cn.gdeiassistant.network.NetworkEnvironment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -641,6 +642,8 @@ class ProfileSettingsViewModel @Inject constructor(
 
     private val _events = MutableSharedFlow<ProfileSettingsEvent>()
     val events: SharedFlow<ProfileSettingsEvent> = _events.asSharedFlow()
+    private var campusCredentialRefreshJob: Job? = null
+    private var campusCredentialRefreshSequence = 0
 
     init {
         viewModelScope.launch {
@@ -680,7 +683,7 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
-        if (_state.value.isBackendTargetChanging) return
+        if (_state.value.isBackendTargetChanging || _state.value.isCampusCredentialActionRunning) return
         _state.update {
             it.copy(
                 isMockModeEnabled = enabled,
@@ -710,7 +713,7 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setNetworkEnvironment(environment: NetworkEnvironment) {
-        if (_state.value.isBackendTargetChanging) return
+        if (_state.value.isBackendTargetChanging || _state.value.isCampusCredentialActionRunning) return
         _state.update {
             it.copy(
                 networkEnvironment = environment,
@@ -743,28 +746,33 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun refreshCampusCredentialStatus() {
-        viewModelScope.launch {
+        val refreshSequence = ++campusCredentialRefreshSequence
+        campusCredentialRefreshJob?.cancel()
+        campusCredentialRefreshJob = viewModelScope.launch {
             _state.update {
                 it.copy(
                     isCampusCredentialLoading = true,
-                    isBackendTargetChanging = false,
                     campusCredentialError = null
                 )
             }
             campusCredentialRepository.getCampusCredentialStatus()
                 .onSuccess { status ->
+                    if (refreshSequence != campusCredentialRefreshSequence) return@launch
                     _state.update {
                         it.copy(
                             campusCredentialStatus = status,
                             isCampusCredentialLoading = false,
+                            isBackendTargetChanging = false,
                             campusCredentialError = null
                         )
                     }
                 }
                 .onFailure { error ->
+                    if (refreshSequence != campusCredentialRefreshSequence) return@launch
                     _state.update {
                         it.copy(
                             isCampusCredentialLoading = false,
+                            isBackendTargetChanging = false,
                             campusCredentialError = error.message
                         )
                     }
@@ -804,13 +812,13 @@ class ProfileSettingsViewModel @Inject constructor(
         successMessage: String
     ) {
         if (_state.value.isCampusCredentialActionRunning || _state.value.isBackendTargetChanging) return
+        _state.update {
+            it.copy(
+                isCampusCredentialActionRunning = true,
+                campusCredentialError = null
+            )
+        }
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isCampusCredentialActionRunning = true,
-                    campusCredentialError = null
-                )
-            }
             action()
                 .onSuccess { status ->
                     _state.update {
