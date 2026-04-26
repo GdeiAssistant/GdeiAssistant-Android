@@ -39,6 +39,9 @@
     <string name="login_mock_enabled_subtitle">현재 로그인은 로컬 데모 데이터를 사용합니다</string>
     <string name="login_mock_disabled_subtitle">비활성화하면 현재 서비스 환경을 사용합니다</string>
     <string name="login_mock_account_hint">로컬 데모 로그인은 화면 검증과 데모 표시 전용입니다</string>
+    <string name="login_campus_credential_consent_label">저는 캠퍼스 인증, 빠른 인증, 교내 데이터 조회 및 학교 시스템과의 필요한 세션 동기화를 위해 플랫폼이 필요한 범위 내에서 제 캠퍼스 계정 자격 정보를 처리하는 데 대해 읽고 별도로 동의합니다.</string>
+    <string name="login_campus_credential_consent_note">나중에 설정에서 동의 상태 확인, 동의 철회, 저장된 자격 정보 삭제, 빠른 인증 켜기/끄기를 할 수 있습니다.</string>
+    <string name="login_campus_credential_consent_required">로그인하기 전에 캠퍼스 자격 정보 동의가 필요합니다</string>
     <string name="privacy_policy">개인정보 처리방침</string>
 
     <!-- 2.0 공통 -->
@@ -1392,6 +1395,36 @@
     <string name="profile_settings_environment_endpoint_title">현재 서비스 주소</string>
     <string name="profile_settings_version_title">현재 버전</string>
     <string name="profile_settings_toggle_failed">설정 전환 실패</string>
+    <string name="profile_settings_campus_credentials_title">캠퍼스 자격 정보 관리</string>
+    <string name="profile_settings_campus_credentials_subtitle">동의 상태, 저장된 자격 정보, 빠른 인증을 확인하고 언제든지 동의를 철회하거나 저장된 자격 정보를 삭제할 수 있습니다.</string>
+    <string name="profile_settings_campus_credentials_loading">캠퍼스 자격 정보 상태를 동기화하는 중…</string>
+    <string name="profile_settings_campus_credentials_consent_status_label">동의 상태</string>
+    <string name="profile_settings_campus_credentials_saved_label">저장된 자격 정보</string>
+    <string name="profile_settings_campus_credentials_quick_auth_label">빠른 인증</string>
+    <string name="profile_settings_campus_credentials_account_label">캠퍼스 계정</string>
+    <string name="profile_settings_campus_credentials_consented_at_label">동의 시각</string>
+    <string name="profile_settings_campus_credentials_revoked_at_label">철회 시각</string>
+    <string name="profile_settings_campus_credentials_status_authorized">동의됨</string>
+    <string name="profile_settings_campus_credentials_status_unauthorized">동의 안 됨</string>
+    <string name="profile_settings_campus_credentials_boolean_yes">예</string>
+    <string name="profile_settings_campus_credentials_boolean_no">아니오</string>
+    <string name="profile_settings_campus_credentials_quick_auth_on">켜짐</string>
+    <string name="profile_settings_campus_credentials_quick_auth_off">꺼짐</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enable_action">빠른 인증 켜기</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disable_action">빠른 인증 끄기</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">끄면 저장된 자격 정보 기반의 빠른 인증 및 세션 동기화가 중지됩니다.</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">켜려면 유효한 동의와 저장된 자격 정보가 필요합니다. 조건이 맞지 않으면 백엔드가 실패 사유를 반환합니다.</string>
+    <string name="profile_settings_campus_credentials_revoke_title">캠퍼스 자격 정보 동의 철회</string>
+    <string name="profile_settings_campus_credentials_revoke_action">동의 철회</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">동의를 철회하면 저장된 캠퍼스 자격 정보 기반의 빠른 인증 및 세션 동기화가 중지됩니다. 서버의 안전 우선 설정에 따라 저장된 자격 정보도 함께 삭제될 수 있습니다.</string>
+    <string name="profile_settings_campus_credentials_delete_title">저장된 캠퍼스 자격 정보 삭제</string>
+    <string name="profile_settings_campus_credentials_delete_action">저장된 자격 정보 삭제</string>
+    <string name="profile_settings_campus_credentials_delete_confirmation">삭제 후에는 시간표, 성적, 캠퍼스 카드, 도서관 등의 기능을 다시 로그인하거나 재인증해야 할 수 있습니다.</string>
+    <string name="profile_settings_campus_credentials_revoke_success">동의가 철회되었습니다. 저장된 자격 정보 기반의 빠른 인증 및 세션 동기화가 중지됩니다.</string>
+    <string name="profile_settings_campus_credentials_delete_success">저장된 캠퍼스 자격 정보를 삭제했습니다. 시간표, 성적, 캠퍼스 카드, 도서관 등의 기능을 다시 로그인하거나 재인증해야 할 수 있습니다.</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_success">빠른 인증이 켜졌습니다</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_success">빠른 인증이 꺼졌습니다</string>
+    <string name="profile_settings_campus_credentials_action_failed">캠퍼스 자격 정보 작업에 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
     <string name="profile_delete_title">계정 탈퇴</string>
     <string name="profile_delete_entry_subtitle">계정 탈퇴 신청 제출 및 로컬 로그인 상태 정리</string>
     <string name="profile_delete_warning_title">이 작업은 되돌릴 수 없습니다</string>

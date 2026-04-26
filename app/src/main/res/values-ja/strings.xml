@@ -39,6 +39,9 @@
     <string name="login_mock_enabled_subtitle">現在のログインはローカルのデモデータを使用します</string>
     <string name="login_mock_disabled_subtitle">オフにすると現在のサービス環境を使用します</string>
     <string name="login_mock_account_hint">ローカルデモログインは画面確認とデモ表示専用です</string>
+    <string name="login_campus_credential_consent_label">私は、キャンパス認証、クイック認証、学内データ照会、学校システムとの必要なセッション同期のために、必要な範囲でプラットフォームが私のキャンパスアカウント資格情報を処理することに、内容を読み個別に同意します。</string>
+    <string name="login_campus_credential_consent_note">後で設定から同意状況の確認、同意の撤回、保存済み資格情報の削除、クイック認証のオン/オフを行えます。</string>
+    <string name="login_campus_credential_consent_required">ログイン前にキャンパス資格情報への同意が必要です</string>
     <string name="privacy_policy">プライバシーポリシー</string>
 
     <!-- 2.0 共通 -->
@@ -1392,6 +1395,36 @@
     <string name="profile_settings_environment_endpoint_title">現在のサービスアドレス</string>
     <string name="profile_settings_version_title">現在のバージョン</string>
     <string name="profile_settings_toggle_failed">設定の切り替えに失敗しました</string>
+    <string name="profile_settings_campus_credentials_title">キャンパス資格情報の管理</string>
+    <string name="profile_settings_campus_credentials_subtitle">同意状況、保存済み資格情報、クイック認証を確認し、いつでも同意撤回や保存済み資格情報の削除を行えます。</string>
+    <string name="profile_settings_campus_credentials_loading">キャンパス資格情報の状態を同期しています…</string>
+    <string name="profile_settings_campus_credentials_consent_status_label">同意状況</string>
+    <string name="profile_settings_campus_credentials_saved_label">保存済み資格情報</string>
+    <string name="profile_settings_campus_credentials_quick_auth_label">クイック認証</string>
+    <string name="profile_settings_campus_credentials_account_label">キャンパスアカウント</string>
+    <string name="profile_settings_campus_credentials_consented_at_label">同意日時</string>
+    <string name="profile_settings_campus_credentials_revoked_at_label">撤回日時</string>
+    <string name="profile_settings_campus_credentials_status_authorized">同意済み</string>
+    <string name="profile_settings_campus_credentials_status_unauthorized">未同意</string>
+    <string name="profile_settings_campus_credentials_boolean_yes">はい</string>
+    <string name="profile_settings_campus_credentials_boolean_no">いいえ</string>
+    <string name="profile_settings_campus_credentials_quick_auth_on">有効</string>
+    <string name="profile_settings_campus_credentials_quick_auth_off">無効</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enable_action">クイック認証を有効にする</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disable_action">クイック認証を無効にする</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">無効にすると、保存済み資格情報に基づくクイック認証やセッション同期が停止します。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">有効にするには、有効な同意と保存済み資格情報が必要です。条件を満たさない場合は、バックエンドが失敗理由を返します。</string>
+    <string name="profile_settings_campus_credentials_revoke_title">キャンパス資格情報の同意を撤回</string>
+    <string name="profile_settings_campus_credentials_revoke_action">同意を撤回</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">同意を撤回すると、保存済みキャンパス資格情報に基づくクイック認証やセッション同期が停止します。サーバー側の安全優先設定によっては、保存済み資格情報も削除される場合があります。</string>
+    <string name="profile_settings_campus_credentials_delete_title">保存済みキャンパス資格情報を削除</string>
+    <string name="profile_settings_campus_credentials_delete_action">保存済み資格情報を削除</string>
+    <string name="profile_settings_campus_credentials_delete_confirmation">削除後は、時間割、成績、キャンパスカード、図書館などの機能で再ログインまたは再認可が必要になる場合があります。</string>
+    <string name="profile_settings_campus_credentials_revoke_success">同意を撤回しました。保存済み資格情報に基づくクイック認証やセッション同期は停止されます。</string>
+    <string name="profile_settings_campus_credentials_delete_success">保存済みキャンパス資格情報を削除しました。時間割、成績、キャンパスカード、図書館などの機能で再ログインまたは再認可が必要になる場合があります。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_success">クイック認証を有効にしました</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_success">クイック認証を無効にしました</string>
+    <string name="profile_settings_campus_credentials_action_failed">キャンパス資格情報の操作に失敗しました。後でもう一度お試しください。</string>
     <string name="profile_delete_title">アカウント削除</string>
     <string name="profile_delete_entry_subtitle">アカウント削除申請を送信し、ローカルのログイン情報をクリアします</string>
     <string name="profile_delete_warning_title">この操作は元に戻せません</string>
