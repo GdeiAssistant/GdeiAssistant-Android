@@ -14,6 +14,7 @@ import cn.gdeiassistant.network.api.AnnouncementApi
 import cn.gdeiassistant.network.api.AuthApi
 import cn.gdeiassistant.network.api.LibraryApi
 import cn.gdeiassistant.network.api.CardApi
+import cn.gdeiassistant.network.api.CampusCredentialApi
 import cn.gdeiassistant.network.api.CetApi
 import cn.gdeiassistant.network.api.ChargeApi
 import cn.gdeiassistant.network.api.DataCenterApi
@@ -124,6 +125,7 @@ object NetworkModule {
     @Provides @Singleton fun provideAnnouncementApi(retrofit: Retrofit): AnnouncementApi = retrofit.create(AnnouncementApi::class.java)
     @Provides @Singleton fun provideLibraryApi(retrofit: Retrofit): LibraryApi = retrofit.create(LibraryApi::class.java)
     @Provides @Singleton fun provideCardApi(retrofit: Retrofit): CardApi = retrofit.create(CardApi::class.java)
+    @Provides @Singleton fun provideCampusCredentialApi(retrofit: Retrofit): CampusCredentialApi = retrofit.create(CampusCredentialApi::class.java)
     @Provides @Singleton fun provideCetApi(retrofit: Retrofit): CetApi = retrofit.create(CetApi::class.java)
     @Provides @Singleton fun provideChargeApi(retrofit: Retrofit): ChargeApi = retrofit.create(ChargeApi::class.java)
     @Provides @Singleton fun provideDataCenterApi(retrofit: Retrofit): DataCenterApi = retrofit.create(DataCenterApi::class.java)

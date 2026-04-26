@@ -5,11 +5,12 @@ import cn.gdeiassistant.BuildConfig
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
+import cn.gdeiassistant.data.CampusCredentialRepository
 import cn.gdeiassistant.data.ProfileRepository
-import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.mapper.PhoneAttributionCatalog
 import cn.gdeiassistant.data.mapper.ProfileDisplayMapper
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.model.CampusCredentialStatus
 import cn.gdeiassistant.model.ContactBindingStatus
 import cn.gdeiassistant.model.FeedbackSubmission
 import cn.gdeiassistant.model.LoginRecordItem
@@ -608,7 +609,11 @@ data class ProfileSettingsUiState(
     val networkEnvironment: NetworkEnvironment = NetworkEnvironment.default(),
     val environmentBaseUrl: String = NetworkEnvironment.default().baseUrl,
     val canChangeNetworkEnvironment: Boolean = BuildConfig.DEBUG,
-    val appVersion: String = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+    val appVersion: String = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+    val campusCredentialStatus: CampusCredentialStatus = CampusCredentialStatus(),
+    val isCampusCredentialLoading: Boolean = true,
+    val isCampusCredentialActionRunning: Boolean = false,
+    val campusCredentialError: String? = null
 )
 
 sealed interface ProfileSettingsEvent {
@@ -618,7 +623,8 @@ sealed interface ProfileSettingsEvent {
 @HiltViewModel
 class ProfileSettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val campusCredentialRepository: CampusCredentialRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileSettingsUiState())
@@ -643,6 +649,7 @@ class ProfileSettingsViewModel @Inject constructor(
                 }
             }
         }
+        refreshCampusCredentialStatus()
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
@@ -665,6 +672,92 @@ class ProfileSettingsViewModel @Inject constructor(
                     _events.emit(
                         ProfileSettingsEvent.ShowMessage(
                             error.message ?: context.getString(R.string.profile_settings_toggle_failed)
+                        )
+                    )
+                }
+        }
+    }
+
+    fun refreshCampusCredentialStatus() {
+        viewModelScope.launch {
+            _state.update { it.copy(isCampusCredentialLoading = true, campusCredentialError = null) }
+            campusCredentialRepository.getCampusCredentialStatus()
+                .onSuccess { status ->
+                    _state.update {
+                        it.copy(
+                            campusCredentialStatus = status,
+                            isCampusCredentialLoading = false,
+                            campusCredentialError = null
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            isCampusCredentialLoading = false,
+                            campusCredentialError = error.message
+                        )
+                    }
+                }
+        }
+    }
+
+    fun revokeCampusCredentialConsent() {
+        performCampusCredentialAction(
+            action = { campusCredentialRepository.revokeCampusCredentialConsent() },
+            successMessage = context.getString(R.string.profile_settings_campus_credentials_revoke_success)
+        )
+    }
+
+    fun deleteCampusCredential() {
+        performCampusCredentialAction(
+            action = { campusCredentialRepository.deleteCampusCredential() },
+            successMessage = context.getString(R.string.profile_settings_campus_credentials_delete_success)
+        )
+    }
+
+    fun setQuickAuthEnabled(enabled: Boolean) {
+        performCampusCredentialAction(
+            action = { campusCredentialRepository.setQuickAuthEnabled(enabled) },
+            successMessage = context.getString(
+                if (enabled) {
+                    R.string.profile_settings_campus_credentials_quick_auth_enabled_success
+                } else {
+                    R.string.profile_settings_campus_credentials_quick_auth_disabled_success
+                }
+            )
+        )
+    }
+
+    private fun performCampusCredentialAction(
+        action: suspend () -> Result<CampusCredentialStatus>,
+        successMessage: String
+    ) {
+        if (_state.value.isCampusCredentialActionRunning) return
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isCampusCredentialActionRunning = true,
+                    campusCredentialError = null
+                )
+            }
+            action()
+                .onSuccess { status ->
+                    _state.update {
+                        it.copy(
+                            campusCredentialStatus = status,
+                            isCampusCredentialLoading = false,
+                            isCampusCredentialActionRunning = false,
+                            campusCredentialError = null
+                        )
+                    }
+                    _events.emit(ProfileSettingsEvent.ShowMessage(successMessage))
+                }
+                .onFailure { error ->
+                    _state.update { it.copy(isCampusCredentialActionRunning = false) }
+                    _events.emit(
+                        ProfileSettingsEvent.ShowMessage(
+                            error.message ?: context.getString(R.string.profile_settings_campus_credentials_action_failed)
                         )
                     )
                 }

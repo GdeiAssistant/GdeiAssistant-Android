@@ -107,6 +107,29 @@ fun maskEmail(email: String?): String {
     return "${local.take(3)}***@$domain"
 }
 
+fun maskAccount(account: String?): String {
+    val normalized = account?.trim().orEmpty()
+    if (normalized.isBlank()) return ""
+    if (normalized.contains("*")) return normalized
+    return when {
+        normalized.length >= 8 -> "${normalized.take(2)}****${normalized.takeLast(2)}"
+        normalized.length >= 3 -> "${normalized.take(1)}***${normalized.takeLast(1)}"
+        normalized.length >= 2 -> "${normalized.take(1)}***"
+        else -> "*"
+    }
+}
+
+fun maskToken(token: String?): String {
+    val normalized = token?.trim().orEmpty()
+    if (normalized.isBlank()) return ""
+    if (normalized.contains("*")) return normalized
+    return when {
+        normalized.length >= 12 -> "${normalized.take(4)}****${normalized.takeLast(4)}"
+        normalized.length > 4 -> "${normalized.take(2)}***${normalized.takeLast(2)}"
+        else -> "***"
+    }
+}
+
 fun displayDeviceName(rawValue: String?): String {
     val value = rawValue.orEmpty()
         .replace("客户端", "")

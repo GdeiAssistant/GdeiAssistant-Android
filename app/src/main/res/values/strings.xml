@@ -38,6 +38,9 @@
     <string name="login_mock_enabled_subtitle">当前登录将使用本地示例数据</string>
     <string name="login_mock_disabled_subtitle">关闭后将使用当前服务环境</string>
     <string name="login_mock_account_hint">本地示例登录仅用于界面验证与联调演示</string>
+    <string name="login_campus_credential_consent_label">我已阅读并单独同意平台在必要范围内处理我的校园账号凭证，用于校园身份认证、快速认证、校园数据查询及与学校系统的必要会话同步。</string>
+    <string name="login_campus_credential_consent_note">你可以在设置中查看授权状态、撤回授权、删除已保存凭证或关闭快速认证。</string>
+    <string name="login_campus_credential_consent_required">请先单独同意校园凭证授权后再登录</string>
     <string name="privacy_policy">隐私政策</string>
 
     <!-- 2.0 通用 -->
@@ -1390,6 +1393,36 @@
     <string name="profile_settings_environment_endpoint_title">当前服务地址</string>
     <string name="profile_settings_version_title">当前版本</string>
     <string name="profile_settings_toggle_failed">切换设置失败</string>
+    <string name="profile_settings_campus_credentials_title">校园凭证管理</string>
+    <string name="profile_settings_campus_credentials_subtitle">查看授权状态、已保存凭证和快速认证，并可随时撤回授权或删除已保存凭证。</string>
+    <string name="profile_settings_campus_credentials_loading">正在同步校园凭证状态…</string>
+    <string name="profile_settings_campus_credentials_consent_status_label">授权状态</string>
+    <string name="profile_settings_campus_credentials_saved_label">已保存凭证</string>
+    <string name="profile_settings_campus_credentials_quick_auth_label">快速认证</string>
+    <string name="profile_settings_campus_credentials_account_label">校园账号</string>
+    <string name="profile_settings_campus_credentials_consented_at_label">授权时间</string>
+    <string name="profile_settings_campus_credentials_revoked_at_label">撤回时间</string>
+    <string name="profile_settings_campus_credentials_status_authorized">已授权</string>
+    <string name="profile_settings_campus_credentials_status_unauthorized">未授权</string>
+    <string name="profile_settings_campus_credentials_boolean_yes">是</string>
+    <string name="profile_settings_campus_credentials_boolean_no">否</string>
+    <string name="profile_settings_campus_credentials_quick_auth_on">已开启</string>
+    <string name="profile_settings_campus_credentials_quick_auth_off">已关闭</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enable_action">开启快速认证</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disable_action">关闭快速认证</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">关闭后，平台将停止基于已保存凭证进行快速认证或会话同步。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">开启前需要有效授权和已保存凭证；如条件不满足，服务端会返回失败原因。</string>
+    <string name="profile_settings_campus_credentials_revoke_title">撤回校园账号凭证授权</string>
+    <string name="profile_settings_campus_credentials_revoke_action">撤回授权</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">撤回授权将停止后续基于已保存校园凭证的快速认证或会话同步；如服务端配置为安全优先处理，已保存凭证也可能被同步删除。</string>
+    <string name="profile_settings_campus_credentials_delete_title">删除已保存的校园凭证</string>
+    <string name="profile_settings_campus_credentials_delete_action">删除已保存凭证</string>
+    <string name="profile_settings_campus_credentials_delete_confirmation">删除后，课表、成绩、校园卡、图书馆等查询可能需要重新登录或重新授权。</string>
+    <string name="profile_settings_campus_credentials_revoke_success">授权已撤回，平台将停止基于已保存凭证进行快速认证或会话同步。</string>
+    <string name="profile_settings_campus_credentials_delete_success">已删除保存的校园凭证，后续课表、成绩、校园卡、图书馆等查询可能需要重新登录或重新授权。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_enabled_success">快速认证已开启</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_success">快速认证已关闭</string>
+    <string name="profile_settings_campus_credentials_action_failed">校园凭证操作失败，请稍后重试</string>
     <string name="profile_delete_title">注销账号</string>
     <string name="profile_delete_entry_subtitle">提交账号注销申请并清理本地登录态</string>
     <string name="profile_delete_warning_title">此操作不可恢复</string>

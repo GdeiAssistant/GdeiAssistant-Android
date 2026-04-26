@@ -6,9 +6,13 @@ data class LoginUiState(
     val username: String = "",
     val password: String = "",
     val isMockModeEnabled: Boolean = true,
+    val isCampusCredentialConsentChecked: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: UiText? = null
 ) {
+    val requiresCampusCredentialConsent: Boolean
+        get() = !isMockModeEnabled
+
     val canSubmit: Boolean
         get() = username.isNotBlank() && password.isNotBlank() && !isLoading
 }

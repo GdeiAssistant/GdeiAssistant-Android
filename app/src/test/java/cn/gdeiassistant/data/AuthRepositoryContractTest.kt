@@ -1,6 +1,8 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.model.CampusCredentialConsentMetadata
 import cn.gdeiassistant.model.DataJsonResult
+import cn.gdeiassistant.model.LoginRequest
 import cn.gdeiassistant.model.UserLoginResult
 import cn.gdeiassistant.network.AppException
 import cn.gdeiassistant.network.api.AuthApi
@@ -16,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,9 +26,6 @@ import org.mockito.kotlin.whenever
 /**
  * Contract tests for [AuthRepository]: verifies that the repository correctly maps
  * [AuthApi] responses to [Result] and delegates token persistence to [SessionManager].
- *
- * These tests operate at the repository level using mocked API/session dependencies.
- * They do not require Android context for the tested paths.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthRepositoryContractTest {
@@ -103,6 +103,36 @@ class AuthRepositoryContractTest {
 
         authRepository.login("alice", "s3cret")
 
-        verify(authApi).login(mapOf("username" to "alice", "password" to "s3cret"))
+        verify(authApi).login(LoginRequest(username = "alice", password = "s3cret"))
+    }
+
+    @Test
+    fun loginApiCallIncludesConsentMetadataWhenProvided() = runTest(testDispatcher) {
+        whenever(authApi.login(any())).thenReturn(
+            DataJsonResult(success = true, code = 200, data = UserLoginResult(token = "tok"))
+        )
+
+        authRepository.login(
+            username = "alice",
+            password = "s3cret",
+            consentMetadata = CampusCredentialConsentMetadata(
+                scene = "LOGIN",
+                policyDate = "2026-04-25",
+                effectiveDate = "2026-05-11"
+            )
+        )
+
+        verify(authApi).login(
+            eq(
+                LoginRequest(
+                    username = "alice",
+                    password = "s3cret",
+                    campusCredentialConsent = true,
+                    consentScene = "LOGIN",
+                    policyDate = "2026-04-25",
+                    effectiveDate = "2026-05-11"
+                )
+            )
+        )
     }
 }

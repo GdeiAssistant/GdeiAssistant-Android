@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -102,6 +103,7 @@ fun LoginScreen(navController: NavHostController) {
         state = uiState,
         onUsernameChange = viewModel::updateUsername,
         onPasswordChange = viewModel::updatePassword,
+        onCampusCredentialConsentChange = viewModel::setCampusCredentialConsentChecked,
         onMockModeChange = viewModel::setMockModeEnabled,
         onLoginClick = viewModel::login
     )
@@ -112,6 +114,7 @@ private fun LoginContent(
     state: LoginUiState,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onCampusCredentialConsentChange: (Boolean) -> Unit,
     onMockModeChange: (Boolean) -> Unit,
     onLoginClick: () -> Unit
 ) {
@@ -137,6 +140,7 @@ private fun LoginContent(
                 state = state,
                 onUsernameChange = onUsernameChange,
                 onPasswordChange = onPasswordChange,
+                onCampusCredentialConsentChange = onCampusCredentialConsentChange,
                 onLoginClick = {
                     focusManager.clearFocus(force = true)
                     onLoginClick()
@@ -210,6 +214,7 @@ private fun LoginFormCard(
     state: LoginUiState,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onCampusCredentialConsentChange: (Boolean) -> Unit,
     onLoginClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -306,6 +311,52 @@ private fun LoginFormCard(
                     }
                 )
             )
+
+            AnimatedVisibility(
+                visible = state.requiresCampusCredentialConsent,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = AppShapes.button,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outlineVariant
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Checkbox(
+                            checked = state.isCampusCredentialConsentChecked,
+                            onCheckedChange = onCampusCredentialConsentChange,
+                            enabled = !state.isLoading,
+                            modifier = Modifier.testTag("login.campusCredentialConsent")
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.login_campus_credential_consent_label),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = stringResource(R.string.login_campus_credential_consent_note),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
 
             LoginActionButton(
                 text = if (state.isLoading) {
