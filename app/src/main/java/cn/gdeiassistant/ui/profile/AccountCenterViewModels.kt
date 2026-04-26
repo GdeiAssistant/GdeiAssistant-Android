@@ -647,25 +647,20 @@ class ProfileSettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            var hasObservedMockMode = false
             settingsRepository.isMockModeEnabled.collectLatest { enabled ->
                 val previous = _state.value.isMockModeEnabled
-                val shouldRefresh = hasObservedMockMode &&
-                    previous != enabled &&
+                val shouldRefresh = previous != enabled &&
                     !_state.value.isBackendTargetChanging
                 _state.update { it.copy(isMockModeEnabled = enabled) }
-                hasObservedMockMode = true
                 if (shouldRefresh) {
                     refreshCampusCredentialStatus()
                 }
             }
         }
         viewModelScope.launch {
-            var hasObservedNetworkEnvironment = false
             settingsRepository.networkEnvironment.collectLatest { environment ->
                 val previous = _state.value.networkEnvironment
-                val shouldRefresh = hasObservedNetworkEnvironment &&
-                    previous != environment &&
+                val shouldRefresh = previous != environment &&
                     !_state.value.isBackendTargetChanging
                 _state.update {
                     it.copy(
@@ -673,7 +668,6 @@ class ProfileSettingsViewModel @Inject constructor(
                         environmentBaseUrl = environment.baseUrl
                     )
                 }
-                hasObservedNetworkEnvironment = true
                 if (shouldRefresh) {
                     refreshCampusCredentialStatus()
                 }
