@@ -770,7 +770,7 @@ fun ProfileSettingsScreen(navController: NavHostController) {
             title = stringResource(R.string.profile_settings_campus_credentials_revoke_title),
             message = stringResource(R.string.profile_settings_campus_credentials_revoke_confirmation),
             confirmText = stringResource(R.string.profile_settings_campus_credentials_revoke_action),
-            enabled = !state.isCampusCredentialActionRunning,
+            enabled = !state.isCampusCredentialActionRunning && !state.isBackendTargetChanging,
             onDismiss = { showRevokeConfirmation = false },
             onConfirm = {
                 showRevokeConfirmation = false
@@ -784,7 +784,7 @@ fun ProfileSettingsScreen(navController: NavHostController) {
             title = stringResource(R.string.profile_settings_campus_credentials_delete_title),
             message = stringResource(R.string.profile_settings_campus_credentials_delete_confirmation),
             confirmText = stringResource(R.string.profile_settings_campus_credentials_delete_action),
-            enabled = !state.isCampusCredentialActionRunning,
+            enabled = !state.isCampusCredentialActionRunning && !state.isBackendTargetChanging,
             onDismiss = { showDeleteConfirmation = false },
             onConfirm = {
                 showDeleteConfirmation = false
@@ -799,7 +799,9 @@ fun ProfileSettingsScreen(navController: NavHostController) {
         actions = {
             IconButton(
                 onClick = viewModel::refreshCampusCredentialStatus,
-                enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning
+                enabled = !state.isCampusCredentialLoading &&
+                    !state.isCampusCredentialActionRunning &&
+                    !state.isBackendTargetChanging
             ) {
                 Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
             }
@@ -817,13 +819,14 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                     title = stringResource(R.string.profile_settings_mock_title),
                     subtitle = stringResource(R.string.profile_settings_mock_subtitle),
                     checked = state.isMockModeEnabled,
+                    enabled = !state.isBackendTargetChanging,
                     onCheckedChange = viewModel::setMockModeEnabled
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
                 SettingEnvironmentRow(
                     selectedEnvironment = state.networkEnvironment,
                     baseUrl = state.environmentBaseUrl,
-                    enabled = state.canChangeNetworkEnvironment,
+                    enabled = state.canChangeNetworkEnvironment && !state.isBackendTargetChanging,
                     onEnvironmentSelected = viewModel::setNetworkEnvironment
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
@@ -996,7 +999,9 @@ private fun CampusCredentialManagementCard(
         TintButton(
             text = quickAuthActionText,
             onClick = { onToggleQuickAuth(!status.quickAuthEnabled) },
-            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            enabled = !state.isCampusCredentialLoading &&
+                !state.isCampusCredentialActionRunning &&
+                !state.isBackendTargetChanging,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -1010,7 +1015,9 @@ private fun CampusCredentialManagementCard(
             text = stringResource(R.string.profile_settings_campus_credentials_revoke_action),
             icon = Icons.Rounded.WarningAmber,
             onClick = onRevokeClick,
-            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            enabled = !state.isCampusCredentialLoading &&
+                !state.isCampusCredentialActionRunning &&
+                !state.isBackendTargetChanging,
             modifier = Modifier.fillMaxWidth(),
             borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.28f),
             contentColor = MaterialTheme.colorScheme.tertiary
@@ -1020,7 +1027,9 @@ private fun CampusCredentialManagementCard(
             text = stringResource(R.string.profile_settings_campus_credentials_delete_action),
             icon = Icons.Rounded.DeleteForever,
             onClick = onDeleteClick,
-            enabled = !state.isCampusCredentialLoading && !state.isCampusCredentialActionRunning,
+            enabled = !state.isCampusCredentialLoading &&
+                !state.isCampusCredentialActionRunning &&
+                !state.isBackendTargetChanging,
             modifier = Modifier.fillMaxWidth(),
             borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.28f),
             contentColor = MaterialTheme.colorScheme.error
@@ -1331,6 +1340,7 @@ private fun SettingSwitchRow(
     title: String,
     subtitle: String,
     checked: Boolean,
+    enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
@@ -1350,7 +1360,7 @@ private fun SettingSwitchRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }
 

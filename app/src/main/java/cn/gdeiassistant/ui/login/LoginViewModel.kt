@@ -71,11 +71,23 @@ class LoginViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
+        _uiState.update {
+            it.copy(
+                isMockModeEnabled = enabled,
+                isMockModeUpdating = true,
+                errorMessage = null
+            )
+        }
         viewModelScope.launch {
             runCatching { settingsRepository.setMockModeEnabled(enabled) }
+                .onSuccess {
+                    _uiState.update { it.copy(isMockModeUpdating = false) }
+                }
                 .onFailure { error ->
                     _uiState.update {
                         it.copy(
+                            isMockModeEnabled = SettingsRepository.isMockModeEnabledSync(),
+                            isMockModeUpdating = false,
                             errorMessage = UiText.DynamicString(
                                 error.message ?: context.getString(R.string.service_unavailable)
                             )
@@ -88,6 +100,7 @@ class LoginViewModel @Inject constructor(
     fun login() {
         val state = _uiState.value
         if (state.isLoading) return
+        if (state.isMockModeUpdating) return
         if (state.username.isBlank() || state.password.isBlank()) {
             _uiState.update { it.copy(errorMessage = UiText.StringResource(R.string.login_error_empty)) }
             return
