@@ -5,7 +5,7 @@ import cn.gdeiassistant.ui.util.UiText
 data class LoginUiState(
     val username: String = "",
     val password: String = "",
-    val isMockModeEnabled: Boolean = true,
+    val isMockModeEnabled: Boolean = false,
     val isCampusCredentialConsentChecked: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: UiText? = null
