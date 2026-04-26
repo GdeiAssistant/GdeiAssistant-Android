@@ -3,6 +3,7 @@ package cn.gdeiassistant.network.mock
 import cn.gdeiassistant.model.CampusCredentialDefaults
 import cn.gdeiassistant.model.maskAccount
 import cn.gdeiassistant.network.mock.MockUtils.getBoolean
+import cn.gdeiassistant.network.mock.MockUtils.getString
 import cn.gdeiassistant.network.mock.MockUtils.jsonObjectBody
 import okhttp3.Request
 
