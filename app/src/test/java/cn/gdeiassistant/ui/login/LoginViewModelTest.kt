@@ -116,6 +116,22 @@ class LoginViewModelTest {
         verify(authRepository).login(eq("student"), eq("password123"), isNull())
     }
 
+    @Test
+    fun mockModeSwitchBlocksLoginUntilPersisted() = runTest(testDispatcher) {
+        setSyncMockModeEnabled(true)
+        mockModeFlow.value = true
+        val viewModel = LoginViewModel(authRepository, settingsRepository, context)
+        advanceUntilIdle()
+
+        viewModel.updateUsername("student")
+        viewModel.updatePassword("password123")
+        viewModel.setMockModeEnabled(false)
+        viewModel.login()
+
+        verifyNoInteractions(authRepository)
+        assertEquals(false, viewModel.uiState.value.canSubmit)
+    }
+
     private fun setSyncMockModeEnabled(value: Boolean) {
         val field: Field = SettingsRepository::class.java.getDeclaredField("mockModeEnabledCache")
         field.isAccessible = true

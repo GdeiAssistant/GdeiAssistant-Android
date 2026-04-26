@@ -148,6 +148,7 @@ private fun LoginContent(
             )
             LoginMockCard(
                 enabled = state.isMockModeEnabled,
+                switchEnabled = !state.isLoading && !state.isMockModeUpdating,
                 onToggle = onMockModeChange
             )
         }
@@ -335,7 +336,7 @@ private fun LoginFormCard(
                         Checkbox(
                             checked = state.isCampusCredentialConsentChecked,
                             onCheckedChange = onCampusCredentialConsentChange,
-                            enabled = !state.isLoading,
+                            enabled = !state.isLoading && !state.isMockModeUpdating,
                             modifier = Modifier.testTag("login.campusCredentialConsent")
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -375,6 +376,7 @@ private fun LoginFormCard(
 @Composable
 private fun LoginMockCard(
     enabled: Boolean,
+    switchEnabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
     Surface(
@@ -430,6 +432,7 @@ private fun LoginMockCard(
                 Switch(
                     checked = enabled,
                     onCheckedChange = onToggle,
+                    enabled = switchEnabled,
                     modifier = Modifier.testTag("login.mock.toggle")
                 )
             }

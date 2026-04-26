@@ -24,6 +24,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -105,6 +107,19 @@ class ProfileSettingsViewModelTest {
     }
 
     @Test
+    fun refreshesCampusCredentialStatusWhenBackendTargetFlowsChange() = runTest(testDispatcher) {
+        ProfileSettingsViewModel(context, settingsRepository, campusCredentialRepository)
+        advanceUntilIdle()
+
+        mockModeFlow.value = true
+        advanceUntilIdle()
+        networkEnvironmentFlow.value = NetworkEnvironment.DEV
+        advanceUntilIdle()
+
+        verify(campusCredentialRepository, times(3)).getCampusCredentialStatus()
+    }
+
+    @Test
     fun setNetworkEnvironmentDelegatesToRepository() = runTest(testDispatcher) {
         val viewModel = ProfileSettingsViewModel(context, settingsRepository, campusCredentialRepository)
 
@@ -112,6 +127,18 @@ class ProfileSettingsViewModelTest {
         advanceUntilIdle()
 
         verify(settingsRepository).setNetworkEnvironment(NetworkEnvironment.PROD)
+    }
+
+    @Test
+    fun backendTargetChangeBlocksCampusCredentialActionsUntilPersisted() = runTest(testDispatcher) {
+        val viewModel = ProfileSettingsViewModel(context, settingsRepository, campusCredentialRepository)
+        advanceUntilIdle()
+
+        viewModel.setMockModeEnabled(true)
+        viewModel.revokeCampusCredentialConsent()
+        advanceUntilIdle()
+
+        verify(campusCredentialRepository, never()).revokeCampusCredentialConsent()
     }
 
     @Test

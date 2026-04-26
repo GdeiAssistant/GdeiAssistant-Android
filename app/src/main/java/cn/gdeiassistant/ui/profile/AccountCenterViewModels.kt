@@ -614,6 +614,7 @@ data class ProfileSettingsUiState(
     val campusCredentialStatus: CampusCredentialStatus = CampusCredentialStatus(),
     val isCampusCredentialLoading: Boolean = true,
     val isCampusCredentialActionRunning: Boolean = false,
+    val isBackendTargetChanging: Boolean = false,
     val campusCredentialError: String? = null
 )
 
@@ -628,7 +629,14 @@ class ProfileSettingsViewModel @Inject constructor(
     private val campusCredentialRepository: CampusCredentialRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileSettingsUiState())
+    private val initialNetworkEnvironment = SettingsRepository.currentNetworkEnvironmentSync()
+    private val _state = MutableStateFlow(
+        ProfileSettingsUiState(
+            isMockModeEnabled = SettingsRepository.isMockModeEnabledSync(),
+            networkEnvironment = initialNetworkEnvironment,
+            environmentBaseUrl = initialNetworkEnvironment.baseUrl
+        )
+    )
     val state: StateFlow<ProfileSettingsUiState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<ProfileSettingsEvent>()
@@ -636,17 +644,35 @@ class ProfileSettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            var hasObservedMockMode = false
             settingsRepository.isMockModeEnabled.collectLatest { enabled ->
+                val previous = _state.value.isMockModeEnabled
+                val shouldRefresh = hasObservedMockMode &&
+                    previous != enabled &&
+                    !_state.value.isBackendTargetChanging
                 _state.update { it.copy(isMockModeEnabled = enabled) }
+                hasObservedMockMode = true
+                if (shouldRefresh) {
+                    refreshCampusCredentialStatus()
+                }
             }
         }
         viewModelScope.launch {
+            var hasObservedNetworkEnvironment = false
             settingsRepository.networkEnvironment.collectLatest { environment ->
+                val previous = _state.value.networkEnvironment
+                val shouldRefresh = hasObservedNetworkEnvironment &&
+                    previous != environment &&
+                    !_state.value.isBackendTargetChanging
                 _state.update {
                     it.copy(
                         networkEnvironment = environment,
                         environmentBaseUrl = environment.baseUrl
                     )
+                }
+                hasObservedNetworkEnvironment = true
+                if (shouldRefresh) {
+                    refreshCampusCredentialStatus()
                 }
             }
         }
@@ -654,9 +680,26 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
+        if (_state.value.isBackendTargetChanging) return
+        _state.update {
+            it.copy(
+                isMockModeEnabled = enabled,
+                isBackendTargetChanging = true,
+                campusCredentialError = null
+            )
+        }
         viewModelScope.launch {
             runCatching { settingsRepository.setMockModeEnabled(enabled) }
+                .onSuccess {
+                    refreshCampusCredentialStatus()
+                }
                 .onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            isMockModeEnabled = SettingsRepository.isMockModeEnabledSync(),
+                            isBackendTargetChanging = false
+                        )
+                    }
                     _events.emit(
                         ProfileSettingsEvent.ShowMessage(
                             error.message ?: context.getString(R.string.profile_settings_toggle_failed)
@@ -667,9 +710,29 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setNetworkEnvironment(environment: NetworkEnvironment) {
+        if (_state.value.isBackendTargetChanging) return
+        _state.update {
+            it.copy(
+                networkEnvironment = environment,
+                environmentBaseUrl = environment.baseUrl,
+                isBackendTargetChanging = true,
+                campusCredentialError = null
+            )
+        }
         viewModelScope.launch {
             runCatching { settingsRepository.setNetworkEnvironment(environment) }
+                .onSuccess {
+                    refreshCampusCredentialStatus()
+                }
                 .onFailure { error ->
+                    val currentEnvironment = SettingsRepository.currentNetworkEnvironmentSync()
+                    _state.update {
+                        it.copy(
+                            networkEnvironment = currentEnvironment,
+                            environmentBaseUrl = currentEnvironment.baseUrl,
+                            isBackendTargetChanging = false
+                        )
+                    }
                     _events.emit(
                         ProfileSettingsEvent.ShowMessage(
                             error.message ?: context.getString(R.string.profile_settings_toggle_failed)
@@ -681,7 +744,13 @@ class ProfileSettingsViewModel @Inject constructor(
 
     fun refreshCampusCredentialStatus() {
         viewModelScope.launch {
-            _state.update { it.copy(isCampusCredentialLoading = true, campusCredentialError = null) }
+            _state.update {
+                it.copy(
+                    isCampusCredentialLoading = true,
+                    isBackendTargetChanging = false,
+                    campusCredentialError = null
+                )
+            }
             campusCredentialRepository.getCampusCredentialStatus()
                 .onSuccess { status ->
                     _state.update {
@@ -734,7 +803,7 @@ class ProfileSettingsViewModel @Inject constructor(
         action: suspend () -> Result<CampusCredentialStatus>,
         successMessage: String
     ) {
-        if (_state.value.isCampusCredentialActionRunning) return
+        if (_state.value.isCampusCredentialActionRunning || _state.value.isBackendTargetChanging) return
         viewModelScope.launch {
             _state.update {
                 it.copy(
