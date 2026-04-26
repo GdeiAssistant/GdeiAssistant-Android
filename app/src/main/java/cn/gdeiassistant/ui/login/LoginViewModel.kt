@@ -28,7 +28,9 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow(
+        LoginUiState(isMockModeEnabled = SettingsRepository.isMockModeEnabledSync())
+    )
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<LoginEvent>()
