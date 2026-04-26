@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import java.lang.reflect.Field
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -44,6 +45,7 @@ class LoginViewModelTest {
         settingsRepository = mock()
         context = mock()
         mockModeFlow = MutableStateFlow(false)
+        setSyncMockModeEnabled(false)
 
         whenever(settingsRepository.isMockModeEnabled).thenReturn(mockModeFlow)
         whenever(context.getString(R.string.login_campus_credential_consent_required)).thenReturn("请先完成校园凭证授权")
@@ -53,6 +55,7 @@ class LoginViewModelTest {
 
     @After
     fun tearDown() {
+        setSyncMockModeEnabled(false)
         Dispatchers.resetMain()
     }
 
@@ -100,6 +103,7 @@ class LoginViewModelTest {
 
     @Test
     fun mockModeBypassesCampusCredentialConsentGate() = runTest(testDispatcher) {
+        setSyncMockModeEnabled(true)
         mockModeFlow.value = true
         whenever(authRepository.login(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(Result.success(Unit))
         val viewModel = LoginViewModel(authRepository, settingsRepository, context)
@@ -111,4 +115,11 @@ class LoginViewModelTest {
 
         verify(authRepository).login(eq("student"), eq("password123"), isNull())
     }
+
+    private fun setSyncMockModeEnabled(value: Boolean) {
+        val field: Field = SettingsRepository::class.java.getDeclaredField("mockModeEnabledCache")
+        field.isAccessible = true
+        field.setBoolean(null, value)
+    }
+
 }
