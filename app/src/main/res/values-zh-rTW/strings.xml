@@ -34,10 +34,10 @@
     <string name="login_secure_hint">Token 將保存在本機安全儲存中，用於後續鑑權與自動重新整理。</string>
     <string name="login_channel_badge">統一身份認證</string>
     <string name="login_feature_ready">已接入</string>
-    <string name="login_mock_title">Mock 模擬</string>
-    <string name="login_mock_enabled_subtitle">當前登入將走本機 mock 資料</string>
-    <string name="login_mock_disabled_subtitle">關閉後將使用正式介面</string>
-    <string name="login_mock_account_hint">Mock 帳號：gdeiassistant　密碼：gdeiassistant</string>
+    <string name="login_mock_title">本機示例資料</string>
+    <string name="login_mock_enabled_subtitle">當前登入將使用本機示例資料</string>
+    <string name="login_mock_disabled_subtitle">關閉後將使用當前服務環境</string>
+    <string name="login_mock_account_hint">本機示例登入僅用於介面驗證和展示示範</string>
     <string name="privacy_policy">隱私權政策</string>
 
     <!-- 2.0 通用 -->
@@ -281,11 +281,11 @@
     <string name="about_support_email">support@gdeiassistant.cn</string>
     <string name="about_architecture_title">當前技術棧</string>
     <string name="about_architecture_summary">Compose UI、Material 3、MVVM/UDF、StateFlow、Retrofit、OkHttp、Kotlin Coroutines。</string>
-    <string name="about_developer_title">開發者設定</string>
-    <string name="about_mock_mode_title">啟用本機模擬資料（Mock Mode）</string>
-    <string name="about_mock_mode_desc">開啟後，應用會優先使用本機模擬資料，方便偵錯和展示。</string>
-    <string name="about_mock_mode_restart_hint">切換成功後建議重新啟動應用，確保網路層與頁面狀態全部重新整理。</string>
-    <string name="about_mock_mode_toast">切換成功，建議重新啟動應用生效</string>
+    <string name="about_developer_title">資料來源設定</string>
+    <string name="about_mock_mode_title">啟用本機示例資料</string>
+    <string name="about_mock_mode_desc">開啟後，應用會優先使用本機示例資料，適合預覽介面和展示示範。</string>
+    <string name="about_mock_mode_restart_hint">切換後建議重新啟動應用，確保網路請求與頁面狀態全部重新整理。</string>
+    <string name="about_mock_mode_toast">已切換資料來源，建議重新啟動應用後繼續使用</string>
     <string name="about_checking">正在檢查更新…</string>
     <string name="about_update_none">升級介面未回傳可用版本訊息</string>
     <string name="about_open_failed">無法開啟外部連結</string>
@@ -294,8 +294,8 @@
     <string name="about_metric_version">當前版本</string>
     <string name="about_metric_build">內部建置</string>
     <string name="about_metric_source">資料來源</string>
-    <string name="about_data_source_live">線上介面</string>
-    <string name="about_data_source_mock">本機模擬</string>
+    <string name="about_data_source_live">線上服務</string>
+    <string name="about_data_source_mock">本機示例</string>
 
     <!-- 儲值 -->
     <string name="charge_title">校園卡儲值</string>
@@ -1381,13 +1381,13 @@
     <string name="profile_feedback_success">意見回饋已提交</string>
     <string name="profile_feedback_failed">意見回饋提交失敗</string>
     <string name="profile_settings_general_title">一般設定</string>
-    <string name="profile_settings_entry_subtitle">查看版本訊息並管理開發開關</string>
-    <string name="profile_settings_mock_title">本機模擬資料</string>
-    <string name="profile_settings_mock_subtitle">開啟後優先使用 Mock 攔截器回傳本機範例資料</string>
-    <string name="profile_settings_environment_title">介面環境</string>
+    <string name="profile_settings_entry_subtitle">查看版本訊息並管理資料來源設定</string>
+    <string name="profile_settings_mock_title">本機示例資料</string>
+    <string name="profile_settings_mock_subtitle">開啟後優先使用本機示例資料，便於預覽介面和展示示範</string>
+    <string name="profile_settings_environment_title">服務環境</string>
     <string name="profile_language_title">語言</string>
-    <string name="profile_settings_environment_subtitle">真實介面支援 dev / staging / prod 三檔切換，便於本機聯調和灰度驗證</string>
-    <string name="profile_settings_environment_release_subtitle">當前為非偵錯建置，僅展示當前環境訊息</string>
+    <string name="profile_settings_environment_subtitle">可查看當前服務環境與服務位址資訊</string>
+    <string name="profile_settings_environment_release_subtitle">當前版本僅展示已連接的服務環境資訊</string>
     <string name="profile_settings_environment_endpoint_title">當前服務位址</string>
     <string name="profile_settings_version_title">當前版本</string>
     <string name="profile_settings_toggle_failed">切換設定失敗</string>

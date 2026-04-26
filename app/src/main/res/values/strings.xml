@@ -34,10 +34,10 @@
     <string name="login_secure_hint">Token 将保存在本地安全存储中，用于后续鉴权与自动刷新。</string>
     <string name="login_channel_badge">统一身份认证</string>
     <string name="login_feature_ready">已接入</string>
-    <string name="login_mock_title">Mock 模拟</string>
-    <string name="login_mock_enabled_subtitle">当前登录将走本地 mock 数据</string>
-    <string name="login_mock_disabled_subtitle">关闭后将使用正式接口</string>
-    <string name="login_mock_account_hint">Mock 账号：gdeiassistant　密码：gdeiassistant</string>
+    <string name="login_mock_title">本地示例数据</string>
+    <string name="login_mock_enabled_subtitle">当前登录将使用本地示例数据</string>
+    <string name="login_mock_disabled_subtitle">关闭后将使用当前服务环境</string>
+    <string name="login_mock_account_hint">本地示例登录仅用于界面验证与联调演示</string>
     <string name="privacy_policy">隐私政策</string>
 
     <!-- 2.0 通用 -->
@@ -281,11 +281,11 @@
     <string name="about_support_email">support@gdeiassistant.cn</string>
     <string name="about_architecture_title">当前技术栈</string>
     <string name="about_architecture_summary">Compose UI、Material 3、MVVM/UDF、StateFlow、Retrofit、OkHttp、Kotlin Coroutines。</string>
-    <string name="about_developer_title">开发者设置</string>
-    <string name="about_mock_mode_title">启用本地模拟数据（Mock Mode）</string>
-    <string name="about_mock_mode_desc">开启后，应用会优先使用本地模拟数据，方便调试和演示。</string>
-    <string name="about_mock_mode_restart_hint">切换成功后建议重启应用，确保网络层与页面状态全部刷新。</string>
-    <string name="about_mock_mode_toast">切换成功，建议重启应用生效</string>
+    <string name="about_developer_title">数据源设置</string>
+    <string name="about_mock_mode_title">启用本地示例数据</string>
+    <string name="about_mock_mode_desc">开启后，应用会优先使用本地示例数据，适合预览界面和示例演示。</string>
+    <string name="about_mock_mode_restart_hint">切换后建议重启应用，确保网络请求与页面状态全部刷新。</string>
+    <string name="about_mock_mode_toast">已切换数据源，建议重启应用后继续使用</string>
     <string name="about_checking">正在检查更新…</string>
     <string name="about_update_none">升级接口未返回可用版本信息</string>
     <string name="about_open_failed">无法打开外部链接</string>
@@ -294,8 +294,8 @@
     <string name="about_metric_version">当前版本</string>
     <string name="about_metric_build">内部构建</string>
     <string name="about_metric_source">数据来源</string>
-    <string name="about_data_source_live">在线接口</string>
-    <string name="about_data_source_mock">本地模拟</string>
+    <string name="about_data_source_live">在线服务</string>
+    <string name="about_data_source_mock">本地示例</string>
 
     <!-- 充值 -->
     <string name="charge_title">校园卡充值</string>
@@ -1381,12 +1381,12 @@
     <string name="profile_feedback_success">反馈已提交</string>
     <string name="profile_feedback_failed">反馈提交失败</string>
     <string name="profile_settings_general_title">通用设置</string>
-    <string name="profile_settings_entry_subtitle">查看版本信息并管理开发开关</string>
-    <string name="profile_settings_mock_title">本地模拟数据</string>
-    <string name="profile_settings_mock_subtitle">开启后优先使用 Mock 拦截器返回本地示例数据</string>
-    <string name="profile_settings_environment_title">接口环境</string>
-    <string name="profile_settings_environment_subtitle">真实接口支持 dev / staging / prod 三档切换，便于本地联调和灰度验证</string>
-    <string name="profile_settings_environment_release_subtitle">当前为非调试构建，仅展示当前环境信息</string>
+    <string name="profile_settings_entry_subtitle">查看版本信息并管理数据源设置</string>
+    <string name="profile_settings_mock_title">本地示例数据</string>
+    <string name="profile_settings_mock_subtitle">开启后优先使用本地示例数据，便于预览界面和示例演示</string>
+    <string name="profile_settings_environment_title">服务环境</string>
+    <string name="profile_settings_environment_subtitle">可查看当前服务环境与服务地址信息</string>
+    <string name="profile_settings_environment_release_subtitle">当前版本仅展示已连接的服务环境信息</string>
     <string name="profile_settings_environment_endpoint_title">当前服务地址</string>
     <string name="profile_settings_version_title">当前版本</string>
     <string name="profile_settings_toggle_failed">切换设置失败</string>

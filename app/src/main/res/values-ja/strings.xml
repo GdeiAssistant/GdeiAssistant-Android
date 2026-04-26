@@ -35,10 +35,10 @@
     <string name="login_secure_hint">トークンはローカルの安全なストレージに保存され、認証と自動更新に使用されます。</string>
     <string name="login_channel_badge">統一認証</string>
     <string name="login_feature_ready">接続済み</string>
-    <string name="login_mock_title">Mock シミュレーション</string>
-    <string name="login_mock_enabled_subtitle">現在のログインはローカルの mock データを使用します</string>
-    <string name="login_mock_disabled_subtitle">オフにすると本番APIを使用します</string>
-    <string name="login_mock_account_hint">Mock アカウント：gdeiassistant　パスワード：gdeiassistant</string>
+    <string name="login_mock_title">ローカルデモデータ</string>
+    <string name="login_mock_enabled_subtitle">現在のログインはローカルのデモデータを使用します</string>
+    <string name="login_mock_disabled_subtitle">オフにすると現在のサービス環境を使用します</string>
+    <string name="login_mock_account_hint">ローカルデモログインは画面確認とデモ表示専用です</string>
     <string name="privacy_policy">プライバシーポリシー</string>
 
     <!-- 2.0 共通 -->
@@ -282,11 +282,11 @@
     <string name="about_support_email">support@gdeiassistant.cn</string>
     <string name="about_architecture_title">現在の技術スタック</string>
     <string name="about_architecture_summary">Compose UI、Material 3、MVVM/UDF、StateFlow、Retrofit、OkHttp、Kotlin Coroutines。</string>
-    <string name="about_developer_title">開発者設定</string>
-    <string name="about_mock_mode_title">ローカルシミュレーションデータを有効化（Mock Mode）</string>
-    <string name="about_mock_mode_desc">有効にすると、アプリはローカルのシミュレーションデータを優先的に使用します。デバッグやデモに便利です。</string>
-    <string name="about_mock_mode_restart_hint">切り替え後はアプリの再起動を推奨します。ネットワーク層と画面の状態が完全に更新されます。</string>
-    <string name="about_mock_mode_toast">切り替え完了。アプリの再起動を推奨します</string>
+    <string name="about_developer_title">データソース設定</string>
+    <string name="about_mock_mode_title">ローカルデモデータを有効化</string>
+    <string name="about_mock_mode_desc">有効にすると、アプリは画面確認やデモ表示向けにローカルのデモデータを優先して使用します。</string>
+    <string name="about_mock_mode_restart_hint">切り替え後はアプリを再起動し、通信と画面状態を完全に更新してください。</string>
+    <string name="about_mock_mode_toast">データソースを切り替えました。再起動後に続行してください</string>
     <string name="about_checking">更新を確認中…</string>
     <string name="about_update_none">アップグレードAPIから利用可能なバージョン情報が返されませんでした</string>
     <string name="about_open_failed">外部リンクを開けません</string>
@@ -295,8 +295,8 @@
     <string name="about_metric_version">現在のバージョン</string>
     <string name="about_metric_build">内部ビルド</string>
     <string name="about_metric_source">データソース</string>
-    <string name="about_data_source_live">オンラインAPI</string>
-    <string name="about_data_source_mock">ローカルシミュレーション</string>
+    <string name="about_data_source_live">オンラインサービス</string>
+    <string name="about_data_source_mock">ローカルデモ</string>
 
     <!-- チャージ -->
     <string name="charge_title">キャンパスカードチャージ</string>
@@ -1382,13 +1382,13 @@
     <string name="profile_feedback_success">フィードバックが送信されました</string>
     <string name="profile_feedback_failed">フィードバックの送信に失敗しました</string>
     <string name="profile_settings_general_title">一般設定</string>
-    <string name="profile_settings_entry_subtitle">バージョン情報を確認し、開発スイッチを管理</string>
-    <string name="profile_settings_mock_title">ローカルシミュレーションデータ</string>
-    <string name="profile_settings_mock_subtitle">有効にすると Mock インターセプタがローカルサンプルデータを優先的に返します</string>
-    <string name="profile_settings_environment_title">API環境</string>
+    <string name="profile_settings_entry_subtitle">バージョン情報を確認し、データソース設定を管理</string>
+    <string name="profile_settings_mock_title">ローカルデモデータ</string>
+    <string name="profile_settings_mock_subtitle">有効にすると、画面確認やデモ表示向けにローカルのデモデータを優先して使用します</string>
+    <string name="profile_settings_environment_title">サービス環境</string>
     <string name="profile_language_title">言語</string>
-    <string name="profile_settings_environment_subtitle">本番APIは dev / staging / prod の3段階切り替えをサポートし、ローカル連携やグレーリリース検証に便利です</string>
-    <string name="profile_settings_environment_release_subtitle">現在はデバッグビルドではないため、現在の環境情報のみ表示しています</string>
+    <string name="profile_settings_environment_subtitle">現在のサービス環境と接続先アドレスを確認できます</string>
+    <string name="profile_settings_environment_release_subtitle">このビルドでは接続中のサービス環境のみ表示されます</string>
     <string name="profile_settings_environment_endpoint_title">現在のサービスアドレス</string>
     <string name="profile_settings_version_title">現在のバージョン</string>
     <string name="profile_settings_toggle_failed">設定の切り替えに失敗しました</string>
