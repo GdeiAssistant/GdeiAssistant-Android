@@ -142,6 +142,20 @@ class ProfileSettingsViewModelTest {
     }
 
     @Test
+    fun campusCredentialActionBlocksBackendTargetChangesUntilFinished() = runTest(testDispatcher) {
+        val viewModel = ProfileSettingsViewModel(context, settingsRepository, campusCredentialRepository)
+        advanceUntilIdle()
+
+        viewModel.revokeCampusCredentialConsent()
+        viewModel.setMockModeEnabled(true)
+        viewModel.setNetworkEnvironment(NetworkEnvironment.PROD)
+        advanceUntilIdle()
+
+        verify(settingsRepository, never()).setMockModeEnabled(true)
+        verify(settingsRepository, never()).setNetworkEnvironment(NetworkEnvironment.PROD)
+    }
+
+    @Test
     fun setNetworkEnvironmentEmitsReadableFailureMessage() = runTest(testDispatcher) {
         doThrow(IllegalStateException("保存失败")).whenever(settingsRepository).setNetworkEnvironment(NetworkEnvironment.DEV)
         val viewModel = ProfileSettingsViewModel(context, settingsRepository, campusCredentialRepository)
