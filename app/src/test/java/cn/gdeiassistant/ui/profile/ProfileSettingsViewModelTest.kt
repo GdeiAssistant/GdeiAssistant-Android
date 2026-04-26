@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import java.lang.reflect.Field
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -55,6 +56,8 @@ class ProfileSettingsViewModelTest {
         campusCredentialRepository = mock()
         mockModeFlow = MutableStateFlow(false)
         networkEnvironmentFlow = MutableStateFlow(NetworkEnvironment.STAGING)
+        setSyncMockModeEnabled(false)
+        setSyncNetworkEnvironment(NetworkEnvironment.STAGING)
 
         whenever(settingsRepository.isMockModeEnabled).thenReturn(mockModeFlow)
         whenever(settingsRepository.networkEnvironment).thenReturn(networkEnvironmentFlow)
@@ -83,6 +86,8 @@ class ProfileSettingsViewModelTest {
 
     @After
     fun tearDown() {
+        setSyncMockModeEnabled(false)
+        setSyncNetworkEnvironment(NetworkEnvironment.default())
         Dispatchers.resetMain()
     }
 
@@ -219,5 +224,17 @@ class ProfileSettingsViewModelTest {
 
         assertEquals(ProfileSettingsEvent.ShowMessage("Missing active consent"), eventDeferred.await())
         assertTrue(!viewModel.state.value.isCampusCredentialActionRunning)
+    }
+
+    private fun setSyncMockModeEnabled(value: Boolean) {
+        val field: Field = SettingsRepository::class.java.getDeclaredField("mockModeEnabledCache")
+        field.isAccessible = true
+        field.setBoolean(null, value)
+    }
+
+    private fun setSyncNetworkEnvironment(environment: NetworkEnvironment) {
+        val field: Field = SettingsRepository::class.java.getDeclaredField("networkEnvironmentCache")
+        field.isAccessible = true
+        field.set(null, environment)
     }
 }
