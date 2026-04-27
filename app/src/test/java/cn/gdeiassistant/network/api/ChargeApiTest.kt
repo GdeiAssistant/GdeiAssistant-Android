@@ -40,12 +40,15 @@ class ChargeApiTest {
         )
 
         api.submitCharge(
+            idempotencyKey = "synthetic-idempotency-key",
             amount = "50",
             password = "synthetic-charge-password"
         )
 
-        val body = server.takeRequest().body.readUtf8()
+        val request = server.takeRequest()
+        val body = request.body.readUtf8()
 
+        assertTrue(request.getHeader("Idempotency-Key") == "synthetic-idempotency-key")
         assertTrue(body.contains("amount=50"))
         assertTrue(body.contains("password=synthetic-charge-password"))
         assertFalse(body.contains("hmac="))

@@ -3,6 +3,7 @@ package cn.gdeiassistant.data
 import android.content.Context
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Charge
+import cn.gdeiassistant.network.IdempotencyKeyGenerator
 import cn.gdeiassistant.network.api.ChargeApi
 import cn.gdeiassistant.network.safeApiCall
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,15 +17,18 @@ class ChargeRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val chargeApi: ChargeApi,
     private val cardRepository: CardRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val idempotencyKeyGenerator: IdempotencyKeyGenerator
 ) {
 
     suspend fun getCardInfo() = cardRepository.getCardInfo()
 
     suspend fun submitCharge(amount: Int, password: String): Result<Charge> = withContext(Dispatchers.IO) {
         try {
+            val idempotencyKey = idempotencyKeyGenerator.newKey()
             val charge = safeApiCall {
                 chargeApi.submitCharge(
+                    idempotencyKey = idempotencyKey,
                     amount = amount.toString(),
                     password = password
                 )
