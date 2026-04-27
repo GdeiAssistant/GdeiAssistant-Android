@@ -8,8 +8,6 @@ import cn.gdeiassistant.network.safeApiCall
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,17 +23,10 @@ class ChargeRepository @Inject constructor(
 
     suspend fun submitCharge(amount: Int, password: String): Result<Charge> = withContext(Dispatchers.IO) {
         try {
-            val timestamp = System.currentTimeMillis().toString()
-            val payload = "amount=$amount&timestamp=$timestamp"
-            val secret = context.getString(R.string.request_validate_token)
-            val hmac = hmacSha256(secret, payload)
-
             val charge = safeApiCall {
                 chargeApi.submitCharge(
                     amount = amount.toString(),
-                    password = password,
-                    hmac = hmac,
-                    timestamp = timestamp
+                    password = password
                 )
             }.getOrElse { return@withContext Result.failure(it) }
                 ?: return@withContext Result.failure(
@@ -51,12 +42,5 @@ class ChargeRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
-
-    private fun hmacSha256(secret: String, data: String): String {
-        val mac = Mac.getInstance("HmacSHA256")
-        mac.init(SecretKeySpec(secret.toByteArray(Charsets.UTF_8), "HmacSHA256"))
-        return mac.doFinal(data.toByteArray(Charsets.UTF_8))
-            .joinToString("") { "%02x".format(it) }
     }
 }

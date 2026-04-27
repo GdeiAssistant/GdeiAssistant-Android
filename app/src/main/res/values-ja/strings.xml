@@ -2,14 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">キャンパスアシスタント</string>
-
-
-    <!-- 請求トークン -->
-    <string
-        name="request_validate_token"
-        translatable="false"
-        tools:ignore="Typos">7UnEVKNng3XV/eBcsL1/lRIANRfXcoPT</string>
-
     <!-- 汎用メッセージ -->
     <string name="service_unavailable">サービスは一時的に利用できません</string>
     <string name="check_upgrade">ソフトウェアの更新を確認</string>

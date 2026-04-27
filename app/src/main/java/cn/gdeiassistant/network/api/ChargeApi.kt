@@ -15,8 +15,6 @@ interface ChargeApi {
     @POST("api/card/charge")
     suspend fun submitCharge(
         @Field("amount") amount: String,
-        @Field("password") password: String,
-        @Field("hmac") hmac: String,
-        @Field("timestamp") timestamp: String
+        @Field("password") password: String
     ): DataJsonResult<Charge>
 }

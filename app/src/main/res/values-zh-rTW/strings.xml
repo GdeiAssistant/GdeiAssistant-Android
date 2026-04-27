@@ -1,14 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">廣東二師助手</string>
-
-
-    <!-- 請求令牌 -->
-    <string
-        name="request_validate_token"
-        translatable="false"
-        tools:ignore="Typos">7UnEVKNng3XV/eBcsL1/lRIANRfXcoPT</string>
-
     <!-- 通用提示 -->
     <string name="service_unavailable">服務暫不可用</string>
     <string name="check_upgrade">檢查軟體更新</string>
