@@ -4,6 +4,7 @@ import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.model.DataJsonResult
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 /**
@@ -14,6 +15,7 @@ interface ChargeApi {
     @FormUrlEncoded
     @POST("api/card/charge")
     suspend fun submitCharge(
+        @Header("Idempotency-Key") idempotencyKey: String,
         @Field("amount") amount: String,
         @Field("password") password: String
     ): DataJsonResult<Charge>
