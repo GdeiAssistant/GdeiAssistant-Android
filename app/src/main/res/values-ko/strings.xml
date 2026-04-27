@@ -2,14 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">캠퍼스 어시스턴트</string>
-
-
-    <!-- 요청 토큰 -->
-    <string
-        name="request_validate_token"
-        translatable="false"
-        tools:ignore="Typos">7UnEVKNng3XV/eBcsL1/lRIANRfXcoPT</string>
-
     <!-- 일반 안내 -->
     <string name="service_unavailable">서비스를 일시적으로 이용할 수 없습니다</string>
     <string name="check_upgrade">소프트웨어 업데이트 확인</string>
