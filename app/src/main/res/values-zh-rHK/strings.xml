@@ -313,6 +313,7 @@
     <string name="charge_agreement">繳費服務條款</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">正在提交充值請求…</string>
+    <string name="charge_submit_failed">充值請求處理失敗，請稍後重試。</string>
     <string name="charge_payment_title">支付頁</string>
     <string name="charge_payment_badge">待完成支付</string>
     <string name="charge_payment_subtitle">請完成支付寶付款，付款完成後可返回此頁確認狀態。</string>

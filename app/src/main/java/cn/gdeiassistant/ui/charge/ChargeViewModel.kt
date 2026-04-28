@@ -29,6 +29,7 @@ data class ChargeUiState(
     val error: UiText? = null,
     val cardInfo: CardInfo? = null,
     val paymentSession: Charge? = null,
+    val currentPaymentOrder: ChargeOrder? = null,
     val latestOrder: ChargeOrder? = null,
     val recentOrders: List<ChargeOrder> = emptyList(),
     val isLoadingOrders: Boolean = false,
@@ -81,12 +82,11 @@ class ChargeViewModel @Inject constructor(
                         it.copy(isLoading = false, cardInfo = cardInfo, error = null)
                     }
                 },
-                onFailure = { e ->
+                onFailure = {
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = e.message?.takeIf(String::isNotBlank)?.let(UiText::DynamicString)
-                                ?: UiText.StringResource(R.string.charge_info_unavailable)
+                            error = UiText.StringResource(R.string.charge_info_unavailable)
                         )
                     }
                 }
@@ -123,7 +123,14 @@ class ChargeViewModel @Inject constructor(
 
             else -> {
                 viewModelScope.launch {
-                    _state.update { it.copy(isSubmitting = true, error = null) }
+                    _state.update {
+                        it.copy(
+                            isSubmitting = true,
+                            error = null,
+                            currentPaymentOrder = null,
+                            orderError = null
+                        )
+                    }
                     repository.submitCharge(amount, password).fold(
                         onSuccess = { charge ->
                             val paymentUrl = charge.alipayURL.orEmpty()
@@ -131,7 +138,7 @@ class ChargeViewModel @Inject constructor(
                                 _state.update {
                                     it.copy(
                                         isSubmitting = false,
-                                        error = UiText.StringResource(R.string.load_failed)
+                                        error = UiText.StringResource(R.string.charge_submit_failed)
                                     )
                                 }
                                 return@fold
@@ -141,6 +148,7 @@ class ChargeViewModel @Inject constructor(
                                 it.copy(
                                     isSubmitting = false,
                                     paymentSession = charge,
+                                    currentPaymentOrder = order,
                                     latestOrder = order ?: it.latestOrder,
                                     recentOrders = order?.let { summary ->
                                         upsertRecentOrder(summary, it.recentOrders)
@@ -155,12 +163,11 @@ class ChargeViewModel @Inject constructor(
                                 )
                             )
                         },
-                        onFailure = { e ->
+                        onFailure = {
                             _state.update {
                                 it.copy(
                                     isSubmitting = false,
-                                    error = e.message?.takeIf(String::isNotBlank)?.let(UiText::DynamicString)
-                                        ?: UiText.StringResource(R.string.load_failed)
+                                    error = UiText.StringResource(R.string.charge_submit_failed)
                                 )
                             }
                         }
@@ -171,7 +178,7 @@ class ChargeViewModel @Inject constructor(
     }
 
     fun clearPaymentPage() {
-        _state.update { it.copy(paymentSession = null) }
+        _state.update { it.copy(paymentSession = null, currentPaymentOrder = null) }
     }
 
     private suspend fun loadRecentOrders() {
@@ -183,16 +190,16 @@ class ChargeViewModel @Inject constructor(
                         isLoadingOrders = false,
                         recentOrders = orders,
                         latestOrder = resolveLatestOrder(it.latestOrder, orders),
+                        currentPaymentOrder = resolveCurrentPaymentOrder(it.currentPaymentOrder, orders),
                         orderError = null
                     )
                 }
             },
-            onFailure = { e ->
+            onFailure = {
                 _state.update {
                     it.copy(
                         isLoadingOrders = false,
-                        orderError = e.message?.takeIf(String::isNotBlank)?.let(UiText::DynamicString)
-                            ?: UiText.StringResource(R.string.charge_order_load_failed)
+                        orderError = UiText.StringResource(R.string.charge_order_load_failed)
                     )
                 }
             }
@@ -224,12 +231,12 @@ class ChargeViewModel @Inject constructor(
     }
 
     private fun resolveLatestOrder(current: ChargeOrder?, orders: List<ChargeOrder>): ChargeOrder? {
-        val currentOrderId = current?.orderId?.takeIf { it.isNotBlank() }
-        return if (currentOrderId == null) {
-            orders.firstOrNull() ?: current
-        } else {
-            orders.firstOrNull { it.orderId == currentOrderId } ?: current
-        }
+        return orders.firstOrNull() ?: current
+    }
+
+    private fun resolveCurrentPaymentOrder(current: ChargeOrder?, orders: List<ChargeOrder>): ChargeOrder? {
+        val currentOrderId = current?.orderId?.takeIf { it.isNotBlank() } ?: return current
+        return orders.firstOrNull { it.orderId == currentOrderId } ?: current
     }
 
     companion object {

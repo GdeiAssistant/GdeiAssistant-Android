@@ -144,7 +144,7 @@ private fun ChargeContent(
     if (state.paymentSession != null) {
         PaymentScreen(
             session = state.paymentSession,
-            order = state.latestOrder,
+            order = state.currentPaymentOrder,
             onBack = {
                 if (paymentCanGoBack) {
                     paymentWebView?.goBack()
@@ -663,7 +663,7 @@ private fun chargeOrderMessage(order: ChargeOrder): String {
         ChargeOrderStatuses.FAILED -> stringResource(R.string.charge_order_status_failed)
         ChargeOrderStatuses.UNKNOWN -> stringResource(R.string.charge_order_status_unknown)
         ChargeOrderStatuses.MANUAL_REVIEW -> stringResource(R.string.charge_order_status_manual_review)
-        else -> order.message?.takeIf { it.isNotBlank() } ?: stringResource(R.string.charge_order_status_fallback)
+        else -> stringResource(R.string.charge_order_status_fallback)
     }
 }
 

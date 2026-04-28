@@ -314,6 +314,7 @@
     <string name="charge_agreement">決済サービス利用規約</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">チャージリクエストを送信中…</string>
+    <string name="charge_submit_failed">チャージリクエストを処理できませんでした。後で再試行してください。</string>
     <string name="charge_payment_title">決済画面</string>
     <string name="charge_payment_badge">決済待ち</string>
     <string name="charge_payment_subtitle">Alipay での決済を完了してから、このページに戻って状態を確認できます。</string>
