@@ -149,4 +149,48 @@ class ChargeViewModelTest {
         assertEquals("PROCESSING", state.latestOrder?.status)
         assertEquals("PROCESSING", state.recentOrders.firstOrNull()?.status)
     }
+
+    @Test
+    fun refreshPrefersFetchedOrderWhenSubmittedSummaryHasNoOrderId() = runTest(testDispatcher) {
+        whenever(repository.getCardInfo()).thenReturn(Result.success(CardInfo(cardBalance = "52.50")))
+        whenever(repository.getRecentChargeOrders(page = 0, size = 5)).thenReturn(
+            Result.success(emptyList()),
+            Result.success(
+                listOf(
+                    ChargeOrder(
+                        orderId = "synthetic-order-from-backend",
+                        amount = 50,
+                        status = "UNKNOWN",
+                        message = "充值状态暂无法确认，请稍后查看订单状态，避免重复提交。"
+                    )
+                )
+            )
+        )
+        whenever(context.getString(R.string.charge_opening_alipay)).thenReturn("正在启动支付宝，请稍后…")
+        whenever(repository.submitCharge(50, "synthetic-charge-password")).thenReturn(
+            Result.success(
+                Charge(
+                    alipayURL = "https://pay.example.invalid/synthetic-charge",
+                    status = "PAYMENT_SESSION_CREATED",
+                    message = "支付请求已生成，请完成支付并刷新余额。该状态不代表最终到账。"
+                )
+            )
+        )
+
+        val viewModel = ChargeViewModel(repository, context)
+        advanceUntilIdle()
+
+        viewModel.updateAmount("50")
+        viewModel.updatePassword("synthetic-charge-password")
+        viewModel.submitCharge()
+        advanceUntilIdle()
+        assertEquals(null, viewModel.state.value.latestOrder?.orderId)
+
+        viewModel.refreshChargeOrders()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertEquals("synthetic-order-from-backend", state.latestOrder?.orderId)
+        assertEquals("UNKNOWN", state.latestOrder?.status)
+    }
 }
