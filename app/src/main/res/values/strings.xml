@@ -1412,6 +1412,7 @@
     <string name="profile_settings_toggle_failed">切换设置失败</string>
     <string name="profile_settings_campus_credentials_title">校园凭证管理</string>
     <string name="profile_settings_campus_credentials_subtitle">查看授权状态、已保存凭证和快速认证，并可随时撤回授权或删除已保存凭证。</string>
+    <string name="profile_settings_campus_credentials_danger_title">危险操作</string>
     <string name="profile_settings_campus_credentials_loading">正在同步校园凭证状态…</string>
     <string name="profile_settings_campus_credentials_consent_status_label">授权状态</string>
     <string name="profile_settings_campus_credentials_saved_label">已保存凭证</string>

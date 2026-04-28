@@ -22,6 +22,22 @@ object MockCampusCredentialProvider {
 
     private var state = MockCampusCredentialState()
 
+    fun resetForLogin(request: Request) {
+        val body = request.jsonObjectBody()
+        val hasConsent = body?.getBoolean("campusCredentialConsent") ?: true
+        state = if (hasConsent) {
+            MockCampusCredentialState()
+        } else {
+            MockCampusCredentialState(
+                hasActiveConsent = false,
+                hasSavedCredential = false,
+                quickAuthAllowed = false,
+                consentedAt = null,
+                campusAccount = null
+            )
+        }
+    }
+
     fun mockStatus(request: Request): String = MockUtils.successDataJson(state.toPayload())
 
     fun mockConsent(request: Request): String {

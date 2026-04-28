@@ -1413,6 +1413,7 @@
     <string name="profile_settings_toggle_failed">Failed to toggle setting</string>
     <string name="profile_settings_campus_credentials_title">Campus Credential Management</string>
     <string name="profile_settings_campus_credentials_subtitle">Review consent status, saved credentials, and quick authentication, and revoke consent or delete saved credentials at any time.</string>
+    <string name="profile_settings_campus_credentials_danger_title">Danger Zone</string>
     <string name="profile_settings_campus_credentials_loading">Syncing campus credential status…</string>
     <string name="profile_settings_campus_credentials_consent_status_label">Consent status</string>
     <string name="profile_settings_campus_credentials_saved_label">Saved credential</string>

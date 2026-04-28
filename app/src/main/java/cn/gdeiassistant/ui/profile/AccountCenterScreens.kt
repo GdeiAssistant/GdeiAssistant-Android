@@ -67,6 +67,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.CampusCredentialStatus
 import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
 import cn.gdeiassistant.model.UserDataExportState
@@ -900,16 +901,16 @@ private fun CampusCredentialManagementCard(
     onDeleteClick: () -> Unit
 ) {
     val status = state.campusCredentialStatus
-    val quickAuthActionText = if (status.quickAuthEnabled) {
-        stringResource(R.string.profile_settings_campus_credentials_quick_auth_disable_action)
-    } else {
-        stringResource(R.string.profile_settings_campus_credentials_quick_auth_enable_action)
-    }
     val quickAuthSubtitle = if (status.quickAuthEnabled) {
         stringResource(R.string.profile_settings_campus_credentials_quick_auth_enabled_subtitle)
     } else {
         stringResource(R.string.profile_settings_campus_credentials_quick_auth_disabled_subtitle)
     }
+    val canRunCredentialAction = !state.isCampusCredentialLoading &&
+        !state.isCampusCredentialActionRunning &&
+        !state.isBackendTargetChanging
+    val canToggleQuickAuth = canRunCredentialAction &&
+        (status.quickAuthEnabled || (status.hasActiveConsent && status.hasSavedCredential))
 
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -943,40 +944,10 @@ private fun CampusCredentialManagementCard(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        SettingInfoRow(
-            title = stringResource(R.string.profile_settings_campus_credentials_consent_status_label),
-            value = stringResource(
-                if (status.hasActiveConsent) {
-                    R.string.profile_settings_campus_credentials_status_authorized
-                } else {
-                    R.string.profile_settings_campus_credentials_status_unauthorized
-                }
-            )
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        SettingInfoRow(
-            title = stringResource(R.string.profile_settings_campus_credentials_saved_label),
-            value = stringResource(
-                if (status.hasSavedCredential) {
-                    R.string.profile_settings_campus_credentials_boolean_yes
-                } else {
-                    R.string.profile_settings_campus_credentials_boolean_no
-                }
-            )
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        SettingInfoRow(
-            title = stringResource(R.string.profile_settings_campus_credentials_quick_auth_label),
-            value = stringResource(
-                if (status.quickAuthEnabled) {
-                    R.string.profile_settings_campus_credentials_quick_auth_on
-                } else {
-                    R.string.profile_settings_campus_credentials_quick_auth_off
-                }
-            )
-        )
+        CredentialStatusSummary(status = status)
+        Spacer(modifier = Modifier.height(16.dp))
+
         status.maskedCampusAccount?.takeIf(String::isNotBlank)?.let { maskedAccount ->
-            Spacer(modifier = Modifier.height(10.dp))
             SettingInfoRow(
                 title = stringResource(R.string.profile_settings_campus_credentials_account_label),
                 value = maskedAccount
@@ -997,29 +968,27 @@ private fun CampusCredentialManagementCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        TintButton(
-            text = quickAuthActionText,
-            onClick = { onToggleQuickAuth(!status.quickAuthEnabled) },
-            enabled = !state.isCampusCredentialLoading &&
-                !state.isCampusCredentialActionRunning &&
-                !state.isBackendTargetChanging,
-            modifier = Modifier.fillMaxWidth()
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+        SettingSwitchRow(
+            title = stringResource(R.string.profile_settings_campus_credentials_quick_auth_label),
+            subtitle = quickAuthSubtitle,
+            checked = status.quickAuthEnabled,
+            enabled = canToggleQuickAuth,
+            onCheckedChange = onToggleQuickAuth
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
         Text(
-            text = quickAuthSubtitle,
-            style = MaterialTheme.typography.bodySmall,
+            text = stringResource(R.string.profile_settings_campus_credentials_danger_title),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         GhostButton(
             text = stringResource(R.string.profile_settings_campus_credentials_revoke_action),
             icon = Icons.Rounded.WarningAmber,
             onClick = onRevokeClick,
-            enabled = !state.isCampusCredentialLoading &&
-                !state.isCampusCredentialActionRunning &&
-                !state.isBackendTargetChanging,
+            enabled = canRunCredentialAction,
             modifier = Modifier.fillMaxWidth(),
             borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.28f),
             contentColor = MaterialTheme.colorScheme.tertiary
@@ -1029,13 +998,90 @@ private fun CampusCredentialManagementCard(
             text = stringResource(R.string.profile_settings_campus_credentials_delete_action),
             icon = Icons.Rounded.DeleteForever,
             onClick = onDeleteClick,
-            enabled = !state.isCampusCredentialLoading &&
-                !state.isCampusCredentialActionRunning &&
-                !state.isBackendTargetChanging,
+            enabled = canRunCredentialAction,
             modifier = Modifier.fillMaxWidth(),
             borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.28f),
             contentColor = MaterialTheme.colorScheme.error
         )
+    }
+}
+
+@Composable
+private fun CredentialStatusSummary(status: CampusCredentialStatus) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        CredentialStatusChip(
+            label = stringResource(R.string.profile_settings_campus_credentials_consent_status_label),
+            value = stringResource(
+                if (status.hasActiveConsent) {
+                    R.string.profile_settings_campus_credentials_status_authorized
+                } else {
+                    R.string.profile_settings_campus_credentials_status_unauthorized
+                }
+            ),
+            active = status.hasActiveConsent,
+            modifier = Modifier.weight(1f)
+        )
+        CredentialStatusChip(
+            label = stringResource(R.string.profile_settings_campus_credentials_saved_label),
+            value = stringResource(
+                if (status.hasSavedCredential) {
+                    R.string.profile_settings_campus_credentials_boolean_yes
+                } else {
+                    R.string.profile_settings_campus_credentials_boolean_no
+                }
+            ),
+            active = status.hasSavedCredential,
+            modifier = Modifier.weight(1f)
+        )
+        CredentialStatusChip(
+            label = stringResource(R.string.profile_settings_campus_credentials_quick_auth_label),
+            value = stringResource(
+                if (status.quickAuthEnabled) {
+                    R.string.profile_settings_campus_credentials_quick_auth_on
+                } else {
+                    R.string.profile_settings_campus_credentials_quick_auth_off
+                }
+            ),
+            active = status.quickAuthEnabled,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun CredentialStatusChip(
+    label: String,
+    value: String,
+    active: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val tint = if (active) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        color = tint.copy(alpha = if (active) 0.10f else 0.06f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = tint
+            )
+        }
     }
 }
 

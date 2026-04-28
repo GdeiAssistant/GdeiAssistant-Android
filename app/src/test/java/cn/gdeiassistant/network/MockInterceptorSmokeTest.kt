@@ -63,6 +63,45 @@ class MockInterceptorSmokeTest {
         val privacy = executeJson("/api/privacy")
         assertTrue(privacy.dataObject().has("cacheAllow"))
 
+        val campusCredentialStatus = executeJson("/api/campus-credential/status")
+        assertTrue(campusCredentialStatus.dataObject().get("hasActiveConsent").asBoolean)
+        assertTrue(campusCredentialStatus.dataObject().get("hasSavedCredential").asBoolean)
+        assertTrue(campusCredentialStatus.dataObject().get("quickAuthEnabled").asBoolean)
+        assertTrue(campusCredentialStatus.dataObject().get("maskedCampusAccount").asString.isNotBlank())
+
+        val quickAuthOff = executeJson(
+            path = "/api/campus-credential/quick-auth",
+            method = "POST",
+            jsonBody = """{"enabled":false}"""
+        )
+        assertEquals(false, quickAuthOff.dataObject().get("quickAuthEnabled").asBoolean)
+
+        val revoked = executeJson(path = "/api/campus-credential/revoke", method = "POST")
+        assertEquals(false, revoked.dataObject().get("hasActiveConsent").asBoolean)
+        assertEquals(false, revoked.dataObject().get("hasSavedCredential").asBoolean)
+
+        val deleted = executeJson(path = "/api/campus-credential", method = "DELETE")
+        assertEquals(false, deleted.dataObject().get("quickAuthEnabled").asBoolean)
+
+        executeJson(
+            path = "/api/auth/login",
+            method = "POST",
+            jsonBody = """{"username":"gdeiassistant","password":"gdeiassistant"}"""
+        )
+        val campusCredentialStatusAfterRelogin = executeJson("/api/campus-credential/status")
+        assertTrue(campusCredentialStatusAfterRelogin.dataObject().get("hasActiveConsent").asBoolean)
+        assertTrue(campusCredentialStatusAfterRelogin.dataObject().get("hasSavedCredential").asBoolean)
+
+        executeJson(
+            path = "/api/auth/login",
+            method = "POST",
+            jsonBody = """{"username":"gdeiassistant","password":"gdeiassistant","campusCredentialConsent":false}"""
+        )
+        val campusCredentialStatusWithoutConsent = executeJson("/api/campus-credential/status")
+        assertEquals(false, campusCredentialStatusWithoutConsent.dataObject().get("hasActiveConsent").asBoolean)
+        assertEquals(false, campusCredentialStatusWithoutConsent.dataObject().get("hasSavedCredential").asBoolean)
+        assertEquals("", campusCredentialStatusWithoutConsent.dataObject().get("maskedCampusAccount").asString)
+
         val phoneStatus = executeJson("/api/phone/status")
         assertTrue(phoneStatus.dataObject().get("phone").asString.isNotBlank())
 

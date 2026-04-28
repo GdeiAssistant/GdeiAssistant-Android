@@ -5,11 +5,14 @@ import okhttp3.Request
 /** Mock provider for authentication and app upgrade endpoints. */
 object MockAuthProvider {
 
-    fun mockLogin(request: Request): String = """
-        {"success":true,"code":200,"message":"success","data":{
-            "token":"mock_jwt_${System.currentTimeMillis()}"
-        }}
-    """.trimIndent()
+    fun mockLogin(request: Request): String {
+        MockCampusCredentialProvider.resetForLogin(request)
+        return """
+            {"success":true,"code":200,"message":"success","data":{
+                "token":"mock_jwt_${System.currentTimeMillis()}"
+            }}
+        """.trimIndent()
+    }
 
     fun mockUpgrade(request: Request): String = """
         {"success":true,"code":200,"message":"","data":{
