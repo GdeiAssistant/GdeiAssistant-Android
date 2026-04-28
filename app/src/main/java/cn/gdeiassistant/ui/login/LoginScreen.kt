@@ -27,7 +27,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Checkbox
@@ -77,9 +76,6 @@ private fun loginCardBorder(): Color = MaterialTheme.colorScheme.outlineVariant
 
 @Composable
 private fun loginMockTint(): Color = MaterialTheme.colorScheme.tertiary
-
-@Composable
-private fun loginMockContainer(): Color = MaterialTheme.colorScheme.tertiaryContainer
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -379,82 +375,59 @@ private fun LoginMockCard(
     switchEnabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
-    Surface(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(),
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, loginCardBorder())
+            .animateContentSize()
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(loginMockContainer()),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.DataObject,
-                        contentDescription = null,
-                        tint = loginMockTint()
-                    )
-                }
-                Spacer(modifier = Modifier.width(14.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.login_mock_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    AnimatedContent(targetState = enabled, label = "loginMockMode") { isEnabled ->
-                        Text(
-                            text = if (isEnabled) {
-                                stringResource(R.string.login_mock_enabled_subtitle)
-                            } else {
-                                stringResource(R.string.login_mock_disabled_subtitle)
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                Switch(
-                    checked = enabled,
-                    onCheckedChange = onToggle,
-                    enabled = switchEnabled,
-                    modifier = Modifier.testTag("login.mock.toggle")
+                Text(
+                    text = stringResource(R.string.login_mock_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-
-            AnimatedVisibility(
-                visible = enabled,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Surface(
-                    shape = AppShapes.button,
-                    color = loginMockContainer(),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, loginMockTint().copy(alpha = 0.14f))
-                ) {
+                AnimatedContent(targetState = enabled, label = "loginMockMode") { isEnabled ->
                     Text(
-                        text = stringResource(R.string.login_mock_account_hint),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = loginMockTint()
+                        text = if (isEnabled) {
+                            stringResource(R.string.login_mock_enabled_subtitle)
+                        } else {
+                            stringResource(R.string.login_mock_disabled_subtitle)
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.78f)
                     )
                 }
             }
+            Spacer(modifier = Modifier.width(12.dp))
+            Switch(
+                checked = enabled,
+                onCheckedChange = onToggle,
+                enabled = switchEnabled,
+                modifier = Modifier.testTag("login.mock.toggle")
+            )
+        }
+
+        AnimatedVisibility(
+            visible = enabled,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Text(
+                text = stringResource(R.string.login_mock_account_hint),
+                modifier = Modifier.padding(end = 64.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = loginMockTint()
+            )
         }
     }
 }
