@@ -62,6 +62,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.Charge
+import cn.gdeiassistant.model.ChargeOrder
+import cn.gdeiassistant.model.ChargeOrderStatuses
 import cn.gdeiassistant.ui.components.AppTopBar
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.GhostButton
@@ -93,6 +95,7 @@ fun ChargeScreen(navController: NavHostController) {
         onAmountChange = viewModel::updateAmount,
         onPasswordChange = viewModel::updatePassword,
         onSubmit = viewModel::submitCharge,
+        onRefreshOrders = viewModel::refreshChargeOrders,
         onExitPayment = viewModel::clearPaymentPage
     )
 }
@@ -105,6 +108,7 @@ private fun ChargeContent(
     onAmountChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    onRefreshOrders: () -> Unit,
     onExitPayment: () -> Unit
 ) {
     val context = LocalContext.current
@@ -140,6 +144,7 @@ private fun ChargeContent(
     if (state.paymentSession != null) {
         PaymentScreen(
             session = state.paymentSession,
+            order = state.latestOrder,
             onBack = {
                 if (paymentCanGoBack) {
                     paymentWebView?.goBack()
@@ -183,6 +188,11 @@ private fun ChargeContent(
         item {
             ChargeProcessCard()
         }
+        state.latestOrder?.let { order ->
+            item {
+                ChargeOrderStatusCard(order = order)
+            }
+        }
         if (!errorText.isNullOrBlank()) {
             item {
                 StatusBanner(
@@ -198,6 +208,14 @@ private fun ChargeContent(
                 onAmountChange = onAmountChange,
                 onPasswordChange = onPasswordChange,
                 onSubmit = onSubmit
+            )
+        }
+        item {
+            RecentChargeOrdersCard(
+                orders = state.recentOrders,
+                isLoading = state.isLoadingOrders,
+                error = state.orderError?.asString(),
+                onRefresh = onRefreshOrders
             )
         }
     }
@@ -431,6 +449,225 @@ private fun ChargeFormCard(
 }
 
 @Composable
+private fun ChargeOrderStatusCard(
+    order: ChargeOrder,
+    modifier: Modifier = Modifier
+) {
+    SectionCard(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.charge_order_status_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = chargeOrderMessage(order),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            BadgePill(text = chargeOrderStatusLabel(order.status))
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChargeMetricCard(
+                label = stringResource(R.string.charge_order_amount_label),
+                value = order.amount?.let { "${it}${stringResource(R.string.charge_currency_unit)}" } ?: "—",
+                modifier = Modifier.weight(1f)
+            )
+            ChargeMetricCard(
+                label = stringResource(R.string.charge_order_updated_label),
+                value = order.updatedAt?.takeIf { it.isNotBlank() }
+                    ?: order.createdAt?.takeIf { it.isNotBlank() }
+                    ?: "—",
+                modifier = Modifier.weight(1f)
+            )
+        }
+        val orderId = order.orderId?.takeIf { it.isNotBlank() }
+        if (orderId != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.charge_order_id_label, orderId),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontFamily = FontFamily.Monospace
+            )
+        }
+        val retryAfter = order.retryAfter
+        if (retryAfter != null && retryAfter > 0) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.charge_order_retry_after, retryAfter),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentChargeOrdersCard(
+    orders: List<ChargeOrder>,
+    isLoading: Boolean,
+    error: String?,
+    onRefresh: () -> Unit
+) {
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Payments,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.charge_order_recent_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = stringResource(R.string.charge_order_recent_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            IconButton(onClick = onRefresh, enabled = !isLoading) {
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.charge_order_refresh)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        when {
+            isLoading -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    Text(
+                        text = stringResource(R.string.charge_processing),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            !error.isNullOrBlank() -> {
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            orders.isEmpty() -> {
+                Text(
+                    text = stringResource(R.string.charge_order_empty),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            else -> {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    orders.forEach { order ->
+                        ChargeOrderRow(order = order)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChargeOrderRow(order: ChargeOrder) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.32f)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = order.amount?.let { "${it}${stringResource(R.string.charge_currency_unit)}" } ?: "—",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = chargeOrderMessage(order),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                BadgePill(text = chargeOrderStatusLabel(order.status))
+            }
+            val orderTimeText = order.updatedAt?.takeIf { it.isNotBlank() }
+                ?: order.createdAt?.takeIf { it.isNotBlank() }
+            if (orderTimeText != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = orderTimeText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun chargeOrderStatusLabel(status: String?): String {
+    return when (status?.uppercase()) {
+        ChargeOrderStatuses.CREATED -> stringResource(R.string.charge_order_status_label_created)
+        ChargeOrderStatuses.PROCESSING -> stringResource(R.string.charge_order_status_label_processing)
+        ChargeOrderStatuses.PAYMENT_SESSION_CREATED -> stringResource(R.string.charge_order_status_label_payment_session_created)
+        ChargeOrderStatuses.FAILED -> stringResource(R.string.charge_order_status_label_failed)
+        ChargeOrderStatuses.UNKNOWN -> stringResource(R.string.charge_order_status_label_unknown)
+        ChargeOrderStatuses.MANUAL_REVIEW -> stringResource(R.string.charge_order_status_label_manual_review)
+        else -> stringResource(R.string.charge_order_status_label_unknown)
+    }
+}
+
+@Composable
+private fun chargeOrderMessage(order: ChargeOrder): String {
+    return when (order.status?.uppercase()) {
+        ChargeOrderStatuses.CREATED -> stringResource(R.string.charge_order_status_created)
+        ChargeOrderStatuses.PROCESSING -> stringResource(R.string.charge_order_status_processing)
+        ChargeOrderStatuses.PAYMENT_SESSION_CREATED -> stringResource(R.string.charge_order_status_payment_session_created)
+        ChargeOrderStatuses.FAILED -> stringResource(R.string.charge_order_status_failed)
+        ChargeOrderStatuses.UNKNOWN -> stringResource(R.string.charge_order_status_unknown)
+        ChargeOrderStatuses.MANUAL_REVIEW -> stringResource(R.string.charge_order_status_manual_review)
+        else -> order.message?.takeIf { it.isNotBlank() } ?: stringResource(R.string.charge_order_status_fallback)
+    }
+}
+
+@Composable
 private fun AmountPresetChip(
     modifier: Modifier = Modifier,
     amount: String,
@@ -467,6 +704,7 @@ private fun AmountPresetChip(
 @Composable
 private fun PaymentScreen(
     session: Charge,
+    order: ChargeOrder?,
     onBack: () -> Unit,
     onReload: () -> Unit,
     onBackToForm: () -> Unit,
@@ -512,6 +750,9 @@ private fun PaymentScreen(
                     onClick = onBackToForm,
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+            order?.let {
+                ChargeOrderStatusCard(order = it)
             }
             PaymentPage(
                 modifier = Modifier.weight(1f),

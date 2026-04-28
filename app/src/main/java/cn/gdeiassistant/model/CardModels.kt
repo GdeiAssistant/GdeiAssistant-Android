@@ -32,5 +32,31 @@ data class CardQueryResult(
 @Immutable
 data class Charge(
     val alipayURL: String? = null,
-    val cookieList: List<Cookie>? = null
+    val cookieList: List<Cookie>? = null,
+    val orderId: String? = null,
+    val status: String? = null,
+    val message: String? = null,
+    val retryAfter: Int? = null
 ) : Serializable
+
+@Immutable
+data class ChargeOrder(
+    val orderId: String? = null,
+    val amount: Int? = null,
+    val status: String? = null,
+    val message: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+    val submittedAt: String? = null,
+    val completedAt: String? = null,
+    val retryAfter: Int? = null
+) : Serializable
+
+object ChargeOrderStatuses {
+    const val CREATED = "CREATED"
+    const val PROCESSING = "PROCESSING"
+    const val PAYMENT_SESSION_CREATED = "PAYMENT_SESSION_CREATED"
+    const val FAILED = "FAILED"
+    const val UNKNOWN = "UNKNOWN"
+    const val MANUAL_REVIEW = "MANUAL_REVIEW"
+}
