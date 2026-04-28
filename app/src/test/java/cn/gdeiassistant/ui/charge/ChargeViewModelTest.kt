@@ -6,6 +6,7 @@ import cn.gdeiassistant.data.ChargeRepository
 import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.model.ChargeOrder
+import cn.gdeiassistant.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -103,6 +104,38 @@ class ChargeViewModelTest {
         assertEquals("PAYMENT_SESSION_CREATED", state.latestOrder?.status)
         assertEquals("synthetic-order-id", state.recentOrders.firstOrNull()?.orderId)
         assertFalse(state.latestOrder?.message.orEmpty().contains("到账成功"))
+    }
+
+    @Test
+    fun submitChargeClearsStaleOrderLoadError() = runTest(testDispatcher) {
+        whenever(repository.getCardInfo()).thenReturn(Result.success(CardInfo(cardBalance = "52.50")))
+        whenever(repository.getRecentChargeOrders(page = 0, size = 5)).thenReturn(
+            Result.failure(IllegalStateException("stale order load failure"))
+        )
+        whenever(context.getString(R.string.charge_opening_alipay)).thenReturn("正在启动支付宝，请稍后…")
+        whenever(repository.submitCharge(50, "synthetic-charge-password")).thenReturn(
+            Result.success(
+                Charge(
+                    alipayURL = "https://pay.example.invalid/synthetic-charge",
+                    orderId = "synthetic-order-id",
+                    status = "PAYMENT_SESSION_CREATED",
+                    message = "支付请求已生成，请完成支付并刷新余额。该状态不代表最终到账。"
+                )
+            )
+        )
+
+        val viewModel = ChargeViewModel(repository, context)
+        advanceUntilIdle()
+        assertEquals(UiText.DynamicString("stale order load failure"), viewModel.state.value.orderError)
+
+        viewModel.updateAmount("50")
+        viewModel.updatePassword("synthetic-charge-password")
+        viewModel.submitCharge()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertEquals(null, state.orderError)
+        assertEquals("synthetic-order-id", state.recentOrders.firstOrNull()?.orderId)
     }
 
     @Test
