@@ -1414,6 +1414,7 @@
     <string name="profile_settings_toggle_failed">設定の切り替えに失敗しました</string>
     <string name="profile_settings_campus_credentials_title">キャンパス資格情報の管理</string>
     <string name="profile_settings_campus_credentials_subtitle">同意状況、保存済み資格情報、クイック認証を確認し、いつでも同意撤回や保存済み資格情報の削除を行えます。</string>
+    <string name="profile_settings_campus_credentials_danger_title">危険な操作</string>
     <string name="profile_settings_campus_credentials_loading">キャンパス資格情報の状態を同期しています…</string>
     <string name="profile_settings_campus_credentials_consent_status_label">同意状況</string>
     <string name="profile_settings_campus_credentials_saved_label">保存済み資格情報</string>
