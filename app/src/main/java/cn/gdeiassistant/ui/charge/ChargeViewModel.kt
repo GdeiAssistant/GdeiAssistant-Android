@@ -224,8 +224,11 @@ class ChargeViewModel @Inject constructor(
 
     private fun resolveLatestOrder(current: ChargeOrder?, orders: List<ChargeOrder>): ChargeOrder? {
         val currentOrderId = current?.orderId?.takeIf { it.isNotBlank() }
-        val refreshedCurrent = currentOrderId?.let { id -> orders.firstOrNull { it.orderId == id } }
-        return refreshedCurrent ?: current ?: orders.firstOrNull()
+        return if (currentOrderId == null) {
+            orders.firstOrNull() ?: current
+        } else {
+            orders.firstOrNull { it.orderId == currentOrderId } ?: current
+        }
     }
 
     companion object {
