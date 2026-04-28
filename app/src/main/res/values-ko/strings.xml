@@ -314,6 +314,7 @@
     <string name="charge_agreement">결제 서비스 약관</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">충전 요청 제출 중…</string>
+    <string name="charge_submit_failed">충전 요청을 처리하지 못했습니다. 잠시 후 다시 시도하세요.</string>
     <string name="charge_payment_title">결제 페이지</string>
     <string name="charge_payment_badge">결제 완료 대기</string>
     <string name="charge_payment_subtitle">알리페이 결제를 완료한 후 이 페이지로 돌아와 상태를 확인할 수 있습니다.</string>

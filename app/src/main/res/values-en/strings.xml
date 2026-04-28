@@ -314,6 +314,7 @@
     <string name="charge_agreement">Payment Terms of Service</string>
     <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">Submitting top-up request…</string>
+    <string name="charge_submit_failed">The charge request could not be processed. Try again later.</string>
     <string name="charge_payment_title">Payment</string>
     <string name="charge_payment_badge">Payment pending</string>
     <string name="charge_payment_subtitle">Please complete the Alipay payment. You can return here to confirm status afterwards.</string>
