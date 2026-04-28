@@ -211,6 +211,71 @@ object MockCampusProvider {
         val amount = fields["amount"].orEmpty().ifBlank { "0" }
         val password = fields["password"].orEmpty()
         if (password.isBlank()) return MockUtils.failureJson(campusText(request.requestLocale(), "密码不能为空", "Password cannot be empty", "密碼不能為空", "パスワードを入力してください", "비밀번호를 입력해 주세요"))
-        return """{"success":true,"code":200,"message":"","data":{"alipayURL":"https://gdeiassistant.cn/?mockCharge=$amount","cookieList":[{"name":"mock_charge_session","value":"session_${System.currentTimeMillis()}","domain":"gdeiassistant.cn"}]}}"""
+        return """{"success":true,"code":200,"message":"","data":{"alipayURL":"https://gdeiassistant.cn/?mockCharge=$amount","cookieList":[{"name":"mock_charge_session","value":"session_${System.currentTimeMillis()}","domain":"gdeiassistant.cn"}],"orderId":"mock-charge-order-$amount","status":"PAYMENT_SESSION_CREATED","message":"${MockUtils.escapeJson(campusText(request.requestLocale(), "支付请求已生成，请完成支付并刷新余额。该状态不代表最终到账。", "The payment request has been generated. Complete payment and refresh the balance. This status does not mean final settlement.", "支付請求已生成，請完成支付並刷新餘額。該狀態不代表最終到賬。", "決済リクエストが生成されました。支払いを完了して残高を更新してください。この状態は最終入金を意味しません。", "결제 요청이 생성되었습니다. 결제를 완료하고 잔액을 새로고침하세요. 이 상태는 최종 입금을 의미하지 않습니다."))}"}}"""
+    }
+
+    fun mockChargeOrderDetail(request: Request): String {
+        val orderId = request.url.encodedPath.substringAfterLast('/').ifBlank { "mock-charge-order-50" }
+        val amount = orderId.substringAfterLast('-').toIntOrNull() ?: 50
+        return mockChargeOrderPayload(
+            request = request,
+            orderId = orderId,
+            amount = amount,
+            status = "PAYMENT_SESSION_CREATED",
+            createdAt = "2026-04-28 10:00:00",
+            updatedAt = "2026-04-28 10:01:00"
+        )
+    }
+
+    fun mockChargeOrders(request: Request): String {
+        val first = mockChargeOrderObject(
+            request = request,
+            orderId = "mock-charge-order-50",
+            amount = 50,
+            status = "PAYMENT_SESSION_CREATED",
+            createdAt = "2026-04-28 10:00:00",
+            updatedAt = "2026-04-28 10:01:00"
+        )
+        val second = mockChargeOrderObject(
+            request = request,
+            orderId = "mock-charge-order-20",
+            amount = 20,
+            status = "PROCESSING",
+            createdAt = "2026-04-28 09:30:00",
+            updatedAt = "2026-04-28 09:31:00",
+            retryAfter = 60
+        )
+        return """{"success":true,"code":200,"message":"","data":[$first,$second]}"""
+    }
+
+    private fun mockChargeOrderPayload(
+        request: Request,
+        orderId: String,
+        amount: Int,
+        status: String,
+        createdAt: String,
+        updatedAt: String,
+        retryAfter: Int? = null
+    ): String {
+        val order = mockChargeOrderObject(request, orderId, amount, status, createdAt, updatedAt, retryAfter)
+        return """{"success":true,"code":200,"message":"","data":$order}"""
+    }
+
+    private fun mockChargeOrderObject(
+        request: Request,
+        orderId: String,
+        amount: Int,
+        status: String,
+        createdAt: String,
+        updatedAt: String,
+        retryAfter: Int? = null
+    ): String {
+        val locale = request.requestLocale()
+        val message = when (status) {
+            "PROCESSING" -> campusText(locale, "充值请求正在处理中，请稍后查看结果，避免重复提交。", "The charge request is being processed. Check again later and avoid submitting it again.", "充值請求正在處理中，請稍後查看結果，避免重複提交。", "チャージリクエストを処理中です。後で結果を確認し、重複送信を避けてください。", "충전 요청을 처리 중입니다. 잠시 후 결과를 확인하고 중복 제출을 피하세요.")
+            else -> campusText(locale, "支付请求已生成，请完成支付并刷新余额。该状态不代表最终到账。", "The payment request has been generated. Complete payment and refresh the balance. This status does not mean final settlement.", "支付請求已生成，請完成支付並刷新餘額。該狀態不代表最終到賬。", "決済リクエストが生成されました。支払いを完了して残高を更新してください。この状態は最終入金を意味しません。", "결제 요청이 생성되었습니다. 결제를 완료하고 잔액을 새로고침하세요. 이 상태는 최종 입금을 의미하지 않습니다.")
+        }
+        val retryAfterJson = retryAfter?.let { ""","retryAfter":$it""" }.orEmpty()
+        return """{"orderId":"${MockUtils.escapeJson(orderId)}","amount":$amount,"status":"$status","message":"${MockUtils.escapeJson(message)}","createdAt":"$createdAt","updatedAt":"$updatedAt"$retryAfterJson}"""
     }
 }

@@ -7,6 +7,7 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.data.ChargeRepository
 import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.Charge
+import cn.gdeiassistant.model.ChargeOrder
 import cn.gdeiassistant.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,7 +28,11 @@ data class ChargeUiState(
     val isSubmitting: Boolean = false,
     val error: UiText? = null,
     val cardInfo: CardInfo? = null,
-    val paymentSession: Charge? = null
+    val paymentSession: Charge? = null,
+    val latestOrder: ChargeOrder? = null,
+    val recentOrders: List<ChargeOrder> = emptyList(),
+    val isLoadingOrders: Boolean = false,
+    val orderError: UiText? = null
 ) {
     val balanceText: String
         get() = cardInfo?.cardBalance?.takeIf { it.isNotBlank() } ?: "—"
@@ -86,6 +91,13 @@ class ChargeViewModel @Inject constructor(
                     }
                 }
             )
+            loadRecentOrders()
+        }
+    }
+
+    fun refreshChargeOrders() {
+        viewModelScope.launch {
+            loadRecentOrders()
         }
     }
 
@@ -125,7 +137,16 @@ class ChargeViewModel @Inject constructor(
                                 return@fold
                             }
                             _state.update {
-                                it.copy(isSubmitting = false, paymentSession = charge, error = null)
+                                val order = charge.toOrderSummary(amount)
+                                it.copy(
+                                    isSubmitting = false,
+                                    paymentSession = charge,
+                                    latestOrder = order ?: it.latestOrder,
+                                    recentOrders = order?.let { summary ->
+                                        upsertRecentOrder(summary, it.recentOrders)
+                                    } ?: it.recentOrders,
+                                    error = null
+                                )
                             }
                             _events.emit(
                                 ChargeEvent.ShowMessage(
@@ -150,5 +171,64 @@ class ChargeViewModel @Inject constructor(
 
     fun clearPaymentPage() {
         _state.update { it.copy(paymentSession = null) }
+    }
+
+    private suspend fun loadRecentOrders() {
+        _state.update { it.copy(isLoadingOrders = true, orderError = null) }
+        repository.getRecentChargeOrders(page = 0, size = RECENT_ORDER_LIMIT).fold(
+            onSuccess = { orders ->
+                _state.update {
+                    it.copy(
+                        isLoadingOrders = false,
+                        recentOrders = orders,
+                        latestOrder = resolveLatestOrder(it.latestOrder, orders),
+                        orderError = null
+                    )
+                }
+            },
+            onFailure = { e ->
+                _state.update {
+                    it.copy(
+                        isLoadingOrders = false,
+                        orderError = e.message?.takeIf(String::isNotBlank)?.let(UiText::DynamicString)
+                            ?: UiText.StringResource(R.string.charge_order_load_failed)
+                    )
+                }
+            }
+        )
+    }
+
+    private fun Charge.toOrderSummary(amount: Int): ChargeOrder? {
+        val hasOrderData = !orderId.isNullOrBlank() || !status.isNullOrBlank()
+        if (!hasOrderData) {
+            return null
+        }
+        return ChargeOrder(
+            orderId = orderId,
+            amount = amount,
+            status = status,
+            message = message,
+            retryAfter = retryAfter
+        )
+    }
+
+    private fun upsertRecentOrder(order: ChargeOrder, current: List<ChargeOrder>): List<ChargeOrder> {
+        val orderId = order.orderId
+        val filtered = if (orderId.isNullOrBlank()) {
+            current
+        } else {
+            current.filterNot { it.orderId == orderId }
+        }
+        return (listOf(order) + filtered).take(RECENT_ORDER_LIMIT)
+    }
+
+    private fun resolveLatestOrder(current: ChargeOrder?, orders: List<ChargeOrder>): ChargeOrder? {
+        val currentOrderId = current?.orderId?.takeIf { it.isNotBlank() }
+        val refreshedCurrent = currentOrderId?.let { id -> orders.firstOrNull { it.orderId == id } }
+        return refreshedCurrent ?: current ?: orders.firstOrNull()
+    }
+
+    companion object {
+        private const val RECENT_ORDER_LIMIT = 5
     }
 }

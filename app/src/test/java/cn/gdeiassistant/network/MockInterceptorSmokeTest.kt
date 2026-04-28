@@ -159,6 +159,16 @@ class MockInterceptorSmokeTest {
             formBody = mapOf("amount" to "50", "password" to "charge123")
         )
         assertTrue(charge.dataObject().get("alipayURL").asString.contains("mockCharge=50"))
+        assertEquals("PAYMENT_SESSION_CREATED", charge.dataObject().get("status").asString)
+
+        val chargeOrders = executeJson("/api/card/charge/orders?page=0&size=20")
+        assertTrue(chargeOrders.dataArray().size() > 0)
+        assertTrue(chargeOrders.dataArray()[0].asJsonObject.has("orderId"))
+        assertTrue(chargeOrders.dataArray()[0].asJsonObject.has("status"))
+
+        val chargeOrder = executeJson("/api/card/charge/orders/mock-charge-order-50")
+        assertEquals("mock-charge-order-50", chargeOrder.dataObject().get("orderId").asString)
+        assertEquals("PAYMENT_SESSION_CREATED", chargeOrder.dataObject().get("status").asString)
 
         val announcements = executeJson("/api/information/announcement/start/0/size/10")
         val announcementItems = announcements.dataArray()
