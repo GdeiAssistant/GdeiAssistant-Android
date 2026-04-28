@@ -145,7 +145,8 @@ class ChargeViewModel @Inject constructor(
                                     recentOrders = order?.let { summary ->
                                         upsertRecentOrder(summary, it.recentOrders)
                                     } ?: it.recentOrders,
-                                    error = null
+                                    error = null,
+                                    orderError = null
                                 )
                             }
                             _events.emit(
