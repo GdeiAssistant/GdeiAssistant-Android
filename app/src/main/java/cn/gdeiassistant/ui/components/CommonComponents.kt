@@ -42,14 +42,16 @@ fun BentoCard(
     contentPadding: PaddingValues = PaddingValues(20.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.42f)
     val cardModifier = modifier
         .shadow(
-            elevation = 12.dp,
+            elevation = if (onClick != null) 3.dp else 0.dp,
             shape = AppShapes.card,
-            spotColor = Color.Black.copy(alpha = 0.1f),
-            ambientColor = Color.Black.copy(alpha = 0.05f)
+            spotColor = Color.Black.copy(alpha = 0.08f),
+            ambientColor = Color.Black.copy(alpha = 0.03f)
         )
         .clip(AppShapes.card)
+        .border(1.dp, borderColor, AppShapes.card)
         .background(containerColor)
         .then(
             if (onClick != null)
