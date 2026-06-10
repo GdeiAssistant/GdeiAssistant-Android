@@ -103,32 +103,23 @@ private fun FontScaleSection(step: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun LanguageSection(selected: String, onSelect: (String) -> Unit) {
-    val locales = listOf(
-        "zh-CN" to "\u7B80\u4F53\u4E2D\u6587",
-        "zh-HK" to "\u7E41\u9AD4\u4E2D\u6587\uFF08\u9999\u6E2F\uFF09",
-        "zh-TW" to "\u7E41\u9AD4\u4E2D\u6587\uFF08\u53F0\u7063\uFF09",
-        "en" to "English",
-        "ja" to "\u65E5\u672C\u8A9E",
-        "ko" to "\uD55C\uAD6D\uC5B4",
-    )
-
     AppearanceSectionCard(title = stringResource(R.string.appearance_language_label)) {
         Column(Modifier.selectableGroup()) {
-            locales.forEach { (code, label) ->
+            supportedLanguageOptions.forEach { option ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = selected == code,
-                            onClick = { onSelect(code) },
+                            selected = selected == option.code,
+                            onClick = { onSelect(option.code) },
                             role = Role.RadioButton
                         )
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(selected = selected == code, onClick = null)
+                    RadioButton(selected = selected == option.code, onClick = null)
                     Spacer(Modifier.width(12.dp))
-                    Text(label, style = MaterialTheme.typography.bodyLarge)
+                    Text(option.nativeName, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

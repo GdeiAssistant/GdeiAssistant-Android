@@ -142,11 +142,13 @@ private fun LoginContent(
                     onLoginClick()
                 }
             )
-            LoginMockCard(
-                enabled = state.isMockModeEnabled,
-                switchEnabled = !state.isLoading && !state.isMockModeUpdating,
-                onToggle = onMockModeChange
-            )
+            if (state.canUseDemoMode) {
+                LoginMockCard(
+                    enabled = state.isMockModeEnabled,
+                    switchEnabled = !state.isLoading && !state.isMockModeUpdating,
+                    onToggle = onMockModeChange
+                )
+            }
         }
     }
 }

@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import cn.gdeiassistant.BuildConfig
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.CheckUpgradeResult
 import cn.gdeiassistant.ui.components.*
@@ -111,12 +110,14 @@ private fun AboutContent(
                 onOpenDownload = onOpenDownload
             )
         }
-        item {
-            DeveloperSettingsCard(
-                isMockModeEnabled = state.isMockModeEnabled,
-                sourceText = sourceText,
-                onMockModeChange = onMockModeChange
-            )
+        if (state.canUseDemoMode) {
+            item {
+                DeveloperSettingsCard(
+                    isMockModeEnabled = state.isMockModeEnabled,
+                    sourceText = sourceText,
+                    onMockModeChange = onMockModeChange
+                )
+            }
         }
         item {
             SupportCard(

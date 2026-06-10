@@ -19,6 +19,14 @@ import javax.inject.Singleton
 
 private val Context.settingsDataStore by preferencesDataStore(name = "developer_settings")
 
+private fun sanitizeMockModeEnabled(enabled: Boolean): Boolean {
+    return SettingsRepository.canUseDemoMode() && enabled
+}
+
+private fun sanitizeNetworkEnvironment(environment: NetworkEnvironment): NetworkEnvironment {
+    return if (SettingsRepository.canChangeNetworkEnvironment()) environment else NetworkEnvironment.PROD
+}
+
 @Singleton
 class SettingsRepository @Inject constructor(
     @ApplicationContext context: Context
@@ -29,21 +37,27 @@ class SettingsRepository @Inject constructor(
         appContext.getSharedPreferences(SYNC_CACHE_PREFERENCES_NAME, Context.MODE_PRIVATE)
 
     init {
-        mockModeEnabledCache = syncCachePreferences.getBoolean(
-            SYNC_CACHE_KEY_MOCK_MODE_ENABLED,
-            DEFAULT_MOCK_MODE_ENABLED
+        mockModeEnabledCache = sanitizeMockModeEnabled(
+            syncCachePreferences.getBoolean(
+                SYNC_CACHE_KEY_MOCK_MODE_ENABLED,
+                DEFAULT_MOCK_MODE_ENABLED
+            )
         )
-        networkEnvironmentCache = NetworkEnvironment.fromStorage(
-            syncCachePreferences.getString(
-                SYNC_CACHE_KEY_NETWORK_ENVIRONMENT,
-                BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+        networkEnvironmentCache = sanitizeNetworkEnvironment(
+            NetworkEnvironment.fromStorage(
+                syncCachePreferences.getString(
+                    SYNC_CACHE_KEY_NETWORK_ENVIRONMENT,
+                    BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+                )
             )
         )
     }
 
     val isMockModeEnabled: Flow<Boolean> =
         appContext.settingsDataStore.data
-            .map { preferences -> preferences[KEY_MOCK_MODE_ENABLED] ?: DEFAULT_MOCK_MODE_ENABLED }
+            .map { preferences ->
+                sanitizeMockModeEnabled(preferences[KEY_MOCK_MODE_ENABLED] ?: DEFAULT_MOCK_MODE_ENABLED)
+            }
             .distinctUntilChanged()
             .onEach { enabled -> persistMockModeCache(enabled) }
 
@@ -55,18 +69,25 @@ class SettingsRepository @Inject constructor(
     val networkEnvironment: Flow<NetworkEnvironment> =
         appContext.settingsDataStore.data
             .map { preferences ->
-                NetworkEnvironment.fromStorage(
-                    preferences[KEY_NETWORK_ENVIRONMENT] ?: BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+                sanitizeNetworkEnvironment(
+                    NetworkEnvironment.fromStorage(
+                        preferences[KEY_NETWORK_ENVIRONMENT] ?: BuildConfig.DEFAULT_NETWORK_ENVIRONMENT
+                    )
                 )
             }
             .distinctUntilChanged()
             .onEach(::persistNetworkEnvironmentCache)
 
     suspend fun setMockModeEnabled(enabled: Boolean) {
+        val nextEnabled = sanitizeMockModeEnabled(enabled)
         appContext.settingsDataStore.edit { preferences ->
-            preferences[KEY_MOCK_MODE_ENABLED] = enabled
+            if (canUseDemoMode()) {
+                preferences[KEY_MOCK_MODE_ENABLED] = nextEnabled
+            } else {
+                preferences.remove(KEY_MOCK_MODE_ENABLED)
+            }
         }
-        persistMockModeCache(enabled)
+        persistMockModeCache(nextEnabled)
     }
 
     suspend fun setScheduleBackgroundUri(uri: String?) {
@@ -95,15 +116,28 @@ class SettingsRepository @Inject constructor(
     }
 
     suspend fun setNetworkEnvironment(environment: NetworkEnvironment) {
+        val nextEnvironment = sanitizeNetworkEnvironment(environment)
         appContext.settingsDataStore.edit { preferences ->
-            preferences[KEY_NETWORK_ENVIRONMENT] = environment.storageValue
+            if (canChangeNetworkEnvironment()) {
+                preferences[KEY_NETWORK_ENVIRONMENT] = nextEnvironment.storageValue
+            } else {
+                preferences.remove(KEY_NETWORK_ENVIRONMENT)
+            }
         }
-        persistNetworkEnvironmentCache(environment)
+        persistNetworkEnvironmentCache(nextEnvironment)
     }
 
     suspend fun initializeSyncCache() {
-        persistMockModeCache(isMockModeEnabled.first())
-        persistNetworkEnvironmentCache(networkEnvironment.first())
+        if (canUseDemoMode()) {
+            persistMockModeCache(isMockModeEnabled.first())
+        } else {
+            setMockModeEnabled(false)
+        }
+        if (canChangeNetworkEnvironment()) {
+            persistNetworkEnvironmentCache(networkEnvironment.first())
+        } else {
+            setNetworkEnvironment(NetworkEnvironment.PROD)
+        }
     }
 
     companion object {
@@ -122,22 +156,28 @@ class SettingsRepository @Inject constructor(
         @Volatile
         private var networkEnvironmentCache: NetworkEnvironment = NetworkEnvironment.default()
 
-        fun isMockModeEnabledSync(): Boolean = mockModeEnabledCache
+        fun canUseDemoMode(): Boolean = BuildConfig.DEBUG
 
-        fun currentNetworkEnvironmentSync(): NetworkEnvironment = networkEnvironmentCache
+        fun canChangeNetworkEnvironment(): Boolean = BuildConfig.DEBUG
+
+        fun isMockModeEnabledSync(): Boolean = canUseDemoMode() && mockModeEnabledCache
+
+        fun currentNetworkEnvironmentSync(): NetworkEnvironment = sanitizeNetworkEnvironment(networkEnvironmentCache)
     }
 
     private fun persistMockModeCache(enabled: Boolean) {
-        mockModeEnabledCache = enabled
+        val nextEnabled = sanitizeMockModeEnabled(enabled)
+        mockModeEnabledCache = nextEnabled
         syncCachePreferences.edit()
-            .putBoolean(SYNC_CACHE_KEY_MOCK_MODE_ENABLED, enabled)
+            .putBoolean(SYNC_CACHE_KEY_MOCK_MODE_ENABLED, nextEnabled)
             .apply()
     }
 
     private fun persistNetworkEnvironmentCache(environment: NetworkEnvironment) {
-        networkEnvironmentCache = environment
+        val nextEnvironment = sanitizeNetworkEnvironment(environment)
+        networkEnvironmentCache = nextEnvironment
         syncCachePreferences.edit()
-            .putString(SYNC_CACHE_KEY_NETWORK_ENVIRONMENT, environment.storageValue)
+            .putString(SYNC_CACHE_KEY_NETWORK_ENVIRONMENT, nextEnvironment.storageValue)
             .apply()
     }
 }

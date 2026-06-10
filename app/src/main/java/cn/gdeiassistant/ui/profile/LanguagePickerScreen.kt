@@ -31,20 +31,6 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.components.LazyScreen
 import kotlinx.coroutines.launch
 
-private data class LanguageOption(
-    val code: String,
-    val nativeName: String
-)
-
-private val languageOptions = listOf(
-    LanguageOption("zh-CN", "简体中文"),
-    LanguageOption("zh-HK", "繁體中文（香港）"),
-    LanguageOption("zh-TW", "繁體中文（台灣）"),
-    LanguageOption("en", "English"),
-    LanguageOption("ja", "日本語"),
-    LanguageOption("ko", "한국어")
-)
-
 @Composable
 fun LanguagePickerScreen(navController: NavHostController) {
     val viewModel: ProfileThemeViewModel = hiltViewModel()
@@ -55,7 +41,7 @@ fun LanguagePickerScreen(navController: NavHostController) {
         title = stringResource(R.string.language_picker_title),
         onBack = navController::popBackStack
     ) {
-        languageOptions.forEach { option ->
+        supportedLanguageOptions.forEach { option ->
             item {
                 LanguageRow(
                     option = option,
@@ -73,7 +59,7 @@ fun LanguagePickerScreen(navController: NavHostController) {
 
 @Composable
 private fun LanguageRow(
-    option: LanguageOption,
+    option: SupportedLanguageOption,
     selected: Boolean,
     onClick: () -> Unit
 ) {

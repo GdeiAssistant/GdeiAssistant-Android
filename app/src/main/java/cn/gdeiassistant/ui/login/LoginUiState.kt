@@ -6,6 +6,7 @@ data class LoginUiState(
     val username: String = "",
     val password: String = "",
     val isMockModeEnabled: Boolean = false,
+    val canUseDemoMode: Boolean = false,
     val isMockModeUpdating: Boolean = false,
     val isCampusCredentialConsentChecked: Boolean = false,
     val isLoading: Boolean = false,

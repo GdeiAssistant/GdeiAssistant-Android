@@ -607,10 +607,11 @@ class DeleteAccountViewModel @Inject constructor(
 }
 
 data class ProfileSettingsUiState(
-    val isMockModeEnabled: Boolean = true,
+    val isMockModeEnabled: Boolean = false,
+    val canUseDemoMode: Boolean = SettingsRepository.canUseDemoMode(),
     val networkEnvironment: NetworkEnvironment = NetworkEnvironment.default(),
     val environmentBaseUrl: String = NetworkEnvironment.default().baseUrl,
-    val canChangeNetworkEnvironment: Boolean = BuildConfig.DEBUG,
+    val canChangeNetworkEnvironment: Boolean = SettingsRepository.canChangeNetworkEnvironment(),
     val appVersion: String = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
     val campusCredentialStatus: CampusCredentialStatus = CampusCredentialStatus(),
     val isCampusCredentialLoading: Boolean = true,
@@ -677,7 +678,10 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
-        if (_state.value.isBackendTargetChanging || _state.value.isCampusCredentialActionRunning) return
+        if (!SettingsRepository.canUseDemoMode() ||
+            _state.value.isBackendTargetChanging ||
+            _state.value.isCampusCredentialActionRunning
+        ) return
         _state.update {
             it.copy(
                 isMockModeEnabled = enabled,
@@ -707,7 +711,10 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun setNetworkEnvironment(environment: NetworkEnvironment) {
-        if (_state.value.isBackendTargetChanging || _state.value.isCampusCredentialActionRunning) return
+        if (!SettingsRepository.canChangeNetworkEnvironment() ||
+            _state.value.isBackendTargetChanging ||
+            _state.value.isCampusCredentialActionRunning
+        ) return
         _state.update {
             it.copy(
                 networkEnvironment = environment,
