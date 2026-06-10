@@ -13,6 +13,27 @@ val stagingBaseUrl = providers.gradleProperty("GDEI_BASE_URL_STAGING").orNull
 val prodBaseUrl = providers.gradleProperty("GDEI_BASE_URL_PROD").orNull
     ?: "https://gdeiassistant.cn/"
 val certificatePins = providers.gradleProperty("GDEI_CERTIFICATE_PINS").orNull.orEmpty()
+val appVersionCode = providers.gradleProperty("GDEI_VERSION_CODE")
+    .map { it.toInt() }
+    .orElse(2)
+    .get()
+val appVersionName = providers.gradleProperty("GDEI_VERSION_NAME")
+    .orElse("2.0.0-PRO")
+    .get()
+val releaseStoreFile = providers.gradleProperty("GDEI_RELEASE_STORE_FILE").orNull
+    ?: System.getenv("ANDROID_KEYSTORE_FILE")
+val releaseStorePassword = providers.gradleProperty("GDEI_RELEASE_STORE_PASSWORD").orNull
+    ?: System.getenv("ANDROID_KEYSTORE_PASSWORD")
+val releaseKeyAlias = providers.gradleProperty("GDEI_RELEASE_KEY_ALIAS").orNull
+    ?: System.getenv("ANDROID_KEY_ALIAS")
+val releaseKeyPassword = providers.gradleProperty("GDEI_RELEASE_KEY_PASSWORD").orNull
+    ?: System.getenv("ANDROID_KEY_PASSWORD")
+val releaseSigningEnabled = listOf(
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+).all { !it.isNullOrBlank() }
 val requireCertificatePins = providers.gradleProperty("GDEI_REQUIRE_CERTIFICATE_PINS")
     .map { it.toBoolean() }
     .orElse(false)
@@ -75,8 +96,8 @@ android {
         applicationId = "cn.gdeiassistant"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "2.0.0-PRO"
+        versionCode = appVersionCode
+        versionName = appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"$prodBaseUrl\"")
         buildConfigField("String", "BASE_URL_DEV", "\"$devBaseUrl\"")
@@ -86,9 +107,23 @@ android {
         buildConfigField("String", "CERTIFICATE_PINS", certificatePins.asBuildConfigString())
     }
 
+    signingConfigs {
+        create("release") {
+            if (releaseSigningEnabled) {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
+            if (releaseSigningEnabled) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
