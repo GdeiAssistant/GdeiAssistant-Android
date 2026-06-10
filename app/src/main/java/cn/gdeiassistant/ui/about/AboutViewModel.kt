@@ -25,7 +25,8 @@ import javax.inject.Inject
 data class AboutUiState(
     val currentVersionName: String = "",
     val currentVersionCode: Long = 0L,
-    val isMockModeEnabled: Boolean = true,
+    val isMockModeEnabled: Boolean = false,
+    val canUseDemoMode: Boolean = SettingsRepository.canUseDemoMode(),
     val isCheckingUpdate: Boolean = false,
     val latestVersion: CheckUpgradeResult? = null,
     val updateAvailable: Boolean = false,
@@ -112,6 +113,7 @@ class AboutViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
+        if (!SettingsRepository.canUseDemoMode()) return
         viewModelScope.launch {
             runCatching {
                 settingsRepository.setMockModeEnabled(enabled)

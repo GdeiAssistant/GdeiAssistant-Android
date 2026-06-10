@@ -816,23 +816,26 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                SettingSwitchRow(
-                    title = stringResource(R.string.profile_settings_mock_title),
-                    subtitle = stringResource(R.string.profile_settings_mock_subtitle),
-                    checked = state.isMockModeEnabled,
-                    enabled = !state.isBackendTargetChanging && !state.isCampusCredentialActionRunning,
-                    onCheckedChange = viewModel::setMockModeEnabled
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
-                SettingEnvironmentRow(
-                    selectedEnvironment = state.networkEnvironment,
-                    baseUrl = state.environmentBaseUrl,
-                    enabled = state.canChangeNetworkEnvironment &&
-                        !state.isBackendTargetChanging &&
-                        !state.isCampusCredentialActionRunning,
-                    onEnvironmentSelected = viewModel::setNetworkEnvironment
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
+                if (state.canUseDemoMode) {
+                    SettingSwitchRow(
+                        title = stringResource(R.string.profile_settings_mock_title),
+                        subtitle = stringResource(R.string.profile_settings_mock_subtitle),
+                        checked = state.isMockModeEnabled,
+                        enabled = !state.isBackendTargetChanging && !state.isCampusCredentialActionRunning,
+                        onCheckedChange = viewModel::setMockModeEnabled
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
+                }
+                if (state.canChangeNetworkEnvironment) {
+                    SettingEnvironmentRow(
+                        selectedEnvironment = state.networkEnvironment,
+                        baseUrl = state.environmentBaseUrl,
+                        enabled = !state.isBackendTargetChanging &&
+                            !state.isCampusCredentialActionRunning,
+                        onEnvironmentSelected = viewModel::setNetworkEnvironment
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp))
+                }
                 SettingInfoRow(
                     title = stringResource(R.string.profile_settings_version_title),
                     value = state.appVersion

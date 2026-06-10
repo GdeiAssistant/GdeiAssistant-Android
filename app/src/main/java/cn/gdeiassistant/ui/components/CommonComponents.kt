@@ -376,7 +376,7 @@ fun AppTopBar(
                 text = title,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-0.5).sp
+                    letterSpacing = 0.sp
                 )
             )
         },
@@ -391,7 +391,7 @@ fun AppTopBar(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.back),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }

@@ -29,7 +29,10 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        LoginUiState(isMockModeEnabled = SettingsRepository.isMockModeEnabledSync())
+        LoginUiState(
+            isMockModeEnabled = SettingsRepository.isMockModeEnabledSync(),
+            canUseDemoMode = SettingsRepository.canUseDemoMode()
+        )
     )
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -71,6 +74,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun setMockModeEnabled(enabled: Boolean) {
+        if (!SettingsRepository.canUseDemoMode()) return
         _uiState.update {
             it.copy(
                 isMockModeEnabled = enabled,

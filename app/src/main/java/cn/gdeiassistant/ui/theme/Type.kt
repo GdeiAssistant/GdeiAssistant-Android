@@ -16,7 +16,7 @@ val AppTypography = Typography(
         fontWeight = FontWeight.ExtraBold,
         fontSize = 48.sp,
         lineHeight = 56.sp,
-        letterSpacing = (-1).sp
+        letterSpacing = 0.sp
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
