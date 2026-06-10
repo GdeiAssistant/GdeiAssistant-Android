@@ -460,8 +460,11 @@ private fun FeatureGridItem(
         }
         Text(
             text = stringResource(feature.titleRes),
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-            maxLines = 1,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 11.sp,
+                lineHeight = 14.sp
+            ),
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
         )

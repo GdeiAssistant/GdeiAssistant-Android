@@ -44,7 +44,7 @@ fun Atmosphere(
 fun SectionCard(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surface,
-    borderColor: Color = Color.Unspecified, // Compatibility
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
@@ -53,7 +53,8 @@ fun SectionCard(
         colors = CardDefaults.cardColors(
             containerColor = containerColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, borderColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -75,7 +76,7 @@ fun HeroCard(
         modifier = modifier,
         shape = AppShapes.container, // Larger corners for Hero
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
