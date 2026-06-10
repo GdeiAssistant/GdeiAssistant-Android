@@ -195,12 +195,38 @@ app/build/outputs/apk/debug/app-debug.apk
 ./gradlew :app:installDebug
 ```
 
-### 5. 运行方式
+### 5. 构建 Release 安装包
+
+仓库提供 `Android Release` GitHub Actions 手动工作流，用于构建签名 APK 和
+AAB，并发布到 GitHub Release。发布前需要在仓库或环境中配置：
+
+- `ANDROID_KEYSTORE_BASE64`：release keystore 文件的 base64 内容
+- `ANDROID_KEYSTORE_PASSWORD`：keystore 密码
+- `ANDROID_KEY_ALIAS`：release key alias
+- `ANDROID_KEY_PASSWORD`：release key 密码
+
+工作流输入包括 `tag_name`、`version_name`、`version_code` 和是否标记为
+prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRelease` 和
+`bundleRelease`。
+
+本地签名构建可以使用：
+
+```bash
+./gradlew :app:assembleRelease \
+  -PGDEI_RELEASE_STORE_FILE=/path/to/release-keystore.jks \
+  -PGDEI_RELEASE_STORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD" \
+  -PGDEI_RELEASE_KEY_ALIAS="$ANDROID_KEY_ALIAS" \
+  -PGDEI_RELEASE_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
+  -PGDEI_VERSION_NAME=2.0.0-PRO \
+  -PGDEI_VERSION_CODE=2
+```
+
+### 6. 运行方式
 
 - `mock` 模式：适合本地开发、UI 联调、回归验证
 - `remote` 模式：适合连接真实后端接口进行联调
 
-### 6. 远程接口环境
+### 7. 远程接口环境
 
 应用内远程接口默认按 `dev / staging / prod` 三套环境运行：
 
