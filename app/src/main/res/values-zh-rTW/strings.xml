@@ -177,6 +177,8 @@
     <string name="schedule_focus_empty_other">當前週還沒有課程安排</string>
     <string name="schedule_grid_title">週課表</string>
     <string name="schedule_grid_subtitle">點按課程卡片可查看上課地點、教師與週次</string>
+    <string name="schedule_list_title">完整課程列表</string>
+    <string name="schedule_list_subtitle">按星期展開，長課程名、地點和教師會完整顯示。</string>
     <string name="schedule_section_header">節次</string>
     <string name="schedule_empty_grid">當前週沒有課程安排</string>
     <string name="schedule_select_week_title">選擇週數</string>

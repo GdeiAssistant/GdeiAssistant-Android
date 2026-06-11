@@ -64,6 +64,7 @@ fun NativeImageGallery(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         imageUrls.forEachIndexed { index, url ->
+            val imageLabel = stringResource(R.string.native_media_image_position, index + 1, imageUrls.size)
             Column(
                 modifier = Modifier.width(cardWidth),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -74,12 +75,12 @@ fun NativeImageGallery(
                 ) {
                     SubcomposeAsyncImage(
                         model = url,
-                        contentDescription = null,
+                        contentDescription = imageLabel,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(cardHeight)
                             .clip(AppShapes.card),
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         loading = {
                             Box(
                                 modifier = Modifier
@@ -113,7 +114,7 @@ fun NativeImageGallery(
                     )
                 }
                 Text(
-                    text = stringResource(R.string.native_media_image_position, index + 1, imageUrls.size),
+                    text = imageLabel,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

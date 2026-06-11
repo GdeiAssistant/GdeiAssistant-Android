@@ -178,6 +178,8 @@
     <string name="schedule_focus_empty_other">今週は授業の予定がありません</string>
     <string name="schedule_grid_title">週間時間割</string>
     <string name="schedule_grid_subtitle">科目カードをタップすると教室・教員・対象週を確認できます</string>
+    <string name="schedule_list_title">全授業リスト</string>
+    <string name="schedule_list_subtitle">曜日ごとに表示し、長い科目名・教室・教員名も確認できます。</string>
     <string name="schedule_section_header">コマ</string>
     <string name="schedule_empty_grid">今週は授業の予定がありません</string>
     <string name="schedule_select_week_title">週を選択</string>

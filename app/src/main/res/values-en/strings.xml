@@ -178,6 +178,8 @@
     <string name="schedule_focus_empty_other">No classes scheduled this week</string>
     <string name="schedule_grid_title">Weekly Schedule</string>
     <string name="schedule_grid_subtitle">Tap a class card to view location, instructor and weeks</string>
+    <string name="schedule_list_title">Full Course List</string>
+    <string name="schedule_list_subtitle">Grouped by day, with long names, locations and instructors shown in full.</string>
     <string name="schedule_section_header">Section</string>
     <string name="schedule_empty_grid">No classes scheduled this week</string>
     <string name="schedule_select_week_title">Select Week</string>
