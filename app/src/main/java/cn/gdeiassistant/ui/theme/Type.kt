@@ -44,14 +44,14 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
+        letterSpacing = 0.sp
     ),
     // Specific style for numbers/data (e.g., grades, balance)
     labelLarge = TextStyle(
@@ -59,6 +59,6 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
+        letterSpacing = 0.sp
     )
 )

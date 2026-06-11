@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -125,7 +126,7 @@ fun BadgePill(
                 text = text,
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
+                    letterSpacing = 0.sp
                 ),
                 color = if (onGradient) Color.White else tint
             )
@@ -177,7 +178,9 @@ fun ActionTile(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
                 Spacer(modifier = Modifier.size(4.dp))
@@ -185,7 +188,7 @@ fun ActionTile(
                     text = sub,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
@@ -259,13 +262,19 @@ fun MetricChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = if (onGradient) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (onGradient) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = value,
                 style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp), // Monospace from labelLarge
-                color = if (onGradient) Color.White else MaterialTheme.colorScheme.onSurface
+                color = if (onGradient) Color.White else MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
             )
         }
     }

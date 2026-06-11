@@ -203,6 +203,13 @@ private fun ScheduleContent(
                 onCourseClick = { selectedCourse = it }
             )
         }
+        item {
+            ScheduleListCard(
+                state = state,
+                dayLabels = dayLabels,
+                onCourseClick = { selectedCourse = it }
+            )
+        }
     }
 
     if (showWeekPicker) {
@@ -715,6 +722,101 @@ private fun ScheduleGridCard(
 }
 
 private data class SchedulePlacement(val course: Schedule, val row: Int, val column: Int, val length: Int)
+
+@Composable
+private fun ScheduleListCard(
+    state: ScheduleUiState,
+    dayLabels: List<Int>,
+    onCourseClick: (Schedule) -> Unit
+) {
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.schedule_list_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.schedule_list_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        if (state.scheduleList.isEmpty()) {
+            Text(
+                text = stringResource(R.string.schedule_empty_grid),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                dayLabels.forEachIndexed { dayIndex, labelRes ->
+                    val courses = state.coursesForDay(dayIndex)
+                    if (courses.isNotEmpty()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(labelRes),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            courses.forEach { course ->
+                                ScheduleListRow(course = course, onClick = { onCourseClick(course) })
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                lineHeight = MaterialTheme.typography.titleSmall.fontSize * 1.25f
+            )
+            Text(
+                text = listOfNotNull(
+                    course.sectionDisplayText(),
+                    course.scheduleLocation ?: stringResource(R.string.schedule_location_pending)
+                ).joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = course.scheduleTeacher ?: stringResource(R.string.schedule_teacher_pending),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+            Text(
+                text = course.scheduleWeek
+                    ?: stringResource(
+                        R.string.schedule_week_range,
+                        course.minScheduleWeek ?: 1,
+                        course.maxScheduleWeek ?: 1
+                    ),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
 
 // ──────────────────────────────────────────────────────────
 // 对话框

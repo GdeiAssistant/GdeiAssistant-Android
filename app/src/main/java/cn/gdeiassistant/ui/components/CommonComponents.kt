@@ -26,6 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,9 +47,9 @@ fun BentoCard(
     val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.42f)
     val cardModifier = modifier
         .shadow(
-            elevation = if (onClick != null) 3.dp else 0.dp,
+            elevation = if (onClick != null) 1.dp else 0.dp,
             shape = AppShapes.card,
-            spotColor = Color.Black.copy(alpha = 0.08f),
+            spotColor = Color.Black.copy(alpha = 0.05f),
             ambientColor = Color.Black.copy(alpha = 0.03f)
         )
         .clip(AppShapes.card)
@@ -90,7 +92,10 @@ fun SelectionPill(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-            color = contentColor
+            color = contentColor,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -253,7 +258,8 @@ fun RemoteThumbnail(
     modifier: Modifier = Modifier,
     width: Dp = 72.dp,
     height: Dp = 72.dp,
-    tint: Color = MaterialTheme.colorScheme.primary
+    tint: Color = MaterialTheme.colorScheme.primary,
+    contentDescription: String? = fallbackLabel
 ) {
     val resolvedLabel = fallbackLabel.trim().firstOrNull()?.uppercase() ?: "G"
     Box(
@@ -285,9 +291,9 @@ fun RemoteThumbnail(
         } else {
             SubcomposeAsyncImage(
                 model = imageModel,
-                contentDescription = null,
+                contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 loading = {
                     Text(
                         text = resolvedLabel,
@@ -348,7 +354,10 @@ fun TextTabSelector(
                         text = label,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selected) tint else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (selected) tint else MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(
