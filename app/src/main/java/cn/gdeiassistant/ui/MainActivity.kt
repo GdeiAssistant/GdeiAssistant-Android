@@ -1,6 +1,10 @@
 package cn.gdeiassistant.ui
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
+import android.os.LocaleList as AndroidLocaleList
+import android.view.ContextThemeWrapper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.core.os.LocaleListCompat
@@ -16,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import cn.gdeiassistant.BuildConfig
+import cn.gdeiassistant.R
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.data.UserPreferencesRepository
@@ -25,6 +31,7 @@ import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -86,13 +93,21 @@ class MainActivity : ComponentActivity() {
                 username = uiTestSeedUsername.ifBlank { "gdeiassistant" }
             )
         }
+        val initialContentLocale = if (uiTestLocale.isNotEmpty()) {
+            AppLocaleSupport.normalizeLocale(uiTestLocale)
+        } else {
+            AppLocaleSupport.currentLocale()
+        }
+        AppLocaleSupport.setCurrentLocale(initialContentLocale)
+        Locale.setDefault(AppLocaleSupport.localeObject(initialContentLocale))
+
         if (uiTestUseMock || uiTestLocale.isNotEmpty()) {
             runBlocking {
                 if (uiTestUseMock) {
                     settingsRepository.setMockModeEnabled(true)
                 }
                 if (uiTestLocale.isNotEmpty()) {
-                    settingsRepository.setLocale(uiTestLocale)
+                    settingsRepository.setLocale(initialContentLocale)
                 }
             }
         }
@@ -116,11 +131,18 @@ class MainActivity : ComponentActivity() {
                 .collectAsStateWithLifecycle(initialValue = UserPreferencesRepository.THEME_SYSTEM)
             val fontScale by userPreferencesRepository.fontScale
                 .collectAsStateWithLifecycle(initialValue = 1.0f)
+            val locale by settingsRepository.locale
+                .collectAsStateWithLifecycle(initialValue = initialContentLocale)
+            val baseDensity = LocalDensity.current
+            val localizedContext = remember(locale) {
+                localizedContext(locale)
+            }
 
             CompositionLocalProvider(
+                LocalContext provides localizedContext,
                 LocalDensity provides Density(
-                    density = LocalDensity.current.density,
-                    fontScale = LocalDensity.current.fontScale * fontScale
+                    density = baseDensity.density,
+                    fontScale = baseDensity.fontScale * fontScale
                 )
             ) {
                 GdeiAssistantTheme(themeMode = themeMode) {
@@ -130,6 +152,17 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    private fun localizedContext(locale: String): Context {
+        val normalizedLocale = AppLocaleSupport.normalizeLocale(locale)
+        val configuration = Configuration(resources.configuration)
+        val localeObject = AppLocaleSupport.localeObject(normalizedLocale)
+        configuration.setLocale(localeObject)
+        configuration.setLocales(AndroidLocaleList(localeObject))
+        return ContextThemeWrapper(this, R.style.AppTheme).apply {
+            applyOverrideConfiguration(configuration)
         }
     }
 }
