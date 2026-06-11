@@ -90,9 +90,9 @@ class MockMessagesUiSmokeTest : BaseMockUiSmokeTest(
 
     @Test
     fun mockMessagesRouteShowsAnnouncementsAndInteractions() {
-        waitForText("Message Hub")
-        composeRule.onNodeWithText("Message Hub").assertIsDisplayed()
-        composeRule.onNodeWithText("News, system notices and interaction messages — all in one place.").assertIsDisplayed()
+        waitForText("消息中枢")
+        composeRule.onNodeWithText("消息中枢").assertIsDisplayed()
+        composeRule.onNodeWithText("把新闻、系统公告和互动消息整理到一个统一入口。").assertIsDisplayed()
     }
 }
 
@@ -103,10 +103,10 @@ class MockMarketplaceUiSmokeTest : BaseMockUiSmokeTest(
 
     @Test
     fun mockMarketplaceRouteShowsListAndDetail() {
-        waitForText("Marketplace")
-        composeRule.onNodeWithText("Marketplace").assertIsDisplayed()
-        composeRule.onNodeWithText("My Items").assertIsDisplayed()
-        composeRule.onNodeWithText("List Item").assertIsDisplayed()
+        waitForText("二手交易")
+        composeRule.onNodeWithText("二手交易").assertIsDisplayed()
+        composeRule.onNodeWithText("个人中心").assertIsDisplayed()
+        composeRule.onNodeWithText("发布商品").assertIsDisplayed()
     }
 }
 
@@ -117,9 +117,9 @@ class MockGradeUiSmokeTest : BaseMockUiSmokeTest(
 
     @Test
     fun mockGradeRouteShowsAcademicContent() {
-        waitForText("Grades")
-        composeRule.onNodeWithText("Grades").assertIsDisplayed()
-        composeRule.onNodeWithText("Academic Year").assertIsDisplayed()
-        composeRule.onNodeWithText("5 courses recorded for this academic year").assertIsDisplayed()
+        waitForText("成绩查询")
+        composeRule.onNodeWithText("成绩查询").assertIsDisplayed()
+        composeRule.onNodeWithText("学年").assertIsDisplayed()
+        composeRule.onNodeWithText("当前学年共收录 5 门课程").assertIsDisplayed()
     }
 }
