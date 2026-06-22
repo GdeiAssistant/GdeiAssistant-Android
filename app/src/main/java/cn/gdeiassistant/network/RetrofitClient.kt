@@ -1,5 +1,6 @@
 package cn.gdeiassistant.network
 
+import android.annotation.SuppressLint
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.event.GlobalEvent
 import cn.gdeiassistant.event.GlobalEventManager
@@ -16,11 +17,13 @@ import javax.inject.Inject
 class AuthInterceptor @Inject constructor(
     private val sessionManager: SessionManager
 ) : Interceptor {
+    @SuppressLint("HardwareIds")
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         val request = chain.request().newBuilder().apply {
             sessionManager.currentToken()?.takeIf { it.isNotBlank() }?.let { token ->
                 addHeader("Authorization", "Bearer $token")
             }
+            // Existing backend contract requires a stable X-Device-ID header.
             val deviceId = Settings.Secure.getString(
                 AppContextProvider.context.contentResolver,
                 Settings.Secure.ANDROID_ID

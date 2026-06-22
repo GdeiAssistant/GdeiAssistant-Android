@@ -158,7 +158,12 @@ object ProfileLocationCatalog {
     }
 
     private fun localeDisplayCountry(code: String, locale: String): String {
-        return runCatching { Locale("", code).getDisplayCountry(AppLocaleSupport.localeObject(locale)) }
+        return runCatching {
+            Locale.Builder()
+                .setRegion(code)
+                .build()
+                .getDisplayCountry(AppLocaleSupport.localeObject(locale))
+        }
             .getOrDefault("")
             .trim()
     }

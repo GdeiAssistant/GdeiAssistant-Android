@@ -68,6 +68,7 @@ import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Locale
 
 @Composable
 fun MarketplaceScreen(navController: NavHostController) {
@@ -524,7 +525,7 @@ private fun MarketplaceDetailHero(detail: MarketplaceDetail) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricChip(
                 label = stringResource(R.string.marketplace_price_label),
-                value = String.format("¥%.2f", detail.item.price),
+                value = String.format(Locale.ROOT, "¥%.2f", detail.item.price),
                 modifier = Modifier.weight(1f)
             )
             MetricChip(
@@ -575,7 +576,7 @@ private fun MarketplaceItemCard(
                     )
                     androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
                     Text(
-                        text = String.format("¥%.2f", item.price),
+                        text = String.format(Locale.ROOT, "¥%.2f", item.price),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -631,7 +632,7 @@ private fun MarketplaceProfileCard(
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
                 Text(
-                    text = String.format("¥%.2f", item.price),
+                    text = String.format(Locale.ROOT, "¥%.2f", item.price),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

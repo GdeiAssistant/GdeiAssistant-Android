@@ -39,6 +39,7 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun SecretPublishScreen(navController: NavHostController) {
@@ -46,7 +47,7 @@ fun SecretPublishScreen(navController: NavHostController) {
     val viewModel: SecretPublishViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var content by rememberSaveable { mutableStateOf("") }
-    var themeId by rememberSaveable { mutableStateOf(1) }
+    var themeId by rememberSaveable { mutableIntStateOf(1) }
     var timerEnabled by rememberSaveable { mutableStateOf(false) }
     var modeRaw by rememberSaveable { mutableStateOf(SecretDraftMode.TEXT.name) }
     var voiceUri by rememberSaveable { mutableStateOf<Uri?>(null) }

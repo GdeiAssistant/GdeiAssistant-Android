@@ -121,6 +121,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             if (releaseSigningEnabled) {
                 signingConfig = signingConfigs.getByName("release")
             }
@@ -135,8 +136,20 @@ android {
     }
 
     packaging {
+        jniLibs {
+            keepDebugSymbols += setOf(
+                "**/libandroidx.graphics.path.so",
+                "**/libdatastore_shared_counter.so"
+            )
+        }
         resources {
             excludes += setOf("META-INF/NOTICE", "META-INF/LICENSE")
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 
@@ -150,6 +163,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    lint {
+        disable += setOf("GradleDependency", "NewerVersionAvailable", "OldTargetApi")
+    }
+
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
 }
 
 dependencies {

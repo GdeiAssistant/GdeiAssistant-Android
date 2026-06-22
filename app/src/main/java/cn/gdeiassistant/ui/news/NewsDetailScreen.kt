@@ -1,7 +1,6 @@
 package cn.gdeiassistant.ui.news
 
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +36,7 @@ import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
+import androidx.core.net.toUri
 
 @Composable
 fun NewsDetailScreen(
@@ -50,7 +50,7 @@ fun NewsDetailScreen(
 
     fun openExternalUrl(url: String) {
         runCatching {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
         }.onFailure {
             Toast.makeText(
                 context,

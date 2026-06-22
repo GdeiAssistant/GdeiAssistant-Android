@@ -52,17 +52,18 @@ class UpgradeService : LifecycleService() {
         lifecycleScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) { runCatching { upgradeApi.getUpgradeInfo() }.getOrNull() }
-                if (result?.success == true && result.data != null) {
+                val data = result?.data
+                if (result?.success == true && data != null) {
                     val currentVersionCode = PackageInfoCompat.getLongVersionCode(
                         packageManager.getPackageInfo(packageName, 0)
                     ).toInt()
-                    val newCode = result.data!!.versionCode ?: 0
+                    val newCode = data.versionCode ?: 0
                     if (newCode > currentVersionCode) {
                         sendBroadcast(Intent("cn.gdeiassistant.CHECK_UPGRADE").apply {
-                            result.data!!.versionCodeName?.let { putExtra("VersionCodeName", it) }
-                            result.data!!.downloadURL?.let { putExtra("DownloadURL", it) }
-                            result.data!!.versionInfo?.let { putExtra("VersionInfo", it) }
-                            result.data!!.fileSize?.let { putExtra("FileSize", it) }
+                            data.versionCodeName?.let { putExtra("VersionCodeName", it) }
+                            data.downloadURL?.let { putExtra("DownloadURL", it) }
+                            data.versionInfo?.let { putExtra("VersionInfo", it) }
+                            data.fileSize?.let { putExtra("FileSize", it) }
                         })
                     }
                 }

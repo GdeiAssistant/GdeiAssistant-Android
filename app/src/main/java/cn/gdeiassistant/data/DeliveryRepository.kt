@@ -19,6 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import java.util.Locale
 
 private const val DELIVERY_PLACEHOLDER_PICKUP_CODE = "00000000000"
 
@@ -80,7 +81,7 @@ class DeliveryRepository @Inject constructor(
                 name = taskName,
                 number = draft.pickupNumber.ifBlank { DELIVERY_PLACEHOLDER_PICKUP_CODE },
                 phone = draft.phone,
-                price = String.format("%.2f", draft.price),
+                price = String.format(Locale.ROOT, "%.2f", draft.price),
                 company = draft.pickupPlace,
                 address = draft.address,
                 remarks = draft.remarks

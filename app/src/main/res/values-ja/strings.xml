@@ -1121,7 +1121,7 @@
     <string name="delivery_publish_address">届け先</string>
     <string name="delivery_publish_remarks">備考</string>
     <string name="delivery_publish_submit">タスクを投稿</string>
-    <string name="delivery_publish_submitting">投稿中...</string>
+    <string name="delivery_publish_submitting">投稿中…</string>
     <string name="delivery_publish_success">配達タスクが投稿されました</string>
     <string name="delivery_publish_failed">投稿に失敗しました</string>
     <string name="delivery_publish_pickup_place_required">受取場所を入力してください</string>
@@ -1177,7 +1177,7 @@
     <string name="photograph_publish_pick_images">画像を選択</string>
     <string name="photograph_publish_selected_count">%1$d 枚の画像を選択済み</string>
     <string name="photograph_publish_submit">作品を投稿</string>
-    <string name="photograph_publish_submitting">投稿中...</string>
+    <string name="photograph_publish_submitting">投稿中…</string>
     <string name="photograph_publish_success">作品が投稿されました</string>
     <string name="photograph_publish_failed">投稿に失敗しました</string>
     <string name="photograph_publish_title_required">タイトルを入力してください</string>
@@ -1287,7 +1287,7 @@
     <string name="profile_avatar_reset_failed">デフォルトアバターへの復元に失敗しました</string>
     <string name="profile_selected_badge">現在の選択</string>
     <string name="native_media_image_position">第 %1$d / %2$d 枚</string>
-    <string name="native_audio_preparing">音声をバッファリング中...</string>
+    <string name="native_audio_preparing">音声をバッファリング中…</string>
     <string name="native_audio_playing">再生中</string>
     <string name="native_audio_ready">タップして音声を再生</string>
     <string name="native_audio_load_failed">音声の読み込みに失敗しました</string>
@@ -1303,7 +1303,7 @@
     <string name="profile_edit_placeholder">タップして設定</string>
     <string name="profile_location_preview_label">現在の選択</string>
     <string name="profile_nickname_placeholder">ニックネームを入力</string>
-    <string name="profile_bio_placeholder">自己紹介を一言で...</string>
+    <string name="profile_bio_placeholder">自己紹介を一言で…</string>
     <string name="profile_fill_nickname">ニックネームを入力してください</string>
     <string name="profile_select_college_first">まず学部を選択してください</string>
     <string name="profile_save_profile_action">プロフィールを保存</string>

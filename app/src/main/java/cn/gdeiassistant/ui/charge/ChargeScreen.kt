@@ -3,7 +3,6 @@ package cn.gdeiassistant.ui.charge
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -73,6 +72,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
+import androidx.core.net.toUri
 
 @Composable
 fun ChargeScreen(navController: NavHostController) {
@@ -894,10 +894,10 @@ private fun handlePossibleExternalUrl(
     return if (targetUrl.startsWith("http://") || targetUrl.startsWith("https://")) {
         false
     } else {
-        val scheme = Uri.parse(targetUrl).scheme?.lowercase().orEmpty()
+        val scheme = targetUrl.toUri().scheme?.lowercase().orEmpty()
         if (scheme in ALLOWED_EXTERNAL_SCHEMES) {
             runCatching {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl)))
+                context.startActivity(Intent(Intent.ACTION_VIEW, targetUrl.toUri()))
             }.onFailure {
                 onFailed()
             }

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cn.gdeiassistant.util
 
 import android.content.Context
@@ -7,6 +9,7 @@ import androidx.security.crypto.MasterKey
 import com.auth0.android.jwt.DecodeException
 import com.auth0.android.jwt.JWT
 import java.util.Date
+import androidx.core.content.edit
 
 object TokenUtils {
     private const val PREFS_NAME = "GdeiAssistant_secure"
@@ -28,12 +31,12 @@ object TokenUtils {
     }
 
     @JvmStatic fun GetUserAccessToken(context: Context): String? = prefs(context).getString(KEY_ACCESS, null)
-    @JvmStatic fun ClearUserToken(context: Context) { prefs(context).edit().clear().apply() }
+    @JvmStatic fun ClearUserToken(context: Context) { prefs(context).edit { clear() } }
     @JvmStatic fun SaveUserToken(accessToken: String, context: Context) {
-        prefs(context).edit()
-            .putString(KEY_ACCESS, accessToken)
-            .remove(LEGACY_KEY_REFRESH)
-            .apply()
+        prefs(context).edit {
+            putString(KEY_ACCESS, accessToken)
+            remove(LEGACY_KEY_REFRESH)
+        }
     }
 
     @JvmStatic

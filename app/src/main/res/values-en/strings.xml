@@ -1121,7 +1121,7 @@
     <string name="delivery_publish_address">Delivery address</string>
     <string name="delivery_publish_remarks">Remarks</string>
     <string name="delivery_publish_submit">Post Task</string>
-    <string name="delivery_publish_submitting">Posting...</string>
+    <string name="delivery_publish_submitting">Posting…</string>
     <string name="delivery_publish_success">Delivery task posted</string>
     <string name="delivery_publish_failed">Failed to post</string>
     <string name="delivery_publish_pickup_place_required">Please enter pickup location</string>
@@ -1177,7 +1177,7 @@
     <string name="photograph_publish_pick_images">Select photos</string>
     <string name="photograph_publish_selected_count">%1$d photos selected</string>
     <string name="photograph_publish_submit">Publish Work</string>
-    <string name="photograph_publish_submitting">Publishing...</string>
+    <string name="photograph_publish_submitting">Publishing…</string>
     <string name="photograph_publish_success">Work published</string>
     <string name="photograph_publish_failed">Failed to publish</string>
     <string name="photograph_publish_title_required">Please enter a title</string>
@@ -1287,7 +1287,7 @@
     <string name="profile_avatar_reset_failed">Failed to restore default avatar</string>
     <string name="profile_selected_badge">Selected</string>
     <string name="native_media_image_position">%1$d / %2$d</string>
-    <string name="native_audio_preparing">Buffering audio...</string>
+    <string name="native_audio_preparing">Buffering audio…</string>
     <string name="native_audio_playing">Playing</string>
     <string name="native_audio_ready">Tap to play audio</string>
     <string name="native_audio_load_failed">Failed to load audio</string>
@@ -1303,7 +1303,7 @@
     <string name="profile_edit_placeholder">Tap to set</string>
     <string name="profile_location_preview_label">Selected</string>
     <string name="profile_nickname_placeholder">Enter nickname</string>
-    <string name="profile_bio_placeholder">Describe yourself in one line...</string>
+    <string name="profile_bio_placeholder">Describe yourself in one line…</string>
     <string name="profile_fill_nickname">Please enter a nickname</string>
     <string name="profile_select_college_first">Please select a college first</string>
     <string name="profile_save_profile_action">Save Profile</string>

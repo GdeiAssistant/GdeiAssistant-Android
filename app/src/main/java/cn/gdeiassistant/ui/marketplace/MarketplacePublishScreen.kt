@@ -49,6 +49,7 @@ import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun MarketplacePublishScreen(navController: NavHostController) {
@@ -61,7 +62,7 @@ fun MarketplacePublishScreen(navController: NavHostController) {
     var location by rememberSaveable { mutableStateOf("") }
     var qq by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
-    var selectedTypeId by rememberSaveable { mutableStateOf(0) }
+    var selectedTypeId by rememberSaveable { mutableIntStateOf(0) }
     val selectedImages = remember { mutableStateListOf<Uri>() }
 
     val imagePicker = rememberLauncherForActivityResult(

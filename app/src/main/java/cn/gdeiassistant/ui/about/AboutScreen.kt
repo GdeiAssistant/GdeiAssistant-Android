@@ -2,7 +2,6 @@ package cn.gdeiassistant.ui.about
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +37,7 @@ import cn.gdeiassistant.ui.components.*
 import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
+import androidx.core.net.toUri
 
 @Composable
 fun AboutScreen(navController: NavHostController) {
@@ -504,7 +504,7 @@ private fun SupportRow(
 
 private fun launchExternal(context: Context, target: String) {
     runCatching {
-        val uri = Uri.parse(target)
+        val uri = target.toUri()
         val action = if (target.startsWith("mailto:")) Intent.ACTION_SENDTO else Intent.ACTION_VIEW
         context.startActivity(Intent(action, uri))
     }.onFailure {
