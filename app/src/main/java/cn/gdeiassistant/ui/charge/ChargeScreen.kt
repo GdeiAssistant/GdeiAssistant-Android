@@ -57,7 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
@@ -112,6 +112,7 @@ private fun ChargeContent(
     onExitPayment: () -> Unit
 ) {
     val context = LocalContext.current
+    val externalOpenFailedText = stringResource(R.string.charge_external_open_failed)
     val errorText = state.error?.asString()
     val cardStatusText = if (state.cardInfo?.cardLostState == "1") {
         stringResource(R.string.card_status_lost)
@@ -157,7 +158,7 @@ private fun ChargeContent(
             onWebViewCreated = { paymentWebView = it },
             onCanGoBackChanged = { paymentCanGoBack = it },
             onOpenExternalFailed = {
-                Toast.makeText(context, context.getString(R.string.charge_external_open_failed), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, externalOpenFailedText, Toast.LENGTH_LONG).show()
             }
         )
         return
@@ -834,7 +835,7 @@ private fun PaymentPage(
                                 )
                             }
 
-                            @Suppress("DEPRECATION")
+                            @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
                             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                                 return handlePossibleExternalUrl(
                                     context = context,

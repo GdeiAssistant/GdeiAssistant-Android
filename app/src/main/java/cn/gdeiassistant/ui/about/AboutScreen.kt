@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
@@ -44,6 +44,8 @@ fun AboutScreen(navController: NavHostController) {
     val context = LocalContext.current
     val viewModel: AboutViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val officialSiteUrl = stringResource(R.string.about_official_site_url)
+    val supportEmail = stringResource(R.string.about_support_email)
 
     LaunchedEffect(viewModel) {
         viewModel.events.collectLatest { message ->
@@ -57,10 +59,10 @@ fun AboutScreen(navController: NavHostController) {
         onCheckUpdate = viewModel::checkForUpdate,
         onMockModeChange = viewModel::setMockModeEnabled,
         onOpenSite = {
-            launchExternal(context, context.getString(R.string.about_official_site_url))
+            launchExternal(context, officialSiteUrl)
         },
         onOpenFeedback = {
-            launchExternal(context, "mailto:${context.getString(R.string.about_support_email)}")
+            launchExternal(context, "mailto:$supportEmail")
         },
         onOpenDownload = { url ->
             launchExternal(context, url)
@@ -246,7 +248,7 @@ private fun UpdateCard(
                 Spacer(modifier = Modifier.height(12.dp))
                 TintButton(
                     text = stringResource(R.string.about_download_update),
-                    onClick = { onOpenDownload(state.latestVersion?.downloadURL.orEmpty()) },
+                    onClick = { onOpenDownload(update.downloadURL.orEmpty()) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

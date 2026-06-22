@@ -34,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
@@ -56,6 +56,7 @@ private enum class GraduateResultState {
 @Composable
 fun GraduateExamScreen(navController: NavHostController) {
     val context = LocalContext.current
+    val backupUrl = stringResource(R.string.graduate_exam_backup_url)
     val viewModel: GraduateExamViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -80,8 +81,7 @@ fun GraduateExamScreen(navController: NavHostController) {
                 onIdNumberChange = viewModel::updateIdNumber,
                 onSubmit = viewModel::submit,
                 onOpenBackup = {
-                    val url = context.getString(R.string.graduate_exam_backup_url)
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(backupUrl)))
                 }
             )
         }

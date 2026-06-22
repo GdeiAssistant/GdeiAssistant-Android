@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -138,6 +139,7 @@ fun GdeiAssistantApp(
     hasActiveSession: Boolean = false
 ) {
     val context = LocalContext.current
+    val loginExpiredToast by rememberUpdatedState(stringResource(R.string.login_expired_toast))
     val startDestination = if (hasActiveSession) Routes.HOME else Routes.LOGIN
 
     LaunchedEffect(initialRoute) {
@@ -163,7 +165,7 @@ fun GdeiAssistantApp(
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(startDestination) { inclusive = true }
                     }
-                    Toast.makeText(context, context.getString(R.string.login_expired_toast), Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, loginExpiredToast, Toast.LENGTH_LONG).show()
                 }
                 is GlobalEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()

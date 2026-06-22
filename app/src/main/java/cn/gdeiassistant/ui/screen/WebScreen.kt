@@ -53,6 +53,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,6 +92,10 @@ fun WebScreen(
 ) {
     val context = LocalContext.current
     val defaultTitle = stringResource(R.string.web_title_default)
+    val unknownHostLabel = stringResource(R.string.web_host_unknown)
+    val browserFailedText = stringResource(R.string.web_browser_failed)
+    val loadFailedText by rememberUpdatedState(stringResource(R.string.web_load_failed))
+    val rendererCrashedText by rememberUpdatedState(stringResource(R.string.web_renderer_crashed))
     var pageTitle by remember(title) { mutableStateOf(title.ifBlank { defaultTitle }) }
     var currentUrl by remember(url) { mutableStateOf(url) }
     var isLoading by remember { mutableStateOf(false) }
@@ -103,7 +108,7 @@ fun WebScreen(
     val isValidUrl = currentUrl.startsWith("http://") || currentUrl.startsWith("https://")
     val isTrustedUrl = isTrustedWebUrl(currentUrl)
     val canReloadInApp = isValidUrl && isTrustedUrl
-    val hostLabel = hostLabelFromUrl(currentUrl).ifBlank { context.getString(R.string.web_host_unknown) }
+    val hostLabel = hostLabelFromUrl(currentUrl).ifBlank { unknownHostLabel }
     val inAppJavaScript = allowJavaScript && isTrustedUrl
 
     val openInBrowser = {
@@ -114,7 +119,7 @@ fun WebScreen(
                 onFailure = {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.web_browser_failed),
+                        browserFailedText,
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -329,7 +334,8 @@ fun WebScreen(
                                                         val targetUrl = request?.url?.toString().orEmpty()
                                                         return handleWebNavigation(
                                                             context = context,
-                                                            targetUrl = targetUrl
+                                                            targetUrl = targetUrl,
+                                                            browserFailedText = browserFailedText
                                                         )
                                                     }
 
@@ -337,7 +343,8 @@ fun WebScreen(
                                                     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                                                         return handleWebNavigation(
                                                             context = context,
-                                                            targetUrl = url.orEmpty()
+                                                            targetUrl = url.orEmpty(),
+                                                            browserFailedText = browserFailedText
                                                         )
                                                     }
 
@@ -355,7 +362,7 @@ fun WebScreen(
                                                     ) {
                                                         if (request?.isForMainFrame == true) {
                                                             errorMessage = error?.description?.toString()
-                                                                ?: context.getString(R.string.web_load_failed)
+                                                                ?: loadFailedText
                                                             isLoading = false
                                                         }
                                                     }
@@ -372,7 +379,7 @@ fun WebScreen(
                                                         canGoBack = false
                                                         isLoading = false
                                                         progress = 0
-                                                        errorMessage = context.getString(R.string.web_renderer_crashed)
+                                                        errorMessage = rendererCrashedText
                                                         return true
                                                     }
                                                 }
@@ -582,7 +589,8 @@ private fun WebView.configureWebSettings(
 
 private fun handleWebNavigation(
     context: Context,
-    targetUrl: String
+    targetUrl: String,
+    browserFailedText: String
 ): Boolean {
     if (targetUrl.isBlank()) return false
     return when {
@@ -596,7 +604,7 @@ private fun handleWebNavigation(
                     onFailure = {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.web_browser_failed),
+                            browserFailedText,
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -612,7 +620,7 @@ private fun handleWebNavigation(
                 onFailure = {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.web_browser_failed),
+                        browserFailedText,
                         Toast.LENGTH_LONG
                     ).show()
                 }

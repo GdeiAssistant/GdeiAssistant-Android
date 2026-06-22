@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
@@ -43,6 +43,7 @@ fun NewsDetailScreen(
     navController: NavHostController
 ) {
     val context = LocalContext.current
+    val webBrowserFailedText = stringResource(R.string.web_browser_failed)
     val viewModel: NewsDetailViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val detail = state.detail
@@ -53,7 +54,7 @@ fun NewsDetailScreen(
         }.onFailure {
             Toast.makeText(
                 context,
-                context.getString(R.string.web_browser_failed),
+                webBrowserFailedText,
                 Toast.LENGTH_LONG
             ).show()
         }
