@@ -78,7 +78,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
@@ -280,6 +280,7 @@ private fun ProfileAccountCard(
     val currentMajor = profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentEnrollment = profile.enrollment?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
+    val selectCollegeFirstText = stringResource(R.string.profile_select_college_first)
 
     SectionCard(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -340,7 +341,7 @@ private fun ProfileAccountCard(
             onEditCollege = { activeSelectionEditor = ProfileSelectionEditorField.College },
             onEditMajor = {
                 if (!canSelectMajor) {
-                    Toast.makeText(context, context.getString(R.string.profile_select_college_first), Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, selectCollegeFirstText, Toast.LENGTH_LONG).show()
                 } else {
                     activeSelectionEditor = ProfileSelectionEditorField.Major
                 }

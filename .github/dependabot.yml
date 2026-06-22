@@ -10,6 +10,11 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Hilt 2.59.2 does not support Kotlin 2.4 metadata yet.
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+        versions:
+          - ">= 2.4.0, < 2.5.0"
     groups:
       gradle-minor-and-patch:
         patterns:
