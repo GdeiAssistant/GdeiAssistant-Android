@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Android SDK platform
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
 
       - name: Run Android lint
         run: ./gradlew lintDebug
@@ -98,7 +98,7 @@ jobs:
 
       - name: Install Android SDK platform
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
 
       - name: Enable KVM
         run: |
