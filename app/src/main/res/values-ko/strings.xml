@@ -1121,7 +1121,7 @@
     <string name="delivery_publish_address">배달 주소</string>
     <string name="delivery_publish_remarks">비고</string>
     <string name="delivery_publish_submit">임무 등록</string>
-    <string name="delivery_publish_submitting">등록 중...</string>
+    <string name="delivery_publish_submitting">등록 중…</string>
     <string name="delivery_publish_success">배달 임무가 등록되었습니다</string>
     <string name="delivery_publish_failed">등록 실패</string>
     <string name="delivery_publish_pickup_place_required">픽업 장소를 입력해 주세요</string>
@@ -1177,7 +1177,7 @@
     <string name="photograph_publish_pick_images">이미지 선택</string>
     <string name="photograph_publish_selected_count">%1$d 장 이미지 선택됨</string>
     <string name="photograph_publish_submit">작품 등록</string>
-    <string name="photograph_publish_submitting">등록 중...</string>
+    <string name="photograph_publish_submitting">등록 중…</string>
     <string name="photograph_publish_success">작품이 등록되었습니다</string>
     <string name="photograph_publish_failed">등록 실패</string>
     <string name="photograph_publish_title_required">제목을 입력해 주세요</string>
@@ -1287,7 +1287,7 @@
     <string name="profile_avatar_reset_failed">기본 프로필 사진 복원 실패</string>
     <string name="profile_selected_badge">현재 선택</string>
     <string name="native_media_image_position">제 %1$d / %2$d 장</string>
-    <string name="native_audio_preparing">오디오 버퍼링 중...</string>
+    <string name="native_audio_preparing">오디오 버퍼링 중…</string>
     <string name="native_audio_playing">재생 중</string>
     <string name="native_audio_ready">음성 재생하기</string>
     <string name="native_audio_load_failed">음성 로딩 실패</string>
@@ -1303,7 +1303,7 @@
     <string name="profile_edit_placeholder">탭하여 설정</string>
     <string name="profile_location_preview_label">현재 선택</string>
     <string name="profile_nickname_placeholder">닉네임을 입력하세요</string>
-    <string name="profile_bio_placeholder">한 줄로 자기소개...</string>
+    <string name="profile_bio_placeholder">한 줄로 자기소개…</string>
     <string name="profile_fill_nickname">닉네임을 입력해 주세요</string>
     <string name="profile_select_college_first">먼저 학과를 선택해 주세요</string>
     <string name="profile_save_profile_action">프로필 저장</string>

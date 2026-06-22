@@ -62,6 +62,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.ShimmerBox
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun PhotographScreen(navController: NavHostController) {
@@ -387,7 +388,7 @@ fun PhotographPublishScreen(navController: NavHostController) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var title by rememberSaveable { mutableStateOf("") }
     var content by rememberSaveable { mutableStateOf("") }
-    var categoryRaw by rememberSaveable { mutableStateOf(PhotographCategory.LIFE.rawValue) }
+    var categoryRaw by rememberSaveable { mutableIntStateOf(PhotographCategory.LIFE.rawValue) }
     val category = remember(categoryRaw) { PhotographCategory.fromRemote(categoryRaw) }
 
     val pickerLauncher = rememberLauncherForActivityResult(

@@ -69,6 +69,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun DatingScreen(navController: NavHostController) {
@@ -275,7 +276,7 @@ fun DatingPublishScreen(navController: NavHostController) {
     var qq by rememberSaveable { mutableStateOf("") }
     var wechat by rememberSaveable { mutableStateOf("") }
     var content by rememberSaveable { mutableStateOf("") }
-    var selectedGrade by rememberSaveable { mutableStateOf(1) }
+    var selectedGrade by rememberSaveable { mutableIntStateOf(1) }
     var selectedArea by rememberSaveable { mutableStateOf(DatingArea.GIRL) }
     var selectedFaculty by rememberSaveable { mutableStateOf(ProfileFormSupport.UnselectedOption) }
     var selectedImage by remember { mutableStateOf<Uri?>(null) }

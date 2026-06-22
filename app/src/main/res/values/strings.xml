@@ -1120,7 +1120,7 @@
     <string name="delivery_publish_address">送达地址</string>
     <string name="delivery_publish_remarks">备注</string>
     <string name="delivery_publish_submit">发布任务</string>
-    <string name="delivery_publish_submitting">发布中...</string>
+    <string name="delivery_publish_submitting">发布中…</string>
     <string name="delivery_publish_success">跑腿任务已发布</string>
     <string name="delivery_publish_failed">发布失败</string>
     <string name="delivery_publish_pickup_place_required">请输入取件地点</string>
@@ -1176,7 +1176,7 @@
     <string name="photograph_publish_pick_images">选择图片</string>
     <string name="photograph_publish_selected_count">已选择 %1$d 张图片</string>
     <string name="photograph_publish_submit">发布作品</string>
-    <string name="photograph_publish_submitting">发布中...</string>
+    <string name="photograph_publish_submitting">发布中…</string>
     <string name="photograph_publish_success">作品已发布</string>
     <string name="photograph_publish_failed">发布失败</string>
     <string name="photograph_publish_title_required">请输入标题</string>
@@ -1286,7 +1286,7 @@
     <string name="profile_avatar_reset_failed">恢复默认头像失败</string>
     <string name="profile_selected_badge">当前选择</string>
     <string name="native_media_image_position">第 %1$d / %2$d 张</string>
-    <string name="native_audio_preparing">正在缓冲音频...</string>
+    <string name="native_audio_preparing">正在缓冲音频…</string>
     <string name="native_audio_playing">正在播放</string>
     <string name="native_audio_ready">点击播放语音</string>
     <string name="native_audio_load_failed">语音加载失败</string>
@@ -1302,7 +1302,7 @@
     <string name="profile_edit_placeholder">点击设置</string>
     <string name="profile_location_preview_label">当前选择</string>
     <string name="profile_nickname_placeholder">请输入昵称</string>
-    <string name="profile_bio_placeholder">一句话介绍自己...</string>
+    <string name="profile_bio_placeholder">一句话介绍自己…</string>
     <string name="profile_fill_nickname">请填写昵称</string>
     <string name="profile_select_college_first">请先选择院系</string>
     <string name="profile_save_profile_action">保存资料</string>

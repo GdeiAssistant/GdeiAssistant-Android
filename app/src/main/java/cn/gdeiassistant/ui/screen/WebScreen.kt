@@ -3,7 +3,6 @@ package cn.gdeiassistant.ui.screen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.webkit.CookieManager
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebChromeClient
@@ -72,6 +71,7 @@ import cn.gdeiassistant.ui.components.Atmosphere
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.HeroCard
 import cn.gdeiassistant.ui.components.MetricChip
+import androidx.core.net.toUri
 
 @Composable private fun webBackground(): Color = MaterialTheme.colorScheme.surface
 @Composable private fun webBackgroundElevated(): Color = MaterialTheme.colorScheme.surfaceContainerLow
@@ -339,7 +339,7 @@ fun WebScreen(
                                                         )
                                                     }
 
-                                                    @Suppress("DEPRECATION")
+                                                    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
                                                     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                                                         return handleWebNavigation(
                                                             context = context,
@@ -636,7 +636,7 @@ private fun openExternalUrl(
     onFailure: () -> Unit
 ) {
     runCatching {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
     }.onFailure {
         onFailure()
     }
@@ -644,12 +644,12 @@ private fun openExternalUrl(
 
 private fun hostLabelFromUrl(url: String): String {
     return runCatching {
-        Uri.parse(url).host.orEmpty().removePrefix("www.")
+        url.toUri().host.orEmpty().removePrefix("www.")
     }.getOrDefault("")
 }
 
 private fun isTrustedWebUrl(url: String): Boolean {
-    val host = runCatching { Uri.parse(url).host.orEmpty().lowercase() }.getOrDefault("")
+    val host = runCatching { url.toUri().host.orEmpty().lowercase() }.getOrDefault("")
     if (host.isBlank()) return false
     return host == "gdeiassistant.cn" ||
         host.endsWith(".gdeiassistant.cn") ||

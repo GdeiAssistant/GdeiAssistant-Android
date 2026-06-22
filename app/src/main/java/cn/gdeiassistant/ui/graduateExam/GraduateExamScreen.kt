@@ -1,7 +1,6 @@
 package cn.gdeiassistant.ui.graduateExam
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +45,7 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
+import androidx.core.net.toUri
 
 private enum class GraduateResultState {
     Loading,
@@ -81,7 +81,7 @@ fun GraduateExamScreen(navController: NavHostController) {
                 onIdNumberChange = viewModel::updateIdNumber,
                 onSubmit = viewModel::submit,
                 onOpenBackup = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(backupUrl)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, backupUrl.toUri()))
                 }
             )
         }

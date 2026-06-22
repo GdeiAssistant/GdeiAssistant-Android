@@ -348,7 +348,7 @@ class MockInterceptorSmokeTest {
         }
         val response = client.newCall(requestBuilder.build()).execute()
         assertEquals(200, response.code)
-        val body = response.body?.string().orEmpty()
+        val body = response.body.string()
         response.close()
         val root = gson.fromJson(body, JsonObject::class.java)
         assertNotNull("response json should not be null for $path", root)

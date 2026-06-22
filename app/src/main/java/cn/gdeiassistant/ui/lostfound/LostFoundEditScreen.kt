@@ -49,6 +49,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun LostFoundEditScreen(navController: NavHostController) {
@@ -62,7 +63,7 @@ fun LostFoundEditScreen(navController: NavHostController) {
     var wechat by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var selectedType by rememberSaveable { mutableStateOf(LostFoundType.LOST) }
-    var selectedItemTypeId by rememberSaveable { mutableStateOf(0) }
+    var selectedItemTypeId by rememberSaveable { mutableIntStateOf(0) }
     var initializedForItemId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(viewModel) {

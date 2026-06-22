@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color.parseColor
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -79,6 +78,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.graphics.toColorInt
 
 // ──────────────────────────────────────────────────────────
 // 入口
@@ -911,7 +911,7 @@ private fun DetailRow(label: String, value: String) {
 // ──────────────────────────────────────────────────────────
 
 private fun courseColor(raw: String?): Color {
-    return runCatching { Color(parseColor(raw ?: "#2563EB")) }
+    return runCatching { Color((raw ?: "#2563EB").toColorInt()) }
         .getOrElse { Color(0xFF315A87) }
         .copy(alpha = 0.88f)
 }

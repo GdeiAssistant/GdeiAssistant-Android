@@ -1,7 +1,6 @@
 package cn.gdeiassistant.ui.profile
 
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -82,6 +81,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.core.net.toUri
 
 @Composable
 fun DownloadDataScreen(navController: NavHostController) {
@@ -1438,7 +1438,7 @@ private fun SettingInfoRow(
 
 private fun launchExternal(context: android.content.Context, url: String) {
     runCatching {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
     }.onFailure {
         Toast.makeText(context, context.getString(R.string.about_open_failed), Toast.LENGTH_LONG).show()
     }

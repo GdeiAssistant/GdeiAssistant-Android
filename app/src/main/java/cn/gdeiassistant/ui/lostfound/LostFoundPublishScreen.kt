@@ -50,6 +50,7 @@ import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun LostFoundPublishScreen(navController: NavHostController) {
@@ -63,7 +64,7 @@ fun LostFoundPublishScreen(navController: NavHostController) {
     var wechat by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var selectedType by rememberSaveable { mutableStateOf(LostFoundType.LOST) }
-    var selectedItemTypeId by rememberSaveable { mutableStateOf(0) }
+    var selectedItemTypeId by rememberSaveable { mutableIntStateOf(0) }
     val selectedImages = remember { mutableStateListOf<Uri>() }
 
     val imagePicker = rememberLauncherForActivityResult(

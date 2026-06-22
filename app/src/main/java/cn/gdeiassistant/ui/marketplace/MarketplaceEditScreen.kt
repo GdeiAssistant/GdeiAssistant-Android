@@ -48,6 +48,8 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Locale
+import androidx.compose.runtime.mutableIntStateOf
 
 @Composable
 fun MarketplaceEditScreen(navController: NavHostController) {
@@ -60,7 +62,7 @@ fun MarketplaceEditScreen(navController: NavHostController) {
     var location by rememberSaveable { mutableStateOf("") }
     var qq by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
-    var selectedTypeId by rememberSaveable { mutableStateOf(0) }
+    var selectedTypeId by rememberSaveable { mutableIntStateOf(0) }
     var initializedForItemId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(viewModel) {
@@ -87,7 +89,7 @@ fun MarketplaceEditScreen(navController: NavHostController) {
         val item = state.item ?: return@LaunchedEffect
         if (initializedForItemId == item.id) return@LaunchedEffect
         title = item.title
-        price = String.format("%.2f", item.price)
+        price = String.format(Locale.ROOT, "%.2f", item.price)
         description = item.description
         location = item.location
         qq = item.qq

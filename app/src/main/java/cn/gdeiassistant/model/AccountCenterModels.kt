@@ -35,7 +35,14 @@ data class PhoneAttribution(
     val name: String
 ) : Serializable {
     fun displayName(locale: Locale = AppLocaleSupport.localeObject()): String {
-        val localizedName = regionCode?.let { Locale("", it).getDisplayCountry(locale) }.orEmpty()
+        val localizedName = regionCode
+            ?.let {
+                Locale.Builder()
+                    .setRegion(it)
+                    .build()
+                    .getDisplayCountry(locale)
+            }
+            .orEmpty()
         if (localizedName.isNotBlank()) {
             return localizedName
         }

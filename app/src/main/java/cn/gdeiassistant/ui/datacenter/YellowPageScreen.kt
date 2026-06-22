@@ -2,7 +2,6 @@ package cn.gdeiassistant.ui.datacenter
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
@@ -52,6 +51,7 @@ import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import androidx.core.net.toUri
 
 @Composable
 fun YellowPageScreen(navController: NavHostController) {
@@ -343,7 +343,7 @@ private fun YellowPageActionCard(
                         onClick = {
                             launchIntent(
                                 context = context,
-                                intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${sanitizePhone(entry.majorPhone)}"))
+                                intent = Intent(Intent.ACTION_DIAL, "tel:${sanitizePhone(entry.majorPhone)}".toUri())
                             )
                         },
                         modifier = Modifier.weight(1f)
@@ -354,7 +354,7 @@ private fun YellowPageActionCard(
                         onClick = {
                             launchIntent(
                                 context = context,
-                                intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:${sanitizePhone(entry.majorPhone)}"))
+                                intent = Intent(Intent.ACTION_SENDTO, "smsto:${sanitizePhone(entry.majorPhone)}".toUri())
                             )
                         },
                         modifier = Modifier.weight(1f)
@@ -370,7 +370,7 @@ private fun YellowPageActionCard(
                             onClick = {
                                 launchIntent(
                                     context = context,
-                                    intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${entry.email}"))
+                                    intent = Intent(Intent.ACTION_SENDTO, "mailto:${entry.email}".toUri())
                                 )
                             },
                             modifier = Modifier.weight(1f),
@@ -384,7 +384,7 @@ private fun YellowPageActionCard(
                             onClick = {
                                 launchIntent(
                                     context = context,
-                                    intent = Intent(Intent.ACTION_VIEW, Uri.parse(normalizeWebsite(entry.website)))
+                                    intent = Intent(Intent.ACTION_VIEW, normalizeWebsite(entry.website).toUri())
                                 )
                             },
                             modifier = Modifier.weight(1f)
