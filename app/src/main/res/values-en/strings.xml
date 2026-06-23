@@ -69,18 +69,18 @@
     <string name="home_feature_group_life">Campus Life</string>
     <string name="home_feature_group_life_subtitle">Social, trade, topics &amp; interact</string>
     <string name="home_system_notice_title">System Notices</string>
-    <string name="home_notice_count">%1$d total</string>
+    <string name="home_notice_count">Total: %1$d</string>
     <string name="menu_grade">Grades</string>
     <string name="menu_schedule">Schedule</string>
     <string name="menu_card">Campus Card</string>
     <string name="menu_library">Library</string>
     <string name="home_today_schedule_title">Today\'s Schedule</string>
     <string name="home_today_schedule_empty_summary">No classes today — take a rest</string>
-    <string name="home_today_schedule_count">%1$d classes total</string>
+    <string name="home_today_schedule_count">Total classes: %1$d</string>
     <string name="home_today_schedule_empty_title">No classes today</string>
     <string name="home_today_schedule_empty_body">Time to relax</string>
     <string name="home_view_schedule">View Schedule</string>
-    <string name="home_stats_course_count">%1$d classes today</string>
+    <string name="home_stats_course_count">Today\'s classes: %1$d</string>
     <string name="home_stats_no_course">No classes today</string>
     <string name="home_stats_card_balance">Card balance ¥%1$s</string>
     <string name="home_view_all">View All</string>
@@ -120,7 +120,7 @@
     <string name="library_renew_loading">Renewing…</string>
     <string name="library_renew">Renew</string>
     <string name="library_renew_success">Renewal successful</string>
-    <string name="library_renew_times">Renewed %1$d times</string>
+    <string name="library_renew_times">Renewals: %1$d</string>
 
     <!-- Schedule -->
     <string name="schedule_title">Schedule</string>
@@ -198,8 +198,8 @@
     <string name="grade_year_four">Year 4</string>
     <string name="grade_selector_year">Academic Year</string>
     <string name="grade_selector_term">Semester</string>
-    <string name="grade_filter_hint">%1$d courses recorded for this academic year</string>
-    <string name="grade_summary_title">%1$d Courses</string>
+    <string name="grade_filter_hint">Courses recorded for this academic year: %1$d</string>
+    <string name="grade_summary_title">Courses: %1$d</string>
     <string name="grade_summary_subtitle">Switch semesters to view GPA and grade details</string>
     <string name="grade_metric_courses">Courses</string>
     <string name="grade_metric_igp">Score</string>
@@ -311,7 +311,7 @@
     <string name="charge_order_id_label">Order %1$s</string>
     <string name="charge_order_amount_label">Amount</string>
     <string name="charge_order_updated_label">Updated</string>
-    <string name="charge_order_retry_after">Check again after %1$d seconds</string>
+    <string name="charge_order_retry_after">Seconds before next check: %1$d</string>
     <string name="charge_order_status_created">The charge request has been created.</string>
     <string name="charge_order_status_processing">The charge request is being processed. Check again later and avoid submitting it again.</string>
     <string name="charge_order_status_payment_session_created">The payment request has been generated. Complete payment and refresh the balance. This status does not mean final settlement.</string>
@@ -466,7 +466,7 @@
     <string name="spare_empty">Set criteria to start searching for available rooms</string>
     <string name="spare_result_title">Results</string>
     <string name="spare_result_subtitle">Available rooms matching the current criteria</string>
-    <string name="spare_result_count_badge">%1$d rooms</string>
+    <string name="spare_result_count_badge">Rooms: %1$d</string>
     <string name="spare_room_section_label">Section</string>
     <string name="spare_room_seating_label">Seats</string>
     <string name="spare_room_exam_seating">Exam seats: %1$s</string>
@@ -629,7 +629,7 @@
     <string name="marketplace_publish_qq_label">QQ</string>
     <string name="marketplace_publish_phone_label">Phone (optional)</string>
     <string name="marketplace_publish_type_label">Category</string>
-    <string name="marketplace_publish_selected_count">%1$d photos selected</string>
+    <string name="marketplace_publish_selected_count">Selected photos: %1$d</string>
     <string name="marketplace_publish_title_required">Please enter item name</string>
     <string name="marketplace_publish_title_too_long">Item name cannot exceed 25 characters</string>
     <string name="marketplace_publish_price_invalid">Please enter a valid price</string>
@@ -709,7 +709,7 @@
     <string name="lost_found_publish_pick_images">Select photos</string>
     <string name="lost_found_publish_submit">Publish</string>
     <string name="lost_found_publish_submitting">Publishing…</string>
-    <string name="lost_found_publish_selected_count">%1$d photos selected</string>
+    <string name="lost_found_publish_selected_count">Selected photos: %1$d</string>
     <string name="lost_found_publish_title_required">Please enter item name</string>
     <string name="lost_found_publish_title_too_long">Item name cannot exceed 25 characters</string>
     <string name="lost_found_publish_description_required">Please enter a description</string>
@@ -746,8 +746,8 @@
     <string name="secret_detail_missing">Post not found</string>
     <string name="secret_unlike_action">Unlike</string>
     <string name="secret_like_action">Like this post</string>
-    <string name="secret_like_count_value">%1$d likes</string>
-    <string name="secret_comment_count_value">%1$d comments</string>
+    <string name="secret_like_count_value">Likes: %1$d</string>
+    <string name="secret_comment_count_value">Comments: %1$d</string>
     <string name="secret_content_title">Content</string>
     <string name="secret_comment_title">Write a Response</string>
     <string name="secret_comment_placeholder">Write your response…</string>
@@ -1059,7 +1059,7 @@
     <string name="photograph_publish_title_text">Title</string>
     <string name="photograph_publish_content_text">Content</string>
     <string name="photograph_publish_pick_images">Select photos</string>
-    <string name="photograph_publish_selected_count">%1$d photos selected</string>
+    <string name="photograph_publish_selected_count">Selected photos: %1$d</string>
     <string name="photograph_publish_submit">Publish Work</string>
     <string name="photograph_publish_submitting">Publishing…</string>
     <string name="photograph_publish_success">Work published</string>
@@ -1094,8 +1094,8 @@
     <string name="library_collection_loading">Searching catalog…</string>
     <string name="library_collection_search_empty">No results found. Try different keywords.</string>
     <string name="library_collection_result_title">Search Results</string>
-    <string name="library_collection_result_subtitle">Showing %1$d results</string>
-    <string name="library_collection_result_pages">%1$d pages of results</string>
+    <string name="library_collection_result_subtitle">Results shown: %1$d</string>
+    <string name="library_collection_result_pages">Result pages: %1$d</string>
     <string name="library_page_previous">Previous</string>
     <string name="library_page_next">Next</string>
     <string name="library_page_indicator">Page %1$d / %2$d</string>
@@ -1113,7 +1113,7 @@
     <string name="library_collection_distribution_empty">No holdings distribution info available</string>
     <string name="library_collection_missing">No collection content to display</string>
     <string name="library_collection_missing_renew_info">Missing accession number or call number for renewal</string>
-    <string name="library_collection_borrow_line">Borrowed %1$s · Due %2$s · Renewed %3$d times</string>
+    <string name="library_collection_borrow_line">Borrowed %1$s · Due %2$s · Renewals: %3$d</string>
     <string name="library_collection_code_line">Accession No. %1$s · Call No. %2$s</string>
     <string name="library_collection_unknown_date">Date unknown</string>
     <string name="library_collection_default_title">Unnamed item</string>
@@ -1244,7 +1244,7 @@
     <string name="profile_phone_unbind_success">Phone unbound</string>
     <string name="profile_phone_unbind_failed">Failed to unbind phone</string>
     <string name="profile_phone_bound_note">Phone is currently bound</string>
-    <string name="profile_phone_bound_note_with_code">Currently bound with +%1$d phone</string>
+    <string name="profile_phone_bound_note_with_code">Currently bound phone code: +%1$d</string>
     <string name="profile_phone_unbound_note">No phone number bound</string>
     <string name="profile_phone_unknown_area">Other region</string>
     <string name="profile_email_input_label">Email address</string>
@@ -1358,7 +1358,7 @@
     <string name="topic_publish_topic_label">Topic name</string>
     <string name="topic_publish_content_label">Content</string>
     <string name="topic_publish_pick_images">Select photos</string>
-    <string name="topic_publish_selected_count">%1$d photos selected</string>
+    <string name="topic_publish_selected_count">Selected photos: %1$d</string>
     <string name="topic_publish_submit_action">Publish Topic</string>
     <string name="topic_publish_topic_required">Please enter a topic name</string>
     <string name="topic_publish_content_required">Please enter topic content</string>
