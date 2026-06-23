@@ -21,12 +21,7 @@
     <string name="login_button">Log In</string>
     <string name="login_loading">Logging in…</string>
     <string name="login_error_empty">Please enter your student ID and password</string>
-    <string name="login_agreement">By logging in you agree to the Terms of Service and Privacy Policy</string>
     <string name="login_subtitle">Log in with your campus account</string>
-    <string name="login_error_title">Login failed</string>
-    <string name="login_secure_hint">Token will be stored locally in secure storage for authentication and auto-refresh.</string>
-    <string name="login_channel_badge">Unified Auth</string>
-    <string name="login_feature_ready">Connected</string>
     <string name="login_mock_title">Local Demo Data</string>
     <string name="login_mock_enabled_subtitle">This login will use local demo data</string>
     <string name="login_mock_disabled_subtitle">Turning off will use the current service environment</string>
@@ -34,7 +29,6 @@
     <string name="login_campus_credential_consent_label">I have read and separately agree that the platform may process my campus account credentials within the necessary scope for campus authentication, quick authentication, campus data queries, and required session synchronization with school systems.</string>
     <string name="login_campus_credential_consent_note">You can manage consent, delete saved credentials, or turn quick authentication on or off later in Settings.</string>
     <string name="login_campus_credential_consent_required">Please agree to campus credential consent before logging in</string>
-    <string name="privacy_policy">Privacy Policy</string>
 
     <!-- 2.0 General -->
     <string name="load_failed">Failed to load</string>
@@ -70,27 +64,16 @@
     <string name="home_greeting_with_name">%1$s, %2$s</string>
     <string name="home_greeting_without_name">%1$s</string>
     <string name="home_student_suffix">student</string>
-    <string name="home_feature_group_academic">Academics</string>
-    <string name="home_feature_group_academic_subtitle">Courses, grades &amp; exams</string>
-    <string name="home_feature_group_campus">Campus Life</string>
-    <string name="home_feature_group_campus_subtitle">Library, card &amp; daily services</string>
-    <string name="home_feature_group_support">System</string>
-    <string name="home_feature_group_support_subtitle">Version, feedback &amp; utilities</string>
     <string name="home_feature_group_service">Campus Services</string>
     <string name="home_feature_group_service_subtitle">Courses, grades, card &amp; academics</string>
-    <string name="home_feature_group_community">Community</string>
-    <string name="home_feature_group_community_subtitle">Discover, trade, topics &amp; interact</string>
     <string name="home_feature_group_life">Campus Life</string>
     <string name="home_feature_group_life_subtitle">Social, trade, topics &amp; interact</string>
     <string name="home_system_notice_title">System Notices</string>
     <string name="home_notice_count">%1$d total</string>
-    <string name="home_notice_link_missing">No detail link available for this notice</string>
     <string name="menu_grade">Grades</string>
     <string name="menu_schedule">Schedule</string>
     <string name="menu_card">Campus Card</string>
     <string name="menu_library">Library</string>
-    <string name="menu_charge">Top Up Card</string>
-    <string name="menu_lost">Report Card Lost</string>
     <string name="home_today_schedule_title">Today\'s Schedule</string>
     <string name="home_today_schedule_empty_summary">No classes today — take a rest</string>
     <string name="home_today_schedule_count">%1$d classes total</string>
@@ -120,7 +103,6 @@
     <string name="card_recent_records_hint">View recent transactions by month</string>
     <string name="card_empty_records">No transactions</string>
     <string name="card_select_date">Select date to query</string>
-    <string name="card_date_filter_label">Filter by date</string>
     <string name="card_date_filter_clear">Clear</string>
     <string name="card_date_filter_confirm">Search</string>
     <string name="card_notice_title">Usage Tip</string>
@@ -205,10 +187,8 @@
     <string name="grade_gpa">GPA</string>
     <string name="grade_course_id">Course ID</string>
     <string name="grade_no_data">No grade data available</string>
-    <string name="grade_course_count">%1$d courses</string>
     <string name="grade_retry">Reload</string>
     <string name="grade_empty_hint">No grades found for the current filter</string>
-    <string name="grade_term_metrics">GPA %1$s · Score %2$s</string>
     <string name="grade_row_metric">Credits %1$s · GPA %2$s</string>
     <string name="grade_row_meta_fallback">Course info pending</string>
     <string name="grade_term_empty">No grades for this semester</string>
@@ -233,8 +213,6 @@
     <string name="feature_evaluate_subtitle">Submit course evaluations</string>
     <string name="feature_library_subtitle">View borrowing, renewals &amp; holdings</string>
     <string name="feature_card_subtitle">Balance &amp; transactions</string>
-    <string name="feature_charge_subtitle">Secure top-up process</string>
-    <string name="feature_lost_subtitle">Report campus card lost</string>
     <string name="feature_about_subtitle">Version, updates &amp; feedback</string>
     <string name="feature_spare_subtitle">Find rooms by campus &amp; time slot</string>
     <string name="feature_graduate_exam_subtitle">Check graduate exam results</string>
@@ -274,11 +252,8 @@
     <string name="about_feedback">Feedback Email</string>
     <string name="about_download_update">Download Update</string>
     <string name="about_backend_title">Contact &amp; Support</string>
-    <string name="about_backend_domain">Backend domain: %s</string>
     <string name="about_official_site_url">https://gdeiassistant.cn</string>
     <string name="about_support_email">support@gdeiassistant.cn</string>
-    <string name="about_architecture_title">Tech Stack</string>
-    <string name="about_architecture_summary">Compose UI, Material 3, MVVM/UDF, StateFlow, Retrofit, OkHttp, Kotlin Coroutines.</string>
     <string name="about_developer_title">Data Source Settings</string>
     <string name="about_mock_mode_title">Enable Local Demo Data</string>
     <string name="about_mock_mode_desc">When enabled, the app prefers local demo data for UI previews and demos.</string>
@@ -287,7 +262,6 @@
     <string name="about_checking">Checking for updates…</string>
     <string name="about_update_none">No available version info from the upgrade API</string>
     <string name="about_open_failed">Cannot open external link</string>
-    <string name="about_checking_desc">Checking whether a new update is available.</string>
     <string name="about_file_size">File size %s</string>
     <string name="about_metric_version">Version</string>
     <string name="about_metric_build">Build</string>
@@ -299,9 +273,7 @@
     <string name="charge_title">Top Up Campus Card</string>
     <string name="charge_subtitle">Enter an amount to start the payment process. You can return here to confirm status after payment.</string>
     <string name="charge_current_balance">Current balance</string>
-    <string name="charge_status_label">Card status: %s</string>
     <string name="charge_account_fallback">Campus card account</string>
-    <string name="charge_card_snapshot">Card Summary</string>
     <string name="charge_refresh">Refresh status</string>
     <string name="charge_info_unavailable">Campus card info not yet available</string>
     <string name="charge_input_title">Top-Up Details</string>
@@ -313,8 +285,6 @@
     <string name="charge_password_empty">Enter your password to confirm the top-up</string>
     <string name="charge_password_hint">Account password</string>
     <string name="charge_password_label">Identity verification</string>
-    <string name="charge_agreement">Payment Terms of Service</string>
-    <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">Submitting top-up request…</string>
     <string name="charge_submit_failed">The charge request could not be processed. Try again later.</string>
     <string name="charge_payment_title">Payment</string>
@@ -323,7 +293,6 @@
     <string name="charge_back_to_form">Back to form</string>
     <string name="charge_opening_alipay">Launching Alipay, please wait…</string>
     <string name="charge_external_open_failed">No app detected to handle this payment link</string>
-    <string name="charge_secure_network_error">Network environment is not secure. Please switch to a safe network.</string>
     <string name="charge_payment_loading">Loading payment page…</string>
     <string name="charge_step_verify">Verify identity</string>
     <string name="charge_step_order">Place order</string>
@@ -357,10 +326,8 @@
     <string name="charge_order_status_label_unknown">Pending confirmation</string>
     <string name="charge_order_status_label_manual_review">Reviewing</string>
     <string name="notice_detail_subtitle">Campus notices preserve original wording. This page only reorganizes the summary and body.</string>
-    <string name="notice_detail_summary_title">Summary</string>
     <string name="notice_detail_body_title">Body</string>
     <string name="notice_detail_notice_id_label">Notice ID</string>
-    <string name="notice_detail_channel_label">Notice Type</string>
     <string name="notice_detail_channel_default">Campus Notice</string>
     <string name="notice_detail_paragraph_count_label">Paragraphs</string>
     <string name="notice_detail_date_label">Published</string>
@@ -401,7 +368,6 @@
     <string name="cet_reset">Reset</string>
     <string name="cet_refresh_checkcode">Refresh code</string>
     <string name="cet_no_data">No score data available</string>
-    <string name="cet_subtitle">Enter your ticket number, name and verification code to check your scores.</string>
     <string name="cet_form_title">Query Form</string>
     <string name="cet_form_subtitle">The verification code can be refreshed independently. Filled info is preserved after a failed query.</string>
     <string name="cet_result_title">Results</string>
@@ -409,7 +375,6 @@
     <string name="cet_query_hint">Refresh the image if the code is hard to read.</string>
     <string name="cet_form_incomplete">Please fill in ticket number, name, and verification code</string>
     <string name="cet_checkcode_unavailable">Verification code unavailable</string>
-    <string name="cet_checkcode_loading">Loading verification code…</string>
     <string name="cet_detail_breakdown">Score Breakdown</string>
     <string name="cet_detail_identity">Exam Info</string>
     <string name="cet_result_empty_hint">Results will appear here after the query.</string>
@@ -422,10 +387,7 @@
 
     <!-- Course Evaluation -->
     <string name="evaluate_title">Course Evaluation</string>
-    <string name="evaluate_subtitle">Whether to submit immediately is up to you. Please confirm the evaluations are ready before submitting.</string>
-    <string name="evaluate_tip">With "Submit Directly" on, the system will finalize submission right after saving.</string>
     <string name="evaluate_direct_submit_title">Submit evaluation directly</string>
-    <string name="evaluate_direct_submit_desc">When off, only saves; when on, saves and submits immediately.</string>
     <string name="evaluate_submit">Submit Evaluation</string>
     <string name="evaluate_submitting">Submitting…</string>
     <string name="evaluate_submit_failed_title">Submission failed</string>
@@ -450,8 +412,6 @@
 
     <!-- News &amp; Messages -->
     <string name="tab_home">Home</string>
-    <string name="tab_schedule">Schedule</string>
-    <string name="tab_discover">Discover</string>
     <string name="tab_profile">Profile</string>
     <string name="tab_messages">News</string>
     <string name="news_title">News</string>
@@ -461,14 +421,12 @@
     <string name="news_category_college_notice">College Notices</string>
     <string name="news_category_campus_notice">Announcements</string>
     <string name="news_category_academic_update">Academic Updates</string>
-    <string name="feature_news_subtitle">View campus news</string>
     <string name="messages_title">Messages</string>
     <string name="messages_badge">Message Hub</string>
     <string name="messages_subtitle">News, system notices and interaction messages — all in one place.</string>
     <string name="messages_metric_news">News</string>
     <string name="messages_metric_unread">Unread</string>
     <string name="messages_news_action_subtitle">View latest news from the school\'s public website</string>
-    <string name="messages_refresh_subtitle">Refresh all content</string>
     <string name="messages_system_notice_title">System Notices</string>
     <string name="messages_system_notice_empty">No system notices</string>
     <string name="messages_system_notice_badge">System Notice</string>
@@ -500,16 +458,10 @@
     <string name="spare_type_label">Room type</string>
     <string name="spare_weekday_label">Weekday</string>
     <string name="spare_week_type_label">Odd/Even week</string>
-    <string name="spare_start_time_label">Start section</string>
-    <string name="spare_end_time_label">End section</string>
     <string name="spare_class_number_label">Section group</string>
-    <string name="spare_class_number_value">Group %1$d</string>
     <string name="spare_min_seating_label">Seats ≥</string>
     <string name="spare_max_seating_label">Seats ≤</string>
     <string name="spare_optional_hint">Optional</string>
-    <string name="spare_min_week_label">Start week</string>
-    <string name="spare_max_week_label">End week</string>
-    <string name="spare_week_value">Week %1$d</string>
     <string name="spare_query_action">Search Rooms</string>
     <string name="spare_empty">Set criteria to start searching for available rooms</string>
     <string name="spare_result_title">Results</string>
@@ -519,13 +471,6 @@
     <string name="spare_room_seating_label">Seats</string>
     <string name="spare_room_exam_seating">Exam seats: %1$s</string>
     <string name="graduate_exam_title">Graduate Exam</string>
-    <string name="graduate_exam_subtitle">Enter your name, admission ticket number and ID number to check scores.</string>
-    <string name="graduate_exam_hero_badge">Exam Scores</string>
-    <string name="graduate_exam_metric_status">Status</string>
-    <string name="graduate_exam_metric_waiting">Pending</string>
-    <string name="graduate_exam_metric_total">Total</string>
-    <string name="graduate_exam_backup_title">Open CHSI backup portal</string>
-    <string name="graduate_exam_backup_subtitle">Use the official backup portal when the API is unstable.</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">Query Info</string>
     <string name="graduate_exam_form_subtitle">Fill in the form to query. The backup portal link stays on the page.</string>
@@ -536,7 +481,6 @@
     <string name="graduate_exam_error_incomplete">Please fill in all query fields</string>
     <string name="graduate_exam_empty">Scores will appear here after the query</string>
     <string name="graduate_exam_result_title">Results</string>
-    <string name="graduate_exam_total_score_value">Total: %1$s</string>
     <string name="graduate_exam_total_score_label">Total Score</string>
     <string name="graduate_exam_detail_title">Score Breakdown</string>
     <string name="graduate_exam_loading_title">Querying</string>
@@ -557,7 +501,6 @@
     <string name="data_center_metric_tools">Tools</string>
     <string name="data_center_metric_scope">Scope</string>
     <string name="data_center_metric_scope_value">Electricity / Directory</string>
-    <string name="data_center_section_title">About</string>
     <string name="data_center_section_body">Dorm electricity bills and campus directory — two high-frequency tools, ready to use with no learning curve.</string>
     <string name="electricity_title">Electricity Bill</string>
     <string name="electricity_subtitle">Enter your name, student ID and year to check dorm electricity usage and fees.</string>
@@ -614,12 +557,6 @@
     <!-- Profile -->
     <string name="profile_title">Profile</string>
     <string name="profile_subtitle_default">Manage account info, binding status and data export.</string>
-    <string name="profile_metric_location">Location</string>
-    <string name="profile_metric_ip">IP Region</string>
-    <string name="profile_export_submitting">Submitting export request</string>
-    <string name="profile_export_ready">Data is ready</string>
-    <string name="profile_export_request">Export Personal Data</string>
-    <string name="profile_contact_title">Account Binding</string>
     <string name="profile_phone_title">Phone</string>
     <string name="profile_email_title">Email</string>
     <string name="profile_export_state_idle">No export record yet. You can request an export at any time.</string>
@@ -627,7 +564,6 @@
     <string name="profile_export_state_exported">Data is ready. You can download the file now.</string>
     <string name="profile_settings_title">Settings</string>
     <string name="profile_logout">Log Out</string>
-    <string name="profile_logout_subtitle">Clear local session and return to login</string>
 
     <!-- Article Details -->
     <string name="article_detail_title">Article Details</string>
@@ -638,10 +574,6 @@
     <!-- Marketplace -->
     <string name="marketplace_title">Marketplace</string>
     <string name="marketplace_refresh">Refresh listings</string>
-    <string name="marketplace_badge">Campus Secondhand</string>
-    <string name="marketplace_subtitle">Browse campus secondhand items in a card feed, with category filters, item details and personal item management.</string>
-    <string name="marketplace_metric_type">Category</string>
-    <string name="marketplace_metric_count">For Sale</string>
     <string name="marketplace_filter_all">All Categories</string>
     <string name="marketplace_search_label">Search items by keyword</string>
     <string name="marketplace_search_action">Search Items</string>
@@ -650,15 +582,11 @@
     <string name="marketplace_my_items_subtitle">Manage active and past listings</string>
     <string name="marketplace_publish_title">List Item</string>
     <string name="marketplace_publish_subtitle">Quickly list a secondhand item</string>
-    <string name="marketplace_open_intro_title">Official Portal</string>
-    <string name="marketplace_open_intro_subtitle">View the full community portal via web</string>
     <string name="marketplace_images_title">Item Photos</string>
     <string name="marketplace_empty">No items for sale at the moment</string>
     <string name="marketplace_detail_title">Item Details</string>
     <string name="marketplace_detail_missing_id">Missing item ID</string>
     <string name="marketplace_detail_missing">Item not found</string>
-    <string name="marketplace_open_image_title">View Photo</string>
-    <string name="marketplace_open_image_subtitle">View item photo via web</string>
     <string name="marketplace_contact_title">Contact</string>
     <string name="marketplace_description_title">Description</string>
     <string name="marketplace_seller_title">Seller Info</string>
@@ -674,10 +602,8 @@
     <string name="marketplace_profile_tab_off">Unlisted</string>
     <string name="marketplace_price_label">Price</string>
     <string name="marketplace_location_label">Trade location</string>
-    <string name="marketplace_has_image">Has photo</string>
     <string name="marketplace_action_sold">Mark as Sold</string>
     <string name="marketplace_action_off_shelf">Unlist</string>
-    <string name="marketplace_action_resell">Relist</string>
     <string name="marketplace_action_put_back">Relist</string>
     <string name="marketplace_action_edit">Edit Item</string>
     <string name="marketplace_default_title">Unnamed item</string>
@@ -687,8 +613,6 @@
     <string name="marketplace_default_location">On-campus pickup</string>
     <string name="marketplace_description_empty">No details available</string>
     <string name="marketplace_contact_private">Seller has not shared contact info</string>
-    <string name="marketplace_profile_nickname">My Marketplace</string>
-    <string name="marketplace_profile_intro">Manage items for sale, sold, and unlisted.</string>
     <string name="marketplace_state_updated">Status updated</string>
     <string name="marketplace_state_confirm_message">This will update the item status immediately and sync to your items list.</string>
     <string name="marketplace_action_failed">Action failed</string>
@@ -719,7 +643,6 @@
     <string name="marketplace_publish_images_required">Please select at least one photo</string>
     <string name="marketplace_publish_success">Item published</string>
     <string name="marketplace_publish_failed">Failed to publish item</string>
-    <string name="marketplace_publish_read_failed">Failed to read item photo</string>
     <string name="marketplace_edit_title">Edit Item</string>
     <string name="marketplace_edit_subtitle">Update item info. Photos will remain unchanged for now.</string>
     <string name="marketplace_edit_submit">Save Changes</string>
@@ -735,16 +658,10 @@
     <!-- Lost &amp; Found -->
     <string name="lost_found_title">Lost &amp; Found</string>
     <string name="lost_found_refresh">Refresh lost &amp; found</string>
-    <string name="lost_found_badge">Campus Lost &amp; Found</string>
-    <string name="lost_found_subtitle">Lost and found items in a unified feed, with details, personal records and recovery status management.</string>
-    <string name="lost_found_metric_filter">Filter</string>
-    <string name="lost_found_metric_count">Entries</string>
     <string name="lost_found_my_items_title">My Items</string>
     <string name="lost_found_my_items_subtitle">View your posted lost and found items</string>
     <string name="lost_found_publish_title">Post Item</string>
     <string name="lost_found_publish_subtitle">Submit a new lost or found item</string>
-    <string name="lost_found_help_title">Official Portal</string>
-    <string name="lost_found_help_subtitle">View the full community portal via web</string>
     <string name="lost_found_images_title">Item Photos</string>
     <string name="lost_found_filter_all">All</string>
     <string name="lost_found_filter_lost">Lost</string>
@@ -753,8 +670,6 @@
     <string name="lost_found_detail_title">Item Details</string>
     <string name="lost_found_detail_missing_id">Missing item ID</string>
     <string name="lost_found_detail_missing">Lost &amp; found item not found</string>
-    <string name="lost_found_open_image_title">View Photo</string>
-    <string name="lost_found_open_image_subtitle">View item photo via web</string>
     <string name="lost_found_contact_title">Contact</string>
     <string name="lost_found_description_title">Description</string>
     <string name="lost_found_owner_title">Posted By</string>
@@ -777,8 +692,6 @@
     <string name="lost_found_status_active">Seeking owner/item</string>
     <string name="lost_found_status_resolved">Recovered</string>
     <string name="lost_found_status_deleted">Deleted by system</string>
-    <string name="lost_found_profile_nickname">My Lost &amp; Found</string>
-    <string name="lost_found_profile_intro">Manage your posted lost, found and recovered items.</string>
     <string name="lost_found_mark_found_success">Marked as recovered</string>
     <string name="lost_found_mark_found_confirm_message">This item will be moved to the Recovered group and removed from the active list.</string>
     <string name="lost_found_action_failed">Action failed</string>
@@ -810,7 +723,6 @@
     <string name="lost_found_publish_images_required">Please select at least one photo</string>
     <string name="lost_found_publish_success">Lost &amp; found item published</string>
     <string name="lost_found_publish_failed">Failed to publish</string>
-    <string name="lost_found_publish_read_failed">Failed to read photo</string>
     <string name="lost_found_edit_title">Edit Item</string>
     <string name="lost_found_edit_subtitle">Update item info. Photos will remain unchanged for now.</string>
     <string name="lost_found_edit_submit">Save Changes</string>
@@ -825,21 +737,13 @@
     <!-- Secret Wall -->
     <string name="secret_title">Secret Wall</string>
     <string name="secret_refresh">Refresh secret wall</string>
-    <string name="secret_badge">Anonymous Corner</string>
-    <string name="secret_subtitle">Browse anonymous posts, view comments, like and respond — a stable space for campus whispers.</string>
-    <string name="secret_metric_feed">Posts</string>
-    <string name="secret_metric_mine">Mine</string>
     <string name="secret_my_posts_title">My Posts</string>
     <string name="secret_my_posts_subtitle">View your anonymous posts</string>
-    <string name="secret_open_audio_help_title">Audio Portal</string>
-    <string name="secret_open_audio_help_subtitle">Audio content can be opened via web</string>
     <string name="secret_voice_section_title">Audio Content</string>
     <string name="secret_voice_section_subtitle">Play directly in-app — no browser redirect needed.</string>
     <string name="secret_empty">The secret wall is quiet — nothing to browse yet</string>
     <string name="secret_detail_title">Post Details</string>
     <string name="secret_detail_missing">Post not found</string>
-    <string name="secret_open_voice_title">Open Audio</string>
-    <string name="secret_open_voice_subtitle">Open audio content via web</string>
     <string name="secret_unlike_action">Unlike</string>
     <string name="secret_like_action">Like this post</string>
     <string name="secret_like_count_value">%1$d likes</string>
@@ -962,16 +866,11 @@
     <string name="dating_publish_success">Profile published</string>
     <string name="dating_publish_failed">Failed to publish profile</string>
     <string name="dating_detail_load_failed">Failed to load profile</string>
-    <string name="dating_publish_read_failed">Failed to read photo</string>
     <string name="dating_loading_title">Loading</string>
     <string name="dating_loading_hint">Syncing profiles and interaction status…</string>
     <string name="feature_dating_subtitle">Browse profiles, publish and manage interactions</string>
     <string name="express_title">Confession Wall</string>
     <string name="express_refresh">Refresh confessions</string>
-    <string name="express_badge">Heartfelt Messages</string>
-    <string name="express_subtitle">Browse confessions, view details, comment, like and guess names — a stable space for campus sentiments.</string>
-    <string name="express_metric_feed">Posts</string>
-    <string name="express_metric_guessable">Guessable</string>
     <string name="express_my_posts_title">My Confessions</string>
     <string name="express_my_posts_subtitle">View your posted confessions</string>
     <string name="express_guide_title">How It Works</string>
@@ -1021,10 +920,6 @@
     <string name="feature_express_subtitle">Post confessions and leave messages here</string>
     <string name="topic_title">Topics</string>
     <string name="topic_refresh">Refresh topics</string>
-    <string name="topic_badge">Campus Discussion</string>
-    <string name="topic_subtitle">Browse topics, view details, manage your posts and like interactions in a unified feed.</string>
-    <string name="topic_metric_feed">Topics</string>
-    <string name="topic_metric_images">Photos</string>
     <string name="topic_my_posts_title">My Topics</string>
     <string name="topic_my_posts_subtitle">View your posted topics</string>
     <string name="topic_guide_title">Browsing Tips</string>
@@ -1039,7 +934,6 @@
     <string name="topic_content_title">Topic Content</string>
     <string name="topic_gallery_title">Photos</string>
     <string name="topic_gallery_empty">No photos attached to this topic</string>
-    <string name="topic_open_image">View photo %1$d</string>
     <string name="topic_like_action">Like Topic</string>
     <string name="topic_liked_action">Liked</string>
     <string name="topic_stat_like">Likes</string>
@@ -1052,11 +946,6 @@
     <string name="feature_topic_subtitle">See what everyone on campus is talking about</string>
     <string name="delivery_title">Campus Delivery</string>
     <string name="delivery_refresh">Refresh delivery hall</string>
-    <string name="delivery_badge">Delivery Hall</string>
-    <string name="delivery_subtitle">Post tasks, accept orders, track delivery status — all in one module.</string>
-    <string name="delivery_metric_hall">Hall</string>
-    <string name="delivery_metric_mine">Mine</string>
-    <string name="delivery_metric_pending">Pending</string>
     <string name="delivery_action_mine_title">My Orders</string>
     <string name="delivery_action_mine_subtitle">View orders I posted and accepted</string>
     <string name="delivery_action_publish_title">Post Delivery Task</string>
@@ -1142,11 +1031,6 @@
     <string name="feature_delivery_subtitle">Post delivery tasks or accept orders for extra cash</string>
     <string name="photograph_title">Campus Photos</string>
     <string name="photograph_refresh">Refresh photos</string>
-    <string name="photograph_badge">Campus Lens</string>
-    <string name="photograph_subtitle">Browse campus photography with category filters, work details, likes, comments, personal gallery and publishing.</string>
-    <string name="photograph_metric_photos">Photos</string>
-    <string name="photograph_metric_comments">Comments</string>
-    <string name="photograph_metric_likes">Likes</string>
     <string name="photograph_action_mine_title">My Works</string>
     <string name="photograph_action_mine_subtitle">View your published photography</string>
     <string name="photograph_action_publish_title">Publish Work</string>
@@ -1227,10 +1111,8 @@
     <string name="library_collection_detail_classification">Classification</string>
     <string name="library_collection_distribution_title">Holdings Distribution</string>
     <string name="library_collection_distribution_empty">No holdings distribution info available</string>
-    <string name="library_collection_detail_hint">View collection details</string>
     <string name="library_collection_missing">No collection content to display</string>
     <string name="library_collection_missing_renew_info">Missing accession number or call number for renewal</string>
-    <string name="library_collection_renew_hint">Renewal uses the current accession number and call number.</string>
     <string name="library_collection_borrow_line">Borrowed %1$s · Due %2$s · Renewed %3$d times</string>
     <string name="library_collection_code_line">Accession No. %1$s · Call No. %2$s</string>
     <string name="library_collection_unknown_date">Date unknown</string>
@@ -1258,15 +1140,10 @@
     <string name="library_renew_dialog_message">Enter your library password to verify the renewal. The password is only used for this request.</string>
 
     <string name="profile_default_username">Campus Account</string>
-    <string name="profile_default_nickname">Not set</string>
-    <string name="profile_metric_placeholder">Pending</string>
     <string name="profile_more_services_title">More Services</string>
     <string name="profile_account_data_title">Account Info</string>
     <string name="profile_account_actions_title">Account Actions</string>
-    <string name="profile_edit_action">Edit</string>
     <string name="profile_avatar_title">Avatar Management</string>
-    <string name="profile_avatar_badge">Avatar Settings</string>
-    <string name="profile_avatar_manage_action">Manage Avatar</string>
     <string name="profile_avatar_hint">A clear square image is recommended. Both standard and HD avatars will be updated.</string>
     <string name="profile_avatar_picker_title">Choose New Avatar</string>
     <string name="profile_avatar_pick_action">Choose from gallery</string>
@@ -1300,14 +1177,12 @@
     <string name="profile_state_label">State / Province</string>
     <string name="profile_city_label">City</string>
     <string name="profile_not_selected">Not selected</string>
-    <string name="profile_edit_placeholder">Tap to set</string>
     <string name="profile_location_preview_label">Selected</string>
     <string name="profile_nickname_placeholder">Enter nickname</string>
     <string name="profile_bio_placeholder">Describe yourself in one line…</string>
     <string name="profile_fill_nickname">Please enter a nickname</string>
     <string name="profile_select_college_first">Please select a college first</string>
     <string name="profile_save_profile_action">Save Profile</string>
-    <string name="profile_clear_birthday">Clear birthday</string>
     <string name="profile_confirm_action">Confirm</string>
     <string name="profile_empty_title">No Profile Data</string>
     <string name="profile_empty_message">Please try again later</string>
@@ -1320,21 +1195,17 @@
     <string name="profile_export_start_action">Start Export</string>
     <string name="profile_export_start_hint">Submit a new data export request to the server</string>
     <string name="profile_export_download_action">Download File</string>
-    <string name="profile_export_download_hint">Available only after file preparation is complete</string>
     <string name="profile_export_started">Data export request submitted</string>
     <string name="profile_export_submit_failed">Failed to submit export request</string>
     <string name="profile_export_download_failed">Failed to download export file</string>
     <string name="profile_binding_unbound">Not bound</string>
     <string name="profile_bind_phone_title">Bind Phone</string>
-    <string name="profile_bind_phone_subtitle">Manage verification code, area code and phone binding</string>
     <string name="profile_bind_phone_form_title">Phone Binding</string>
     <string name="profile_bind_email_title">Bind Email</string>
-    <string name="profile_bind_email_subtitle">Bind or unbind the email for notifications</string>
     <string name="profile_bind_email_form_title">Email Binding</string>
     <string name="profile_privacy_title">Privacy Settings</string>
     <string name="profile_privacy_subtitle">Manage profile visibility, caching and indexing preferences.</string>
     <string name="profile_privacy_badge">Privacy Controls</string>
-    <string name="profile_privacy_entry_subtitle">Manage what profile info is visible in the community</string>
     <string name="profile_privacy_profile_title">Profile Visibility</string>
     <string name="profile_privacy_platform_title">Platform Settings</string>
     <string name="profile_privacy_faculty">College</string>
@@ -1350,7 +1221,6 @@
     <string name="profile_privacy_saved">Privacy settings saved</string>
     <string name="profile_privacy_save_failed">Failed to save privacy settings</string>
     <string name="profile_login_records_title">Login Records</string>
-    <string name="profile_login_records_subtitle">View recent login devices, IPs and regions</string>
     <string name="profile_login_records_loading">Loading login records…</string>
     <string name="profile_login_records_empty">No login records to display</string>
     <string name="profile_login_ip">IP Address</string>
@@ -1395,7 +1265,6 @@
     <string name="profile_feedback_title">Help &amp; Feedback</string>
     <string name="profile_feedback_subtitle">Send issues, suggestions or experience feedback to the team.</string>
     <string name="profile_feedback_badge">Feedback</string>
-    <string name="profile_feedback_entry_subtitle">Report issues, suggestions and feedback directly</string>
     <string name="profile_feedback_type_label">Feedback type</string>
     <string name="profile_feedback_contact_label">Contact info</string>
     <string name="profile_feedback_content_label">Feedback content</string>
@@ -1404,7 +1273,6 @@
     <string name="profile_feedback_success">Feedback submitted</string>
     <string name="profile_feedback_failed">Failed to submit feedback</string>
     <string name="profile_settings_general_title">General Settings</string>
-    <string name="profile_settings_entry_subtitle">View version info and manage data source settings</string>
     <string name="profile_settings_mock_title">Local Demo Data</string>
     <string name="profile_settings_mock_subtitle">When enabled, the app prefers local demo data for UI previews and demos</string>
     <string name="profile_settings_environment_title">Service Environment</string>
@@ -1429,8 +1297,6 @@
     <string name="profile_settings_campus_credentials_boolean_no">No</string>
     <string name="profile_settings_campus_credentials_quick_auth_on">Enabled</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">Disabled</string>
-    <string name="profile_settings_campus_credentials_quick_auth_enable_action">Enable Quick Authentication</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disable_action">Disable Quick Authentication</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">Turning it off stops quick authentication or session synchronization based on saved credentials.</string>
     <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">Active consent and a saved credential are required before enabling it. The backend will return a reason if the request is rejected.</string>
     <string name="profile_settings_campus_credentials_revoke_title">Revoke Campus Credential Consent</string>
@@ -1445,7 +1311,6 @@
     <string name="profile_settings_campus_credentials_quick_auth_disabled_success">Quick authentication disabled</string>
     <string name="profile_settings_campus_credentials_action_failed">Campus credential action failed. Please try again later.</string>
     <string name="profile_delete_title">Delete Account</string>
-    <string name="profile_delete_entry_subtitle">Submit account deletion request and clear local session</string>
     <string name="profile_delete_warning_title">This action cannot be undone</string>
     <string name="profile_delete_warning_body">After submitting the deletion request, this account will enter the closure process. Please confirm your password and back up personal data beforehand.</string>
     <string name="profile_delete_password_label">Current login password</string>
@@ -1455,23 +1320,18 @@
     <string name="profile_delete_failed">Failed to submit deletion request</string>
 
     <!-- Profile Edit -->
-    <string name="profile_info_title">Personal Info</string>
     <string name="profile_info_nickname">Nickname</string>
     <string name="profile_info_birthday">Birthday</string>
-    <string name="profile_info_faculty">College</string>
     <string name="profile_info_major">Major</string>
     <string name="profile_info_enrollment">Enrollment Year</string>
-    <string name="profile_info_location">Location</string>
     <string name="profile_info_hometown">Hometown</string>
     <string name="profile_info_intro">Bio</string>
     <string name="profile_info_not_set">Not set</string>
-    <string name="profile_info_edit_title">Edit %s</string>
     <string name="profile_info_save">Save</string>
     <string name="profile_info_cancel">Cancel</string>
     <string name="profile_info_saved">Saved</string>
     <string name="profile_info_save_failed">Save failed</string>
 
-    <string name="profile_language_title">Language</string>
 
     <string name="discovery_title">Discover</string>
     <string name="discovery_badge">Community Square</string>
@@ -1489,7 +1349,6 @@
     <string name="discovery_open_express">Open Confession Wall</string>
     <string name="discovery_open_topic">Open Topics</string>
     <string name="discovery_empty">No community content to display</string>
-    <string name="feature_discovery_subtitle">Browse secret wall, confession wall and topics</string>
 
     <string name="topic_search_label">Search topics by keyword</string>
     <string name="topic_search_action">Search Topics</string>
@@ -1581,12 +1440,7 @@
     <string name="news_source_default">News</string>
 
     <!-- Charge error strings -->
-    <string name="charge_error_no_server_public_key">Failed to obtain server public key</string>
     <string name="charge_error_no_payment_info">Server did not return payment info</string>
-    <string name="charge_error_empty_payment_data">Payment data is empty</string>
-    <string name="charge_error_empty_payment_signature">Payment signature is empty</string>
-    <string name="charge_error_parse_failed">Failed to parse payment info</string>
-    <string name="charge_error_login_required">Please log in first</string>
 
     <!-- Network error messages -->
     <string name="network_error_forbidden">Access denied</string>
