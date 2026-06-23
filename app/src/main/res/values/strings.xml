@@ -20,12 +20,7 @@
     <string name="login_button">登录</string>
     <string name="login_loading">登录中…</string>
     <string name="login_error_empty">请输入学号和密码</string>
-    <string name="login_agreement">登录即表示同意用户协议与隐私政策</string>
     <string name="login_subtitle">使用校园账号登录</string>
-    <string name="login_error_title">登录失败</string>
-    <string name="login_secure_hint">Token 将保存在本地安全存储中，用于后续鉴权与自动刷新。</string>
-    <string name="login_channel_badge">统一身份认证</string>
-    <string name="login_feature_ready">已接入</string>
     <string name="login_mock_title">本地示例数据</string>
     <string name="login_mock_enabled_subtitle">当前登录将使用本地示例数据</string>
     <string name="login_mock_disabled_subtitle">关闭后将使用当前服务环境</string>
@@ -33,7 +28,6 @@
     <string name="login_campus_credential_consent_label">我已阅读并单独同意平台在必要范围内处理我的校园账号凭证，用于校园身份认证、快速认证、校园数据查询及与学校系统的必要会话同步。</string>
     <string name="login_campus_credential_consent_note">你可以在设置中查看授权状态、撤回授权、删除已保存凭证或关闭快速认证。</string>
     <string name="login_campus_credential_consent_required">请先单独同意校园凭证授权后再登录</string>
-    <string name="privacy_policy">隐私政策</string>
 
     <!-- 2.0 通用 -->
     <string name="load_failed">加载失败</string>
@@ -69,27 +63,16 @@
     <string name="home_greeting_with_name">%1$s，%2$s同学</string>
     <string name="home_greeting_without_name">%1$s，同学</string>
     <string name="home_student_suffix">同学</string>
-    <string name="home_feature_group_academic">学业服务</string>
-    <string name="home_feature_group_academic_subtitle">课程、成绩与考试入口</string>
-    <string name="home_feature_group_campus">校园生活</string>
-    <string name="home_feature_group_campus_subtitle">图书、卡务与日常服务</string>
-    <string name="home_feature_group_support">系统支持</string>
-    <string name="home_feature_group_support_subtitle">版本、反馈与辅助工具</string>
     <string name="home_feature_group_service">校园服务</string>
     <string name="home_feature_group_service_subtitle">课程、成绩、卡务与学业支持</string>
-    <string name="home_feature_group_community">校园社区</string>
-    <string name="home_feature_group_community_subtitle">发现、交易、话题与互动</string>
     <string name="home_feature_group_life">校园生活</string>
     <string name="home_feature_group_life_subtitle">社交、交易、话题与互动</string>
     <string name="home_system_notice_title">系统公告</string>
     <string name="home_notice_count">共 %1$d 条</string>
-    <string name="home_notice_link_missing">该通知暂无可用详情链接</string>
     <string name="menu_grade">成绩查询</string>
     <string name="menu_schedule">课表查询</string>
     <string name="menu_card">校园卡</string>
     <string name="menu_library">图书馆</string>
-    <string name="menu_charge">校园卡充值</string>
-    <string name="menu_lost">校园卡挂失</string>
     <string name="home_today_schedule_title">今日课表</string>
     <string name="home_today_schedule_empty_summary">今天无课，好好休息</string>
     <string name="home_today_schedule_count">共 %1$d 节课</string>
@@ -119,7 +102,6 @@
     <string name="card_recent_records_hint">按月份查看最近消费情况</string>
     <string name="card_empty_records">暂无消费流水</string>
     <string name="card_select_date">选择日期查询</string>
-    <string name="card_date_filter_label">按日期查询</string>
     <string name="card_date_filter_clear">清除</string>
     <string name="card_date_filter_confirm">查询</string>
     <string name="card_notice_title">使用提示</string>
@@ -204,10 +186,8 @@
     <string name="grade_gpa">绩点</string>
     <string name="grade_course_id">课程编号</string>
     <string name="grade_no_data">暂无成绩数据</string>
-    <string name="grade_course_count">%1$d 门课程</string>
     <string name="grade_retry">重新加载</string>
     <string name="grade_empty_hint">当前筛选条件下暂无成绩数据</string>
-    <string name="grade_term_metrics">绩点 %1$s · 绩分 %2$s</string>
     <string name="grade_row_metric">学分 %1$s · 绩点 %2$s</string>
     <string name="grade_row_meta_fallback">课程信息待补充</string>
     <string name="grade_term_empty">当前学期暂无成绩</string>
@@ -232,8 +212,6 @@
     <string name="feature_evaluate_subtitle">提交教学评价</string>
     <string name="feature_library_subtitle">查看借阅、续借与馆藏状态</string>
     <string name="feature_card_subtitle">余额与消费流水</string>
-    <string name="feature_charge_subtitle">进入安全充值流程</string>
-    <string name="feature_lost_subtitle">快速提交校园卡挂失</string>
     <string name="feature_about_subtitle">版本、更新与反馈</string>
     <string name="feature_spare_subtitle">按校区和时段查询教室</string>
     <string name="feature_graduate_exam_subtitle">查询考研成绩结果</string>
@@ -273,11 +251,8 @@
     <string name="about_feedback">反馈邮箱</string>
     <string name="about_download_update">下载更新</string>
     <string name="about_backend_title">联系与支持</string>
-    <string name="about_backend_domain">后端域名：%s</string>
     <string name="about_official_site_url">https://gdeiassistant.cn</string>
     <string name="about_support_email">support@gdeiassistant.cn</string>
-    <string name="about_architecture_title">当前技术栈</string>
-    <string name="about_architecture_summary">Compose UI、Material 3、MVVM/UDF、StateFlow、Retrofit、OkHttp、Kotlin Coroutines。</string>
     <string name="about_developer_title">数据源设置</string>
     <string name="about_mock_mode_title">启用本地示例数据</string>
     <string name="about_mock_mode_desc">开启后，应用会优先使用本地示例数据，适合预览界面和示例演示。</string>
@@ -286,7 +261,6 @@
     <string name="about_checking">正在检查更新…</string>
     <string name="about_update_none">升级接口未返回可用版本信息</string>
     <string name="about_open_failed">无法打开外部链接</string>
-    <string name="about_checking_desc">正在检查当前版本是否有新更新。</string>
     <string name="about_file_size">文件大小 %s</string>
     <string name="about_metric_version">当前版本</string>
     <string name="about_metric_build">内部构建</string>
@@ -298,9 +272,7 @@
     <string name="charge_title">校园卡充值</string>
     <string name="charge_subtitle">输入金额后就能进入支付流程，充值完成后可以返回确认状态。</string>
     <string name="charge_current_balance">当前余额</string>
-    <string name="charge_status_label">卡状态：%s</string>
     <string name="charge_account_fallback">校园卡账户</string>
-    <string name="charge_card_snapshot">校园卡摘要</string>
     <string name="charge_refresh">刷新状态</string>
     <string name="charge_info_unavailable">暂未获取到校园卡信息</string>
     <string name="charge_input_title">充值信息</string>
@@ -312,8 +284,6 @@
     <string name="charge_password_empty">请输入账号密码以确认充值</string>
     <string name="charge_password_hint">账号密码</string>
     <string name="charge_password_label">身份验证</string>
-    <string name="charge_agreement">缴费服务条款</string>
-    <string name="charge_agreement_url">http://ecard.gdei.edu.edu/CardManage/CardInfo/TransferClause</string>
     <string name="charge_processing">正在提交充值请求…</string>
     <string name="charge_submit_failed">充值请求处理失败，请稍后重试。</string>
     <string name="charge_payment_title">支付页</string>
@@ -322,7 +292,6 @@
     <string name="charge_back_to_form">返回填写页</string>
     <string name="charge_opening_alipay">正在启动支付宝，请稍后…</string>
     <string name="charge_external_open_failed">未检测到可处理当前支付链接的应用</string>
-    <string name="charge_secure_network_error">上网环境存在风险，请切换到安全网络充值</string>
     <string name="charge_payment_loading">支付页面加载中…</string>
     <string name="charge_step_verify">校验身份</string>
     <string name="charge_step_order">安全下单</string>
@@ -356,10 +325,8 @@
     <string name="charge_order_status_label_unknown">待确认</string>
     <string name="charge_order_status_label_manual_review">核实中</string>
     <string name="notice_detail_subtitle">校园公告保留原文语义，当前页面只对信息摘要与正文层级做统一整理。</string>
-    <string name="notice_detail_summary_title">公告摘要</string>
     <string name="notice_detail_body_title">通知正文</string>
     <string name="notice_detail_notice_id_label">公告编号</string>
-    <string name="notice_detail_channel_label">通知类型</string>
     <string name="notice_detail_channel_default">校园公告</string>
     <string name="notice_detail_paragraph_count_label">段落</string>
     <string name="notice_detail_date_label">发布时间</string>
@@ -400,7 +367,6 @@
     <string name="cet_reset">重置</string>
     <string name="cet_refresh_checkcode">刷新验证码</string>
     <string name="cet_no_data">暂无成绩数据</string>
-    <string name="cet_subtitle">输入准考证号、姓名和验证码后即可查询成绩。</string>
     <string name="cet_form_title">查询表单</string>
     <string name="cet_form_subtitle">验证码支持单独刷新，查询失败后已填写的信息会保留。</string>
     <string name="cet_result_title">查询结果</string>
@@ -408,7 +374,6 @@
     <string name="cet_query_hint">看不清验证码时可直接刷新图片。</string>
     <string name="cet_form_incomplete">请完整填写准考证号、姓名和验证码</string>
     <string name="cet_checkcode_unavailable">验证码暂不可用</string>
-    <string name="cet_checkcode_loading">验证码加载中…</string>
     <string name="cet_detail_breakdown">分项成绩</string>
     <string name="cet_detail_identity">考试信息</string>
     <string name="cet_result_empty_hint">完成查询后，成绩结果会显示在这里。</string>
@@ -421,10 +386,7 @@
 
     <!-- 教学评价 -->
     <string name="evaluate_title">教学评价</string>
-    <string name="evaluate_subtitle">是否立即提交由你自己决定，提交前请先确认本学期评教已准备完成。</string>
-    <string name="evaluate_tip">开启“直接提交”后，系统会在保存后立即完成最终提交。</string>
     <string name="evaluate_direct_submit_title">直接提交评教信息</string>
-    <string name="evaluate_direct_submit_desc">关闭时只保存评价内容，开启时保存后立即提交。</string>
     <string name="evaluate_submit">提交教学评价</string>
     <string name="evaluate_submitting">正在提交…</string>
     <string name="evaluate_submit_failed_title">提交失败</string>
@@ -449,8 +411,6 @@
 
     <!-- 资讯与消息 -->
     <string name="tab_home">首页</string>
-    <string name="tab_schedule">课表</string>
-    <string name="tab_discover">发现</string>
     <string name="tab_profile">我的</string>
     <string name="tab_messages">资讯</string>
     <string name="news_title">新闻</string>
@@ -460,14 +420,12 @@
     <string name="news_category_college_notice">院部通知</string>
     <string name="news_category_campus_notice">通知公告</string>
     <string name="news_category_academic_update">学术动态</string>
-    <string name="feature_news_subtitle">查看校园新闻</string>
     <string name="messages_title">资讯信息</string>
     <string name="messages_badge">消息中枢</string>
     <string name="messages_subtitle">把新闻、系统公告和互动消息整理到一个统一入口。</string>
     <string name="messages_metric_news">新闻</string>
     <string name="messages_metric_unread">未读</string>
     <string name="messages_news_action_subtitle">查看学校官网公开发布的最新资讯</string>
-    <string name="messages_refresh_subtitle">重新拉取全部内容</string>
     <string name="messages_system_notice_title">系统公告</string>
     <string name="messages_system_notice_empty">当前没有系统公告</string>
     <string name="messages_system_notice_badge">系统公告</string>
@@ -499,16 +457,10 @@
     <string name="spare_type_label">课室类型</string>
     <string name="spare_weekday_label">星期</string>
     <string name="spare_week_type_label">单双周</string>
-    <string name="spare_start_time_label">开始节次</string>
-    <string name="spare_end_time_label">结束节次</string>
     <string name="spare_class_number_label">课节组</string>
-    <string name="spare_class_number_value">第 %1$d 组</string>
     <string name="spare_min_seating_label">座位数 ≥</string>
     <string name="spare_max_seating_label">座位数 ≤</string>
     <string name="spare_optional_hint">选填</string>
-    <string name="spare_min_week_label">起始周</string>
-    <string name="spare_max_week_label">结束周</string>
-    <string name="spare_week_value">第 %1$d 周</string>
     <string name="spare_query_action">查询空教室</string>
     <string name="spare_empty">设置条件后开始查询空教室</string>
     <string name="spare_result_title">查询结果</string>
@@ -518,13 +470,6 @@
     <string name="spare_room_seating_label">座位</string>
     <string name="spare_room_exam_seating">考试座位：%1$s</string>
     <string name="graduate_exam_title">考研查询</string>
-    <string name="graduate_exam_subtitle">输入姓名、准考证号和证件号码后即可查询成绩。</string>
-    <string name="graduate_exam_hero_badge">研招成绩</string>
-    <string name="graduate_exam_metric_status">状态</string>
-    <string name="graduate_exam_metric_waiting">待查询</string>
-    <string name="graduate_exam_metric_total">总分</string>
-    <string name="graduate_exam_backup_title">打开研招网备用入口</string>
-    <string name="graduate_exam_backup_subtitle">当接口波动时，可切换到官方备用查询入口。</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">查询信息</string>
     <string name="graduate_exam_form_subtitle">完成填写后即可查询，官方备用入口会保留在页面里。</string>
@@ -535,7 +480,6 @@
     <string name="graduate_exam_error_incomplete">请完整填写查询信息</string>
     <string name="graduate_exam_empty">完成查询后，考研成绩会展示在这里</string>
     <string name="graduate_exam_result_title">查询结果</string>
-    <string name="graduate_exam_total_score_value">总分：%1$s</string>
     <string name="graduate_exam_total_score_label">总分</string>
     <string name="graduate_exam_detail_title">成绩明细</string>
     <string name="graduate_exam_loading_title">正在查询</string>
@@ -556,7 +500,6 @@
     <string name="data_center_metric_tools">工具</string>
     <string name="data_center_metric_scope">覆盖</string>
     <string name="data_center_metric_scope_value">电费 / 黄页</string>
-    <string name="data_center_section_title">模块说明</string>
     <string name="data_center_section_body">这里先收纳宿舍电费和校园黄页两个高频工具，打开就能直接查，不需要额外学习。</string>
     <string name="electricity_title">电费查询</string>
     <string name="electricity_subtitle">输入姓名、学号和年份，就能查看宿舍这一年的电费与用电情况。</string>
@@ -613,12 +556,6 @@
     <!-- 个人中心 -->
     <string name="profile_title">个人中心</string>
     <string name="profile_subtitle_default">整理账号资料、绑定状态和数据导出入口。</string>
-    <string name="profile_metric_location">所在地</string>
-    <string name="profile_metric_ip">IP 归属</string>
-    <string name="profile_export_submitting">正在提交导出请求</string>
-    <string name="profile_export_ready">数据已准备完成</string>
-    <string name="profile_export_request">申请导出个人数据</string>
-    <string name="profile_contact_title">账号绑定状态</string>
     <string name="profile_phone_title">手机号</string>
     <string name="profile_email_title">邮箱</string>
     <string name="profile_export_state_idle">当前还没有导出记录，可随时发起导出请求。</string>
@@ -626,7 +563,6 @@
     <string name="profile_export_state_exported">数据已准备完成，可直接下载导出文件。</string>
     <string name="profile_settings_title">应用设置</string>
     <string name="profile_logout">退出登录</string>
-    <string name="profile_logout_subtitle">清除本地登录态并返回登录页</string>
 
     <!-- 资讯详情 -->
     <string name="article_detail_title">资讯详情</string>
@@ -637,10 +573,6 @@
     <!-- 二手交易 -->
     <string name="marketplace_title">二手交易</string>
     <string name="marketplace_refresh">刷新二手列表</string>
-    <string name="marketplace_badge">校园闲置</string>
-    <string name="marketplace_subtitle">把校内闲置商品整理成易浏览的卡片流，保留与后端一致的分类筛选、详情查看和个人商品管理能力。</string>
-    <string name="marketplace_metric_type">分类</string>
-    <string name="marketplace_metric_count">在售</string>
     <string name="marketplace_filter_all">全部分类</string>
     <string name="marketplace_search_label">搜索商品关键词</string>
     <string name="marketplace_search_action">搜索商品</string>
@@ -649,15 +581,11 @@
     <string name="marketplace_my_items_subtitle">管理出售中与历史状态</string>
     <string name="marketplace_publish_title">发布商品</string>
     <string name="marketplace_publish_subtitle">快速上架新的闲置物品</string>
-    <string name="marketplace_open_intro_title">官方入口</string>
-    <string name="marketplace_open_intro_subtitle">通过网页查看完整社区入口</string>
     <string name="marketplace_images_title">商品图片</string>
     <string name="marketplace_empty">当前没有可展示的在售商品</string>
     <string name="marketplace_detail_title">商品详情</string>
     <string name="marketplace_detail_missing_id">缺少商品编号</string>
     <string name="marketplace_detail_missing">没有找到当前商品信息</string>
-    <string name="marketplace_open_image_title">查看首图</string>
-    <string name="marketplace_open_image_subtitle">使用网页查看商品图片</string>
     <string name="marketplace_contact_title">联系方式</string>
     <string name="marketplace_description_title">商品说明</string>
     <string name="marketplace_seller_title">卖家信息</string>
@@ -673,10 +601,8 @@
     <string name="marketplace_profile_tab_off">已下架</string>
     <string name="marketplace_price_label">价格</string>
     <string name="marketplace_location_label">交易地点</string>
-    <string name="marketplace_has_image">含图片</string>
     <string name="marketplace_action_sold">标记售出</string>
     <string name="marketplace_action_off_shelf">下架商品</string>
-    <string name="marketplace_action_resell">重新上架</string>
     <string name="marketplace_action_put_back">恢复上架</string>
     <string name="marketplace_action_edit">编辑商品</string>
     <string name="marketplace_default_title">未命名商品</string>
@@ -686,8 +612,6 @@
     <string name="marketplace_default_location">校内自提</string>
     <string name="marketplace_description_empty">暂无详细说明</string>
     <string name="marketplace_contact_private">发布者暂未公开联系方式</string>
-    <string name="marketplace_profile_nickname">我的二手交易</string>
-    <string name="marketplace_profile_intro">管理正在出售、已售出和已下架的闲置物品。</string>
     <string name="marketplace_state_updated">状态已更新</string>
     <string name="marketplace_state_confirm_message">确认后会立即更新商品状态，并同步到我的商品列表。</string>
     <string name="marketplace_action_failed">操作失败</string>
@@ -718,7 +642,6 @@
     <string name="marketplace_publish_images_required">请至少选择一张商品图片</string>
     <string name="marketplace_publish_success">商品已发布</string>
     <string name="marketplace_publish_failed">商品发布失败</string>
-    <string name="marketplace_publish_read_failed">读取商品图片失败</string>
     <string name="marketplace_edit_title">编辑商品</string>
     <string name="marketplace_edit_subtitle">调整商品信息，图片暂时保持不变</string>
     <string name="marketplace_edit_submit">保存修改</string>
@@ -734,16 +657,10 @@
     <!-- 失物招领 -->
     <string name="lost_found_title">失物招领</string>
     <string name="lost_found_refresh">刷新失物信息</string>
-    <string name="lost_found_badge">校园寻物</string>
-    <string name="lost_found_subtitle">把寻物与招领条目统一整理成信息流，保留详情查看、个人记录和已找回状态管理能力。</string>
-    <string name="lost_found_metric_filter">筛选</string>
-    <string name="lost_found_metric_count">条目数</string>
     <string name="lost_found_my_items_title">个人中心</string>
     <string name="lost_found_my_items_subtitle">查看已发布的寻物与招领</string>
     <string name="lost_found_publish_title">发布信息</string>
     <string name="lost_found_publish_subtitle">提交新的寻物或招领信息</string>
-    <string name="lost_found_help_title">官方入口</string>
-    <string name="lost_found_help_subtitle">通过网页查看完整社区入口</string>
     <string name="lost_found_images_title">条目图片</string>
     <string name="lost_found_filter_all">全部</string>
     <string name="lost_found_filter_lost">寻物</string>
@@ -752,8 +669,6 @@
     <string name="lost_found_detail_title">条目详情</string>
     <string name="lost_found_detail_missing_id">缺少条目编号</string>
     <string name="lost_found_detail_missing">没有找到当前失物招领信息</string>
-    <string name="lost_found_open_image_title">查看图片</string>
-    <string name="lost_found_open_image_subtitle">使用网页查看条目图片</string>
     <string name="lost_found_contact_title">联系方式</string>
     <string name="lost_found_description_title">详细描述</string>
     <string name="lost_found_owner_title">发布者信息</string>
@@ -776,8 +691,6 @@
     <string name="lost_found_status_active">寻主/寻物中</string>
     <string name="lost_found_status_resolved">已找回</string>
     <string name="lost_found_status_deleted">系统删除</string>
-    <string name="lost_found_profile_nickname">我的失物招领</string>
-    <string name="lost_found_profile_intro">管理已发布的寻物、招领和已找回条目。</string>
     <string name="lost_found_mark_found_success">已标记为找回</string>
     <string name="lost_found_mark_found_confirm_message">确认后该条目会移入已找回分组，不再继续展示在进行中的列表。</string>
     <string name="lost_found_action_failed">操作失败</string>
@@ -809,7 +722,6 @@
     <string name="lost_found_publish_images_required">请至少选择一张图片</string>
     <string name="lost_found_publish_success">失物招领已发布</string>
     <string name="lost_found_publish_failed">失物招领发布失败</string>
-    <string name="lost_found_publish_read_failed">读取失物招领图片失败</string>
     <string name="lost_found_edit_title">编辑信息</string>
     <string name="lost_found_edit_subtitle">调整条目内容，图片暂时保持不变</string>
     <string name="lost_found_edit_submit">保存修改</string>
@@ -824,21 +736,13 @@
     <!-- 校园树洞 -->
     <string name="secret_title">校园树洞</string>
     <string name="secret_refresh">刷新树洞列表</string>
-    <string name="secret_badge">匿名角落</string>
-    <string name="secret_subtitle">保留后端匿名树洞能力，支持浏览内容、查看评论、点赞和回应，让校园里的轻声表达有更稳定的入口。</string>
-    <string name="secret_metric_feed">树洞</string>
-    <string name="secret_metric_mine">我的</string>
     <string name="secret_my_posts_title">我的树洞</string>
     <string name="secret_my_posts_subtitle">查看自己发过的匿名内容</string>
-    <string name="secret_open_audio_help_title">语音入口</string>
-    <string name="secret_open_audio_help_subtitle">语音内容可用网页方式打开</string>
     <string name="secret_voice_section_title">语音内容</string>
     <string name="secret_voice_section_subtitle">支持在应用内直接播放，不再跳转网页。</string>
     <string name="secret_empty">树洞还很安静，暂时没有可浏览的内容</string>
     <string name="secret_detail_title">树洞详情</string>
     <string name="secret_detail_missing">没有找到当前树洞内容</string>
-    <string name="secret_open_voice_title">打开语音</string>
-    <string name="secret_open_voice_subtitle">通过网页打开语音内容</string>
     <string name="secret_unlike_action">取消点赞</string>
     <string name="secret_like_action">点赞这条树洞</string>
     <string name="secret_like_count_value">点赞 %1$d</string>
@@ -961,16 +865,11 @@
     <string name="dating_publish_success">资料发布成功</string>
     <string name="dating_publish_failed">资料发布失败</string>
     <string name="dating_detail_load_failed">加载资料失败</string>
-    <string name="dating_publish_read_failed">读取图片失败</string>
     <string name="dating_loading_title">正在加载</string>
     <string name="dating_loading_hint">正在同步卖室友资料和互动状态…</string>
     <string name="feature_dating_subtitle">浏览资料、发布和处理互动</string>
     <string name="express_title">表白墙</string>
     <string name="express_refresh">刷新表白墙</string>
-    <string name="express_badge">真诚留言</string>
-    <string name="express_subtitle">保留与 iOS 一致的表白墙浏览、详情、评论、点赞和猜名字能力，让校园里的心意与回应有稳定入口。</string>
-    <string name="express_metric_feed">表白</string>
-    <string name="express_metric_guessable">可猜名</string>
     <string name="express_my_posts_title">我的表白</string>
     <string name="express_my_posts_subtitle">查看自己发过的内容</string>
     <string name="express_guide_title">互动说明</string>
@@ -1020,10 +919,6 @@
     <string name="feature_express_subtitle">想表白、想留言，都可以写在这里</string>
     <string name="topic_title">话题</string>
     <string name="topic_refresh">刷新话题列表</string>
-    <string name="topic_badge">校园讨论</string>
-    <string name="topic_subtitle">对齐 iOS 的话题信息流结构，支持浏览话题、查看详情、管理我的发布和点赞互动。</string>
-    <string name="topic_metric_feed">话题</string>
-    <string name="topic_metric_images">配图</string>
     <string name="topic_my_posts_title">我的话题</string>
     <string name="topic_my_posts_subtitle">查看自己发布过的话题</string>
     <string name="topic_guide_title">浏览提示</string>
@@ -1038,7 +933,6 @@
     <string name="topic_content_title">话题正文</string>
     <string name="topic_gallery_title">配图</string>
     <string name="topic_gallery_empty">这条话题没有附带图片</string>
-    <string name="topic_open_image">查看第 %1$d 张</string>
     <string name="topic_like_action">点赞话题</string>
     <string name="topic_liked_action">已点赞</string>
     <string name="topic_stat_like">点赞</string>
@@ -1051,11 +945,6 @@
     <string name="feature_topic_subtitle">最近校园里在聊什么，这里一眼能看见</string>
     <string name="delivery_title">全民快递</string>
     <string name="delivery_refresh">刷新跑腿大厅</string>
-    <string name="delivery_badge">跑腿大厅</string>
-    <string name="delivery_subtitle">对齐 iOS 的大厅、我的订单和发布流程，让接单、送达和状态跟踪都在一个模块里完成。</string>
-    <string name="delivery_metric_hall">大厅</string>
-    <string name="delivery_metric_mine">我的</string>
-    <string name="delivery_metric_pending">待接单</string>
     <string name="delivery_action_mine_title">我的订单</string>
     <string name="delivery_action_mine_subtitle">查看我发布的和我接的单</string>
     <string name="delivery_action_publish_title">发布全民快递</string>
@@ -1141,11 +1030,6 @@
     <string name="feature_delivery_subtitle">发跑腿需求，也能顺手接单赚点零花</string>
     <string name="photograph_title">拍好校园</string>
     <string name="photograph_refresh">刷新摄影内容</string>
-    <string name="photograph_badge">校园镜头</string>
-    <string name="photograph_subtitle">按 Android 的内容流方式重做摄影模块，保留分类浏览、作品详情、点赞评论、我的作品和发布入口。</string>
-    <string name="photograph_metric_photos">照片</string>
-    <string name="photograph_metric_comments">评论</string>
-    <string name="photograph_metric_likes">点赞</string>
     <string name="photograph_action_mine_title">我的作品</string>
     <string name="photograph_action_mine_subtitle">查看自己发布过的摄影作品</string>
     <string name="photograph_action_publish_title">发布作品</string>
@@ -1226,10 +1110,8 @@
     <string name="library_collection_detail_classification">分类号</string>
     <string name="library_collection_distribution_title">馆藏分布</string>
     <string name="library_collection_distribution_empty">当前没有可展示的馆藏分布信息</string>
-    <string name="library_collection_detail_hint">查看馆藏详情</string>
     <string name="library_collection_missing">当前没有可展示的馆藏内容</string>
     <string name="library_collection_missing_renew_info">缺少续借所需的登录号或索书号</string>
-    <string name="library_collection_renew_hint">续借时将沿用当前借阅条目的登录号和索书号。</string>
     <string name="library_collection_borrow_line">借阅 %1$s · 应还 %2$s · 已续借 %3$d 次</string>
     <string name="library_collection_code_line">登录号 %1$s · 索书号 %2$s</string>
     <string name="library_collection_unknown_date">日期未知</string>
@@ -1257,15 +1139,10 @@
     <string name="library_renew_dialog_message">请输入图书馆密码完成续借校验，密码只用于本次请求。</string>
 
     <string name="profile_default_username">校园账号</string>
-    <string name="profile_default_nickname">未填写</string>
-    <string name="profile_metric_placeholder">待补充</string>
     <string name="profile_more_services_title">更多服务</string>
     <string name="profile_account_data_title">账号资料</string>
     <string name="profile_account_actions_title">账号功能</string>
-    <string name="profile_edit_action">编辑</string>
     <string name="profile_avatar_title">头像管理</string>
-    <string name="profile_avatar_badge">头像设置</string>
-    <string name="profile_avatar_manage_action">头像管理</string>
     <string name="profile_avatar_hint">建议选择清晰的正方形头像图片。上传后会同步更新普通头像与高清头像。</string>
     <string name="profile_avatar_picker_title">选择新头像</string>
     <string name="profile_avatar_pick_action">从相册选择</string>
@@ -1299,14 +1176,12 @@
     <string name="profile_state_label">省 / 州</string>
     <string name="profile_city_label">城市</string>
     <string name="profile_not_selected">未选择</string>
-    <string name="profile_edit_placeholder">点击设置</string>
     <string name="profile_location_preview_label">当前选择</string>
     <string name="profile_nickname_placeholder">请输入昵称</string>
     <string name="profile_bio_placeholder">一句话介绍自己…</string>
     <string name="profile_fill_nickname">请填写昵称</string>
     <string name="profile_select_college_first">请先选择院系</string>
     <string name="profile_save_profile_action">保存资料</string>
-    <string name="profile_clear_birthday">清空生日</string>
     <string name="profile_confirm_action">确定</string>
     <string name="profile_empty_title">暂无个人资料</string>
     <string name="profile_empty_message">请稍后重试</string>
@@ -1319,21 +1194,17 @@
     <string name="profile_export_start_action">发起导出</string>
     <string name="profile_export_start_hint">向后端提交一次新的数据导出请求</string>
     <string name="profile_export_download_action">下载文件</string>
-    <string name="profile_export_download_hint">仅在文件准备完成后可用</string>
     <string name="profile_export_started">已提交数据导出请求</string>
     <string name="profile_export_submit_failed">提交导出请求失败</string>
     <string name="profile_export_download_failed">下载导出文件失败</string>
     <string name="profile_binding_unbound">未绑定</string>
     <string name="profile_bind_phone_title">绑定手机</string>
-    <string name="profile_bind_phone_subtitle">管理验证码、区号和手机号绑定状态</string>
     <string name="profile_bind_phone_form_title">手机号绑定</string>
     <string name="profile_bind_email_title">绑定邮箱</string>
-    <string name="profile_bind_email_subtitle">绑定或解绑接收通知的邮箱地址</string>
     <string name="profile_bind_email_form_title">邮箱绑定</string>
     <string name="profile_privacy_title">隐私设置</string>
     <string name="profile_privacy_subtitle">管理资料公开范围，以及平台缓存和检索行为。</string>
     <string name="profile_privacy_badge">隐私控制</string>
-    <string name="profile_privacy_entry_subtitle">管理个人资料在社区中的展示范围</string>
     <string name="profile_privacy_profile_title">资料公开项</string>
     <string name="profile_privacy_platform_title">平台设置</string>
     <string name="profile_privacy_faculty">学院</string>
@@ -1349,7 +1220,6 @@
     <string name="profile_privacy_saved">隐私设置已保存</string>
     <string name="profile_privacy_save_failed">保存隐私设置失败</string>
     <string name="profile_login_records_title">登录记录</string>
-    <string name="profile_login_records_subtitle">查看近期登录设备、IP 和地区信息</string>
     <string name="profile_login_records_loading">正在加载登录记录…</string>
     <string name="profile_login_records_empty">当前没有可展示的登录记录</string>
     <string name="profile_login_ip">IP 地址</string>
@@ -1394,7 +1264,6 @@
     <string name="profile_feedback_title">帮助与反馈</string>
     <string name="profile_feedback_subtitle">把问题、建议或体验反馈发给维护团队。</string>
     <string name="profile_feedback_badge">意见反馈</string>
-    <string name="profile_feedback_entry_subtitle">把异常、建议和使用体验直接发给我们</string>
     <string name="profile_feedback_type_label">反馈类型</string>
     <string name="profile_feedback_contact_label">联系方式</string>
     <string name="profile_feedback_content_label">反馈内容</string>
@@ -1403,7 +1272,6 @@
     <string name="profile_feedback_success">反馈已提交</string>
     <string name="profile_feedback_failed">反馈提交失败</string>
     <string name="profile_settings_general_title">通用设置</string>
-    <string name="profile_settings_entry_subtitle">查看版本信息并管理数据源设置</string>
     <string name="profile_settings_mock_title">本地示例数据</string>
     <string name="profile_settings_mock_subtitle">开启后优先使用本地示例数据，便于预览界面和示例演示</string>
     <string name="profile_settings_environment_title">服务环境</string>
@@ -1428,8 +1296,6 @@
     <string name="profile_settings_campus_credentials_boolean_no">否</string>
     <string name="profile_settings_campus_credentials_quick_auth_on">已开启</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">已关闭</string>
-    <string name="profile_settings_campus_credentials_quick_auth_enable_action">开启快速认证</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disable_action">关闭快速认证</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">关闭后，平台将停止基于已保存凭证进行快速认证或会话同步。</string>
     <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">开启前需要有效授权和已保存凭证；如条件不满足，服务端会返回失败原因。</string>
     <string name="profile_settings_campus_credentials_revoke_title">撤回校园账号凭证授权</string>
@@ -1444,7 +1310,6 @@
     <string name="profile_settings_campus_credentials_quick_auth_disabled_success">快速认证已关闭</string>
     <string name="profile_settings_campus_credentials_action_failed">校园凭证操作失败，请稍后重试</string>
     <string name="profile_delete_title">注销账号</string>
-    <string name="profile_delete_entry_subtitle">提交账号注销申请并清理本地登录态</string>
     <string name="profile_delete_warning_title">此操作不可恢复</string>
     <string name="profile_delete_warning_body">提交注销申请后，当前账号将按后端规则进入关闭流程，请确认密码无误并提前备份个人数据。</string>
     <string name="profile_delete_password_label">当前登录密码</string>
@@ -1454,23 +1319,18 @@
     <string name="profile_delete_failed">注销申请提交失败</string>
 
     <!-- 个人资料编辑 -->
-    <string name="profile_info_title">个人资料</string>
     <string name="profile_info_nickname">昵称</string>
     <string name="profile_info_birthday">生日</string>
-    <string name="profile_info_faculty">学院</string>
     <string name="profile_info_major">专业</string>
     <string name="profile_info_enrollment">入学年份</string>
-    <string name="profile_info_location">所在地</string>
     <string name="profile_info_hometown">家乡</string>
     <string name="profile_info_intro">个人简介</string>
     <string name="profile_info_not_set">未填写</string>
-    <string name="profile_info_edit_title">编辑%s</string>
     <string name="profile_info_save">保存</string>
     <string name="profile_info_cancel">取消</string>
     <string name="profile_info_saved">已保存</string>
     <string name="profile_info_save_failed">保存失败</string>
 
-    <string name="profile_language_title">语言</string>
 
     <string name="discovery_title">发现</string>
     <string name="discovery_badge">社区广场</string>
@@ -1488,7 +1348,6 @@
     <string name="discovery_open_express">打开表白墙</string>
     <string name="discovery_open_topic">打开话题</string>
     <string name="discovery_empty">当前没有可展示的社区内容</string>
-    <string name="feature_discovery_subtitle">集中浏览树洞、表白墙和话题内容</string>
 
     <string name="topic_search_label">搜索话题关键词</string>
     <string name="topic_search_action">搜索话题</string>
@@ -1580,12 +1439,7 @@
     <string name="news_source_default">新闻</string>
 
     <!-- Charge error strings -->
-    <string name="charge_error_no_server_public_key">未能获取服务器公钥</string>
     <string name="charge_error_no_payment_info">服务端未返回支付信息</string>
-    <string name="charge_error_empty_payment_data">支付信息为空</string>
-    <string name="charge_error_empty_payment_signature">支付签名为空</string>
-    <string name="charge_error_parse_failed">支付信息解析失败</string>
-    <string name="charge_error_login_required">请先登录</string>
 
     <!-- Network error messages -->
     <string name="network_error_forbidden">权限不足</string>
