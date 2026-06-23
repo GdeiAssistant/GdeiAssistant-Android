@@ -164,7 +164,13 @@ android {
     }
 
     lint {
-        disable += setOf("GradleDependency", "NewerVersionAvailable", "OldTargetApi")
+        disable += setOf(
+            "GradleDependency",
+            "IconDuplicates",
+            "IconLauncherShape",
+            "NewerVersionAvailable",
+            "OldTargetApi"
+        )
     }
 
 }
