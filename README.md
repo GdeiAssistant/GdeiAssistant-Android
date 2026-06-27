@@ -106,9 +106,9 @@ GdeiAssistant-Android/
 项目支持两种数据源：
 
 - `remote`：请求真实后端接口
-- `mock`：使用本地模拟数据
+- `mock`：使用本地模拟数据（仅 Debug 构建可在关于页切换）
 
-应用默认开启 `mock` 模式，便于本地联调和页面验证。切换入口位于应用内关于页，切换后建议重启应用以确保网络层与页面状态全部刷新。
+**默认行为：** `DEFAULT_MOCK_MODE_ENABLED=false`，即默认连接真实后端。Debug 构建可在关于页手动开启 mock 以便 UI 联调；**Release 构建强制 `remote` + `prod` 环境**，不可切换 mock 或 dev/staging 接口（见 `SettingsRepository.canUseDemoMode()` / `canChangeNetworkEnvironment()`）。
 
 本地示例登录能力仅用于开发调试、界面验证与联调演示，不应在公开发行说明中暴露测试账号或密码。
 
@@ -197,8 +197,11 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ### 5. 构建 Release 安装包
 
-仓库提供 `Android Release` GitHub Actions 手动工作流，用于构建签名 APK 和
-AAB，并发布到 GitHub Release。发布前需要在仓库或环境中配置：
+#### GitHub Actions 构建 APK
+
+仓库提供 [**Android Release**](https://github.com/GdeiAssistant/GdeiAssistant-Android/actions/workflows/android-release.yml) 手动工作流：在 Actions 页选择 **Run workflow**，填写 `tag_name`、`version_name`、`version_code` 等参数后触发。成功后会将签名 APK / AAB 发布到 [GitHub Releases](https://github.com/GdeiAssistant/GdeiAssistant-Android/releases)（首个正式 Release 发布后可在该页下载）。
+
+发布前需要在仓库或环境中配置：
 
 - `ANDROID_KEYSTORE_BASE64`：release keystore 文件的 base64 内容
 - `ANDROID_KEYSTORE_PASSWORD`：keystore 密码
@@ -223,8 +226,8 @@ prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRel
 
 ### 6. 运行方式
 
-- `mock` 模式：适合本地开发、UI 联调、回归验证
-- `remote` 模式：适合连接真实后端接口进行联调
+- `mock` 模式（仅 Debug）：适合本地开发、UI 联调、回归验证
+- `remote` 模式：连接真实后端；Release 固定为 `remote` + `prod`
 
 ### 7. 远程接口环境
 
