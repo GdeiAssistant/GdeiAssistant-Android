@@ -68,3 +68,7 @@
 
 # 保留注解信息（Retrofit / Gson / Compose 等依赖）
 -keepattributes *Annotation*
+
+# Keep Gson model and API DTO classes
+-keep class cn.gdeiassistant.model.** { *; }
+-keep class cn.gdeiassistant.network.api.** { *; }
