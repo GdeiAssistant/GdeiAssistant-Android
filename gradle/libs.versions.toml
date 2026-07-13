@@ -4,8 +4,8 @@
 [versions]
 agp = "9.2.1"
 kotlin = "2.3.21"
-ksp = "2.3.9"
-hilt = "2.60"
+ksp = "2.3.10"
+hilt = "2.60.1"
 androidx-hilt = "1.4.0"
 coreKtx = "1.19.0"
 splashscreen = "1.2.0"
