@@ -2,7 +2,7 @@
 # 使用方式：在 build.gradle.kts 中通过 libs.xxx 引用
 
 [versions]
-agp = "9.3.0"
+agp = "9.3.1"
 kotlin = "2.3.21"
 ksp = "2.3.10"
 hilt = "2.60.1"
