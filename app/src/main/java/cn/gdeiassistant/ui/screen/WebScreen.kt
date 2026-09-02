@@ -585,6 +585,8 @@ private fun WebView.configureWebSettings(
     url: String
 ) {
     settings.javaScriptEnabled = allowJavaScript && isTrustedWebUrl(url)
+    settings.allowFileAccess = false
+    settings.allowContentAccess = false
 }
 
 private fun handleWebNavigation(
@@ -614,17 +616,7 @@ private fun handleWebNavigation(
         }
 
         else -> {
-            openExternalUrl(
-                context = context,
-                url = targetUrl,
-                onFailure = {
-                    Toast.makeText(
-                        context,
-                        browserFailedText,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            )
+            Toast.makeText(context, browserFailedText, Toast.LENGTH_LONG).show()
             true
         }
     }
