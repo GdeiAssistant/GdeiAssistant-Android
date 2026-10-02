@@ -48,8 +48,9 @@ class SessionManager @Inject constructor(
                 synchronized(cookieLock) {
                     val now = System.currentTimeMillis()
                     val storedCookies = cookieStore[url.host].orEmpty()
+                    // Only expiry removes stored cookies; path/Secure matching is request-specific.
                     val validCookies = storedCookies.filter { cookie ->
-                        cookie.expiresAt >= now && cookie.matches(url)
+                        cookie.expiresAt >= now
                     }
                     if (validCookies.size != storedCookies.size) {
                         if (validCookies.isEmpty()) {
@@ -58,7 +59,7 @@ class SessionManager @Inject constructor(
                             cookieStore[url.host] = validCookies.toMutableList()
                         }
                     }
-                    return validCookies
+                    return validCookies.filter { it.matches(url) }
                 }
             }
         }
