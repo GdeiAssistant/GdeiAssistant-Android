@@ -48,27 +48,25 @@ class ResponseInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         val response = chain.proceed(chain.request())
 
-        if (response.code == NetworkConstants.HTTP_UNAUTHORIZED) {
-            val bodyStr = response.peekBody(64 * 1024).string()
-            val parsed = parseErrorFromBody(bodyStr)
-            sessionManager.clearTokens()
-            GlobalEventManager.emit(GlobalEvent.Unauthorized)
-            throw AppException(
-                message = parsed.first ?: NetworkConstants.messageLoginExpired(),
-                code = NetworkConstants.HTTP_UNAUTHORIZED,
-                errorCode = parsed.second ?: "AUTH_REQUIRED"
-            )
-        }
-
         if (!response.isSuccessful) {
-            val bodyStr = response.peekBody(64 * 1024).string()
-            val parsed = parseErrorFromBody(bodyStr)
-            GlobalEventManager.emit(GlobalEvent.ShowToast(parsed.first ?: NetworkConstants.messageRequestFailed()))
-            throw AppException(
-                message = parsed.first ?: NetworkConstants.messageRequestFailed(),
-                code = response.code,
-                errorCode = parsed.second
-            )
+            // This interceptor owns error responses because it replaces them with an exception.
+            // Close the original body even if reading it or handling session expiry fails.
+            response.use {
+                val bodyStr = response.peekBody(64 * 1024).string()
+                val parsed = parseErrorFromBody(bodyStr)
+                if (response.code == NetworkConstants.HTTP_UNAUTHORIZED) {
+                    sessionManager.clearTokens()
+                    GlobalEventManager.emit(GlobalEvent.Unauthorized)
+                    throw AppException(
+                        message = parsed.first ?: NetworkConstants.messageLoginExpired(),
+                        code = response.code,
+                        errorCode = parsed.second ?: "AUTH_REQUIRED"
+                    )
+                }
+                val errorMessage = parsed.first ?: NetworkConstants.messageRequestFailed()
+                GlobalEventManager.emit(GlobalEvent.ShowToast(errorMessage))
+                throw AppException(errorMessage, response.code, parsed.second)
+            }
         }
 
         return response
