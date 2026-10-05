@@ -8,6 +8,8 @@ import android.content.Context
 import android.graphics.Color
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.network.AppContextProvider
+import coil.Coil
+import coil.ImageLoader
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,11 +21,13 @@ import javax.inject.Inject
 class GdeiAssistantApplication : Application() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
+    @Inject lateinit var imageLoader: ImageLoader
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
         AppContextProvider.init(this)
+        Coil.setImageLoader(imageLoader)
         applicationScope.launch {
             settingsRepository.initializeSyncCache()
         }

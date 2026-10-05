@@ -59,6 +59,7 @@ interface TopicApi {
 data class TopicPostDto(
     val id: Int? = null,
     val username: String? = null,
+    val authorId: String? = null,
     val topic: String? = null,
     val content: String? = null,
     val count: Int? = null,

@@ -24,11 +24,13 @@ import cn.gdeiassistant.BuildConfig
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.data.SocialSessionCoordinator
 import cn.gdeiassistant.data.UserPreferencesRepository
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
@@ -54,6 +56,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
+
+    @Inject
+    lateinit var socialSessionCoordinator: SocialSessionCoordinator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -121,6 +126,17 @@ class MainActivity : ComponentActivity() {
                     if (currentAppLocales != newLocales) {
                         AppCompatDelegate.setApplicationLocales(newLocales)
                     }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                socialSessionCoordinator.onEnterForeground()
+                try {
+                    awaitCancellation()
+                } finally {
+                    socialSessionCoordinator.onEnterBackground()
                 }
             }
         }

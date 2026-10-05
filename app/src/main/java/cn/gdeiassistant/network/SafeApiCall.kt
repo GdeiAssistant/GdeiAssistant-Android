@@ -16,7 +16,8 @@ suspend fun <T> safeApiCall(block: suspend () -> DataJsonResult<T>): Result<T?> 
         block = block,
         isSuccessful = { it.success == true },
         errorMessage = { it.message },
-        errorCode = { it.code }
+        statusCode = { it.code },
+        businessErrorCode = { it.errorCode }
     ) { response ->
         response.data
     }
@@ -30,7 +31,8 @@ suspend fun safeJsonResultCall(block: suspend () -> JsonResult): Result<Unit> {
         block = block,
         isSuccessful = { it.success == true },
         errorMessage = { it.message },
-        errorCode = { it.code }
+        statusCode = { it.code },
+        businessErrorCode = { it.errorCode }
     ) {
         Unit
     }
@@ -40,7 +42,8 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     crossinline block: suspend () -> Response,
     crossinline isSuccessful: (Response) -> Boolean,
     crossinline errorMessage: (Response) -> String?,
-    crossinline errorCode: (Response) -> Int?,
+    crossinline statusCode: (Response) -> Int?,
+    crossinline businessErrorCode: (Response) -> String?,
     crossinline successValue: (Response) -> ResultType
 ): Result<ResultType> {
     return try {
@@ -50,21 +53,23 @@ private suspend inline fun <Response, ResultType> safeResultCall(
         } else {
             Result.failure(
                 AppException(
-                    errorMessage(response) ?: NetworkConstants.messageRequestFailed(),
-                    errorCode(response) ?: -1
+                    message = errorMessage(response) ?: NetworkConstants.messageRequestFailed(),
+                    code = statusCode(response) ?: -1,
+                    errorCode = businessErrorCode(response)
                 )
             )
         }
     } catch (e: AppException) {
         Result.failure(e)
     } catch (e: HttpException) {
-        val message = e.response()?.errorBody()?.string()?.let { parseMessageFromErrorBody(it) }
+        val parsed = e.response()?.errorBody()?.string()?.let(::parseErrorBody)
+        val message = parsed?.first
             ?: when (e.code()) {
                 NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.messageLoginExpired()
                 NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.messageForbidden()
                 else -> NetworkConstants.messageServerError(e.code())
             }
-        Result.failure(AppException(message, e.code()))
+        Result.failure(AppException(message, e.code(), parsed?.second))
     } catch (e: IOException) {
         Result.failure(AppException(NetworkConstants.messageNetworkError(), -1))
     } catch (e: Exception) {
@@ -72,10 +77,13 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     }
 }
 
-private fun parseMessageFromErrorBody(bodyStr: String): String? {
+private fun parseErrorBody(bodyStr: String): Pair<String?, String?>? {
     if (bodyStr.isBlank()) return null
     return try {
-        (com.google.gson.Gson().fromJson(bodyStr, JsonObject::class.java)?.get("message") as? JsonPrimitive)?.asString
+        val json = com.google.gson.Gson().fromJson(bodyStr, JsonObject::class.java) ?: return null
+        val message = (json.get("message") as? JsonPrimitive)?.asString
+        val errorCode = (json.get("errorCode") as? JsonPrimitive)?.asString
+        message to errorCode
     } catch (_: Exception) {
         null
     }

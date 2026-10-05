@@ -106,6 +106,7 @@ class TopicRepository @Inject constructor(
             topic = dto.topic.orEmpty(),
             contentPreview = content.take(64),
             authorName = dto.username.orEmpty(),
+            authorId = dto.authorId?.trim()?.takeIf(String::isNotBlank),
             publishedAt = dto.publishTime.orEmpty(),
             likeCount = dto.likeCount ?: 0,
             imageCount = imageCount,

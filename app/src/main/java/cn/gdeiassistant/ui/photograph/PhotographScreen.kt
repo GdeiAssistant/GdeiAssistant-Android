@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -138,7 +139,10 @@ fun PhotographScreen(navController: NavHostController) {
                 items(state.posts, key = { it.id }) { post ->
                     PhotographPostCard(
                         post = post,
-                        onClick = { navController.navigate(Routes.photographDetail(post.id)) }
+                        onClick = { navController.navigate(Routes.photographDetail(post.id)) },
+                        onAuthorClick = post.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
                     )
                 }
             }
@@ -209,10 +213,26 @@ fun PhotographDetailScreen(navController: NavHostController) {
                         Text(text = detail.content, style = MaterialTheme.typography.bodyLarge)
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
                         Text(
-                            text = "${detail.post.authorName} · ${photographCategoryLabel(detail.post.category)} · ${detail.post.createdAt}",
+                            text = "${photographCategoryLabel(detail.post.category)} · ${detail.post.createdAt}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        if (detail.post.authorId.isNullOrBlank()) {
+                            androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
+                            Text(
+                                text = detail.post.authorName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            TextButton(
+                                onClick = {
+                                    navController.navigate(Routes.socialUser(detail.post.authorId))
+                                }
+                            ) {
+                                Text(text = detail.post.authorName)
+                            }
+                        }
                     }
                 }
                 item {
@@ -373,7 +393,10 @@ fun PhotographProfileScreen(navController: NavHostController) {
                 items(state.visibleItems, key = { it.id }) { post ->
                     PhotographPostCard(
                         post = post,
-                        onClick = { navController.navigate(Routes.photographDetail(post.id)) }
+                        onClick = { navController.navigate(Routes.photographDetail(post.id)) },
+                        onAuthorClick = post.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
                     )
                 }
             }
@@ -546,7 +569,8 @@ private fun PhotographDetailHero(detail: PhotographPostDetail) {
 @Composable
 private fun PhotographPostCard(
     post: PhotographPost,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAuthorClick: (() -> Unit)? = null
 ) {
     SectionCard(
         modifier = Modifier
@@ -589,9 +613,20 @@ private fun PhotographPostCard(
         }
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
         Text(
-            text = "${post.authorName} · ${stringResource(R.string.photograph_stat_like)} ${post.likeCount} · ${stringResource(R.string.photograph_stat_comment)} ${post.commentCount}",
+            text = "${stringResource(R.string.photograph_stat_like)} ${post.likeCount} · ${stringResource(R.string.photograph_stat_comment)} ${post.commentCount}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(4.dp))
+        Text(
+            text = post.authorName,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = if (onAuthorClick != null) {
+                Modifier.clickable(onClick = onAuthorClick)
+            } else {
+                Modifier
+            }
         )
     }
 }

@@ -408,10 +408,19 @@ object MockCommunityProvider {
 
     private fun MockMarketplaceItemRecord.toMarketplaceItemPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "username" to username, "name" to communitySeedText(locale, name),
-            "description" to communitySeedText(locale, description), "price" to price, "location" to communitySeedText(locale, location),
-            "type" to type, "qq" to qq, "phone" to phone, "state" to state,
-            "publishTime" to publishTime, "pictureURL" to pictureURL
+            "id" to id,
+            "username" to username,
+            "authorId" to demoAuthorPublicId(username),
+            "name" to communitySeedText(locale, name),
+            "description" to communitySeedText(locale, description),
+            "price" to price,
+            "location" to communitySeedText(locale, location),
+            "type" to type,
+            "qq" to qq,
+            "phone" to phone,
+            "state" to state,
+            "publishTime" to publishTime,
+            "pictureURL" to pictureURL
         )
     }
 
@@ -424,23 +433,46 @@ object MockCommunityProvider {
 
     private fun MockLostFoundItemRecord.toLostFoundItemPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "username" to username, "name" to communitySeedText(locale, name),
-            "description" to communitySeedText(locale, description), "location" to communitySeedText(locale, location), "itemType" to itemType,
-            "lostType" to lostType, "qq" to qq, "wechat" to wechat, "phone" to phone,
-            "state" to state, "publishTime" to publishTime, "pictureURL" to pictureURL
+            "id" to id,
+            "username" to username,
+            "authorId" to demoAuthorPublicId(username),
+            "name" to communitySeedText(locale, name),
+            "description" to communitySeedText(locale, description),
+            "location" to communitySeedText(locale, location),
+            "itemType" to itemType,
+            "lostType" to lostType,
+            "qq" to qq,
+            "wechat" to wechat,
+            "phone" to phone,
+            "state" to state,
+            "publishTime" to publishTime,
+            "pictureURL" to pictureURL
         )
     }
 
     private fun MockLostFoundProfileRecord.toLostFoundProfilePayload(locale: String): Map<String, Any?> {
-        return linkedMapOf("avatarURL" to avatarURL, "username" to username, "nickname" to communitySeedText(locale, nickname))
+        return linkedMapOf(
+            "avatarURL" to avatarURL,
+            "username" to username,
+            "nickname" to communitySeedText(locale, nickname),
+            "authorId" to demoAuthorPublicId(username)
+        )
     }
 
     private fun MockSecretPostRecord.toSecretPayload(locale: String, includeComments: Boolean): Map<String, Any?> {
+        // 匿名树洞：对外固定匿名标签，不下发可关联校园账号的 username / authorId。
         return linkedMapOf(
-            "id" to id, "username" to communitySeedText(locale, username), "content" to communitySeedText(locale, content),
-            "theme" to theme, "type" to type, "timer" to timer, "state" to state,
-            "publishTime" to publishTime, "likeCount" to likeCount,
-            "commentCount" to commentCount, "liked" to if (liked) 1 else 0,
+            "id" to id,
+            "username" to secretAnonymousLabel(locale, id),
+            "content" to communitySeedText(locale, content),
+            "theme" to theme,
+            "type" to type,
+            "timer" to timer,
+            "state" to state,
+            "publishTime" to publishTime,
+            "likeCount" to likeCount,
+            "commentCount" to commentCount,
+            "liked" to if (liked) 1 else 0,
             "voiceURL" to voiceURL,
             "secretCommentList" to if (includeComments) {
                 mockSecretComments
@@ -453,17 +485,31 @@ object MockCommunityProvider {
 
     private fun MockSecretCommentRecord.toSecretCommentPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "contentId" to contentId, "username" to communitySeedText(locale, username),
-            "comment" to communitySeedText(locale, comment), "publishTime" to publishTime, "avatarTheme" to avatarTheme
+            "id" to id,
+            "contentId" to contentId,
+            "username" to secretAnonymousLabel(locale, id),
+            "comment" to communitySeedText(locale, comment),
+            "publishTime" to publishTime,
+            "avatarTheme" to avatarTheme
         )
     }
 
     private fun MockDatingProfileRecord.toDatingProfilePayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "profileId" to profileId, "username" to username, "nickname" to communitySeedText(locale, nickname),
-            "grade" to grade, "faculty" to communitySeedText(locale, faculty), "hometown" to communitySeedText(locale, hometown),
-            "content" to communitySeedText(locale, content), "qq" to qq, "wechat" to wechat,
-            "area" to area, "state" to state, "pictureURL" to pictureURL
+            "profileId" to profileId,
+            "username" to username,
+            // 发布者公开 ID；nickname 是被介绍人物展示名，二者不得混用。
+            "authorId" to demoAuthorPublicId(username),
+            "nickname" to communitySeedText(locale, nickname),
+            "grade" to grade,
+            "faculty" to communitySeedText(locale, faculty),
+            "hometown" to communitySeedText(locale, hometown),
+            "content" to communitySeedText(locale, content),
+            "qq" to qq,
+            "wechat" to wechat,
+            "area" to area,
+            "state" to state,
+            "pictureURL" to pictureURL
         )
     }
 
@@ -475,30 +521,69 @@ object MockCommunityProvider {
     }
 
     private fun MockExpressPostRecord.toExpressPayload(locale: String): Map<String, Any?> {
+        // 匿名表白：不下发 username/realname/authorId；内部 record 仍保留供竞猜与本人筛选。
         return linkedMapOf(
-            "id" to id, "username" to username, "nickname" to communitySeedText(locale, nickname),
-            "realname" to communitySeedText(locale, realname), "selfGender" to selfGender, "name" to communitySeedText(locale, name),
-            "content" to communitySeedText(locale, content), "personGender" to personGender,
-            "publishTime" to publishTime, "likeCount" to likeCount, "liked" to liked,
-            "commentCount" to commentCount, "guessCount" to guessCount,
-            "guessSum" to guessSum, "canGuess" to canGuess
+            "id" to id,
+            "nickname" to communitySeedText(locale, nickname),
+            "selfGender" to selfGender,
+            "name" to communitySeedText(locale, name),
+            "content" to communitySeedText(locale, content),
+            "personGender" to personGender,
+            "publishTime" to publishTime,
+            "likeCount" to likeCount,
+            "liked" to liked,
+            "commentCount" to commentCount,
+            "guessCount" to guessCount,
+            "guessSum" to guessSum,
+            "canGuess" to canGuess
         )
     }
 
     private fun MockExpressCommentRecord.toExpressCommentPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "username" to username, "nickname" to communitySeedText(locale, nickname),
-            "expressId" to expressId, "comment" to communitySeedText(locale, comment), "publishTime" to publishTime
+            "id" to id,
+            "nickname" to communitySeedText(locale, nickname),
+            "expressId" to expressId,
+            "comment" to communitySeedText(locale, comment),
+            "publishTime" to publishTime
         )
+    }
+
+    /** 固定匿名展示标签，与内部 record.username（可能含校园账号）解耦。 */
+    private fun secretAnonymousLabel(locale: String, seed: Int): String {
+        val labels = listOf(
+            "匿名同学 A",
+            "匿名同学 B",
+            "匿名同学 C",
+            "匿名同学 D",
+            "匿名同学 E"
+        )
+        return communitySeedText(locale, labels[kotlin.math.abs(seed) % labels.size])
     }
 
     private fun MockTopicPostRecord.toTopicPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "username" to username, "topic" to communitySeedText(locale, topic),
-            "content" to communitySeedText(locale, content), "count" to count, "publishTime" to publishTime,
-            "likeCount" to likeCount, "liked" to liked,
-            "firstImageUrl" to firstImageUrl, "imageUrls" to imageUrls
+            "id" to id,
+            "username" to username,
+            "authorId" to demoAuthorPublicId(username),
+            "topic" to communitySeedText(locale, topic),
+            "content" to communitySeedText(locale, content),
+            "count" to count,
+            "publishTime" to publishTime,
+            "likeCount" to likeCount,
+            "liked" to liked,
+            "firstImageUrl" to firstImageUrl,
+            "imageUrls" to imageUrls
         )
+    }
+
+    private fun demoAuthorPublicId(username: String): String {
+        return when (username) {
+            MockUtils.MOCK_CURRENT_USERNAME -> MockSocialProvider.CURRENT_PUBLIC_ID
+            "2023002003" -> MockSocialProvider.PEER_ALICE_ID
+            "2022003018" -> MockSocialProvider.PEER_BOB_ID
+            else -> MockSocialProvider.PEER_CAROL_ID
+        }
     }
 
     private fun MockDeliveryOrderRecord.toDeliveryOrderPayload(locale: String): Map<String, Any?> {
@@ -526,10 +611,17 @@ object MockCommunityProvider {
 
     private fun MockPhotographPostRecord.toPhotographPayload(locale: String, includeComments: Boolean): Map<String, Any?> {
         return linkedMapOf(
-            "id" to id, "title" to communitySeedText(locale, title), "content" to communitySeedText(locale, content),
-            "count" to photoCount(), "type" to type, "username" to username,
-            "createTime" to createTime, "likeCount" to likeCount,
-            "commentCount" to commentCount, "liked" to if (liked) 1 else 0,
+            "id" to id,
+            "title" to communitySeedText(locale, title),
+            "content" to communitySeedText(locale, content),
+            "count" to photoCount(),
+            "type" to type,
+            "username" to username,
+            "authorId" to demoAuthorPublicId(username),
+            "createTime" to createTime,
+            "likeCount" to likeCount,
+            "commentCount" to commentCount,
+            "liked" to if (liked) 1 else 0,
             "firstImageUrl" to (firstImageUrl ?: resolvedImageUrls().firstOrNull()),
             "imageUrls" to resolvedImageUrls(),
             "photographCommentList" to if (includeComments) {

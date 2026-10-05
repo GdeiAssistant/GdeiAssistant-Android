@@ -139,6 +139,7 @@ class PhotographRepository @Inject constructor(
                 context.getString(R.string.photograph_default_content)
             }.take(60),
             authorName = dto.username.orEmpty().ifBlank { context.getString(R.string.photograph_default_author) },
+            authorId = dto.authorId?.trim()?.takeIf(String::isNotBlank),
             createdAt = dto.createTime.orEmpty().ifBlank { context.getString(R.string.common_just_now) },
             likeCount = dto.likeCount ?: 0,
             commentCount = dto.commentCount ?: 0,

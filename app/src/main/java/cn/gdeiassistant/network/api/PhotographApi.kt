@@ -79,6 +79,7 @@ data class PhotographPostDto(
     val count: Int? = null,
     val type: Int? = null,
     val username: String? = null,
+    val authorId: String? = null,
     val createTime: String? = null,
     val likeCount: Int? = null,
     val commentCount: Int? = null,

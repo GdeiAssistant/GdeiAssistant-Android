@@ -91,6 +91,27 @@ fun MessagesScreen(navController: NavHostController) {
             MessagesOverviewCard(state = state)
         }
         item {
+            SectionCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(Routes.SOCIAL_CONVERSATIONS) }
+            ) {
+                BadgePill(text = stringResource(R.string.social_dm_badge))
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.social_conversations_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.social_messages_entry_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        item {
             NewsSection(
                 items = state.newsItems.take(3),
                 error = state.newsError,

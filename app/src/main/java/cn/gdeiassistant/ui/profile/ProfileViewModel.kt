@@ -6,11 +6,14 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.ProfileRepository
 import cn.gdeiassistant.data.SessionManager
+import cn.gdeiassistant.data.SocialRepository
+import cn.gdeiassistant.data.SocialSessionCoordinator
 import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
 import cn.gdeiassistant.model.ProfileOptions
 import cn.gdeiassistant.model.ProfileUpdateRequest
+import cn.gdeiassistant.model.SocialUser
 import cn.gdeiassistant.model.UserProfileSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -44,6 +47,7 @@ data class ProfileDraftUiState(
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val profile: UserProfileSummary? = null,
+    val socialMe: SocialUser? = null,
     val profileOptions: ProfileOptions = ProfileFormSupport.defaultOptions,
     val locationRegions: List<ProfileLocationRegion> = emptyList(),
     val isEditing: Boolean = false,
@@ -66,6 +70,8 @@ enum class ProfileLocationField {
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val socialRepository: SocialRepository,
+    private val socialSessionCoordinator: SocialSessionCoordinator,
     private val sessionManager: SessionManager,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -87,10 +93,12 @@ class ProfileViewModel @Inject constructor(
             val profileDeferred = async { profileRepository.getProfile() }
             val optionsDeferred = async { profileRepository.getProfileOptions() }
             val locationDeferred = async { profileRepository.getLocationRegions() }
+            val socialDeferred = async { socialRepository.getMe() }
 
             val profileResult = profileDeferred.await()
             val optionsResult = optionsDeferred.await()
             val locationResult = locationDeferred.await()
+            val socialResult = socialDeferred.await()
             val fallbackUsername = sessionManager.currentUsername().orEmpty()
             val profile = profileResult.getOrNull() ?: UserProfileSummary(
                 username = fallbackUsername.ifBlank { context.getString(R.string.profile_default_username) }
@@ -101,6 +109,7 @@ class ProfileViewModel @Inject constructor(
                 current.copy(
                     isLoading = false,
                     profile = profile,
+                    socialMe = socialResult.getOrNull() ?: current.socialMe,
                     profileOptions = options,
                     locationRegions = locationResult.getOrDefault(current.locationRegions),
                     draft = if (current.isEditing) {
@@ -349,6 +358,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logout() {
+        socialSessionCoordinator.onLogout()
         sessionManager.clearTokens()
         viewModelScope.launch {
             _events.emit(ProfileEvent.NavigateToLogin)

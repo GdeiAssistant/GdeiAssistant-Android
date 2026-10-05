@@ -32,6 +32,7 @@ import cn.gdeiassistant.network.api.PhotographApi
 import cn.gdeiassistant.network.api.ProfileApi
 import cn.gdeiassistant.network.api.ScheduleApi
 import cn.gdeiassistant.network.api.SecretApi
+import cn.gdeiassistant.network.api.SocialApi
 import cn.gdeiassistant.network.api.SpareApi
 import cn.gdeiassistant.network.api.TopicApi
 import cn.gdeiassistant.network.api.UpgradeApi
@@ -143,6 +144,7 @@ object NetworkModule {
     @Provides @Singleton fun provideProfileApi(retrofit: Retrofit): ProfileApi = retrofit.create(ProfileApi::class.java)
     @Provides @Singleton fun provideScheduleApi(retrofit: Retrofit): ScheduleApi = retrofit.create(ScheduleApi::class.java)
     @Provides @Singleton fun provideSecretApi(retrofit: Retrofit): SecretApi = retrofit.create(SecretApi::class.java)
+    @Provides @Singleton fun provideSocialApi(retrofit: Retrofit): SocialApi = retrofit.create(SocialApi::class.java)
     @Provides @Singleton fun provideSpareApi(retrofit: Retrofit): SpareApi = retrofit.create(SpareApi::class.java)
     @Provides @Singleton fun provideTopicApi(retrofit: Retrofit): TopicApi = retrofit.create(TopicApi::class.java)
     @Provides @Singleton fun provideUpgradeApi(retrofit: Retrofit): UpgradeApi = retrofit.create(UpgradeApi::class.java)

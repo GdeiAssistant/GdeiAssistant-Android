@@ -284,6 +284,25 @@ fun PrivacySettingsScreen(navController: NavHostController) {
             }
         }
         item {
+            SectionCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(Routes.SOCIAL_DM_PRIVACY) }
+            ) {
+                Text(
+                    text = stringResource(R.string.social_dm_privacy_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.social_dm_privacy_entry_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        item {
             TintButton(
                 text = stringResource(R.string.profile_privacy_save_action),
                 onClick = viewModel::save,

@@ -26,7 +26,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.Email
@@ -35,6 +37,7 @@ import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PersonSearch
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.VerifiedUser
@@ -85,6 +88,7 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
+import cn.gdeiassistant.model.SocialRelationshipKind
 import cn.gdeiassistant.model.UserProfileSummary
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
@@ -207,6 +211,69 @@ fun ProfileScreen(navController: NavHostController) {
                         onSaveBio = viewModel::saveBio,
                         onSaveLocation = viewModel::saveLocation
                     )
+                }
+                state.socialMe?.let { socialMe ->
+                    item {
+                        SectionCard(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(R.string.social_profile_stats_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                ProfileSocialStat(
+                                    label = stringResource(R.string.social_stat_following),
+                                    value = socialMe.followingCount.toString(),
+                                    onClick = {
+                                        navController.navigate(
+                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FOLLOWING)
+                                        )
+                                    }
+                                )
+                                ProfileSocialStat(
+                                    label = stringResource(R.string.social_stat_followers),
+                                    value = socialMe.followerCount.toString(),
+                                    onClick = {
+                                        navController.navigate(
+                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FOLLOWERS)
+                                        )
+                                    }
+                                )
+                                ProfileSocialStat(
+                                    label = stringResource(R.string.social_stat_friends),
+                                    value = socialMe.friendCount.toString(),
+                                    onClick = {
+                                        navController.navigate(
+                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FRIENDS)
+                                        )
+                                    }
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            ProfileMenuRow(
+                                item = ProfileMenuItem(
+                                    Icons.Rounded.PersonSearch,
+                                    stringResource(R.string.social_search_title)
+                                ) { navController.navigate(Routes.SOCIAL_SEARCH) }
+                            )
+                            ProfileMenuRow(
+                                item = ProfileMenuItem(
+                                    Icons.Rounded.Chat,
+                                    stringResource(R.string.social_conversations_title)
+                                ) { navController.navigate(Routes.SOCIAL_CONVERSATIONS) }
+                            )
+                            ProfileMenuRow(
+                                item = ProfileMenuItem(
+                                    Icons.Rounded.Block,
+                                    stringResource(R.string.social_blocks_title)
+                                ) { navController.navigate(Routes.SOCIAL_BLOCKS) }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -1292,6 +1359,27 @@ private fun ProfileLocationPickerSheet(
 
             Spacer(modifier = Modifier.height(12.dp))
         }
+    }
+}
+
+@Composable
+private fun ProfileSocialStat(label: String, value: String, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

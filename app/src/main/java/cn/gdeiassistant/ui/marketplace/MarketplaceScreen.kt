@@ -293,7 +293,20 @@ fun MarketplaceDetailScreen(navController: NavHostController) {
                             fontWeight = FontWeight.SemiBold
                         )
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                        DetailRow(stringResource(R.string.marketplace_seller_name_label), detail.sellerNickname ?: detail.item.sellerName)
+                        val sellerLabel = detail.sellerNickname ?: detail.item.sellerName
+                        if (detail.sellerAuthorId.isNullOrBlank()) {
+                            DetailRow(stringResource(R.string.marketplace_seller_name_label), sellerLabel)
+                        } else {
+                            TextButton(
+                                onClick = { navController.navigate(Routes.socialUser(detail.sellerAuthorId)) }
+                            ) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.marketplace_seller_name_label
+                                    ) + "：" + sellerLabel
+                                )
+                            }
+                        }
                         DetailRow(stringResource(R.string.marketplace_seller_college_label), detail.sellerCollege ?: "—")
                         DetailRow(stringResource(R.string.marketplace_seller_major_label), detail.sellerMajor ?: "—")
                         DetailRow(stringResource(R.string.marketplace_seller_grade_label), detail.sellerGrade ?: "—")

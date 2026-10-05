@@ -117,6 +117,7 @@ class DatingRepository @Inject constructor(
             content = dto.content.orEmpty().trim(),
             area = DatingArea.fromRemote(dto.area),
             imageUrl = dto.pictureURL?.trim()?.ifBlank { null },
+            authorId = dto.authorId?.trim()?.takeIf(String::isNotBlank),
             isMine = dto.username?.trim() == sessionManager.currentUsername()
         )
     }

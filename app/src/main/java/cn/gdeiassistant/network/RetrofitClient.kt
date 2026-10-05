@@ -50,28 +50,39 @@ class ResponseInterceptor @Inject constructor(
 
         if (response.code == NetworkConstants.HTTP_UNAUTHORIZED) {
             val bodyStr = response.peekBody(64 * 1024).string()
-            val message = parseMessageFromBody(bodyStr)
+            val parsed = parseErrorFromBody(bodyStr)
             sessionManager.clearTokens()
             GlobalEventManager.emit(GlobalEvent.Unauthorized)
-            throw AppException(message ?: NetworkConstants.messageLoginExpired(), NetworkConstants.HTTP_UNAUTHORIZED)
+            throw AppException(
+                message = parsed.first ?: NetworkConstants.messageLoginExpired(),
+                code = NetworkConstants.HTTP_UNAUTHORIZED,
+                errorCode = parsed.second ?: "AUTH_REQUIRED"
+            )
         }
 
         if (!response.isSuccessful) {
             val bodyStr = response.peekBody(64 * 1024).string()
-            val message = parseMessageFromBody(bodyStr)
-            GlobalEventManager.emit(GlobalEvent.ShowToast(message ?: NetworkConstants.messageRequestFailed()))
-            throw AppException(message ?: NetworkConstants.messageRequestFailed(), response.code)
+            val parsed = parseErrorFromBody(bodyStr)
+            GlobalEventManager.emit(GlobalEvent.ShowToast(parsed.first ?: NetworkConstants.messageRequestFailed()))
+            throw AppException(
+                message = parsed.first ?: NetworkConstants.messageRequestFailed(),
+                code = response.code,
+                errorCode = parsed.second
+            )
         }
 
         return response
     }
 
-    private fun parseMessageFromBody(bodyStr: String?): String? {
-        if (bodyStr.isNullOrBlank()) return null
+    private fun parseErrorFromBody(bodyStr: String?): Pair<String?, String?> {
+        if (bodyStr.isNullOrBlank()) return null to null
         return try {
-            (gson.fromJson(bodyStr, JsonObject::class.java)?.get("message") as? JsonPrimitive)?.asString
+            val json = gson.fromJson(bodyStr, JsonObject::class.java) ?: return null to null
+            val message = (json.get("message") as? JsonPrimitive)?.asString
+            val errorCode = (json.get("errorCode") as? JsonPrimitive)?.asString
+            message to errorCode
         } catch (_: Exception) {
-            null
+            null to null
         }
     }
 }

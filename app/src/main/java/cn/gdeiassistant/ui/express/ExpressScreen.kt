@@ -246,7 +246,9 @@ fun ExpressDetailScreen(navController: NavHostController) {
             }
             else -> {
                 val detail = requireNotNull(state.detail)
-                item { ExpressDetailHero(detail = detail) }
+                item {
+                    ExpressDetailHero(detail = detail)
+                }
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -447,7 +449,10 @@ fun ExpressProfileScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun ExpressDetailHero(detail: ExpressPostDetail) {
+private fun ExpressDetailHero(
+    detail: ExpressPostDetail,
+    onAuthorClick: (() -> Unit)? = null
+) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
@@ -474,7 +479,12 @@ private fun ExpressDetailHero(detail: ExpressPostDetail) {
             text = "${detail.post.nickname}  ${stringResource(R.string.express_like_action)}  ${detail.post.targetName}",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = if (onAuthorClick != null) {
+                Modifier.clickable(onClick = onAuthorClick)
+            } else {
+                Modifier
+            }
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -500,7 +510,8 @@ private fun ExpressDetailHero(detail: ExpressPostDetail) {
 @Composable
 private fun ExpressPostCard(
     post: ExpressPost,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAuthorClick: (() -> Unit)? = null
 ) {
     SectionCard(
         modifier = Modifier
@@ -514,7 +525,12 @@ private fun ExpressPostCard(
             Text(
                 text = post.nickname,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = if (onAuthorClick != null) {
+                    Modifier.clickable(onClick = onAuthorClick)
+                } else {
+                    Modifier
+                }
             )
             Text(
                 text = post.publishTime,

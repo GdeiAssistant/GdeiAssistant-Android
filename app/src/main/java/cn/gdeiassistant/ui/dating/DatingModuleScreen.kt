@@ -35,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -232,7 +233,14 @@ fun DatingDetailScreen(navController: NavHostController) {
             }
             else -> {
                 val detail = requireNotNull(state.detail)
-                item { DatingDetailHero(detail = detail) }
+                item {
+                    DatingDetailHero(
+                        detail = detail,
+                        onPublisherClick = detail.profile.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
+                    )
+                }
                 detail.profile.imageUrl?.takeIf { it.isNotBlank() }?.let { imageUrl ->
                     item {
                         SectionCard(modifier = Modifier.fillMaxWidth()) {
@@ -507,7 +515,10 @@ private fun DatingFeedCard(
 }
 
 @Composable
-private fun DatingDetailHero(detail: DatingProfileDetail) {
+private fun DatingDetailHero(
+    detail: DatingProfileDetail,
+    onPublisherClick: (() -> Unit)? = null
+) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
@@ -530,6 +541,12 @@ private fun DatingDetailHero(detail: DatingProfileDetail) {
             text = detail.profile.content,
             style = MaterialTheme.typography.bodyLarge
         )
+        if (onPublisherClick != null) {
+            Spacer(modifier = Modifier.size(8.dp))
+            TextButton(onClick = onPublisherClick) {
+                Text(text = stringResource(R.string.dating_view_publisher))
+            }
+        }
     }
 }
 
