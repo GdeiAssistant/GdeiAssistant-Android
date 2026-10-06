@@ -59,10 +59,12 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     private var originalAccessibilityFlags = 0
     private var conversationId = ""
     private var evidencePrefix = "social-image"
-    private var dismissedLauncherAnr = false
+    private val ciEmulatorMode = InstrumentationRegistry.getArguments().getString("gdeiEmulator") == "true"
+    private val dismissedSystemAnrTitles = mutableSetOf<String>()
 
     @Before
     fun prepareRealGalleryImageAndOpenConversation() {
+        Log.i("SocialImageUiTest", "Received gdeiEmulator=$ciEmulatorMode")
         val info = automation.serviceInfo
         originalAccessibilityFlags = info.flags
         info.flags = info.flags or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
@@ -354,7 +356,10 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
         val deadline = SystemClock.uptimeMillis() + 20_000
         while (SystemClock.uptimeMillis() < deadline) {
             val roots = nativeRoots()
-            if (dismissKnownEmulatorLauncherAnr(roots)) continue
+            if (dismissKnownEmulatorSystemAnr(roots)) {
+                SystemClock.sleep(200)
+                continue
+            }
             for (root in roots) select(root)?.let { return it }
             SystemClock.sleep(200)
         }
@@ -362,23 +367,33 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
         throw AssertionError(message)
     }
 
-    private fun dismissKnownEmulatorLauncherAnr(roots: List<AccessibilityNodeInfo>): Boolean {
-        if (dismissedLauncherAnr || InstrumentationRegistry.getArguments().getString("gdeiEmulator") != "true") return false
-        val dialog = roots.firstOrNull { root ->
-            walk(root).any { node ->
-                node.viewIdResourceName == "android:id/alertTitle" &&
-                    node.text?.toString() == "Pixel Launcher isn't responding"
+    private fun dismissKnownEmulatorSystemAnr(roots: List<AccessibilityNodeInfo>): Boolean {
+        if (!ciEmulatorMode) return false
+        for (dialog in roots) {
+            val title = walk(dialog).firstOrNull { node ->
+                node.packageName?.toString() == "android" && node.viewIdResourceName == "android:id/alertTitle"
+            }?.text?.toString() ?: continue
+            val stage = when (title) {
+                "Pixel Launcher isn't responding" -> "launcher-anr"
+                "Messages isn't responding" -> "messages-anr"
+                else -> continue
             }
-        } ?: return false
-        val close = walk(dialog).firstOrNull { it.viewIdResourceName == "android:id/aerr_close" }
-            ?: return false
-        // The isolated AVD's launcher is unrelated to this app or the real system picker.
-        // Preserve the ANR evidence; app/picker ANRs and repeat launcher ANRs remain failures.
-        saveEvidence("launcher-anr")
-        assertTrue("System launcher ANR could not be dismissed", clickNodeOrParent(close))
-        dismissedLauncherAnr = true
-        Log.w("SocialImageUiTest", "Closed known Pixel Launcher ANR in isolated CI emulator")
-        return true
+            // Never click the same title twice or use a picker window behind its blocking modal.
+            // A still-closing or repeated ANR must disappear within the original wait deadline.
+            if (title in dismissedSystemAnrTitles) return true
+            val close = walk(dialog).firstOrNull { node ->
+                node.packageName?.toString() == "android" && node.viewIdResourceName == "android:id/aerr_close"
+            } ?: return false
+            // These two external boot ANRs were observed in the isolated CI AVD. Preserve the
+            // original modal; app/provider ANRs and other titles are not handled.
+            saveEvidence(stage)
+            Log.w("SocialImageUiTest", "gdeiEmulator=$ciEmulatorMode matchedSystemAnrTitle=$title")
+            assertTrue("Known system ANR could not be dismissed: $title", clickNodeOrParent(close))
+            dismissedSystemAnrTitles.add(title)
+            Log.w("SocialImageUiTest", "Closed known system ANR in isolated CI emulator: $title")
+            return true
+        }
+        return false
     }
 
     private fun waitForAppWindow() {
