@@ -136,6 +136,7 @@ private fun resolveUiTestInitialRoute(route: String): String? = when (route) {
     Routes.MESSAGES -> Routes.MESSAGES
     Routes.PROFILE -> Routes.PROFILE
     Routes.MARKETPLACE -> Routes.MARKETPLACE
+    Routes.SOCIAL_CONVERSATIONS -> Routes.SOCIAL_CONVERSATIONS
     else -> null
 }
 

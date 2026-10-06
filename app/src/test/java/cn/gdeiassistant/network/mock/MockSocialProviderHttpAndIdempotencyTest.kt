@@ -185,6 +185,41 @@ class MockSocialProviderHttpAndIdempotencyTest {
         assertEquals(404, wrongConversation.httpCode)
     }
 
+    @Test
+    fun oneShotImageFailureDoesNotCommitAndIdenticalRetryUploadsOriginalBytesOnce() {
+        val conversationId = gson.fromJson(
+            MockSocialProvider.route(get("http://localhost/api/social/conversations"))!!.body,
+            JsonObject::class.java
+        ).getAsJsonObject("data").getAsJsonArray("items")[0].asJsonObject.get("id").asString
+        val messagesUrl = "http://localhost/api/social/conversations/$conversationId/messages"
+        val seededImage = gson.fromJson(MockSocialProvider.route(get(messagesUrl))!!.body, JsonObject::class.java)
+            .getAsJsonObject("data").getAsJsonArray("items")
+            .first { it.asJsonObject.get("type").asString == "IMAGE" }.asJsonObject.get("id").asString
+        val jpeg = MockSocialProvider.route(get("$messagesUrl/$seededImage/image"))!!.binaryBody!!
+        val clientId = "78ae321d-724d-4c65-a1a1-dddd79883147"
+        val request = postMultipartImage("$messagesUrl/image", clientId, jpeg)
+
+        MockSocialProvider.failNextImageSendForTest()
+        assertEquals(503, MockSocialProvider.route(request)!!.httpCode)
+        val afterFailure = gson.fromJson(MockSocialProvider.route(get(messagesUrl))!!.body, JsonObject::class.java)
+            .getAsJsonObject("data").getAsJsonArray("items")
+        assertFalse(afterFailure.any { it.asJsonObject.get("clientMessageId").asString == clientId })
+
+        val retry = MockSocialProvider.route(request)!!
+        assertEquals(200, retry.httpCode)
+        val serverId = gson.fromJson(retry.body, JsonObject::class.java).getAsJsonObject("data").get("id").asString
+        val duplicate = MockSocialProvider.route(request)!!
+        assertEquals(serverId, gson.fromJson(duplicate.body, JsonObject::class.java).getAsJsonObject("data").get("id").asString)
+        val committed = gson.fromJson(MockSocialProvider.route(get(messagesUrl))!!.body, JsonObject::class.java)
+            .getAsJsonObject("data").getAsJsonArray("items")
+        assertEquals(1, committed.count { it.asJsonObject.get("clientMessageId").asString == clientId })
+        org.junit.Assert.assertArrayEquals(jpeg, MockSocialProvider.route(get("$messagesUrl/$serverId/image"))!!.binaryBody)
+        assertEquals(3, MockSocialProvider.imageSendAttemptsForTest().size)
+        assertTrue(MockSocialProvider.imageSendAttemptsForTest().all {
+            it.clientMessageId == clientId && it.sha256 == cn.gdeiassistant.data.SocialChatImageMetadata.sha256Hex(jpeg)
+        })
+    }
+
     private fun peerIdOfFirstConversation(conversationId: String): String {
         val conversation = gson.fromJson(
             MockSocialProvider.route(get("http://localhost/api/social/conversations/$conversationId"))!!.body,

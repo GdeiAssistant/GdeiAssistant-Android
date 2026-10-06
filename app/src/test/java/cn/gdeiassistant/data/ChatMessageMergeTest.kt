@@ -233,6 +233,44 @@ class ChatMessageMergeTest {
         assertEquals(ChatSendStatus.SENT, merged.single().sendStatus)
     }
 
+    @Test
+    fun refreshKeepsUnconfirmedFailedImageAndPendingTextButReplacesServerHistory() {
+        val failed = message("local-image", "c1", "me", "image", "", ChatSendStatus.FAILED, "")
+            .copy(type = ChatMessageType.IMAGE, localImagePath = "/tmp/original.jpg")
+        val pending = message("local-text", "c1", "me", "text", "new", ChatSendStatus.PENDING, "")
+        val previousServer = message("old", "c1", "peer", "old", "old", ChatSendStatus.SENT, "1")
+        val refreshedServer = message("new", "c1", "peer", "new", "fresh", ChatSendStatus.SENT, "2")
+
+        val refreshed = ChatMessageMerge.merge(
+            listOf(previousServer, failed, pending), listOf(refreshedServer), prepend = false, replace = true
+        )
+
+        assertEquals(setOf("new", "local-image", "local-text"), refreshed.map { it.id }.toSet())
+        assertEquals(failed, refreshed.first { it.id == failed.id })
+        assertEquals(pending, refreshed.first { it.id == pending.id })
+    }
+
+    @Test
+    fun refreshConfirmationReplacesFailedImageOnceAndKeepsOriginalPathForCleanup() {
+        val failed = message("local-image", "c1", "me", "image", "", ChatSendStatus.FAILED, "")
+            .copy(type = ChatMessageType.IMAGE, localImagePath = "/tmp/original.jpg")
+        val confirmed = failed.copy(
+            id = "server-image", seq = "3", sendStatus = ChatSendStatus.SENT, localImagePath = null,
+            image = ChatImageMeta(url = "/api/social/conversations/c1/messages/server-image/image")
+        )
+
+        val refreshed = ChatMessageMerge.merge(
+            listOf(failed), listOf(confirmed, confirmed), prepend = false, replace = true
+        )
+
+        assertEquals(1, refreshed.size)
+        assertEquals("server-image", refreshed.single().id)
+        assertEquals(ChatSendStatus.SENT, refreshed.single().sendStatus)
+        assertEquals(ChatMessageType.IMAGE, refreshed.single().type)
+        assertEquals("/tmp/original.jpg", refreshed.single().localImagePath)
+        assertEquals(confirmed.image, refreshed.single().image)
+    }
+
     private fun message(
         id: String,
         conversationId: String,

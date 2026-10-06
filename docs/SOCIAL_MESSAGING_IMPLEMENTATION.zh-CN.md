@@ -1,6 +1,6 @@
 # Android 社交与私信实现说明
 
-日期：2026-10-05。基线 HEAD：`c54a37f`（本说明随图片私信追加更新，未 commit）。
+日期：2026-10-06。图片实现原始基线：`c54a37f`；本轮模拟器测试补充基线：`98a9c2ceb48e03caedb95c752bfadd26bed1c3c2`。
 
 ## 范围
 
@@ -82,9 +82,21 @@
 - 未验证：完整 Android App build、Compose 类型检查、模拟器/真机键盘与图片预览（本机缺 Android SDK）。
 - 2026-10-06 本机确认：`adb`、`emulator`、`sdkmanager` 缺失，两个 SDK 环境变量未设，默认 SDK 目录和 `local.properties` 均不存在。
 - 纯 JVM 验证脚本：`/tmp/gdei-chat-images-20261005/android-pure.py`。直接编译实际生产模型、API DTO/注解、URL/鉴权判定、图片头/摘要、消息合并和 mock，再执行 JUnit；只沿用 Compose `Immutable` / `BuildConfig` 编译标记，不替代业务或 Bitmap 实现。其图片支持测试验证纯 `SocialChatImageMetadata`，不包含 Android 图片解码、EXIF/Matrix、Photo Picker、ViewModel 生命周期或 Compose。
-- 最新实际执行结果：`OK (52 tests)`；编译与测试记录分别为该临时目录下 `android-pure/compile.log` 和 `android-pure/test.log`。本仓未执行完整 Gradle/设备测试。
+- 图片实现阶段本机执行结果：`OK (52 tests)`；编译与测试记录分别为该临时目录下 `android-pure/compile.log` 和 `android-pure/test.log`。该检查不包含完整 Gradle/设备测试。
 - 此独立检查使用 Java 17、Kotlin 2.3.21、JUnit 4.13.2、Retrofit 3.0.0，以及已缓存的 Gson 2.13.2 / OkHttp 4.12.0 / Okio 3.6.0 / coroutines 1.9.0；不能代替仓库声明版本的完整 Gradle 构建。测试涵盖 MIME/尺寸限制、真实 multipart 字节、同 ID 原图在隐私收紧后的重试、已提交优先、精确同源 Bearer、mock 图片 HTTP 响应头与字节、DTO 缺字段默认和 Retrofit 字段名。
 - 六种语言 `strings.xml` 实际 XML 解析通过；新增图片文案均齐全。固定合成 JPEG 由真实 JVM ImageIO 解码确认，不将缺失文件伪装成成功。
 - 2026-10-06 Dot 云端补充：在 Debian 13 Linux 隔离目录安装并校验 Gradle 9.6.1、Android CLI 22.0、官方 `platforms;android-37.0` revision 2 与 Build-Tools 36.0.0。用户确认的 2019-01-16 SDK 许可按准确正文接受，组件安装退出 0；未改变源码、依赖、compileSdk 或系统网络设置。
 - 该环境首次 `lintDebug`、`testDebugUnitTest` 均在根项目 AGP 9.3.1 插件解析阶段退出 1，实际单测 0 项；Google 官方 AGP 与插件 marker POM 在 Dot 均可 HTTP 200 读取。探针确认 JVM 未使用现有代理后，仅对隔离进程接入同一代理，启动一次 `lintDebug testDebugUnitTest assembleDebug`。随后结果读取被工具自动审批取消，未获得明确拒绝理由，也未获得退出码；句柄 71771 的终态未知，可能仍运行，未重启或终止。因此完整 Gradle 构建、compileSdk 绑定与设备 UI 仍未验证通过。
 - 主助手已读回第 3 版阶段报告：ZIP CRC 与 307 个文件 SHA-256 全部匹配，SDK 安装记录、原始失败日志和组合命令现有启动日志相符；原 Android 354 个源码文件校验无差异。恢复后应先只读核对原命令终态与保存日志，再决定后续验证。
+
+## 2026-10-06 图片私信模拟器测试补充
+
+- 新增 `MockSocialChatImageUiTest` 四项仪器测试，沿用现有 Compose/JUnit 框架。测试运行时生成 320×240 四色 PNG，通过 `MediaStore` 写入模拟器相册，操作实际系统 Photo Picker；只有远端服务使用既有 in-memory mock，不伪造 picker 回调。
+- 覆盖系统选图取消、预览渲染及移除、真实规范化 JPEG 上传、鉴权图片气泡与完整看图；断言实际图片尺寸、存储字节和 SHA-256，并从 Compose 所在 Android 窗口采样已渲染的合成图片颜色。
+- 一次性 mock HTTP 503 验证发送失败；收紧隐私后重试被拒，再恢复互关权限后使用原 `clientMessageId` 和原 bytes 重试成功，服务端仅一条消息。隐私收紧后历史已发送图片仍可查看。离开聊天页后，本页失败消息及临时文件清理，重新进入不显示残留。
+- 该流程暴露刷新历史丢失失败消息的问题，已修正 `ChatMessageMerge.merge(replace=true)`：保留未经服务端确认的本地 pending/failed；同 client key 的服务端确认仍替换占位。新增两项消息合并回归及一项 mock 单次失败/重试回归。
+- 本机实际运行 `python3 /tmp/gdei-chat-images-20261005/android-pure.py`，直接编译本轮实际纯 production 源码并执行 `OK (55 tests)`；沿用上方标记和依赖边界。`git diff --check`、`bash -n scripts/run-emulator-tests.sh` 及两个 workflow 的 YAML 解析通过。脚本控制流另用临时合成命令验证：即使诊断采集失败，Gradle 原退出码 0/37 均保留；这不代表 Gradle 或模拟器执行成功。
+- 本轮本机再次确认无 SDK、`adb`、`emulator`、`sdkmanager` 或 `local.properties`，未执行 instrumentation/Compose 编译。新增四项测试的实际结果须以随后精确提交的 CI 为准。
+- PR 的 Android CI 继续在 API 35 / Google APIs / x86_64 / Pixel 6 执行全部 `connectedDebugAndroidTest`（原四项 smoke 加新增四项）。入口为 `bash scripts/run-emulator-tests.sh`，退出前采集截图/可访问性树和 logcat，上传到 `android-instrumentation-reports` 的 `android-ui-evidence/`、`android-emulator-logcat.log`，同时保留 Gradle 报告。
+- 签名发布 workflow 只补与已验证 CI 相同的 `platforms;android-37.0` 安装步骤，放在 release secrets 检查之后；未修改签名或执行发布。
+- 仍需实际设备确认 OEM/旧版 picker、相机/HEIC 输入、键盘交互及真实服务环境；本轮相册仅使用合成 PNG，退出测试时删除该测试创建的 URI。

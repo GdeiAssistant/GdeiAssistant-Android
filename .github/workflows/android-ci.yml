@@ -112,7 +112,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run Compose smoke tests on emulator
+      - name: Run Compose and real Photo Picker tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -121,7 +121,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: bash -o pipefail -c './gradlew connectedDebugAndroidTest --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-connected-tests.log'
+          script: bash scripts/run-emulator-tests.sh
 
       - name: Upload instrumentation logs and reports
         if: always()
@@ -130,6 +130,8 @@ jobs:
           name: android-instrumentation-reports
           path: |
             gradle-connected-tests.log
+            android-emulator-logcat.log
+            android-ui-evidence/
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
             app/build/outputs/apk/

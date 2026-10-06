@@ -25,6 +25,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 data class MockSocialRouteResult(
@@ -57,6 +59,8 @@ data class MockSocialRouteResult(
     }
 }
 
+data class MockImageSendAttempt(val clientMessageId: String, val sha256: String)
+
 /** 演示用社交/私信 mock：内存关系、会话、消息与隐私策略。 */
 object MockSocialProvider {
 
@@ -83,6 +87,8 @@ object MockSocialProvider {
     private val conversations = ConcurrentHashMap<String, MockConversation>()
     private val messages = ConcurrentHashMap<String, MutableList<MockMessage>>()
     private val imageBytesByMessageId = ConcurrentHashMap<String, ByteArray>()
+    private val failNextImageSend = AtomicBoolean(false)
+    private val imageSendAttempts = ConcurrentLinkedQueue<MockImageSendAttempt>()
 
     /** 固定可解码 1x1 JPEG，仅用作演示会话的初始图片，不替代缺失的上传文件。 */
     private val syntheticJpeg: ByteArray = byteArrayOf(
@@ -114,6 +120,8 @@ object MockSocialProvider {
             conversations.clear()
             messages.clear()
             imageBytesByMessageId.clear()
+            failNextImageSend.set(false)
+            imageSendAttempts.clear()
             follows += CURRENT_PUBLIC_ID to PEER_ALICE_ID
             follows += PEER_ALICE_ID to CURRENT_PUBLIC_ID
             follows += CURRENT_PUBLIC_ID to PEER_BOB_ID
@@ -151,6 +159,13 @@ object MockSocialProvider {
     fun setPeerDmPolicyForTest(userId: String, policy: DmPolicy) {
         peerDmPolicies[userId] = policy
     }
+
+    /** Test-only fault in this in-memory demo provider; never used by the remote API. */
+    fun failNextImageSendForTest() {
+        failNextImageSend.set(true)
+    }
+
+    fun imageSendAttemptsForTest(): List<MockImageSendAttempt> = imageSendAttempts.toList()
 
     fun route(request: Request): MockSocialRouteResult? {
         val path = request.url.encodedPath
@@ -509,6 +524,7 @@ object MockSocialProvider {
             return failure("INVALID_REQUEST", 400, "invalid image format")
         }
         val sha = sha256Hex(imagePart.bytes)
+        imageSendAttempts += MockImageSendAttempt(clientMessageId, sha)
         val existing = messages[conversationId].orEmpty()
             .firstOrNull { it.senderId == CURRENT_PUBLIC_ID && it.clientMessageId == clientMessageId }
         if (existing != null) {
@@ -516,6 +532,9 @@ object MockSocialProvider {
                 return failure("CLIENT_MESSAGE_CONFLICT", 409, "client message conflict")
             }
             return successDataJson(messageMap(existing))
+        }
+        if (failNextImageSend.compareAndSet(true, false)) {
+            return failure("SERVICE_UNAVAILABLE", 503, "demo upload temporarily unavailable")
         }
         val peerId = peerOf(conversation, CURRENT_PUBLIC_ID)
         if (isBlockedEither(CURRENT_PUBLIC_ID, peerId)) {

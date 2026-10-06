@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import cn.gdeiassistant.network.mock.MockSocialProvider
 import cn.gdeiassistant.ui.navigation.Routes
 import org.junit.Rule
 import org.junit.Test
@@ -25,6 +26,9 @@ private fun createMockComposeRule(
     seedSession: Boolean = false,
     initialRoute: String? = null
 ): AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity> {
+    if (initialRoute == Routes.SOCIAL_CONVERSATIONS) {
+        MockSocialProvider.resetDemoGraph()
+    }
     return AndroidComposeTestRule(
         ActivityScenarioRule<MainActivity>(
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java).apply {

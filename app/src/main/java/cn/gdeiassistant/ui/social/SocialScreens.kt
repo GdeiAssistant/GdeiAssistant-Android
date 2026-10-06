@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -451,6 +452,7 @@ fun ConversationListScreen(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
+                    .testTag("social.conversation.${conversation.peer.id}")
                     .clickable { navController.navigate(Routes.socialChat(conversation.id)) }
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -563,6 +565,7 @@ fun ChatScreen(navController: NavHostController) {
 
     if (!state.imagePreviewPath.isNullOrBlank()) {
         AlertDialog(
+            modifier = Modifier.testTag("social.image.preview"),
             onDismissRequest = viewModel::cancelImagePreview,
             title = { Text(stringResource(R.string.social_image_preview_title)) },
             text = {
@@ -580,12 +583,12 @@ fun ChatScreen(navController: NavHostController) {
                 )
             },
             confirmButton = {
-                TextButton(onClick = viewModel::confirmSendImage) {
+                TextButton(onClick = viewModel::confirmSendImage, modifier = Modifier.testTag("social.image.confirm")) {
                     Text(stringResource(R.string.social_image_send))
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::cancelImagePreview) {
+                TextButton(onClick = viewModel::cancelImagePreview, modifier = Modifier.testTag("social.image.cancel")) {
                     Text(stringResource(R.string.social_image_cancel))
                 }
             }
@@ -594,18 +597,19 @@ fun ChatScreen(navController: NavHostController) {
 
     viewerMessage?.let { message ->
         AlertDialog(
+            modifier = Modifier.testTag("social.image.viewer"),
             onDismissRequest = { viewerMessage = null },
             title = { Text(stringResource(R.string.social_image_viewer_title)) },
             text = {
                 SocialChatImageBubble(
                     message = message,
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("social.image.viewer.pixels"),
                     contentScale = ContentScale.Fit
                 )
             },
             confirmButton = {
-                TextButton(onClick = { viewerMessage = null }) {
+                TextButton(onClick = { viewerMessage = null }, modifier = Modifier.testTag("social.image.viewer.close")) {
                     Text(stringResource(R.string.social_image_close))
                 }
             }
@@ -619,7 +623,7 @@ fun ChatScreen(navController: NavHostController) {
                 title = conversation?.peer?.nickname ?: stringResource(R.string.social_chat_title),
                 onBackClick = navController::popBackStack,
                 actions = {
-                    IconButton(onClick = viewModel::refreshAll, enabled = !state.isLoading) {
+                    IconButton(onClick = viewModel::refreshAll, enabled = !state.isLoading, modifier = Modifier.testTag("social.chat.refresh")) {
                         Icon(
                             Icons.Rounded.Refresh,
                             contentDescription = stringResource(R.string.schedule_refresh)
@@ -633,6 +637,7 @@ fun ChatScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .testTag("social.chat")
                 .imePadding()
                 .navigationBarsPadding()
         ) {
@@ -736,13 +741,15 @@ fun ChatScreen(navController: NavHostController) {
                         if (message.type == ChatMessageType.IMAGE) {
                             SocialChatImageBubble(
                                 message = message,
-                                onClick = { viewerMessage = message }
+                                onClick = { viewerMessage = message },
+                                modifier = Modifier.testTag("social.image.${message.id}")
                             )
                         } else {
                             Text(message.content)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
+                            modifier = Modifier.testTag("social.message.status.${message.clientMessageId}"),
                             text = when (message.sendStatus) {
                                 ChatSendStatus.PENDING -> stringResource(R.string.social_message_pending)
                                 ChatSendStatus.FAILED -> stringResource(R.string.social_message_failed)
@@ -754,7 +761,7 @@ fun ChatScreen(navController: NavHostController) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         if (message.sendStatus == ChatSendStatus.FAILED) {
-                            TextButton(onClick = { viewModel.retry(message) }) {
+                            TextButton(onClick = { viewModel.retry(message) }, modifier = Modifier.testTag("social.message.retry.${message.clientMessageId}")) {
                                 Text(stringResource(R.string.social_retry_send))
                             }
                         }
@@ -782,6 +789,7 @@ fun ChatScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
+                        modifier = Modifier.testTag("social.image.pick"),
                         onClick = {
                             pickImage.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)

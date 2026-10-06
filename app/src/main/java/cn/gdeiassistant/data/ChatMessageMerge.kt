@@ -39,7 +39,11 @@ object ChatMessageMerge {
         prepend: Boolean,
         replace: Boolean
     ): List<ChatMessage> {
-        val base = if (replace) emptyList() else existing
+        // A refresh replaces server history, not unconfirmed local sends. The same client key
+        // still merges with an incoming server confirmation, so a refresh cannot duplicate it.
+        val base = if (replace) existing.filter {
+            isLocalPlaceholder(it) && !isCommittedServerMessage(it)
+        } else existing
         val ordered = if (prepend) incoming + base else base + incoming
         val slots = ArrayList<ChatMessage>()
         val byServerId = HashMap<String, Int>()
