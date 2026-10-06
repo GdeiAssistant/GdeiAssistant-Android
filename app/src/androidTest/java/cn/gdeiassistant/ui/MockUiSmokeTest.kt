@@ -97,9 +97,9 @@ class MockMessagesUiSmokeTest : BaseMockUiSmokeTest(
 
     @Test
     fun mockMessagesRouteShowsAnnouncementsAndInteractions() {
-        waitForText("消息中枢")
-        composeRule.onNodeWithText("消息中枢").assertIsDisplayed()
-        composeRule.onNodeWithText("把新闻、系统公告和互动消息整理到一个统一入口。").assertIsDisplayed()
+        waitForText("资讯信息")
+        composeRule.onNodeWithText("资讯信息").assertIsDisplayed()
+        composeRule.onNodeWithText("私信会话").assertIsDisplayed()
     }
 }
 
