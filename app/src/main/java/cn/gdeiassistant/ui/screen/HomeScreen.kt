@@ -1,34 +1,48 @@
 package cn.gdeiassistant.ui.screen
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.EventAvailable
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Schedule
-import cn.gdeiassistant.ui.components.*
+import cn.gdeiassistant.ui.components.LazyScreen
+import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.home.HomeViewModel
 import cn.gdeiassistant.ui.navigation.AppFeature
 import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
@@ -81,7 +95,6 @@ fun HomeScreen(navController: NavController) {
                 cardBalance = state.cardInfo?.cardBalance
             )
         }
-
         item {
             TodayScheduleCard(
                 courses = state.todayCourses,
@@ -89,17 +102,15 @@ fun HomeScreen(navController: NavController) {
                 onOpenSchedule = { navController.navigate(Routes.SCHEDULE) }
             )
         }
-
         if (state.notices.isNotEmpty() || !state.noticeError.isNullOrBlank()) {
             item {
-                NoticeBento(
+                NoticeSection(
                     notices = state.notices,
                     onOpenAll = { navController.navigate(Routes.NOTICE_LIST) },
                     onOpenNotice = { notice -> navController.navigate(Routes.noticeDetail(notice.id)) }
                 )
             }
         }
-
         AppFeatureGroup.entries.forEach { group ->
             val features = AppFeatureCatalog.featuresFor(group)
             if (features.isNotEmpty()) {
@@ -122,15 +133,6 @@ private fun GreetingHeader(
     courseCount: Int = 0,
     cardBalance: String? = null
 ) {
-    val timeEmoji = remember {
-        when (LocalTime.now().hour) {
-            in 5..11  -> "☀️"
-            in 12..13 -> "🌤️"
-            in 14..17 -> "🌅"
-            in 18..23 -> "🌙"
-            else      -> "✨"
-        }
-    }
     val courseSummary = if (courseCount > 0) {
         stringResource(R.string.home_stats_course_count, courseCount)
     } else {
@@ -142,20 +144,14 @@ private fun GreetingHeader(
     val statsLine = listOfNotNull(courseSummary, balanceSummary).joinToString(" · ")
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        BadgePill(text = dateLabel)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = timeEmoji, fontSize = 13.sp)
-            Text(
-                text = statsLine,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
-            )
-        }
+        AssistChip(onClick = {}, enabled = false, label = { Text(dateLabel) })
+        Text(
+            text = statsLine,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -166,88 +162,59 @@ private fun TodayScheduleCard(
     onOpenSchedule: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().animateContentSize(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppShapes.card,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.home_today_schedule_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.home_today_schedule_title)) },
+                supportingContent = {
                     Text(
                         text = if (courses.isEmpty()) {
                             stringResource(R.string.home_today_schedule_empty_summary)
                         } else {
                             stringResource(R.string.home_today_schedule_count, courses.size)
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        }
                     )
-                }
-                GhostButton(
-                    text = stringResource(R.string.home_view_schedule),
-                    onClick = onOpenSchedule,
-                    borderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+                },
+                trailingContent = {
+                    TextButton(onClick = onOpenSchedule) {
+                        Text(stringResource(R.string.home_view_schedule))
+                    }
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            )
             AnimatedContent(
                 targetState = error to courses,
                 label = "schedule_grid",
-                transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
+                transitionSpec = { fadeIn() togetherWith fadeOut() }
             ) { (err, items) ->
                 when {
                     !err.isNullOrBlank() -> {
                         Text(
                             text = err,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     items.isEmpty() -> {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(14.dp)
-                        ) {
-                            Text("🏖️", fontSize = 30.sp)
-                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                Text(
-                                    text = stringResource(R.string.home_today_schedule_empty_title),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    text = stringResource(R.string.home_today_schedule_empty_body),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
+                        ListItem(
+                            headlineContent = {
+                                Text(stringResource(R.string.home_today_schedule_empty_title))
+                            },
+                            supportingContent = {
+                                Text(stringResource(R.string.home_today_schedule_empty_body))
+                            },
+                            leadingContent = {
+                                Icon(Icons.Rounded.EventAvailable, contentDescription = null)
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
                     }
-                    else -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            items.forEach { course -> CourseRow(course) }
-                        }
+                    else -> Column {
+                        items.forEach { course -> CourseRow(course) }
                     }
                 }
             }
@@ -257,8 +224,6 @@ private fun TodayScheduleCard(
 
 @Composable
 private fun CourseRow(course: Schedule) {
-    val isDark = isSystemInDarkTheme()
-    val onPrimary = MaterialTheme.colorScheme.onPrimary
     val slotLabel = remember(course.row, course.scheduleLength) {
         val r = course.row ?: 0
         val len = course.scheduleLength ?: 1
@@ -269,120 +234,62 @@ private fun CourseRow(course: Schedule) {
     val startTime = SectionStartTimes[course.row ?: 0] ?: ""
     val subtitle = listOfNotNull(course.scheduleLocation, course.scheduleTeacher)
         .joinToString(" · ")
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                if (isDark) Color.Black.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.15f),
-                AppShapes.small
-            )
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier.width(48.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = startTime,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = onPrimary
-            )
-            Text(
-                text = slotLabel,
-                style = MaterialTheme.typography.labelSmall,
-                color = onPrimary.copy(alpha = 0.85f)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(2.dp)
-                .height(36.dp)
-                .background(onPrimary.copy(alpha = 0.4f), CircleShape)
-        )
-        Column(modifier = Modifier.weight(1f)) {
+    ListItem(
+        headlineContent = {
             Text(
                 text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = onPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        },
+        supportingContent = {
             if (subtitle.isNotBlank()) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = onPrimary.copy(alpha = 0.85f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Text(text = subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-        }
-    }
+        },
+        leadingContent = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = startTime, style = MaterialTheme.typography.labelLarge)
+                Text(text = slotLabel, style = MaterialTheme.typography.labelSmall)
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
 }
 
 @Composable
-private fun NoticeBento(
+private fun NoticeSection(
     notices: List<AnnouncementItem>,
     onOpenAll: () -> Unit,
     onOpenNotice: (AnnouncementItem) -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth().animateContentSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.home_system_notice_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
-            GhostButton(text = stringResource(R.string.home_view_all), onClick = onOpenAll)
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        AnimatedContent(
-            targetState = notices.take(5),
-            label = "notice_state",
-            transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) }
-        ) { items ->
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                items.forEachIndexed { index, notice ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onOpenNotice(notice) }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(7.dp)
-                                .background(
-                                    if (index == 0) MaterialTheme.colorScheme.secondary
-                                    else MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
-                                    CircleShape
-                                )
-                        )
-                        Text(
-                            text = notice.title,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = notice.publishTime,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppShapes.card,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
+    ) {
+        Column {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.home_system_notice_title)) },
+                trailingContent = {
+                    TextButton(onClick = onOpenAll) {
+                        Text(stringResource(R.string.home_view_all))
                     }
-                }
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            )
+            notices.take(5).forEachIndexed { index, notice ->
+                if (index > 0) HorizontalDivider()
+                ListItem(
+                    headlineContent = {
+                        Text(text = notice.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    },
+                    supportingContent = { Text(text = notice.publishTime) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenNotice(notice) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
             }
         }
     }
@@ -394,13 +301,12 @@ private fun FeatureGroupSection(
     features: List<AppFeature>,
     onNavigate: (String) -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth().animateContentSize()) {
+    SectionCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(group.titleRes),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = stringResource(group.subtitleRes),
@@ -408,10 +314,9 @@ private fun FeatureGroupSection(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 features.chunked(4).forEach { rowItems ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         rowItems.forEach { feature ->
                             FeatureGridItem(
                                 feature = feature,
@@ -419,7 +324,7 @@ private fun FeatureGroupSection(
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        repeat(4 - rowItems.size) { Spacer(Modifier.weight(1f)) }
+                        repeat(4 - rowItems.size) { SpacerWeight() }
                     }
                 }
             }
@@ -428,42 +333,30 @@ private fun FeatureGroupSection(
 }
 
 @Composable
+private fun RowScope.SpacerWeight() {
+    androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+}
+
+@Composable
 private fun FeatureGridItem(
     feature: AppFeature,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = isSystemInDarkTheme()
     Column(
-        modifier = modifier
-            .testTag("home.entry.${feature.route}")
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+        modifier = modifier.testTag("home.entry.${feature.route}"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .background(
-                    MaterialTheme.colorScheme.primary.copy(alpha = if (isDark) 0.12f else 0.08f),
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
+        FilledTonalIconButton(onClick = onClick) {
             Icon(
                 imageVector = feature.icon,
-                contentDescription = stringResource(feature.titleRes),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp)
+                contentDescription = stringResource(feature.titleRes)
             )
         }
         Text(
             text = stringResource(feature.titleRes),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 11.sp,
-                lineHeight = 14.sp
-            ),
+            style = MaterialTheme.typography.labelMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center

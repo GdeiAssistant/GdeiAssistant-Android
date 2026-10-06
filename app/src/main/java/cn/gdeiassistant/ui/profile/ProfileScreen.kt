@@ -224,7 +224,7 @@ fun ProfileScreen(navController: NavHostController) {
                             Text(
                                 text = stringResource(R.string.social_profile_actions_title),
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.ExtraBold
+                                fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             ProfileMenuRow(
@@ -270,7 +270,7 @@ private fun LazyListScope.profileMenuSection(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(12.dp))
             items.forEachIndexed { index, item ->
@@ -324,7 +324,7 @@ private fun ProfileAccountCard(
         Text(
             text = stringResource(R.string.profile_account_data_title),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -346,7 +346,7 @@ private fun ProfileAccountCard(
                 Text(
                     text = displayName,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
@@ -968,7 +968,7 @@ private fun ProfileSelectionPickerSheet(
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 24.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -1139,7 +1139,7 @@ private fun ProfileEmptyCard() {
             Text(
                 text = stringResource(R.string.profile_empty_title),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -1279,7 +1279,7 @@ private fun ProfileLocationPickerSheet(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
 
             if (pickerRegions.isEmpty()) {
@@ -1313,7 +1313,7 @@ private fun ProfileLocationPickerSheet(
                             Text(
                                 text = displayText(value, stringResource(R.string.profile_not_selected)),
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.ExtraBold,
+                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }

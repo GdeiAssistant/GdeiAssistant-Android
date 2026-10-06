@@ -83,7 +83,7 @@ fun DatingCenterScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.dating_subtitle),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))

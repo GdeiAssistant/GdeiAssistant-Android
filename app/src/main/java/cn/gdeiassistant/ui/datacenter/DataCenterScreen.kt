@@ -47,7 +47,7 @@ fun DataCenterScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.data_center_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(

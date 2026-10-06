@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.evaluate
 
 import android.widget.Toast
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -182,7 +183,7 @@ private fun EvaluateModeCard(
                     Text(
                         text = stringResource(R.string.evaluate_form_title),
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -200,7 +201,7 @@ private fun EvaluateModeCard(
             }
 
             Surface(
-                shape = RoundedCornerShape(22.dp),
+                shape = AppShapes.card,
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
             ) {
                 Row(
@@ -241,7 +242,7 @@ private fun EvaluateModeCard(
             if (state.isSubmitting) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = AppShapes.card,
                     color = MaterialTheme.colorScheme.surfaceContainerLow
                 ) {
                     Row(
@@ -301,7 +302,7 @@ private fun EvaluateNoticeCard() {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Surface(
-            shape = RoundedCornerShape(18.dp),
+            shape = AppShapes.card,
             color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f)
         ) {
             Text(

@@ -276,7 +276,7 @@ private fun CardOverviewCard(state: CardUiState) {
                 Text(
                     text = state.balanceText,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -394,7 +394,7 @@ private fun MonthSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Surface(
-            shape = RoundedCornerShape(999.dp),
+            shape = AppShapes.pill,
             color = MaterialTheme.colorScheme.secondaryContainer
         ) {
             Text(
@@ -425,7 +425,7 @@ private fun RecordItem(record: Card) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
@@ -450,7 +450,7 @@ private fun RecordItem(record: Card) {
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Surface(
-                    shape = RoundedCornerShape(999.dp),
+                    shape = AppShapes.pill,
                     color = amountSurface
                 ) {
                     Text(
@@ -494,7 +494,7 @@ private fun InfoMetric(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
@@ -524,7 +524,7 @@ private fun MetaPill(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
+        shape = AppShapes.card,
         color = surface
     ) {
         Row(

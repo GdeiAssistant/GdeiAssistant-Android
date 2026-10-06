@@ -102,7 +102,7 @@ fun MarketplacePublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.marketplace_publish_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.profile
 
 import android.net.Uri
+import cn.gdeiassistant.ui.theme.AppShapes
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -118,7 +119,7 @@ fun AvatarEditScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.profile_avatar_picker_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -174,7 +175,7 @@ fun AvatarEditScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.profile_avatar_restore_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(

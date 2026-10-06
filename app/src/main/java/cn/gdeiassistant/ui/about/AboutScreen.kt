@@ -144,7 +144,7 @@ private fun AboutOverviewCard(
         Text(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
@@ -265,7 +265,7 @@ private fun UpdateSnapshot(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(22.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column(
@@ -336,7 +336,7 @@ private fun DeveloperSettingsCard(
         Spacer(modifier = Modifier.height(14.dp))
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(22.dp),
+            shape = AppShapes.card,
             color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Row(
@@ -425,7 +425,7 @@ private fun AboutMetricCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(22.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
     ) {
         Column(

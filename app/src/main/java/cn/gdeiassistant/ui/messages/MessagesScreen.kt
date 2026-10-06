@@ -101,7 +101,7 @@ fun MessagesScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.social_conversations_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -198,7 +198,7 @@ private fun MessagesOverviewCard(state: MessagesUiState) {
                         Text(
                             text = value,
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -362,7 +362,7 @@ private fun FestivalCard(festival: Festival) {
                 Text(
                     text = festival.name.orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = stringResource(R.string.messages_festival_badge),
@@ -436,7 +436,7 @@ private fun InfoSectionCard(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = subtitle,

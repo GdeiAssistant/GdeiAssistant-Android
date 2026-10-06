@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.social
 
 import androidx.compose.foundation.clickable
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,7 +76,7 @@ fun SocialChatImageBubble(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 120.dp, max = 240.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(AppShapes.small)
             .clickable(onClick = onClick)
     )
 }

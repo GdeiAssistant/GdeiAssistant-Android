@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.graduateExam
 
 import android.content.Intent
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -142,7 +143,7 @@ private fun GraduateQueryCard(
                 Text(
                     text = stringResource(R.string.graduate_exam_form_title),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
@@ -169,7 +170,7 @@ private fun GraduateQueryCard(
             label = { Text(text = stringResource(R.string.graduate_exam_name_hint)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp)
+            shape = AppShapes.card
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -179,7 +180,7 @@ private fun GraduateQueryCard(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp)
+            shape = AppShapes.card
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -189,7 +190,7 @@ private fun GraduateQueryCard(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp)
+            shape = AppShapes.card
         )
         Spacer(modifier = Modifier.height(16.dp))
         TintButton(
@@ -273,7 +274,7 @@ private fun ScoreSummaryCard(score: GraduateExamScore) {
                 Text(
                     text = score.totalScore,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
@@ -284,7 +285,7 @@ private fun ScoreSummaryCard(score: GraduateExamScore) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Surface(
-                shape = RoundedCornerShape(18.dp),
+                shape = AppShapes.card,
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
             ) {
                 Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
@@ -328,7 +329,7 @@ private fun ScoreDetailCard(score: GraduateExamScore) {
 private fun ScoreInfoRow(label: String, value: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Row(

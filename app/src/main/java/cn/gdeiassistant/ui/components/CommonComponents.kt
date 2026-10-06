@@ -1,36 +1,47 @@
 package cn.gdeiassistant.ui.components
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.theme.AppShapes
 import coil.compose.SubcomposeAsyncImage
@@ -40,32 +51,31 @@ import coil.compose.SubcomposeAsyncImageContent
 fun BentoCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    contentPadding: PaddingValues = PaddingValues(20.dp),
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.42f)
-    val cardModifier = modifier
-        .shadow(
-            elevation = if (onClick != null) 1.dp else 0.dp,
+    val colors = CardDefaults.cardColors(containerColor = containerColor)
+    val cardModifier = modifier.fillMaxWidth()
+    if (onClick != null) {
+        Card(
+            onClick = onClick,
+            modifier = cardModifier,
             shape = AppShapes.card,
-            spotColor = Color.Black.copy(alpha = 0.05f),
-            ambientColor = Color.Black.copy(alpha = 0.03f)
-        )
-        .clip(AppShapes.card)
-        .border(1.dp, borderColor, AppShapes.card)
-        .background(containerColor)
-        .then(
-            if (onClick != null)
-                Modifier
-                    .semantics { role = Role.Button }
-                    .clickable { onClick() }
-            else Modifier
-        )
-        .padding(contentPadding)
-
-    Column(modifier = cardModifier) {
-        content()
+            colors = colors,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column(modifier = Modifier.padding(contentPadding), content = content)
+        }
+    } else {
+        Card(
+            modifier = cardModifier,
+            shape = AppShapes.card,
+            colors = colors,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column(modifier = Modifier.padding(contentPadding), content = content)
+        }
     }
 }
 
@@ -77,27 +87,12 @@ fun SelectionPill(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    val borderColor = if (selected) tint.copy(alpha = 0.28f) else tint.copy(alpha = 0.12f)
-    val containerColor = if (selected) tint.copy(alpha = 0.14f) else Color.Transparent
-    val contentColor = if (selected) tint else MaterialTheme.colorScheme.onSurfaceVariant
-    Surface(
+    FilterChip(
+        selected = selected,
         onClick = onClick,
         modifier = modifier,
-        shape = AppShapes.button,
-        color = containerColor,
-        border = borderStroke(1.dp, borderColor)
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-            color = contentColor,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
-    }
+        label = { Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+    )
 }
 
 @Composable
@@ -107,42 +102,27 @@ fun GhostButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    borderColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+    borderColor: Color = MaterialTheme.colorScheme.outline,
     contentColor: Color = MaterialTheme.colorScheme.primary
 ) {
-    val resolvedBorderColor = if (enabled) borderColor else borderColor.copy(alpha = 0.5f)
-    val resolvedContentColor = if (enabled) contentColor else contentColor.copy(alpha = 0.5f)
-    Surface(
+    OutlinedButton(
         onClick = onClick,
-        modifier = modifier,
-        shape = AppShapes.button,
+        modifier = modifier.defaultMinSize(minHeight = 40.dp),
         enabled = enabled,
-        color = Color.Transparent,
-        border = borderStroke(1.dp, resolvedBorderColor)
+        shape = AppShapes.button,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = contentColor),
+        border = ButtonDefaults.outlinedButtonBorder(enabled).copy(
+            brush = androidx.compose.ui.graphics.SolidColor(if (enabled) borderColor else borderColor.copy(alpha = 0.38f))
+        )
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 9.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = resolvedContentColor,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = resolvedContentColor
-                )
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
             )
         }
+        Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -155,37 +135,24 @@ fun TintButton(
     enabled: Boolean = true,
     tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    val resolvedTint = if (enabled) tint else tint.copy(alpha = 0.45f)
-    Surface(
+    FilledTonalButton(
         onClick = onClick,
-        modifier = modifier,
-        shape = AppShapes.button,
+        modifier = modifier.defaultMinSize(minHeight = 40.dp),
         enabled = enabled,
-        color = resolvedTint.copy(alpha = 0.12f)
+        shape = AppShapes.button,
+        colors = ButtonDefaults.filledTonalButtonColors(
+            contentColor = tint,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = resolvedTint,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = resolvedTint
-                )
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
             )
         }
+        Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -201,27 +168,14 @@ fun RemoteAvatar(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-                    )
-                )
-            )
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                shape = CircleShape
-            ),
+            .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center
     ) {
         if (imageModel == null) {
             Text(
                 text = resolvedLabel,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         } else {
             SubcomposeAsyncImage(
@@ -233,16 +187,14 @@ fun RemoteAvatar(
                     Text(
                         text = resolvedLabel,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 },
                 error = {
                     Text(
                         text = resolvedLabel,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 },
                 success = { SubcomposeAsyncImageContent() }
@@ -266,26 +218,13 @@ fun RemoteThumbnail(
         modifier = modifier
             .size(width = width, height = height)
             .clip(AppShapes.small)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        tint.copy(alpha = 0.14f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.18f)
-                    )
-                )
-            )
-            .border(
-                width = 1.dp,
-                color = tint.copy(alpha = 0.14f),
-                shape = AppShapes.small
-            ),
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         contentAlignment = Alignment.Center
     ) {
         if (imageModel == null) {
             Text(
                 text = resolvedLabel,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
                 color = tint
             )
         } else {
@@ -298,7 +237,6 @@ fun RemoteThumbnail(
                     Text(
                         text = resolvedLabel,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
                         color = tint
                     )
                 },
@@ -306,7 +244,6 @@ fun RemoteThumbnail(
                     Text(
                         text = resolvedLabel,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
                         color = tint
                     )
                 },
@@ -316,6 +253,7 @@ fun RemoteThumbnail(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextTabSelector(
     labels: List<String>,
@@ -324,52 +262,23 @@ fun TextTabSelector(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.small,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+    PrimaryTabRow(
+        selectedTabIndex = selectedIndex,
+        modifier = modifier.fillMaxWidth(),
+        containerColor = Color.Transparent
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .animateContentSize(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            labels.forEachIndexed { index, label ->
-                val selected = index == selectedIndex
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(AppShapes.small)
-                        .semantics {
-                            role = Role.Tab
-                            this.selected = selected
-                        }
-                        .clickable { onSelect(index) }
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+        labels.forEachIndexed { index, label ->
+            Tab(
+                selected = index == selectedIndex,
+                onClick = { onSelect(index) },
+                text = {
                     Text(
                         text = label,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selected) tint else MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(3.dp)
-                            .alpha(if (selected) 1f else 0f)
-                            .clip(CircleShape)
-                            .background(tint)
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
+            )
         }
     }
 }
@@ -381,31 +290,23 @@ fun AppTopBar(
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    containerColor: Color = MaterialTheme.colorScheme.background.copy(alpha = 0.85f)
+    containerColor: Color = MaterialTheme.colorScheme.surface
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 0.sp
-                )
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
             if (onBackClick != null) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                ) {
+                IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        contentDescription = stringResource(R.string.back)
                     )
                 }
             }
@@ -413,10 +314,8 @@ fun AppTopBar(
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor,
-            scrolledContainerColor = MaterialTheme.colorScheme.surface
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         scrollBehavior = scrollBehavior
     )
 }
-
-private fun borderStroke(width: Dp, color: Color) = androidx.compose.foundation.BorderStroke(width, color)

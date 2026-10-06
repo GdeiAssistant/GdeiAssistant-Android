@@ -102,7 +102,7 @@ fun SpareScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.spare_condition_title),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
                 Text(
@@ -295,7 +295,7 @@ private fun SpareMetricCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
     ) {
         Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
@@ -333,7 +333,7 @@ private fun SpareResultHeader(
                 Text(
                     text = stringResource(R.string.spare_result_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
                 Text(
@@ -432,7 +432,7 @@ private fun SpareRoomCard(item: SpareRoomItem) {
         Text(
             text = item.roomName,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
         Text(

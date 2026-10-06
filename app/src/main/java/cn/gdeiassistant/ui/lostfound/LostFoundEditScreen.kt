@@ -200,7 +200,7 @@ private fun LostFoundEditContent(
             Text(
                 text = stringResource(R.string.lost_found_edit_subtitle),
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
         }
         if (imageUrls.isNotEmpty()) {

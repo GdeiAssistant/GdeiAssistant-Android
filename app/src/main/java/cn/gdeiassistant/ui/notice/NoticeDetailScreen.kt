@@ -111,7 +111,7 @@ private fun NoticeHeadlineCard(
         Text(
             text = detail.title,
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(

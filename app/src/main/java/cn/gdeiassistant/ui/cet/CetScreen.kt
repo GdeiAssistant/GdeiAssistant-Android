@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.cet
 
 import android.graphics.BitmapFactory
+import cn.gdeiassistant.ui.theme.AppShapes
 import android.util.Base64
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
@@ -188,7 +189,7 @@ private fun QueryFormCard(
             Text(
                 text = stringResource(R.string.cet_form_title),
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = stringResource(R.string.cet_form_subtitle),
@@ -202,7 +203,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_number_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(20.dp),
+                shape = AppShapes.card,
                 leadingIcon = { Icon(Icons.Outlined.Badge, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -217,7 +218,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_name_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(20.dp),
+                shape = AppShapes.card,
                 leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -231,7 +232,7 @@ private fun QueryFormCard(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.cet_checkcode_hint)) },
                 singleLine = true,
-                shape = RoundedCornerShape(20.dp),
+                shape = AppShapes.card,
                 leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -281,7 +282,7 @@ private fun CaptchaCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(22.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
     ) {
         Column(
@@ -295,7 +296,7 @@ private fun CaptchaCard(
                 ShimmerBox(
                     modifier = Modifier.fillMaxWidth(),
                     height = 92.dp,
-                    shape = RoundedCornerShape(18.dp)
+                    shape = AppShapes.card
                 )
             } else if (captchaBitmap != null) {
                 Image(
@@ -389,7 +390,7 @@ private fun ResultSummaryCard(result: Cet) {
                 Text(
                     text = result.totalScore ?: "\u2014",
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
@@ -400,7 +401,7 @@ private fun ResultSummaryCard(result: Cet) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Surface(
-                shape = RoundedCornerShape(18.dp),
+                shape = AppShapes.card,
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
             ) {
                 Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
@@ -462,7 +463,7 @@ private fun ResultDetailCard(result: Cet) {
 private fun DetailRow(text: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Text(

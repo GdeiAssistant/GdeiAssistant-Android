@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/** 全站统一空状态：120dp 淡色图标 + headlineSmall 提示文案 */
+/** 全站统一空状态：淡色圆形图标 + titleMedium 提示文案 + 可选说明 */
 @Composable
 fun EmptyState(
     icon: ImageVector,
@@ -32,35 +32,35 @@ fun EmptyState(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
             shape = CircleShape,
-            color = tint.copy(alpha = 0.12f)
+            color = tint.copy(alpha = 0.10f)
         ) {
             Box(
                 modifier = Modifier
-                    .size(88.dp)
+                    .size(64.dp)
                     .background(Color.Transparent),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(42.dp),
+                    modifier = Modifier.size(30.dp),
                     tint = tint.copy(alpha = 0.88f)
                 )
             }
         }
         Text(
             text = message,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(top = 24.dp)
+                .padding(top = 16.dp)
                 .padding(horizontal = 24.dp)
         )
         supporting?.takeIf { it.isNotBlank() }?.let {
@@ -70,7 +70,7 @@ fun EmptyState(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .padding(top = 10.dp)
+                    .padding(top = 6.dp)
                     .padding(horizontal = 24.dp)
             )
         }

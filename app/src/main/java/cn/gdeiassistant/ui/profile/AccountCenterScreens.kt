@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.profile
 
 import android.content.Intent
+import cn.gdeiassistant.ui.theme.AppShapes
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -481,7 +482,7 @@ fun BindPhoneScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .clickable { showAreaCodeSheet = true },
                     readOnly = true,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_phone_area_label)) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -489,7 +490,7 @@ fun BindPhoneScreen(navController: NavHostController) {
                     value = phone,
                     onValueChange = { phone = it.filter(Char::isDigit) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_phone_input_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true
@@ -499,7 +500,7 @@ fun BindPhoneScreen(navController: NavHostController) {
                     value = code,
                     onValueChange = { code = it.filter(Char::isDigit) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_verification_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
@@ -602,7 +603,7 @@ fun BindEmailScreen(navController: NavHostController) {
                     value = email,
                     onValueChange = { email = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_email_input_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     singleLine = true
@@ -612,7 +613,7 @@ fun BindEmailScreen(navController: NavHostController) {
                     value = code,
                     onValueChange = { code = it.filter(Char::isDigit) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_verification_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
@@ -698,7 +699,7 @@ fun FeedbackScreen(navController: NavHostController) {
                     value = type,
                     onValueChange = { type = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_feedback_type_label)) },
                     singleLine = true
                 )
@@ -707,7 +708,7 @@ fun FeedbackScreen(navController: NavHostController) {
                     value = contact,
                     onValueChange = { contact = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_feedback_contact_label)) },
                     singleLine = true
                 )
@@ -716,7 +717,7 @@ fun FeedbackScreen(navController: NavHostController) {
                     value = content,
                     onValueChange = { content = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     minLines = 5,
                     label = { Text(text = stringResource(R.string.profile_feedback_content_label)) }
                 )
@@ -779,7 +780,7 @@ fun DeleteAccountScreen(navController: NavHostController) {
                     value = password,
                     onValueChange = { password = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppShapes.input,
                     label = { Text(text = stringResource(R.string.profile_delete_password_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     singleLine = true
@@ -911,7 +912,7 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                 ) {
                     Surface(
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(18.dp)
+                        shape = AppShapes.card
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
@@ -1116,7 +1117,7 @@ private fun CredentialStatusChip(
     }
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = AppShapes.card,
         color = tint.copy(alpha = if (active) 0.10f else 0.06f)
     ) {
         Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
@@ -1181,7 +1182,7 @@ private fun AccountIntroCard(
         ) {
             Surface(
                 color = tint.copy(alpha = 0.12f),
-                shape = RoundedCornerShape(22.dp)
+                shape = AppShapes.card
             ) {
                 Icon(
                     imageVector = icon,
@@ -1197,7 +1198,7 @@ private fun AccountIntroCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = subtitle,
@@ -1279,7 +1280,7 @@ private fun BindingStatusCard(
         ) {
             Surface(
                 color = tint.copy(alpha = 0.12f),
-                shape = RoundedCornerShape(18.dp)
+                shape = AppShapes.card
             ) {
                 Icon(
                     imageVector = icon,
@@ -1291,7 +1292,7 @@ private fun BindingStatusCard(
             Text(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.ExtraBold,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -1338,14 +1339,14 @@ private fun BindPhoneAreaCodeSheet(
             Text(
                 text = stringResource(R.string.profile_phone_area_picker_title),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = AppShapes.input,
                 label = { Text(text = stringResource(R.string.profile_phone_area_search_label)) },
                 singleLine = true
             )

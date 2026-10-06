@@ -344,7 +344,7 @@ fun PhotographProfileScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.photograph_profile_subtitle),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -455,7 +455,7 @@ fun PhotographPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.photograph_action_publish_subtitle),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -542,7 +542,7 @@ private fun PhotographDetailHero(detail: PhotographPostDetail) {
         Text(
             text = detail.post.title,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))

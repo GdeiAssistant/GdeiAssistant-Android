@@ -165,7 +165,7 @@ private fun YellowPageOverviewCard(
         Text(
             text = stringResource(R.string.yellow_page_subtitle),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -277,7 +277,7 @@ fun YellowPageDetailScreen(navController: NavHostController) {
                 Text(
                     text = entry.section,
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -332,7 +332,7 @@ fun SecretProfileScreen(navController: NavHostController) {
                         Text(
                             text = stringResource(R.string.secret_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -365,7 +365,7 @@ private fun SecretDetailHero(detail: SecretDetail) {
         Text(
             text = detail.post.title,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))

@@ -152,7 +152,7 @@ fun CollectionDetailScreen(navController: NavHostController) {
                         Text(
                             text = detail.title,
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.ExtraBold
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(

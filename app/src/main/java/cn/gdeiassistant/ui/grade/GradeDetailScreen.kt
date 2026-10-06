@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.grade
 
 import androidx.annotation.StringRes
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.Icon
@@ -20,8 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,7 +44,7 @@ private fun GradeDetailContent(args: GradeDetailArgs?, onBack: () -> Unit) {
     val scoreText = grade?.gradeScore?.takeIf { it.isNotBlank() } ?: "—"
     val gpaText = grade?.gradeGpa?.takeIf { it.isNotBlank() } ?: "—"
     val creditText = grade?.gradeCredit?.takeIf { it.isNotBlank() } ?: "—"
-    val (scoreBg, scoreFg) = detailBadgeStyle(scoreText)
+    val (scoreBg, scoreFg) = gradeTone(scoreText)
 
     LazyScreen(
         title = stringResource(R.string.grade_detail_title),
@@ -79,7 +77,7 @@ private fun GradeDetailContent(args: GradeDetailArgs?, onBack: () -> Unit) {
                         Text(
                             text = grade?.gradeName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.grade_no_data),
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.ExtraBold
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -90,7 +88,7 @@ private fun GradeDetailContent(args: GradeDetailArgs?, onBack: () -> Unit) {
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Surface(shape = RoundedCornerShape(999.dp), color = scoreBg) {
+                    Surface(shape = AppShapes.pill, color = scoreBg) {
                         Text(
                             text = scoreText,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -142,7 +140,7 @@ private fun DetailMetric(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)) {
@@ -184,21 +182,5 @@ private fun DetailRow(label: String, value: String) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.width(12.dp))
         Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-    }
-}
-
-@Composable
-private fun detailBadgeStyle(raw: String): Pair<Color, Color> {
-    val score = raw.toDoubleOrNull()
-        ?: return MaterialTheme.colorScheme.surfaceContainerHighest to MaterialTheme.colorScheme.onSurface
-    val green = Color(0xFF0E7A63)
-    val blue = Color(0xFF1764F6)
-    val amber = Color(0xFFB7791F)
-    val red = Color(0xFFC2412D)
-    return when {
-        score >= 90 -> green.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to green
-        score >= 80 -> blue.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to blue
-        score >= 60 -> amber.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to amber
-        else -> red.copy(alpha = 0.12f).compositeOver(MaterialTheme.colorScheme.surface) to red
     }
 }

@@ -1,6 +1,8 @@
 package cn.gdeiassistant.ui.schedule
 
 import android.content.ContentResolver
+import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.extendedColors
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -38,8 +42,6 @@ import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Image as ImageIcon
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -278,7 +280,7 @@ private fun ScheduleOverviewCard(
                     Text(
                         text = stringResource(R.string.schedule_week_nth, selectedWeek),
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -353,7 +355,7 @@ private fun WeekStepButton(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        shape = RoundedCornerShape(20.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
     ) {
         Box(
@@ -379,7 +381,7 @@ private fun ScheduleMetricCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(22.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
     ) {
         Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
@@ -460,7 +462,7 @@ private fun FocusCourseRow(course: Schedule, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = RoundedCornerShape(22.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
@@ -505,6 +507,9 @@ private fun ScheduleGridCard(
     val rowAltFill = MaterialTheme.colorScheme.surfaceContainerLowest
     val todayHeaderFill = MaterialTheme.colorScheme.primaryContainer
     val todayColumnFill = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+    val courseFallback = MaterialTheme.colorScheme.primary
+    val courseBase = MaterialTheme.colorScheme.surface
+    val courseFillAlpha = if (MaterialTheme.extendedColors.isDark) 0.24f else 0.14f
 
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
@@ -538,7 +543,7 @@ private fun ScheduleGridCard(
         Spacer(modifier = Modifier.height(14.dp))
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
+            shape = AppShapes.card,
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
         ) {
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -574,7 +579,7 @@ private fun ScheduleGridCard(
                                     text = stringResource(labelRes),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = if (isToday) FontWeight.ExtraBold else FontWeight.Medium
+                                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Medium
                                 )
                             }
                         }
@@ -661,18 +666,23 @@ private fun ScheduleGridCard(
                                 if (length <= 0) return@mapNotNull null
                                 SchedulePlacement(course, row, column, length)
                             }.forEach { placement ->
-                                ElevatedCard(
+                                val accent = courseColor(placement.course.colorCode, courseFallback)
+                                Row(
                                     modifier = Modifier
                                         .offset(x = dayColumnWidth * placement.column, y = cellHeight * placement.row)
                                         .width(dayColumnWidth)
                                         .height(cellHeight * placement.length)
                                         .padding(2.dp)
-                                        .clickable { onCourseClick(placement.course) },
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = CardDefaults.elevatedCardColors(
-                                        containerColor = courseColor(placement.course.colorCode)
-                                    )
+                                        .clip(AppShapes.small)
+                                        .background(accent.copy(alpha = courseFillAlpha).compositeOver(courseBase))
+                                        .clickable { onCourseClick(placement.course) }
                                 ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(3.dp)
+                                            .fillMaxHeight()
+                                            .background(accent)
+                                    )
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -682,8 +692,8 @@ private fun ScheduleGridCard(
                                         Text(
                                             text = placement.course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             maxLines = if (placement.length >= 2) 4 else 3,
                                             overflow = TextOverflow.Ellipsis,
                                             lineHeight = MaterialTheme.typography.labelSmall.fontSize * 1.3f
@@ -693,7 +703,7 @@ private fun ScheduleGridCard(
                                             Text(
                                                 text = location,
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = Color.White.copy(alpha = 0.82f),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis,
                                                 lineHeight = MaterialTheme.typography.labelSmall.fontSize * 1.3f
@@ -778,7 +788,7 @@ private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = RoundedCornerShape(18.dp),
+        shape = AppShapes.card,
         color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         Column(
@@ -910,10 +920,9 @@ private fun DetailRow(label: String, value: String) {
 // 工具函数
 // ──────────────────────────────────────────────────────────
 
-private fun courseColor(raw: String?): Color {
-    return runCatching { Color((raw ?: "#2563EB").toColorInt()) }
-        .getOrElse { Color(0xFF315A87) }
-        .copy(alpha = 0.88f)
+private fun courseColor(raw: String?, fallback: Color): Color {
+    if (raw.isNullOrBlank()) return fallback
+    return runCatching { Color(raw.toColorInt()) }.getOrElse { fallback }
 }
 
 @Composable

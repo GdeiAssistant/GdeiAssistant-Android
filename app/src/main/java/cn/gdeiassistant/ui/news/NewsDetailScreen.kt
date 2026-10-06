@@ -125,7 +125,7 @@ fun NewsDetailScreen(
                     Text(
                         text = detail.title,
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold
                     )
                     if (!detail.link.isNullOrBlank()) {
                         Spacer(modifier = Modifier.height(18.dp))

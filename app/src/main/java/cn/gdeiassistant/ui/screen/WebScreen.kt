@@ -433,8 +433,7 @@ private fun WebHeroCard(
 
     HeroCard(
         modifier = Modifier.fillMaxWidth(),
-        start = webHeroStart(),
-        end = webHeroEnd()
+        containerColor = webHeroStart()
     ) {
         Row(
             modifier = Modifier.horizontalScroll(chipScrollState),

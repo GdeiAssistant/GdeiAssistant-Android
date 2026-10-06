@@ -120,7 +120,7 @@ private fun ElectricityOverviewCard(
         Text(
             text = stringResource(R.string.electricity_subtitle),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
