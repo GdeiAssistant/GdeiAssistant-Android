@@ -120,3 +120,11 @@
 - 提交 `f5e192c586e2e8e9ee3f3b561346304b92e0653c` 的 run `37418045113` 又在四项图片测试的窗口检测处失败。日志确认四次实际 `PICK_IMAGES` 均启动并显示，窗口 flags 仍为 `65618`，与第二次成功一致；第三次截图及树则明确是 `Pixel Launcher isn't responding` 系统 ANR 模态框遮住已打开的 picker/合成照片。系统只暴露可交互的 ANR 框，不能把这次现象当作应用未选图或权限回归。
 - 仅在脚本显式传入 `gdeiEmulator=true` 的隔离 CI 环境，测试辅助函数对精确匹配的 Pixel Launcher ANR 保存截图/树，再操作 `android:id/aerr_close`；每个用例最多一次。应用或 picker 的 ANR、重复 Launcher ANR不在处理范围，仍导致测试失败；未跳过任何选图、字节、ID、隐私、取消或文件清理断言，原 20 秒限制及前两轮修正保持不变。
 - 本机完成差异/脚本语法及实际新旧证据检查，模拟器弹窗处理后的真实八项流程仍须下一精确提交 CI 验证。
+
+### 合并后的模拟器稳定性修正
+
+- 提交 `eef0d4e` 的 run `37418965573` 已执行并通过 231 项单测与全部八项仪器测试；该轮没有出现 ANR 处理日志，不能用这次通过证明弹窗处理分支已在设备上执行。合并后 `eba3461c6d16f91cb5da6835cc189cd648aedbe7` 的源码树与该提交相同，run `37419647725` 的单测仍通过，但四项图片测试再遇 `Photo picker did not open`。
+- 合并后的四份超时截图/树均明确显示 `Messages isn't responding`，后方为已打开的真实 Photo Picker 和合成照片。logcat 记录 `com.google.android.apps.messaging` 在测试前因 `CARRIER_CONFIG_CHANGED` 广播超时出现 ANR，四次 picker 均实际启动并显示；此前只匹配 Pixel Launcher 的条件不会处理这个标题。
+- 本轮只在 `gdeiEmulator=true` 时处理系统 `android` 包下 `android:id/alertTitle` 精确匹配的 `Pixel Launcher isn't responding` / `Messages isn't responding`。每个用例、每个标题最多操作一次 `android:id/aerr_close`，操作前保存原模态框的截图及窗口树；同一标题仍在关闭或再次出现时不重复点击、不读取背后的 picker，仍沿用原 20 秒期限，弹窗持续阻塞则测试失败。其他标题、本应用或 provider 的 ANR 不处理。每个用例记录实际收到的 CI 模式布尔值，匹配与关闭时记录精确标题，不输出完整 Runner 参数 Bundle。
+- 仪器 CI 在模拟器启动前先执行 `assembleDebug assembleDebugAndroidTest`，避免首次系统广播与 APK 重编译同时争用资源；`gradle-instrumentation-prebuild.log` 随原仪器 artifact 上传。API 35、Google APIs、机器、超时和全部八项 connected 测试不变；系统选图、原 bytes/ID、隐私、取消和清理断言保持原样。
+- 本机通过 `git diff --check`、`bash -n scripts/run-emulator-tests.sh`、`actionlint .github/workflows/android-ci.yml` 和 YAML 解析。实际执行当前 shell 入口的四组临时合成命令，验证 Gradle 原退出码 0/37 在诊断成功/失败时均保留，CI 标记及完整 connected 命令不变，原目录拉取和 ZIP 解压仍生效；另外两组验证预编译任务、日志和失败退出码。以上只证明配置/脚本控制流，本机仍无 Android SDK，未执行 APK/Compose 构建或设备测试；本轮真实八项流程及 CI 模式记录须由随后精确提交的 CI 再验证。

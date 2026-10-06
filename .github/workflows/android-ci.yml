@@ -106,6 +106,9 @@ jobs:
         run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
 
+      - name: Build app and instrumentation APKs before starting emulator
+        run: ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-instrumentation-prebuild.log
+
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -129,6 +132,7 @@ jobs:
         with:
           name: android-instrumentation-reports
           path: |
+            gradle-instrumentation-prebuild.log
             gradle-connected-tests.log
             android-emulator-logcat.log
             android-ui-evidence/
