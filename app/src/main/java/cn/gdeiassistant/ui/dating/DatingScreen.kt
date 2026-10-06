@@ -31,6 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.LocalizedProfileCatalog
 import cn.gdeiassistant.model.DatingArea
 import cn.gdeiassistant.model.DatingMyPost
 import cn.gdeiassistant.model.DatingPickStatus
@@ -308,7 +309,7 @@ private fun DatingPostCard(
                     )
                     androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
                     Text(
-                        text = "${item.grade} · ${item.faculty} · ${stringResource(R.string.dating_hometown_prefix, item.hometown)}",
+                        text = "${item.grade} · ${LocalizedProfileCatalog.localizeFacultyName(item.faculty)} · ${stringResource(R.string.dating_hometown_prefix, item.hometown)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

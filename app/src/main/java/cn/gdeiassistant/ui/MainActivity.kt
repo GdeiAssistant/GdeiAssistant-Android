@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -150,12 +151,17 @@ class MainActivity : ComponentActivity() {
             val locale by settingsRepository.locale
                 .collectAsStateWithLifecycle(initialValue = initialContentLocale)
             val baseDensity = LocalDensity.current
-            val localizedContext = remember(locale) {
-                localizedContext(locale)
+            val baseConfiguration = LocalConfiguration.current
+            val localizedContext = remember(locale, baseConfiguration) {
+                localizedContext(locale, baseConfiguration)
+            }
+            val localizedConfiguration = remember(localizedContext) {
+                configurationSnapshot(localizedContext)
             }
 
             CompositionLocalProvider(
                 LocalContext provides localizedContext,
+                LocalConfiguration provides localizedConfiguration,
                 LocalDensity provides Density(
                     density = baseDensity.density,
                     fontScale = baseDensity.fontScale * fontScale
@@ -171,9 +177,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun localizedContext(locale: String): Context {
+    private fun localizedContext(locale: String, sourceConfiguration: Configuration): Context {
         val normalizedLocale = AppLocaleSupport.normalizeLocale(locale)
-        val configuration = Configuration(resources.configuration)
+        val configuration = Configuration(sourceConfiguration)
         val localeObject = AppLocaleSupport.localeObject(normalizedLocale)
         configuration.setLocale(localeObject)
         configuration.setLocales(AndroidLocaleList(localeObject))
@@ -181,4 +187,6 @@ class MainActivity : ComponentActivity() {
             applyOverrideConfiguration(configuration)
         }
     }
+
+    private fun configurationSnapshot(context: Context): Configuration = Configuration(context.resources.configuration)
 }

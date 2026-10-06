@@ -83,7 +83,9 @@ class MarketplaceRepository @Inject constructor(
                     sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),
                     sellerMajor = profile?.major?.trim()?.ifBlank { null },
                     sellerEnrollment = profile?.enrollment,
-                    imageUrls = images
+                    imageUrls = images,
+                    typeId = detail.secondhandItem.type,
+                    sellerFacultyCode = profile?.faculty
                 )
             }
     }

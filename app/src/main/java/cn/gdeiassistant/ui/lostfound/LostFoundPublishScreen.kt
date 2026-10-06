@@ -168,7 +168,7 @@ fun LostFoundPublishScreen(navController: NavHostController) {
                 ) {
                     state.itemTypeOptions.forEach { option ->
                         SelectionPill(
-                            text = option.title,
+                            text = option.displayTitle(),
                             selected = selectedItemTypeId == option.id,
                             onClick = { selectedItemTypeId = option.id }
                         )

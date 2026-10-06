@@ -1,6 +1,7 @@
 package cn.gdeiassistant.data
 
 import cn.gdeiassistant.model.ProfileFormSupport
+import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.network.api.ProfileDictionaryOptionDto
 import cn.gdeiassistant.network.api.ProfileFacultyOptionDto
 import cn.gdeiassistant.network.api.ProfileMajorOptionDto
@@ -9,8 +10,16 @@ import com.google.gson.Gson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.junit.Before
+import org.junit.After
 
 class ProfileOptionsRepositoryTest {
+
+    @Before
+    fun setFixtureLocale() = AppLocaleSupport.setCurrentLocale("zh-CN")
+
+    @After
+    fun clearFixtureLocale() = AppLocaleSupport.setCurrentLocale(null)
 
     @Test
     fun mapProfileOptionsNormalizesMajorsAndFallsBackToSharedDefaults() {

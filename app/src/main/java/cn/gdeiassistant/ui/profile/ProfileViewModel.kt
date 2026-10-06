@@ -379,7 +379,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun draftStateFrom(profile: UserProfileSummary, options: ProfileOptions): ProfileDraftUiState {
-        val normalizedCollege = profile.faculty?.takeIf(String::isNotBlank)
+        val normalizedCollege = (options.facultyNameFor(profile.facultyCode) ?: profile.faculty)?.takeIf(String::isNotBlank)
             ?.takeIf { options.facultyOptions.contains(it) }
             ?: ProfileFormSupport.UnselectedOption
         val restoredMajor = profile.majorCode

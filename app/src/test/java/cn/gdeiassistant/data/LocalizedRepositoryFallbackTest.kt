@@ -2,6 +2,7 @@ package cn.gdeiassistant.data
 
 import android.content.Context
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.GraduateExamQuery
 import cn.gdeiassistant.model.SpareRoomQuery
@@ -9,6 +10,8 @@ import cn.gdeiassistant.network.api.GraduateExamApi
 import cn.gdeiassistant.network.api.GraduateExamScoreDto
 import cn.gdeiassistant.network.api.ProfileApi
 import cn.gdeiassistant.network.api.ProfileOptionsDto
+import cn.gdeiassistant.network.api.ProfileFacultyOptionDto
+import cn.gdeiassistant.network.api.ProfileMajorOptionDto
 import cn.gdeiassistant.network.api.SpareApi
 import cn.gdeiassistant.network.api.SpareRoomDto
 import kotlinx.coroutines.test.runTest
@@ -17,6 +20,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class LocalizedRepositoryFallbackTest {
@@ -76,5 +81,30 @@ class LocalizedRepositoryFallbackTest {
         val result = ProfileOptionsRepository(context, api).getOptions(forceRefresh = true)
         assertTrue(result.isFailure)
         assertEquals("Profile options are unavailable", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun cachedProfileDictionaryRelocalizesWithoutReloadingOrChangingCodes() = runTest {
+        val api = mock<ProfileApi>()
+        whenever(api.getProfileOptions()).thenReturn(DataJsonResult(success = true, code = 200,
+            data = ProfileOptionsDto(faculties = listOf(ProfileFacultyOptionDto(code = 11,
+                majors = listOf(ProfileMajorOptionDto(code = "software_engineering")))))))
+        try {
+            AppLocaleSupport.setCurrentLocale("zh-CN")
+            val repository = ProfileOptionsRepository(mock<Context>(), api)
+            val initial = repository.getOptions().getOrThrow()
+            assertEquals("计算机科学系", initial.faculties.single().label)
+            listOf("zh-HK" to "軟件工程", "zh-TW" to "軟體工程", "en" to "Software Engineering").forEach { (locale, major) ->
+                AppLocaleSupport.setCurrentLocale(locale)
+                val cached = repository.getOptions().getOrThrow()
+                assertEquals(11, cached.faculties.single().code)
+                assertEquals(major, cached.faculties.single().majors.first { it.code == "software_engineering" }.label)
+                assertEquals(cached, repository.currentOptions())
+            }
+            assertEquals("计算机科学系", initial.faculties.single().label)
+            verify(api, times(1)).getProfileOptions()
+        } finally {
+            AppLocaleSupport.setCurrentLocale(null)
+        }
     }
 }

@@ -156,7 +156,7 @@ fun MarketplaceScreen(navController: NavHostController) {
                 )
                 state.typeOptions.forEach { option ->
                     SelectionPill(
-                        text = option.title,
+                        text = option.displayTitle(),
                         selected = state.selectedTypeId == option.id,
                         onClick = { viewModel.selectType(option.id) }
                     )
@@ -206,6 +206,10 @@ fun MarketplaceDetailScreen(navController: NavHostController) {
     val viewModel: MarketplaceDetailViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val detail = state.detail
+    val contactHint = listOfNotNull(
+        detail?.contactQQ?.trim()?.takeIf(String::isNotBlank)?.let { stringResource(R.string.marketplace_contact_qq, it) },
+        detail?.contactPhone?.trim()?.takeIf(String::isNotBlank)?.let { stringResource(R.string.marketplace_contact_phone, it) }
+    ).joinToString(" / ").ifBlank { stringResource(R.string.marketplace_contact_private) }
 
     LazyScreen(
         title = stringResource(R.string.marketplace_detail_title),
@@ -260,10 +264,10 @@ fun MarketplaceDetailScreen(navController: NavHostController) {
                 item {
                     ActionTile(
                         title = stringResource(R.string.marketplace_contact_title),
-                        subtitle = detail.contactHint,
+                        subtitle = contactHint,
                         icon = Icons.Rounded.Person,
                         onClick = {
-                            Toast.makeText(context, detail.contactHint, Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, contactHint, Toast.LENGTH_LONG).show()
                         },
                         tint = MaterialTheme.colorScheme.tertiary,
                         emphasized = true,
@@ -307,9 +311,11 @@ fun MarketplaceDetailScreen(navController: NavHostController) {
                                 )
                             }
                         }
-                        DetailRow(stringResource(R.string.marketplace_seller_college_label), detail.sellerCollege ?: "—")
-                        DetailRow(stringResource(R.string.marketplace_seller_major_label), detail.sellerMajor ?: "—")
-                        DetailRow(stringResource(R.string.marketplace_seller_grade_label), detail.sellerGrade ?: "—")
+                        DetailRow(stringResource(R.string.marketplace_seller_college_label), detail.displaySellerCollege() ?: "—")
+                        DetailRow(stringResource(R.string.marketplace_seller_major_label), detail.displaySellerMajor() ?: "—")
+                        DetailRow(stringResource(R.string.marketplace_seller_grade_label), detail.sellerEnrollment?.let {
+                            stringResource(R.string.marketplace_seller_grade_suffix, it)
+                        } ?: detail.sellerGrade ?: "—")
                     }
                 }
             }
@@ -525,7 +531,7 @@ private fun MarketplaceDetailHero(detail: MarketplaceDetail) {
         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
     ) {
         BadgePill(
-            text = detail.condition
+            text = detail.displayCondition()
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
         Text(

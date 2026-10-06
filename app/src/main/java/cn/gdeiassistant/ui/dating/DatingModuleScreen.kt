@@ -53,6 +53,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.LocalizedProfileCatalog
 import cn.gdeiassistant.model.DatingArea
 import cn.gdeiassistant.model.DatingProfileCard
 import cn.gdeiassistant.model.DatingProfileDetail
@@ -368,7 +369,7 @@ fun DatingPublishScreen(navController: NavHostController) {
                 ) {
                     state.facultyOptions.forEach { faculty ->
                         SelectionPill(
-                            text = faculty,
+                            text = LocalizedProfileCatalog.localizeFacultyName(faculty),
                             selected = selectedFaculty == faculty,
                             onClick = { selectedFaculty = faculty }
                         )
@@ -494,7 +495,7 @@ private fun DatingFeedCard(
                     fontWeight = FontWeight.ExtraBold
                 )
                 Text(
-                    text = "${item.grade} · ${item.faculty}",
+                    text = "${item.grade} · ${LocalizedProfileCatalog.localizeFacultyName(item.faculty)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -532,7 +533,7 @@ private fun DatingDetailHero(
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(
-            text = "${detail.profile.grade} · ${detail.profile.faculty} · ${stringResource(R.string.dating_hometown_prefix, detail.profile.hometown)}",
+            text = "${detail.profile.grade} · ${LocalizedProfileCatalog.localizeFacultyName(detail.profile.faculty)} · ${stringResource(R.string.dating_hometown_prefix, detail.profile.hometown)}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

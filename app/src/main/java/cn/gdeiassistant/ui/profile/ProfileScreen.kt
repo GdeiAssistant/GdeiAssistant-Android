@@ -70,6 +70,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -85,6 +86,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.AppLocaleSupport
+import cn.gdeiassistant.model.ProfileLocationCatalog
 import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.ProfileLocationRegion
 import cn.gdeiassistant.model.ProfileLocationSelection
@@ -298,6 +301,7 @@ private fun ProfileAccountCard(
     onSaveLocation: (ProfileLocationField, ProfileLocationSelection) -> Unit
 ) {
     val context = LocalContext.current
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
     var showBirthdayPicker by rememberSaveable { mutableStateOf(false) }
     var activeLocationField by remember { mutableStateOf<ProfileLocationField?>(null) }
     var activeTextEditor by remember { mutableStateOf<ProfileTextEditorField?>(null) }
@@ -307,9 +311,11 @@ private fun ProfileAccountCard(
         ?: stringResource(R.string.profile_info_not_set)
     val avatarFallbackLabel = profile.nickname?.takeIf(String::isNotBlank)
         ?: profile.username
-    val profileOptions = state.profileOptions
-    val currentCollege = profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
-    val currentMajor = profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
+    val profileOptions = state.profileOptions.localizedForLocale(locale)
+    val currentCollege = profileOptions.facultyNameFor(profile.facultyCode)
+        ?: profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
+    val currentMajor = profileOptions.majorLabelFor(currentCollege, profile.majorCode.orEmpty())
+        ?: profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val currentEnrollment = profile.enrollment?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
     val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
     val selectCollegeFirstText = stringResource(R.string.profile_select_college_first)
@@ -351,7 +357,7 @@ private fun ProfileAccountCard(
                 )
                 if (!profile.ipArea.isNullOrBlank()) {
                     Text(
-                        text = stringResource(R.string.profile_ip_area_label, profile.ipArea),
+                        text = stringResource(R.string.profile_ip_area_label, ProfileLocationCatalog.localizeIpArea(profile.ipArea, locale)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -392,6 +398,7 @@ private fun ProfileAccountCard(
 
         ProfileSummaryContent(
             profile = profile,
+            profileOptions = profileOptions,
             isSaving = state.isSaving,
             onEditNickname = {
                 textEditorValue = profile.nickname.orEmpty()
@@ -513,6 +520,7 @@ private fun ProfileAccountCard(
 @Composable
 private fun ProfileSummaryContent(
     profile: UserProfileSummary,
+    profileOptions: cn.gdeiassistant.model.ProfileOptions,
     isSaving: Boolean,
     onEditNickname: () -> Unit,
     onEditBirthday: () -> Unit,
@@ -523,6 +531,9 @@ private fun ProfileSummaryContent(
     onEditHometown: () -> Unit,
     onEditBio: () -> Unit
 ) {
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val faculty = profileOptions.facultyNameFor(profile.facultyCode) ?: profile.faculty
+    val major = profileOptions.majorLabelFor(faculty.orEmpty(), profile.majorCode.orEmpty()) ?: profile.major
     Column(modifier = Modifier.testTag("profile.details"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_nickname),
@@ -538,13 +549,13 @@ private fun ProfileSummaryContent(
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_college_label),
-            value = displayText(profile.faculty, stringResource(R.string.profile_not_selected)),
+            value = displayText(faculty, stringResource(R.string.profile_not_selected)),
             onClick = onEditCollege,
             enabled = !isSaving
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_major),
-            value = displayText(profile.major, stringResource(R.string.profile_not_selected)),
+            value = displayText(major, stringResource(R.string.profile_not_selected)),
             onClick = onEditMajor,
             enabled = !isSaving
         )
@@ -557,13 +568,13 @@ private fun ProfileSummaryContent(
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_country_region_label),
-            value = displayText(profile.location, stringResource(R.string.profile_not_selected)),
+            value = displayText(ProfileLocationCatalog.selectionDisplayName(profile.locationSelection, profile.location, locale), stringResource(R.string.profile_not_selected)),
             onClick = onEditLocation,
             enabled = !isSaving
         )
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_hometown),
-            value = displayText(profile.hometown, stringResource(R.string.profile_not_selected)),
+            value = displayText(ProfileLocationCatalog.selectionDisplayName(profile.hometownSelection, profile.hometown, locale), stringResource(R.string.profile_not_selected)),
             onClick = onEditHometown,
             enabled = !isSaving
         )
@@ -591,6 +602,7 @@ private fun ProfileEditingContent(
     onSave: () -> Unit,
     onShowBirthdayPicker: () -> Unit
 ) {
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
     val draft = state.draft
     val profileOptions = state.profileOptions
     val majorOptions = profileOptions.majorOptionsFor(draft.college)
@@ -638,13 +650,13 @@ private fun ProfileEditingContent(
 
         ProfileValueField(
             title = stringResource(R.string.profile_country_region_label),
-            value = displayText(draft.location, stringResource(R.string.profile_not_selected)),
+            value = displayText(ProfileLocationCatalog.selectionDisplayName(draft.locationSelection, draft.location, locale), stringResource(R.string.profile_not_selected)),
             onClick = { onOpenLocationPicker(ProfileLocationField.Location) }
         )
 
         ProfileValueField(
             title = stringResource(R.string.profile_info_hometown),
-            value = displayText(draft.hometown, stringResource(R.string.profile_not_selected)),
+            value = displayText(ProfileLocationCatalog.selectionDisplayName(draft.hometownSelection, draft.hometown, locale), stringResource(R.string.profile_not_selected)),
             onClick = { onOpenLocationPicker(ProfileLocationField.Hometown) }
         )
 
@@ -1188,9 +1200,11 @@ private fun ProfileLocationPickerSheet(
     onDismiss: () -> Unit,
     onConfirm: (ProfileLocationSelection) -> Unit
 ) {
-    val initialSelection = remember(regions, currentSelection) {
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val pickerRegions = remember(regions, locale) { ProfileLocationCatalog.localizeRegions(regions, locale) }
+    val initialSelection = remember(pickerRegions, currentSelection) {
         currentSelection?.takeIf { selection ->
-            val region = regions.firstOrNull { it.code == selection.regionCode } ?: return@takeIf false
+            val region = pickerRegions.firstOrNull { it.code == selection.regionCode } ?: return@takeIf false
             if (selection.stateCode.isBlank()) {
                 return@takeIf true
             }
@@ -1201,18 +1215,18 @@ private fun ProfileLocationPickerSheet(
             state.cities.any { city -> city.code == selection.cityCode }
         }
     }
-    var selectedRegionCode by remember(regions, currentSelection) {
-        mutableStateOf(initialSelection?.regionCode ?: regions.firstOrNull()?.code.orEmpty())
+    var selectedRegionCode by remember(pickerRegions, currentSelection) {
+        mutableStateOf(initialSelection?.regionCode ?: pickerRegions.firstOrNull()?.code.orEmpty())
     }
-    var selectedStateCode by remember(regions, currentSelection) {
+    var selectedStateCode by remember(pickerRegions, currentSelection) {
         mutableStateOf(initialSelection?.stateCode.orEmpty())
     }
-    var selectedCityCode by remember(regions, currentSelection) {
+    var selectedCityCode by remember(pickerRegions, currentSelection) {
         mutableStateOf(initialSelection?.cityCode.orEmpty())
     }
 
-    val currentRegion = remember(regions, selectedRegionCode) {
-        regions.firstOrNull { it.code == selectedRegionCode } ?: regions.firstOrNull()
+    val currentRegion = remember(pickerRegions, selectedRegionCode) {
+        pickerRegions.firstOrNull { it.code == selectedRegionCode } ?: pickerRegions.firstOrNull()
     }
     val currentStates = currentRegion?.states.orEmpty()
     val currentState = remember(currentStates, selectedStateCode) {
@@ -1235,13 +1249,14 @@ private fun ProfileLocationPickerSheet(
         }
     }
 
-    val selectedLocation = remember(currentRegion, currentState, currentCity) {
+    val selectedLocation = remember(currentRegion, currentState, currentCity, locale) {
         currentRegion?.let { region ->
             ProfileLocationSelection(
                 displayName = ProfileFormSupport.makeLocationDisplay(
                     region = region.name,
                     state = currentState?.name.orEmpty(),
-                    city = currentCity?.name.orEmpty()
+                    city = currentCity?.name.orEmpty(),
+                    locale = locale
                 ),
                 regionCode = region.code,
                 stateCode = currentState?.code.orEmpty(),
@@ -1257,6 +1272,7 @@ private fun ProfileLocationPickerSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag("profile.location.picker")
                 .padding(horizontal = 24.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -1266,7 +1282,7 @@ private fun ProfileLocationPickerSheet(
                 fontWeight = FontWeight.ExtraBold
             )
 
-            if (regions.isEmpty()) {
+            if (pickerRegions.isEmpty()) {
                 Text(
                     text = stringResource(R.string.profile_location_unavailable),
                     style = MaterialTheme.typography.bodyMedium,
@@ -1307,9 +1323,9 @@ private fun ProfileLocationPickerSheet(
                 ProfileSelectionField(
                     title = stringResource(R.string.profile_country_region_label),
                     value = currentRegion?.name.orEmpty(),
-                    options = regions.map { it.name },
+                    options = pickerRegions.map { it.name },
                     onSelect = { selectedName ->
-                        selectedRegionCode = regions.firstOrNull { it.name == selectedName }?.code.orEmpty()
+                        selectedRegionCode = pickerRegions.firstOrNull { it.name == selectedName }?.code.orEmpty()
                     }
                 )
 

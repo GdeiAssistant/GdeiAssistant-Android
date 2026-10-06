@@ -78,12 +78,35 @@ data class ProfileOptions(
     val lostFoundModes: List<ProfileDictionaryOption>
 ) : Serializable {
 
+    fun localizedForLocale(locale: String = AppLocaleSupport.currentLocale()): ProfileOptions {
+        val labels = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
+        fun localizeDictionary(source: List<ProfileDictionaryOption>, known: List<ProfileDictionaryOption>) =
+            source.map { option -> option.copy(label = known.firstOrNull { it.code == option.code }?.label ?: option.label) }
+        return copy(
+            faculties = faculties.map { faculty ->
+                val known = labels.faculties.firstOrNull { it.code == faculty.code }
+                faculty.copy(
+                    label = known?.label ?: faculty.label,
+                    majors = faculty.majors.map { major -> major.copy(label = known?.majors?.firstOrNull { it.code == major.code }?.label ?: major.label) }
+                )
+            },
+            marketplaceItemTypes = localizeDictionary(marketplaceItemTypes, labels.marketplaceItemTypes),
+            lostFoundItemTypes = localizeDictionary(lostFoundItemTypes, labels.lostFoundItemTypes),
+            lostFoundModes = localizeDictionary(lostFoundModes, labels.lostFoundModes)
+        )
+    }
+
+    private fun facultyForLabel(value: String): ProfileFacultyOption? {
+        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizeOptionLookup(value) }
+            ?: LocalizedProfileCatalog.facultyCodeForLabel(value)?.let { code -> faculties.firstOrNull { it.code == code } }
+    }
+
     val facultyOptions: List<String>
-        get() = faculties.map(ProfileFacultyOption::label)
+        get() = localizedForLocale().faculties.map(ProfileFacultyOption::label)
 
     fun majorOptionsFor(faculty: String): List<String> {
-        val normalizedFaculty = normalizeOptionLookup(faculty)
-        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizedFaculty }
+        val code = facultyForLabel(faculty)?.code
+        return localizedForLocale().faculties.firstOrNull { it.code == code }
             ?.majors
             ?.map(ProfileMajorOption::label)
             ?.takeIf(List<String>::isNotEmpty)
@@ -91,55 +114,51 @@ data class ProfileOptions(
     }
 
     fun canSelectMajor(faculty: String): Boolean {
-        val normalized = ProfileFormSupport.normalizeSelection(faculty)
-        return normalized.isNotEmpty() && normalized != ProfileFormSupport.UnselectedOption
+        return facultyForLabel(faculty)?.code?.let { it != 0 } ?: false
     }
 
     fun facultyCodeFor(college: String): Int? {
-        val normalizedCollege = normalizeOptionLookup(college)
-        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizedCollege }?.code
+        return facultyForLabel(college)?.code
     }
 
     fun facultyNameFor(code: Int?): String? {
         val label = code?.let { value ->
-            faculties.firstOrNull { it.code == value }?.label
+            localizedForLocale().faculties.firstOrNull { it.code == value }?.label
         }
         val normalized = label?.trim().orEmpty()
         return normalized.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedOption }
     }
 
     fun majorCodeFor(faculty: String, majorLabel: String): String? {
-        val normalizedFaculty = normalizeOptionLookup(faculty)
+        val option = facultyForLabel(faculty) ?: return null
         val normalizedMajor = normalizeOptionLookup(majorLabel)
-        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizedFaculty }
-            ?.majors
-            ?.firstOrNull { normalizeOptionLookup(it.label) == normalizedMajor }
-            ?.code
+        return option.majors.firstOrNull { normalizeOptionLookup(it.label) == normalizedMajor }?.code
+            ?: LocalizedProfileCatalog.majorCodeForLabel(option.code, majorLabel)?.takeIf { code -> option.majors.any { it.code == code } }
     }
 
     fun majorLabelFor(faculty: String, majorCode: String): String? {
-        val normalizedFaculty = normalizeOptionLookup(faculty)
-        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizedFaculty }
+        val code = facultyForLabel(faculty)?.code
+        return localizedForLocale().faculties.firstOrNull { it.code == code }
             ?.majors
             ?.firstOrNull { it.code == majorCode }
             ?.label
     }
 
     fun marketplaceTypeOptions(): List<MarketplaceTypeOption> {
-        return marketplaceItemTypes.map { option ->
+        return localizedForLocale().marketplaceItemTypes.map { option ->
             MarketplaceTypeOption(id = option.code, title = option.label)
         }
     }
 
     fun lostFoundItemTypeOptions(): List<LostFoundItemTypeOption> {
-        return lostFoundItemTypes.map { option ->
+        return localizedForLocale().lostFoundItemTypes.map { option ->
             LostFoundItemTypeOption(id = option.code, title = option.label)
         }
     }
 
     fun marketplaceTypeTitle(value: Int?): String {
         return dictionaryLabelFor(
-            options = marketplaceItemTypes,
+            options = localizedForLocale().marketplaceItemTypes,
             code = value,
             fallback = LocalizedProfileCatalog.currentCatalog().otherLabel
         )
@@ -147,7 +166,7 @@ data class ProfileOptions(
 
     fun lostFoundItemTypeTitle(value: Int?): String {
         return dictionaryLabelFor(
-            options = lostFoundItemTypes,
+            options = localizedForLocale().lostFoundItemTypes,
             code = value,
             fallback = LocalizedProfileCatalog.currentCatalog().otherLabel
         )
@@ -155,7 +174,7 @@ data class ProfileOptions(
 
     fun lostFoundModeTitle(value: Int?): String {
         return dictionaryLabelFor(
-            options = lostFoundModes,
+            options = localizedForLocale().lostFoundModes,
             code = value,
             fallback = ProfileFormSupport.UnselectedOption
         )
