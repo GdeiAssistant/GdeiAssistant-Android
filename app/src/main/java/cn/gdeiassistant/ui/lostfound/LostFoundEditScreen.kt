@@ -276,7 +276,7 @@ private fun LostFoundEditContent(
             ) {
                 itemTypeOptions.forEach { option ->
                     SelectionPill(
-                        text = option.title,
+                        text = option.displayTitle(),
                         selected = selectedItemTypeId == option.id,
                         onClick = { onItemTypeSelected(option.id) }
                     )

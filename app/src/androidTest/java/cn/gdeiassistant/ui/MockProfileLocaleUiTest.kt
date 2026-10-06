@@ -69,6 +69,44 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
             composeRule.waitUntil(20_000) { AppLocaleSupport.currentLocale() == option.code }
             composeRule.waitUntilAtLeastOneExists(hasText(localized(option.code, R.string.appearance_title)), 20_000)
             composeRule.onNodeWithText(localized(option.code, R.string.appearance_title)).assertIsDisplayed()
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.identity"), 20_000)
+            val (location, hometown, ipArea) = when (option.code) {
+                "zh-HK", "zh-TW" -> Triple("中國 廣東 廣州", "中國 廣東 汕頭", "廣東")
+                "en" -> Triple("Guangzhou, Guangdong, China", "Shantou, Guangdong, China", "Guangdong")
+                "ja" -> Triple("広州, 広東, 中国", "汕頭, 広東, 中国", "広東")
+                "ko" -> Triple("광저우, 광둥, 중국", "산터우, 광둥, 중국", "광둥")
+                else -> Triple("中国 广东 广州", "中国 广东 汕头", "广东")
+            }
+            scrollToText(localized(option.code, R.string.profile_ip_area_label, ipArea)).assertIsDisplayed()
+            val (faculty, major) = when (option.code) {
+                "zh-HK" -> "計算機科學系" to "軟件工程"
+                "zh-TW" -> "計算機科學系" to "軟體工程"
+                "en" -> "Department of Computer Science" to "Software Engineering"
+                "ja" -> "計算機科学科" to "ソフトウェア工学"
+                "ko" -> "컴퓨터과학과" to "소프트웨어공학"
+                else -> "计算机科学系" to "软件工程"
+            }
+            scrollToText(faculty).assertIsDisplayed()
+            scrollToText(major).assertIsDisplayed()
+            scrollToText(hometown).assertIsDisplayed()
+            scrollToText(location).assertIsDisplayed().performClick()
+            composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.location.picker"), 20_000)
+            composeRule.onNode(hasText(location) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            val country = when (option.code) {
+                "zh-HK", "zh-TW" -> "中國"
+                "en" -> "China"
+                "ko" -> "중국"
+                else -> "中国"
+            }
+            composeRule.onNode(hasText(country) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            composeRule.onNode(hasText(ipArea) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            scrollToText(hometown).performClick()
+            composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.location.picker"), 20_000)
+            composeRule.onNode(hasText(hometown) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            scrollToText(localized(option.code, R.string.appearance_title)).performClick()
         }
     }
 
@@ -82,10 +120,10 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
         it.performScrollTo()
     }
 
-    private fun localized(locale: String, resource: Int): String {
+    private fun localized(locale: String, resource: Int, vararg arguments: Any): String {
         val context = instrumentation.targetContext
         val configuration = Configuration(context.resources.configuration)
         configuration.setLocale(Locale.forLanguageTag(locale))
-        return context.createConfigurationContext(configuration).getString(resource)
+        return context.createConfigurationContext(configuration).getString(resource, *arguments)
     }
 }

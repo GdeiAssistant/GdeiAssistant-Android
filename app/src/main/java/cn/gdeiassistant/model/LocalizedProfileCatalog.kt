@@ -8,6 +8,24 @@ data class LocalizedProfileCatalog(
     companion object {
         fun currentCatalog(): LocalizedProfileCatalog = catalogForLocale(AppLocaleSupport.currentLocale())
 
+        fun facultyCodeForLabel(value: String): Int? {
+            return localizedLabels.keys.asSequence().flatMap { catalogForLocale(it).defaultOptions.faculties.asSequence() }
+                .firstOrNull { normalizedLabel(it.label) == normalizedLabel(value) }?.code
+        }
+
+        fun majorCodeForLabel(facultyCode: Int, value: String): String? {
+            return localizedLabels.keys.asSequence().flatMap { locale ->
+                catalogForLocale(locale).defaultOptions.faculties.firstOrNull { it.code == facultyCode }?.majors.orEmpty().asSequence()
+            }.firstOrNull { normalizedLabel(it.label) == normalizedLabel(value) }?.code
+        }
+
+        fun localizeFacultyName(value: String, locale: String = AppLocaleSupport.currentLocale()): String {
+            val code = facultyCodeForLabel(value) ?: return value
+            return catalogForLocale(locale).defaultOptions.faculties.firstOrNull { it.code == code }?.label ?: value
+        }
+
+        private fun normalizedLabel(value: String): String = value.trim().replace(" ", "").replace("\u3000", "")
+
         fun catalogForLocale(locale: String): LocalizedProfileCatalog {
             val normalizedLocale = AppLocaleSupport.normalizeLocale(locale)
             val labels = localizedLabels[normalizedLocale] ?: localizedLabels.getValue("zh-CN")

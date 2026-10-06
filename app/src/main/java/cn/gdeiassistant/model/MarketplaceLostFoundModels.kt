@@ -24,7 +24,10 @@ enum class MarketplaceItemState(val remoteValue: Int) {
 data class MarketplaceTypeOption(
     val id: Int,
     val title: String
-) : Serializable
+) : Serializable {
+    fun displayTitle(locale: String = AppLocaleSupport.currentLocale()): String =
+        LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions.marketplaceItemTypes.firstOrNull { it.code == id }?.label ?: title
+}
 
 @Immutable
 data class MarketplaceItem(
@@ -55,8 +58,25 @@ data class MarketplaceDetail(
     val sellerMajor: String? = null,
     val sellerGrade: String? = null,
     val sellerEnrollment: Int? = null,
-    val imageUrls: List<String> = emptyList()
-) : Serializable
+    val imageUrls: List<String> = emptyList(),
+    val typeId: Int? = null,
+    val sellerFacultyCode: Int? = null
+) : Serializable {
+    fun displayCondition(locale: String = AppLocaleSupport.currentLocale()): String =
+        LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions.marketplaceItemTypes.firstOrNull { it.code == typeId }?.label ?: condition
+
+    fun displaySellerCollege(locale: String = AppLocaleSupport.currentLocale()): String? =
+        LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions.faculties.firstOrNull { it.code == sellerFacultyCode && it.code != 0 }?.label
+            ?: sellerCollege?.let { LocalizedProfileCatalog.localizeFacultyName(it, locale) }
+
+    fun displaySellerMajor(locale: String = AppLocaleSupport.currentLocale()): String? {
+        val value = sellerMajor ?: return null
+        val facultyCode = sellerFacultyCode ?: sellerCollege?.let(LocalizedProfileCatalog::facultyCodeForLabel) ?: return value
+        val majors = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions.faculties.firstOrNull { it.code == facultyCode }?.majors.orEmpty()
+        val majorCode = majors.firstOrNull { it.code == value }?.code ?: LocalizedProfileCatalog.majorCodeForLabel(facultyCode, value)
+        return majors.firstOrNull { it.code == majorCode }?.label ?: value
+    }
+}
 
 @Immutable
 data class MarketplacePersonalSummary(
@@ -103,7 +123,8 @@ data class MarketplaceEditableItem(
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 
-val marketplaceTypeTitles = ProfileFormSupport.defaultOptions.marketplaceItemTypes.map(ProfileDictionaryOption::label)
+val marketplaceTypeTitles: List<String>
+    get() = ProfileFormSupport.defaultOptions.marketplaceItemTypes.map(ProfileDictionaryOption::label)
 
 fun marketplaceTypeTitle(value: Int?): String {
     return ProfileFormSupport.defaultOptions.marketplaceTypeTitle(value)
@@ -182,7 +203,10 @@ data class LostFoundPersonalSummary(
 data class LostFoundItemTypeOption(
     val id: Int,
     val title: String
-) : Serializable
+) : Serializable {
+    fun displayTitle(locale: String = AppLocaleSupport.currentLocale()): String =
+        LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions.lostFoundItemTypes.firstOrNull { it.code == id }?.label ?: title
+}
 
 @Immutable
 data class LostFoundDraft(
@@ -222,7 +246,8 @@ data class LostFoundEditableItem(
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 
-val lostFoundItemTypeTitles = ProfileFormSupport.defaultOptions.lostFoundItemTypes.map(ProfileDictionaryOption::label)
+val lostFoundItemTypeTitles: List<String>
+    get() = ProfileFormSupport.defaultOptions.lostFoundItemTypes.map(ProfileDictionaryOption::label)
 
 fun lostFoundItemTypeTitle(value: Int?): String {
     return ProfileFormSupport.defaultOptions.lostFoundItemTypeTitle(value)

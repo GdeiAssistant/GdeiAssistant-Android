@@ -31,11 +31,11 @@ class ProfileOptionsRepository @Inject constructor(
     @Volatile
     private var hasLoadedRemoteOptions: Boolean = false
 
-    fun currentOptions(): ProfileOptions = cachedOptions
+    fun currentOptions(): ProfileOptions = cachedOptions.localizedForLocale()
 
     suspend fun getOptions(forceRefresh: Boolean = false): Result<ProfileOptions> = withContext(Dispatchers.IO) {
         if (!forceRefresh && hasLoadedRemoteOptions) {
-            return@withContext Result.success(cachedOptions)
+            return@withContext Result.success(currentOptions())
         }
 
         safeApiCall { profileApi.getProfileOptions() }
@@ -43,7 +43,7 @@ class ProfileOptionsRepository @Inject constructor(
                 val mapped = dto?.let(::mapProfileOptions) ?: throw IllegalStateException(context.getString(R.string.profile_options_empty))
                 cachedOptions = mapped
                 hasLoadedRemoteOptions = true
-                mapped
+                currentOptions()
             }
     }
 }

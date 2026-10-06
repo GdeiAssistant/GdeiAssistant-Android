@@ -58,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -68,6 +69,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.model.AppLocaleSupport
+import cn.gdeiassistant.model.ProfileLocationCatalog
 import cn.gdeiassistant.model.CampusCredentialStatus
 import cn.gdeiassistant.model.PhoneAttribution
 import cn.gdeiassistant.model.PrivacySettings
@@ -342,6 +345,7 @@ fun PrivacySettingsScreen(navController: NavHostController) {
 fun LoginRecordsScreen(navController: NavHostController) {
     val viewModel: LoginRecordsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
 
     LazyScreen(
         title = stringResource(R.string.profile_login_records_title),
@@ -401,7 +405,7 @@ fun LoginRecordsScreen(navController: NavHostController) {
                         )
                         LoginRecordLine(
                             label = stringResource(R.string.profile_login_area),
-                            value = record.area
+                            value = ProfileLocationCatalog.localizeIpArea(record.area, locale)
                         )
                         LoginRecordLine(
                             label = stringResource(R.string.profile_login_device),
@@ -409,7 +413,7 @@ fun LoginRecordsScreen(navController: NavHostController) {
                         )
                         LoginRecordLine(
                             label = stringResource(R.string.profile_login_status),
-                            value = record.statusText
+                            value = stringResource(R.string.profile_login_status_success)
                         )
                     }
                 }

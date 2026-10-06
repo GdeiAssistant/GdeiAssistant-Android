@@ -10,29 +10,26 @@ object ProfileLocationCatalog {
         get() = ProfileLocationMockCatalog.regions
 
     fun regionsForLocale(locale: String = AppLocaleSupport.currentLocale()): List<ProfileLocationRegion> {
-        return regions.map { region ->
-            ProfileLocationRegion(
-                code = region.code,
+        return localizeRegions(regions, locale)
+    }
+
+    fun localizeRegions(
+        source: List<ProfileLocationRegion>,
+        locale: String = AppLocaleSupport.currentLocale()
+    ): List<ProfileLocationRegion> {
+        return source.map { region ->
+            region.copy(
                 name = localizeRegionName(region.code, region.name, locale),
                 states = region.states.map { state ->
-                    ProfileLocationState(
-                        code = state.code,
+                    state.copy(
                         name = localizeStateName(region.code, state.code, state.name, locale),
                         cities = state.cities.map { city ->
-                            ProfileLocationCity(
-                                code = city.code,
-                                name = localizeCityName(region.code, state.code, city.code, city.name, locale),
-                                latinName = city.latinName,
-                                localizedNames = city.localizedNames
+                            city.copy(
+                                name = localizeCityName(region.code, state.code, city.code, city.name, locale)
                             )
-                        },
-                        latinName = state.latinName,
-                        localizedNames = state.localizedNames
+                        }
                     )
-                },
-                latinName = region.latinName,
-                localizedNames = region.localizedNames,
-                iso = region.iso
+                }
             )
         }
     }
@@ -43,14 +40,14 @@ object ProfileLocationCatalog {
         cityCode: String,
         locale: String = AppLocaleSupport.currentLocale()
     ): ProfileLocationSelection? {
-        val region = regionsForLocale(locale).firstOrNull { it.code == regionCode } ?: return null
+        val region = regions.firstOrNull { it.code == regionCode } ?: return null
         val state = region.states.firstOrNull { it.code == stateCode }
         val city = state?.cities?.firstOrNull { it.code == cityCode }
         return ProfileLocationSelection(
             displayName = ProfileFormSupport.makeLocationDisplay(
-                region = region.name,
-                state = state?.name.orEmpty(),
-                city = city?.name.orEmpty(),
+                region = localizeRegionName(region.code, region.name, locale),
+                state = state?.let { localizeStateName(region.code, it.code, it.name, locale) }.orEmpty(),
+                city = city?.let { localizeCityName(region.code, state.code, it.code, it.name, locale) }.orEmpty(),
                 locale = locale
             ),
             regionCode = region.code,
@@ -66,6 +63,28 @@ object ProfileLocationCatalog {
         locale: String = AppLocaleSupport.currentLocale()
     ): String {
         return selection(regionCode, stateCode, cityCode, locale)?.displayName.orEmpty()
+    }
+
+    fun selectionDisplayName(
+        selection: ProfileLocationSelection?,
+        fallback: String?,
+        locale: String = AppLocaleSupport.currentLocale()
+    ): String {
+        if (selection == null) return fallback.orEmpty()
+        val resolved = ProfileLocationCatalog.selection(selection.regionCode, selection.stateCode, selection.cityCode, locale)
+        return resolved?.takeIf {
+            it.regionCode == selection.regionCode && it.stateCode == selection.stateCode && it.cityCode == selection.cityCode
+        }?.displayName?.ifBlank { fallback.orEmpty() } ?: fallback.orEmpty()
+    }
+
+    // Only system IP-area fields use this exact catalog lookup. Unknown or ambiguous
+    // values stay intact; this must never be applied to names, biographies or posts.
+    fun localizeIpArea(value: String, locale: String = AppLocaleSupport.currentLocale()): String {
+        fun resolve(name: String): String? {
+            val matches = ipAreaPaths[name.lowercase(Locale.ROOT)] ?: return null
+            return matches.map { path -> areaPathDisplay(path, locale) }.distinct().singleOrNull()
+        }
+        return resolve(value.trim()) ?: value
     }
 
     fun localizeRegionName(regionCode: String, fallbackName: String, locale: String = AppLocaleSupport.currentLocale()): String {
@@ -128,14 +147,14 @@ object ProfileLocationCatalog {
         preferCountryLookup: Boolean = false
     ): String {
         val normalizedLocale = AppLocaleSupport.normalizeLocale(locale)
-        if (normalizedLocale.startsWith("zh")) {
-            return name
-        }
-
         localizedNames?.get(normalizedLocale)
             ?.trim()
             ?.takeIf(String::isNotEmpty)
             ?.let { return it }
+
+        if (normalizedLocale.startsWith("zh")) {
+            return name
+        }
 
         if (preferCountryLookup) {
             val countryName = localeDisplayCountry(code, normalizedLocale)
@@ -192,6 +211,58 @@ object ProfileLocationCatalog {
         val instance: Any,
         val method: Method
     )
+
+    private data class AreaName(
+        val name: String,
+        val code: String,
+        val latinName: String?,
+        val localizedNames: Map<String, String>?,
+        val country: Boolean = false
+    )
+
+    private fun areaPathDisplay(path: List<AreaName>, locale: String): String {
+        val names = path.map { item -> localizeName(item.name, item.code, locale, item.latinName, item.localizedNames, item.country) }
+        return ProfileFormSupport.makeLocationDisplay(names[0], names.getOrElse(1) { "" }, names.getOrElse(2) { "" }, locale)
+    }
+
+    private val ipAreaPaths: Map<String, List<List<AreaName>>> by lazy {
+        val paths = buildList {
+            regions.forEach { region ->
+                val country = AreaName(region.name, region.iso ?: region.code, region.latinName, region.localizedNames, country = true)
+                add(listOf(country))
+                region.states.forEach { state ->
+                    val province = AreaName(state.name, state.code, state.latinName, state.localizedNames)
+                    add(listOf(province))
+                    add(listOf(country, province))
+                    state.cities.forEach { city ->
+                        val locality = AreaName(city.name, city.code, city.latinName, city.localizedNames)
+                        add(listOf(locality))
+                        add(listOf(province, locality))
+                        add(listOf(country, province, locality))
+                    }
+                }
+            }
+        }
+        val locales = regions.flatMap { it.localizedNames.orEmpty().keys }.toSet() + AppLocaleSupport.fallbackLocale
+        val nodes = paths.flatten().distinct()
+        val labelsByLocale = locales.associateWith { locale ->
+            nodes.associateWith { item -> localizeName(item.name, item.code, locale, item.latinName, item.localizedNames, item.country) }
+        }
+        paths.flatMap { path ->
+            val aliases = buildList {
+                add(path.joinToString(" ") { it.name })
+                add(path.joinToString("") { it.name })
+                add(path.joinToString(" ") { it.latinName ?: it.name })
+                locales.forEach { locale ->
+                    val names = path.map { labelsByLocale.getValue(locale).getValue(it) }
+                    add(ProfileFormSupport.makeLocationDisplay(names[0], names.getOrElse(1) { "" }, names.getOrElse(2) { "" }, locale))
+                    add(names.joinToString(" "))
+                    if (locale.startsWith("zh")) add(names.joinToString(""))
+                }
+            }
+            aliases.distinct().map { it.lowercase(Locale.ROOT) to path }
+        }.groupBy({ it.first }, { it.second })
+    }
 
     private val hanLatinTransliterator: TransliteratorHandle? by lazy {
         runCatching {

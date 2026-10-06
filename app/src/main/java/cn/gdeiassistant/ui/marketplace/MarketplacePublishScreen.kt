@@ -168,7 +168,7 @@ fun MarketplacePublishScreen(navController: NavHostController) {
                 ) {
                     state.typeOptions.forEach { option ->
                         SelectionPill(
-                            text = option.title,
+                            text = option.displayTitle(),
                             selected = selectedTypeId == option.id,
                             onClick = { selectedTypeId = option.id }
                         )

@@ -171,6 +171,11 @@ fun LostFoundDetailScreen(navController: NavHostController) {
     val viewModel: LostFoundDetailViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val detail = state.detail
+    val contactHint = listOfNotNull(
+        detail?.contactQQ?.trim()?.takeIf(String::isNotBlank)?.let { stringResource(R.string.lost_found_contact_qq, it) },
+        detail?.contactWechat?.trim()?.takeIf(String::isNotBlank)?.let { stringResource(R.string.lost_found_contact_wechat, it) },
+        detail?.contactPhone?.trim()?.takeIf(String::isNotBlank)?.let { stringResource(R.string.lost_found_contact_phone, it) }
+    ).joinToString(" / ").ifBlank { stringResource(R.string.lost_found_contact_private) }
 
     LazyScreen(
         title = stringResource(R.string.lost_found_detail_title),
@@ -225,10 +230,10 @@ fun LostFoundDetailScreen(navController: NavHostController) {
                 item {
                     ActionTile(
                         title = stringResource(R.string.lost_found_contact_title),
-                        subtitle = detail.contactHint,
+                        subtitle = contactHint,
                         icon = Icons.Rounded.Person,
                         onClick = {
-                            Toast.makeText(context, detail.contactHint, Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, contactHint, Toast.LENGTH_LONG).show()
                         },
                         tint = MaterialTheme.colorScheme.tertiary,
                         emphasized = true,
@@ -276,7 +281,7 @@ fun LostFoundDetailScreen(navController: NavHostController) {
                                 )
                                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(4.dp))
                                 Text(
-                                    text = detail.ownerUsername ?: detail.statusText,
+                                    text = detail.ownerUsername ?: lostFoundStateLabel(detail.item.state),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -295,7 +300,7 @@ fun LostFoundDetailScreen(navController: NavHostController) {
                                 )
                             }
                         }
-                        DetailRow(stringResource(R.string.lost_found_status_label), detail.statusText)
+                        DetailRow(stringResource(R.string.lost_found_status_label), lostFoundStateLabel(detail.item.state))
                     }
                 }
             }
@@ -527,7 +532,7 @@ private fun LostFoundDetailHero(detail: LostFoundDetail) {
             )
             MetricChip(
                 label = stringResource(R.string.lost_found_status_label),
-                value = detail.statusText,
+                value = lostFoundStateLabel(detail.item.state),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -700,4 +705,11 @@ private fun lostFoundProfileTabLabel(tab: LostFoundProfileTab): String {
         LostFoundProfileTab.FOUND -> stringResource(R.string.lost_found_profile_tab_found)
         LostFoundProfileTab.DID_FOUND -> stringResource(R.string.lost_found_profile_tab_did_found)
     }
+}
+
+@Composable
+private fun lostFoundStateLabel(state: cn.gdeiassistant.model.LostFoundItemState): String = when (state) {
+    cn.gdeiassistant.model.LostFoundItemState.ACTIVE -> stringResource(R.string.lost_found_status_active)
+    cn.gdeiassistant.model.LostFoundItemState.RESOLVED -> stringResource(R.string.lost_found_status_resolved)
+    cn.gdeiassistant.model.LostFoundItemState.SYSTEM_DELETED -> stringResource(R.string.lost_found_status_deleted)
 }
