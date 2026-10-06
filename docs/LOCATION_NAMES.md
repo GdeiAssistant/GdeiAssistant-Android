@@ -13,3 +13,5 @@
 根据 [GeoNames 国家元数据](https://download.geonames.org/export/dump/countryInfo.txt)，`GUF` 是法属圭亚那，外部 ISO 代码应为 `GF`；`GUY` 是圭亚那，外部 ISO 代码为 `GY`。本次修正 `GUF` 误用的 `GY` 及六语言显示名称，业务代码 `GUF` 和原始名称不变。只包含旧名称“圭亚那”的系统地区字符串保持原样，不猜测国家；明确的“法属圭亚那”名称可正确切换语言。
 
 纽约州保留英文名称 `New York`，纽约市使用 `New York City`，与 [纽约市政府网页内容规范](https://designsystem.nyc.gov/standards/nyc-web-content-style-guide.html)中的名称一致，避免市与州显示重名。
+
+共享离线来源快照位于 `GdeiAssistant/frontend/scripts/location-names-geonames.json`，记录采用条目的代码路径、GeoNames ID、匹配依据和标签。同步更新后应核对四端对应路径的标签与国家 ISO，不能只按数组位置复制。
