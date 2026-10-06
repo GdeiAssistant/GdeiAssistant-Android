@@ -283,7 +283,18 @@ fun LostFoundDetailScreen(navController: NavHostController) {
                             }
                         }
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                        DetailRow(stringResource(R.string.lost_found_owner_name_label), detail.ownerNickname ?: detail.ownerUsername ?: "—")
+                        val ownerLabel = detail.ownerNickname ?: detail.ownerUsername ?: "—"
+                        if (detail.ownerAuthorId.isNullOrBlank()) {
+                            DetailRow(stringResource(R.string.lost_found_owner_name_label), ownerLabel)
+                        } else {
+                            TextButton(
+                                onClick = { navController.navigate(Routes.socialUser(detail.ownerAuthorId)) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.lost_found_owner_name_label) + "：" + ownerLabel
+                                )
+                            }
+                        }
                         DetailRow(stringResource(R.string.lost_found_status_label), detail.statusText)
                     }
                 }

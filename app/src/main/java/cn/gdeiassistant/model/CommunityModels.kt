@@ -24,6 +24,7 @@ enum class ExpressGender(val remoteValue: Int) {
 data class ExpressPost(
     val id: String,
     val nickname: String,
+    val authorId: String? = null,
     val targetName: String,
     val contentPreview: String,
     val publishTime: String,
@@ -58,6 +59,7 @@ data class TopicPost(
     val topic: String,
     val contentPreview: String,
     val authorName: String,
+    val authorId: String? = null,
     val publishedAt: String,
     val likeCount: Int,
     val imageCount: Int,

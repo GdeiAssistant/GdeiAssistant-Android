@@ -74,6 +74,7 @@ interface LostFoundApi {
 data class LostFoundItemDto(
     val id: Int? = null,
     val username: String? = null,
+    val authorId: String? = null,
     val name: String? = null,
     val description: String? = null,
     val location: String? = null,
@@ -95,7 +96,8 @@ data class LostFoundDetailDto(
 data class LostFoundProfileDto(
     val avatarURL: String? = null,
     val username: String? = null,
-    val nickname: String? = null
+    val nickname: String? = null,
+    val authorId: String? = null
 )
 
 data class LostFoundPersonalSummaryDto(

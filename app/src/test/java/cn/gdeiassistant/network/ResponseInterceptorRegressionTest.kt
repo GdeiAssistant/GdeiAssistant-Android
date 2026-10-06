@@ -72,7 +72,7 @@ class ResponseInterceptorRegressionTest {
             .addInterceptor(ResponseInterceptor(session)).build()
         try {
             server.start()
-            server.enqueue(MockResponse().setResponseCode(code).setBody("""{"message":"synthetic failure"}"""))
+            server.enqueue(MockResponse().setResponseCode(code).setBody("""{"message":"synthetic failure","errorCode":"SYNTHETIC_ERROR"}"""))
             client.newCall(Request.Builder().url(server.url("/test")).build()).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     failure.set(e)
@@ -95,6 +95,7 @@ class ResponseInterceptorRegressionTest {
             val error = failure.get() as AppException
             assertEquals(code, error.code)
             assertEquals("synthetic failure", error.message)
+            assertEquals("SYNTHETIC_ERROR", error.errorCode)
             if (code == 401) verify(session).clearTokens() else verify(session, never()).clearTokens()
         } finally {
             client.dispatcher.cancelAll()
@@ -117,11 +118,12 @@ class ResponseInterceptorRegressionTest {
             val api = Retrofit.Builder().baseUrl(server.url("/"))
                 .client(client).addConverterFactory(GsonConverterFactory.create())
                 .build().create(TestApi::class.java)
-            server.enqueue(MockResponse().setResponseCode(422).setBody("""{"message":"validation failed"}"""))
+            server.enqueue(MockResponse().setResponseCode(422).setBody("""{"message":"validation failed","errorCode":"SYNTHETIC_VALIDATION"}"""))
             val error = safeJsonResultCall { api.request() }.exceptionOrNull()
             assertTrue(error is AppException)
             assertEquals(422, (error as AppException).code)
             assertEquals("validation failed", error.message)
+            assertEquals("SYNTHETIC_VALIDATION", error.errorCode)
         } finally {
             client.dispatcher.executorService.shutdownNow()
             client.connectionPool.evictAll()

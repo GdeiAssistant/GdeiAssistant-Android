@@ -79,6 +79,8 @@ class LostFoundRepository @Inject constructor(
                     ownerUsername = detail.profile?.username ?: itemDto.username,
                     ownerNickname = detail.profile?.nickname?.trim()?.ifBlank { null },
                     ownerAvatarUrl = detail.profile?.avatarURL?.trim()?.ifBlank { null },
+                    ownerAuthorId = detail.profile?.authorId?.trim()?.takeIf(String::isNotBlank)
+                        ?: itemDto.authorId?.trim()?.takeIf(String::isNotBlank),
                     imageUrls = images
                 )
             }

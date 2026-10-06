@@ -81,6 +81,7 @@ interface MarketplaceApi {
 data class MarketplaceItemDto(
     val id: Int? = null,
     val username: String? = null,
+    val authorId: String? = null,
     val name: String? = null,
     val description: String? = null,
     val price: String? = null,

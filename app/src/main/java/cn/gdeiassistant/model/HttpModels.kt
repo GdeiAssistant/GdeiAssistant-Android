@@ -5,12 +5,14 @@ import java.io.Serializable
 data class JsonResult(
     val success: Boolean? = null,
     val code: Int? = null,
-    val message: String? = null
+    val message: String? = null,
+    val errorCode: String? = null
 ) : Serializable
 
 data class DataJsonResult<T>(
     val success: Boolean? = null,
     val code: Int? = null,
     val message: String? = null,
+    val errorCode: String? = null,
     val data: T? = null
 ) : Serializable

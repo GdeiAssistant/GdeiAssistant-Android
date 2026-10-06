@@ -72,6 +72,7 @@ interface ExpressApi {
 data class ExpressPostDto(
     val id: Int? = null,
     val username: String? = null,
+    val authorId: String? = null,
     val nickname: String? = null,
     val realname: String? = null,
     val selfGender: Int? = null,

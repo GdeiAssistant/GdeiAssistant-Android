@@ -79,6 +79,7 @@ class MarketplaceRepository @Inject constructor(
                     contactPhone = detail.secondhandItem.phone?.trim()?.ifBlank { null },
                     sellerUsername = profile?.username ?: detail.secondhandItem.username,
                     sellerNickname = profile?.nickname?.trim()?.ifBlank { null },
+                    sellerAuthorId = detail.secondhandItem.authorId?.trim()?.takeIf(String::isNotBlank),
                     sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),
                     sellerMajor = profile?.major?.trim()?.ifBlank { null },
                     sellerEnrollment = profile?.enrollment,

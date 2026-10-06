@@ -4,6 +4,7 @@ import android.content.Context
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.AuthRepository
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.data.SocialSessionCoordinator
 import cn.gdeiassistant.model.CampusCredentialConsentMetadata
 import cn.gdeiassistant.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class LoginViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var authRepository: AuthRepository
     private lateinit var settingsRepository: SettingsRepository
+    private lateinit var socialSessionCoordinator: SocialSessionCoordinator
     private lateinit var context: Context
     private lateinit var mockModeFlow: MutableStateFlow<Boolean>
 
@@ -43,6 +45,7 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
         authRepository = mock()
         settingsRepository = mock()
+        socialSessionCoordinator = mock()
         context = mock()
         mockModeFlow = MutableStateFlow(false)
         setSyncMockModeEnabled(false)
@@ -61,7 +64,7 @@ class LoginViewModelTest {
 
     @Test
     fun loginBlocksSubmitWhenConsentIsRequiredButUnchecked() = runTest(testDispatcher) {
-        val viewModel = LoginViewModel(authRepository, settingsRepository, context)
+        val viewModel = LoginViewModel(authRepository, settingsRepository, socialSessionCoordinator, context)
         viewModel.updateUsername("student")
         viewModel.updatePassword("password123")
 
@@ -78,7 +81,7 @@ class LoginViewModelTest {
     @Test
     fun loginSendsConsentMetadataWhenChecked() = runTest(testDispatcher) {
         whenever(authRepository.login(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(Result.success(Unit))
-        val viewModel = LoginViewModel(authRepository, settingsRepository, context)
+        val viewModel = LoginViewModel(authRepository, settingsRepository, socialSessionCoordinator, context)
         val eventDeferred = async { viewModel.events.first() }
 
         viewModel.updateUsername("student")
@@ -106,7 +109,7 @@ class LoginViewModelTest {
         setSyncMockModeEnabled(true)
         mockModeFlow.value = true
         whenever(authRepository.login(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(Result.success(Unit))
-        val viewModel = LoginViewModel(authRepository, settingsRepository, context)
+        val viewModel = LoginViewModel(authRepository, settingsRepository, socialSessionCoordinator, context)
 
         viewModel.updateUsername("student")
         viewModel.updatePassword("password123")
@@ -120,7 +123,7 @@ class LoginViewModelTest {
     fun mockModeSwitchBlocksLoginUntilPersisted() = runTest(testDispatcher) {
         setSyncMockModeEnabled(true)
         mockModeFlow.value = true
-        val viewModel = LoginViewModel(authRepository, settingsRepository, context)
+        val viewModel = LoginViewModel(authRepository, settingsRepository, socialSessionCoordinator, context)
         advanceUntilIdle()
 
         viewModel.updateUsername("student")

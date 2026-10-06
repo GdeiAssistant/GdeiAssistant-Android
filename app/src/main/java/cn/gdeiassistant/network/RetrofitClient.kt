@@ -53,27 +53,34 @@ class ResponseInterceptor @Inject constructor(
             // Close the original body even if reading it or handling session expiry fails.
             response.use {
                 val bodyStr = response.peekBody(64 * 1024).string()
-                val message = parseMessageFromBody(bodyStr)
+                val parsed = parseErrorFromBody(bodyStr)
                 if (response.code == NetworkConstants.HTTP_UNAUTHORIZED) {
                     sessionManager.clearTokens()
                     GlobalEventManager.emit(GlobalEvent.Unauthorized)
-                    throw AppException(message ?: NetworkConstants.messageLoginExpired(), response.code)
+                    throw AppException(
+                        message = parsed.first ?: NetworkConstants.messageLoginExpired(),
+                        code = response.code,
+                        errorCode = parsed.second ?: "AUTH_REQUIRED"
+                    )
                 }
-                val errorMessage = message ?: NetworkConstants.messageRequestFailed()
+                val errorMessage = parsed.first ?: NetworkConstants.messageRequestFailed()
                 GlobalEventManager.emit(GlobalEvent.ShowToast(errorMessage))
-                throw AppException(errorMessage, response.code)
+                throw AppException(errorMessage, response.code, parsed.second)
             }
         }
 
         return response
     }
 
-    private fun parseMessageFromBody(bodyStr: String?): String? {
-        if (bodyStr.isNullOrBlank()) return null
+    private fun parseErrorFromBody(bodyStr: String?): Pair<String?, String?> {
+        if (bodyStr.isNullOrBlank()) return null to null
         return try {
-            (gson.fromJson(bodyStr, JsonObject::class.java)?.get("message") as? JsonPrimitive)?.asString
+            val json = gson.fromJson(bodyStr, JsonObject::class.java) ?: return null to null
+            val message = (json.get("message") as? JsonPrimitive)?.asString
+            val errorCode = (json.get("errorCode") as? JsonPrimitive)?.asString
+            message to errorCode
         } catch (_: Exception) {
-            null
+            null to null
         }
     }
 }

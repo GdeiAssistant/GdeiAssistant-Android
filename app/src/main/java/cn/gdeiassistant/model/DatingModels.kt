@@ -13,6 +13,8 @@ data class DatingProfileCard(
     val content: String,
     val area: DatingArea,
     val imageUrl: String? = null,
+    /** 发布者公开 UUID（非资料昵称对应人物）。 */
+    val authorId: String? = null,
     val isMine: Boolean = false
 ) : Serializable
 

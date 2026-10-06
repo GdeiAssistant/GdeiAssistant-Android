@@ -96,6 +96,7 @@ class ExpressRepository @Inject constructor(
         return ExpressPost(
             id = dto.id?.toString() ?: System.nanoTime().toString(),
             nickname = dto.nickname.orEmpty().ifBlank { dto.username.orEmpty() },
+            authorId = dto.authorId?.trim()?.takeIf(String::isNotBlank),
             targetName = dto.name.orEmpty(),
             contentPreview = preview,
             publishTime = dto.publishTime.orEmpty(),

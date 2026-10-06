@@ -181,7 +181,10 @@ fun TopicScreen(navController: NavHostController) {
                 items(state.posts, key = { it.id }) { post ->
                     TopicPostCard(
                         post = post,
-                        onClick = { navController.navigate(Routes.topicDetail(post.id)) }
+                        onClick = { navController.navigate(Routes.topicDetail(post.id)) },
+                        onAuthorClick = post.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
                     )
                 }
             }
@@ -238,7 +241,14 @@ fun TopicDetailScreen(navController: NavHostController) {
             }
             else -> {
                 val detail = requireNotNull(state.detail)
-                item { TopicDetailHero(detail = detail) }
+                item {
+                    TopicDetailHero(
+                        detail = detail,
+                        onAuthorClick = detail.post.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
+                    )
+                }
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -350,7 +360,10 @@ fun TopicProfileScreen(navController: NavHostController) {
                 items(state.items, key = { it.id }) { post ->
                     TopicPostCard(
                         post = post,
-                        onClick = { navController.navigate(Routes.topicDetail(post.id)) }
+                        onClick = { navController.navigate(Routes.topicDetail(post.id)) },
+                        onAuthorClick = post.authorId?.let { authorId ->
+                            { navController.navigate(Routes.socialUser(authorId)) }
+                        }
                     )
                 }
             }
@@ -359,7 +372,10 @@ fun TopicProfileScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun TopicDetailHero(detail: TopicPostDetail) {
+private fun TopicDetailHero(
+    detail: TopicPostDetail,
+    onAuthorClick: (() -> Unit)? = null
+) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
@@ -370,7 +386,12 @@ private fun TopicDetailHero(detail: TopicPostDetail) {
             text = detail.post.authorName,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = if (onAuthorClick != null) {
+                Modifier.clickable(onClick = onAuthorClick)
+            } else {
+                Modifier
+            }
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
         Text(
@@ -397,7 +418,8 @@ private fun TopicDetailHero(detail: TopicPostDetail) {
 @Composable
 private fun TopicPostCard(
     post: TopicPost,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAuthorClick: (() -> Unit)? = null
 ) {
     SectionCard(
         modifier = Modifier
@@ -422,7 +444,15 @@ private fun TopicPostCard(
         }
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BadgePill(text = post.authorName, tint = MaterialTheme.colorScheme.secondary)
+            BadgePill(
+                text = post.authorName,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = if (onAuthorClick != null) {
+                    Modifier.clickable(onClick = onAuthorClick)
+                } else {
+                    Modifier
+                }
+            )
             if (post.imageCount > 0) {
                 BadgePill(
                     text = "${stringResource(R.string.topic_stat_image)} ${post.imageCount}",

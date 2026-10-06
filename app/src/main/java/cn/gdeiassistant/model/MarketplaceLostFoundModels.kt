@@ -50,6 +50,7 @@ data class MarketplaceDetail(
     val contactPhone: String? = null,
     val sellerUsername: String? = null,
     val sellerNickname: String? = null,
+    val sellerAuthorId: String? = null,
     val sellerCollege: String? = null,
     val sellerMajor: String? = null,
     val sellerGrade: String? = null,
@@ -162,6 +163,8 @@ data class LostFoundDetail(
     val ownerUsername: String? = null,
     val ownerNickname: String? = null,
     val ownerAvatarUrl: String? = null,
+    /** 发布者公开 UUID；勿用 username 猜测。 */
+    val ownerAuthorId: String? = null,
     val imageUrls: List<String> = emptyList()
 ) : Serializable
 

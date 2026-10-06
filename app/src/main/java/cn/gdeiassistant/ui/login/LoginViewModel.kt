@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.AuthRepository
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.data.SocialSessionCoordinator
 import cn.gdeiassistant.model.CampusCredentialConsentMetadata
 import cn.gdeiassistant.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository,
+    private val socialSessionCoordinator: SocialSessionCoordinator,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -129,6 +131,7 @@ class LoginViewModel @Inject constructor(
                 password = state.password,
                 consentMetadata = consentMetadata
             ).onSuccess {
+                socialSessionCoordinator.onLoginSuccess()
                 _uiState.update { it.copy(isLoading = false) }
                 _events.emit(LoginEvent.NavigateToHome)
             }.onFailure { error ->

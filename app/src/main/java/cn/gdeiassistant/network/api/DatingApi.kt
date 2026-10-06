@@ -72,6 +72,8 @@ interface DatingApi {
 data class DatingProfileDto(
     val profileId: Int? = null,
     val username: String? = null,
+    /** 发布者公开 UUID；非被介绍人物。 */
+    val authorId: String? = null,
     val nickname: String? = null,
     val grade: Int? = null,
     val faculty: String? = null,

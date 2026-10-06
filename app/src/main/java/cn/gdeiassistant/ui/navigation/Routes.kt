@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.navigation
 
 import android.net.Uri
+import cn.gdeiassistant.model.SocialRelationshipKind
 
 object Routes {
     const val HOME = "home"
@@ -111,6 +112,17 @@ object Routes {
     const val NOTICE_DETAIL = "notice_detail/{noticeId}"
     const val NOTICE_LIST = "notice_list"
     const val INTERACTION_LIST = "interaction_list"
+    const val SOCIAL_SEARCH = "social_search"
+    const val SOCIAL_BLOCKS = "social_blocks"
+    const val SOCIAL_CONVERSATIONS = "social_conversations"
+    const val SOCIAL_DM_PRIVACY = "social_dm_privacy"
+    const val SOCIAL_USER_ID = "socialUserId"
+    const val SOCIAL_RELATION_KIND = "socialRelationKind"
+    const val SOCIAL_CONVERSATION_ID = "socialConversationId"
+    const val SOCIAL_USER = "social_user/{$SOCIAL_USER_ID}"
+    const val SOCIAL_RELATIONS =
+        "social_relations/{$SOCIAL_USER_ID}/{$SOCIAL_RELATION_KIND}"
+    const val SOCIAL_CHAT = "social_chat/{$SOCIAL_CONVERSATION_ID}"
 
     fun webView(
         title: String = "",
@@ -178,5 +190,17 @@ object Routes {
 
     fun noticeDetail(noticeId: String): String {
         return "notice_detail/${Uri.encode(noticeId)}"
+    }
+
+    fun socialUser(userId: String): String {
+        return "social_user/${Uri.encode(userId)}"
+    }
+
+    fun socialRelations(userId: String, kind: SocialRelationshipKind): String {
+        return "social_relations/${Uri.encode(userId)}/${Uri.encode(kind.remoteValue)}"
+    }
+
+    fun socialChat(conversationId: String): String {
+        return "social_chat/${Uri.encode(conversationId)}"
     }
 }

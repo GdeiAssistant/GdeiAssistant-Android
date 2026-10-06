@@ -97,6 +97,13 @@ import cn.gdeiassistant.ui.secret.SecretDetailScreen
 import cn.gdeiassistant.ui.secret.SecretPublishScreen
 import cn.gdeiassistant.ui.secret.SecretProfileScreen
 import cn.gdeiassistant.ui.secret.SecretScreen
+import cn.gdeiassistant.ui.social.ChatScreen
+import cn.gdeiassistant.ui.social.ConversationListScreen
+import cn.gdeiassistant.ui.social.SocialBlockListScreen
+import cn.gdeiassistant.ui.social.SocialDmPrivacyScreen
+import cn.gdeiassistant.ui.social.SocialProfileScreen
+import cn.gdeiassistant.ui.social.SocialRelationListScreen
+import cn.gdeiassistant.ui.social.SocialSearchScreen
 import cn.gdeiassistant.ui.spare.SpareScreen
 import cn.gdeiassistant.ui.topic.TopicDetailScreen
 import cn.gdeiassistant.ui.topic.TopicPublishScreen
@@ -129,6 +136,7 @@ private fun resolveUiTestInitialRoute(route: String): String? = when (route) {
     Routes.MESSAGES -> Routes.MESSAGES
     Routes.PROFILE -> Routes.PROFILE
     Routes.MARKETPLACE -> Routes.MARKETPLACE
+    Routes.SOCIAL_CONVERSATIONS -> Routes.SOCIAL_CONVERSATIONS
     else -> null
 }
 
@@ -316,6 +324,20 @@ private fun NavGraphBuilder.accountGraph(navController: NavHostController) {
         route = AppNavGraphs.ACCOUNT
     ) {
         composable(Routes.PROFILE_PRIVACY) { PrivacySettingsScreen(navController = navController) }
+        composable(Routes.SOCIAL_DM_PRIVACY) { SocialDmPrivacyScreen(navController = navController) }
+        composable(Routes.SOCIAL_BLOCKS) { SocialBlockListScreen(navController = navController) }
+        composable(Routes.SOCIAL_SEARCH) { SocialSearchScreen(navController = navController) }
+        composable(
+            route = Routes.SOCIAL_USER,
+            arguments = listOf(navArgument(Routes.SOCIAL_USER_ID) { type = NavType.StringType })
+        ) { SocialProfileScreen(navController = navController) }
+        composable(
+            route = Routes.SOCIAL_RELATIONS,
+            arguments = listOf(
+                navArgument(Routes.SOCIAL_USER_ID) { type = NavType.StringType },
+                navArgument(Routes.SOCIAL_RELATION_KIND) { type = NavType.StringType }
+            )
+        ) { SocialRelationListScreen(navController = navController) }
         composable(Routes.PROFILE_LOGIN_RECORDS) { LoginRecordsScreen(navController = navController) }
         composable(Routes.PROFILE_BIND_PHONE) { BindPhoneScreen(navController = navController) }
         composable(Routes.PROFILE_BIND_EMAIL) { BindEmailScreen(navController = navController) }
@@ -440,6 +462,11 @@ private fun NavGraphBuilder.informationGraph(navController: NavHostController) {
             NewsDetailScreen(navController = navController)
         }
         composable(Routes.INTERACTION_LIST) { InteractionListScreen(navController = navController) }
+        composable(Routes.SOCIAL_CONVERSATIONS) { ConversationListScreen(navController = navController) }
+        composable(
+            route = Routes.SOCIAL_CHAT,
+            arguments = listOf(navArgument(Routes.SOCIAL_CONVERSATION_ID) { type = NavType.StringType })
+        ) { ChatScreen(navController = navController) }
         composable(Routes.NOTICE_LIST) {
             NoticeListScreen(
                 navController = navController,

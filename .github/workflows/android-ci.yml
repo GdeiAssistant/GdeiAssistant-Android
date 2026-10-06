@@ -12,10 +12,15 @@ on:
       - master
       - 'release/**'
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -43,28 +48,29 @@ jobs:
 
       - name: Install Android SDK platform
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
 
       - name: Run Android lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDebug --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-lint.log
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-unit-tests.log
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-build.log
 
-      - name: Upload test reports on failure
-        if: failure()
+      - name: Upload build logs and test reports
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: android-test-reports
           path: |
+            gradle-*.log
             app/build/reports/tests/
             app/build/test-results/
             app/build/reports/lint-results*
             app/build/outputs/apk/debug/
-          retention-days: 7
+          retention-days: 3
 
   instrumented-smoke:
     name: Emulator Smoke Tests
@@ -98,7 +104,7 @@ jobs:
 
       - name: Install Android SDK platform
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
 
       - name: Enable KVM
         run: |
@@ -106,7 +112,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run Compose smoke tests on emulator
+      - name: Run Compose and real Photo Picker tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -115,15 +121,18 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedDebugAndroidTest --no-daemon --stacktrace
+          script: bash scripts/run-emulator-tests.sh
 
-      - name: Upload instrumentation reports on failure
-        if: failure()
+      - name: Upload instrumentation logs and reports
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: android-instrumentation-reports
           path: |
+            gradle-connected-tests.log
+            android-emulator-logcat.log
+            android-ui-evidence/
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
             app/build/outputs/apk/
-          retention-days: 7
+          retention-days: 3

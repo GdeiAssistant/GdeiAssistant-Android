@@ -38,6 +38,15 @@
 - 新闻通知
 - 系统通知公告
 - 互动消息
+- 私信会话与文字聊天
+
+### 社交关系
+
+- 用户搜索与公开主页
+- 关注 / 粉丝 / 互关好友
+- 拉黑与黑名单
+- 四档私信接收设置
+- 公开社区作者主页入口（匿名树洞不暴露身份）
 
 ### 个人中心
 
@@ -46,7 +55,8 @@
 - 头像管理
 - 绑定手机
 - 绑定邮箱
-- 隐私设置
+- 隐私设置（含私信接收范围）
+- 社交关系统计入口
 - 登录记录
 - 用户数据导出与下载
 - 意见反馈
@@ -80,6 +90,7 @@ GdeiAssistant-Android/
 │   ├── ui/
 │   │   ├── home/
 │   │   ├── messages/
+│   │   ├── social/
 │   │   ├── profile/
 │   │   ├── grade/
 │   │   ├── schedule/
@@ -245,6 +256,10 @@ prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRel
   -PGDEI_BASE_URL_STAGING=https://gdeiassistant.azurewebsites.net/ \
   -PGDEI_BASE_URL_PROD=https://gdeiassistant.cn/
 ```
+
+## 社交与私信
+
+Android 端接入说明见 [`docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md`](docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md)。共享契约以主仓设计文档为准；本仓仅实现客户端，不包含后端部署。
 
 ## 后端接口位置
 

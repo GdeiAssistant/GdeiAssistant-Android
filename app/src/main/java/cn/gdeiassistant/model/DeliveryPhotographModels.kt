@@ -105,6 +105,8 @@ data class PhotographPost(
     val title: String,
     val contentPreview: String,
     val authorName: String,
+    /** 作者公开 UUID；勿用 username 猜测。 */
+    val authorId: String? = null,
     val createdAt: String,
     val likeCount: Int,
     val commentCount: Int,

@@ -8,6 +8,8 @@ import cn.gdeiassistant.network.mock.MockCampusProvider
 import cn.gdeiassistant.network.mock.MockCommunityProvider
 import cn.gdeiassistant.network.mock.MockInfoProvider
 import cn.gdeiassistant.network.mock.MockProfileProvider
+import cn.gdeiassistant.network.mock.MockSocialProvider
+import cn.gdeiassistant.network.mock.MockSocialRouteResult
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
@@ -24,6 +26,8 @@ class MockInterceptor : Interceptor {
         }
 
         val request = chain.request()
+        MockSocialProvider.route(request)?.let { return mockSocial(request, it) }
+
         val json = routeAuth(request)
             ?: routeProfile(request)
             ?: routeAcademic(request)
@@ -66,8 +70,10 @@ class MockInterceptor : Interceptor {
             path.contains("api/profile/location") -> MockProfileProvider.mockUpdateLocation(request)
             path.contains("api/profile/hometown") -> MockProfileProvider.mockUpdateHometown(request)
             path.contains("api/introduction") -> MockProfileProvider.mockUpdateIntroduction(request)
-            path.contains("api/privacy") && request.method == "GET" -> MockProfileProvider.mockGetPrivacySettings(request)
-            path.contains("api/privacy") && request.method == "POST" -> MockProfileProvider.mockUpdatePrivacySettings(request)
+            path.contains("api/privacy") && !path.contains("api/social") && request.method == "GET" ->
+                MockProfileProvider.mockGetPrivacySettings(request)
+            path.contains("api/privacy") && !path.contains("api/social") && request.method == "POST" ->
+                MockProfileProvider.mockUpdatePrivacySettings(request)
             path.contains("api/ip/start/") -> MockProfileProvider.mockLoginRecords(request)
             path.contains("api/phone/attribution") -> MockProfileProvider.mockPhoneAttributions(request)
             path.contains("api/phone/verification") -> MockProfileProvider.mockSendPhoneVerification(request)
@@ -221,5 +227,10 @@ class MockInterceptor : Interceptor {
             .message("OK")
             .body(json.toResponseBody(mediaType))
             .build()
+    }
+
+    /** 社交 mock：HTTP 状态与 payload.code / success 对齐，并保留 errorCode。 */
+    private fun mockSocial(request: Request, result: MockSocialRouteResult): Response {
+        return result.toResponse(request)
     }
 }
