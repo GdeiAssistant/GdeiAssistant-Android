@@ -1448,7 +1448,7 @@
     <string name="social_list_followers">粉絲列表</string>
     <string name="social_list_friends">好友列表</string>
     <string name="social_list_empty_title">暫時未有關係</string>
-    <string name="social_list_empty_body">而家未有可以顯示嘅關係。</string>
+    <string name="social_list_empty_body">仲未關注任何人，快去搵下感興趣嘅人啦</string>
     <string name="social_blocks_title">黑名單</string>
     <string name="social_blocks_empty_title">黑名單暫時未有人</string>
     <string name="social_blocks_empty_body">你仲未封鎖任何用戶。</string>
@@ -1479,7 +1479,7 @@
     <string name="social_relationship_self">自己</string>
     <string name="social_relationship_none">未關注</string>
     <string name="social_relationship_following">已關注</string>
-    <string name="social_relationship_followed_by">關注咗我</string>
+    <string name="social_relationship_followed_by">對方關注咗你</string>
     <string name="social_relationship_mutual">互相關注</string>
     <string name="social_default_nickname">用戶</string>
     <string name="social_dm_privacy_title">邊個可以私訊我</string>

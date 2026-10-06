@@ -1449,7 +1449,7 @@
     <string name="social_list_followers">팔로워 목록</string>
     <string name="social_list_friends">친구 목록</string>
     <string name="social_list_empty_title">목록이 비어 있음</string>
-    <string name="social_list_empty_body">표시할 관계가 없습니다.</string>
+    <string name="social_list_empty_body">아직 팔로우나 팔로워가 없어요. 관심 있는 사람을 찾아보세요.</string>
     <string name="social_blocks_title">차단 목록</string>
     <string name="social_blocks_empty_title">차단한 사용자 없음</string>
     <string name="social_blocks_empty_body">아직 차단한 사용자가 없습니다.</string>
@@ -1480,7 +1480,7 @@
     <string name="social_relationship_self">나</string>
     <string name="social_relationship_none">팔로우 안 함</string>
     <string name="social_relationship_following">팔로잉</string>
-    <string name="social_relationship_followed_by">나를 팔로우함</string>
+    <string name="social_relationship_followed_by">나를 팔로우하는 중</string>
     <string name="social_relationship_mutual">맞팔</string>
     <string name="social_default_nickname">사용자</string>
     <string name="social_dm_privacy_title">누가 쪽지를 보낼 수 있나요</string>

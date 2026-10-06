@@ -1449,7 +1449,7 @@
     <string name="social_list_followers">Followers</string>
     <string name="social_list_friends">Friends</string>
     <string name="social_list_empty_title">Empty list</string>
-    <string name="social_list_empty_body">Nothing to show here yet.</string>
+    <string name="social_list_empty_body">No follows or followers yet. Discover people you&apos;re interested in.</string>
     <string name="social_blocks_title">Blocked</string>
     <string name="social_blocks_empty_title">No blocked users</string>
     <string name="social_blocks_empty_body">You have not blocked anyone.</string>
