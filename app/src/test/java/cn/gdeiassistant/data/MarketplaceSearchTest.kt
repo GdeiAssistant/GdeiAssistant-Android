@@ -121,7 +121,7 @@ class MarketplaceSearchTest {
         context = mock(),
         marketplaceApi = marketplaceApi,
         profileRepository = mock(),
-        profileOptionsRepository = ProfileOptionsRepository(mock<ProfileApi>())
+        profileOptionsRepository = ProfileOptionsRepository(context = mock(), profileApi = mock<ProfileApi>())
     )
 
     @Test

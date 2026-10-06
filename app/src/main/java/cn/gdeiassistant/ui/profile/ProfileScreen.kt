@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
-import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -72,6 +71,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -203,6 +203,9 @@ fun ProfileScreen(navController: NavHostController) {
                         profile = profile,
                         state = state,
                         onOpenAvatarManager = { navController.navigate(Routes.PROFILE_AVATAR) },
+                        onOpenRelations = { userId, kind ->
+                            navController.navigate(Routes.socialRelations(userId, kind))
+                        },
                         onSaveNickname = viewModel::saveNickname,
                         onSaveBirthday = viewModel::saveBirthday,
                         onSaveCollege = viewModel::saveCollege,
@@ -212,47 +215,14 @@ fun ProfileScreen(navController: NavHostController) {
                         onSaveLocation = viewModel::saveLocation
                     )
                 }
-                state.socialMe?.let { socialMe ->
+                state.socialMe?.let {
                     item {
                         SectionCard(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(R.string.social_profile_stats_title),
+                                text = stringResource(R.string.social_profile_actions_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.ExtraBold
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                ProfileSocialStat(
-                                    label = stringResource(R.string.social_stat_following),
-                                    value = socialMe.followingCount.toString(),
-                                    onClick = {
-                                        navController.navigate(
-                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FOLLOWING)
-                                        )
-                                    }
-                                )
-                                ProfileSocialStat(
-                                    label = stringResource(R.string.social_stat_followers),
-                                    value = socialMe.followerCount.toString(),
-                                    onClick = {
-                                        navController.navigate(
-                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FOLLOWERS)
-                                        )
-                                    }
-                                )
-                                ProfileSocialStat(
-                                    label = stringResource(R.string.social_stat_friends),
-                                    value = socialMe.friendCount.toString(),
-                                    onClick = {
-                                        navController.navigate(
-                                            Routes.socialRelations(socialMe.id, SocialRelationshipKind.FRIENDS)
-                                        )
-                                    }
-                                )
-                            }
                             Spacer(modifier = Modifier.height(12.dp))
                             ProfileMenuRow(
                                 item = ProfileMenuItem(
@@ -265,12 +235,6 @@ fun ProfileScreen(navController: NavHostController) {
                                     Icons.Rounded.Chat,
                                     stringResource(R.string.social_conversations_title)
                                 ) { navController.navigate(Routes.SOCIAL_CONVERSATIONS) }
-                            )
-                            ProfileMenuRow(
-                                item = ProfileMenuItem(
-                                    Icons.Rounded.Block,
-                                    stringResource(R.string.social_blocks_title)
-                                ) { navController.navigate(Routes.SOCIAL_BLOCKS) }
                             )
                         }
                     }
@@ -324,6 +288,7 @@ private fun ProfileAccountCard(
     profile: UserProfileSummary,
     state: ProfileUiState,
     onOpenAvatarManager: () -> Unit,
+    onOpenRelations: (String, SocialRelationshipKind) -> Unit,
     onSaveNickname: (String) -> Unit,
     onSaveBirthday: (String) -> Unit,
     onSaveCollege: (String) -> Unit,
@@ -349,7 +314,7 @@ private fun ProfileAccountCard(
     val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
     val selectCollegeFirstText = stringResource(R.string.profile_select_college_first)
 
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
+    SectionCard(modifier = Modifier.fillMaxWidth().testTag("profile.account")) {
         Text(
             text = stringResource(R.string.profile_account_data_title),
             style = MaterialTheme.typography.titleLarge,
@@ -357,6 +322,7 @@ private fun ProfileAccountCard(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
+            modifier = Modifier.fillMaxWidth().testTag("profile.identity"),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.Top
         ) {
@@ -390,6 +356,33 @@ private fun ProfileAccountCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+        }
+
+        state.socialMe?.let { socialMe ->
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().testTag("profile.social.stats"),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProfileSocialStat(
+                    label = stringResource(R.string.social_stat_following),
+                    value = socialMe.followingCount.toString(),
+                    modifier = Modifier.weight(1f).testTag("profile.social.following"),
+                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWING) }
+                )
+                ProfileSocialStat(
+                    label = stringResource(R.string.social_stat_followers),
+                    value = socialMe.followerCount.toString(),
+                    modifier = Modifier.weight(1f).testTag("profile.social.followers"),
+                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWERS) }
+                )
+                ProfileSocialStat(
+                    label = stringResource(R.string.social_stat_friends),
+                    value = socialMe.friendCount.toString(),
+                    modifier = Modifier.weight(1f).testTag("profile.social.friends"),
+                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FRIENDS) }
+                )
             }
         }
 
@@ -530,7 +523,7 @@ private fun ProfileSummaryContent(
     onEditHometown: () -> Unit,
     onEditBio: () -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(modifier = Modifier.testTag("profile.details"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_nickname),
             value = displayText(profile.nickname, stringResource(R.string.profile_info_not_set)),
@@ -1363,11 +1356,12 @@ private fun ProfileLocationPickerSheet(
 }
 
 @Composable
-private fun ProfileSocialStat(label: String, value: String, onClick: () -> Unit) {
+private fun ProfileSocialStat(label: String, value: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp),
+        modifier = modifier
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(

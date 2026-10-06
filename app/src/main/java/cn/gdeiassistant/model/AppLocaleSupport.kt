@@ -12,6 +12,9 @@ object AppLocaleSupport {
         val normalized = locale
             ?.trim()
             ?.replace('_', '-')
+            ?.substringBefore(',')
+            ?.substringBefore(';')
+            ?.trim()
             .orEmpty()
 
         if (normalized.isEmpty()) {
@@ -21,9 +24,10 @@ object AppLocaleSupport {
         val lower = normalized.lowercase(Locale.ROOT)
         return when {
             lower == "zh-cn" || lower == "zh-hans" || lower == "zh-hans-cn" || lower == "zh" -> "zh-CN"
-            lower == "zh-hk" || lower == "zh-hant-hk" -> "zh-HK"
+            lower == "zh-hk" || lower == "zh-hant-hk" || lower == "zh-mo" || lower == "zh-hant-mo" -> "zh-HK"
             lower == "zh-tw" || lower == "zh-hant" || lower == "zh-hant-tw" -> "zh-TW"
-            lower.startsWith("zh-hk") -> "zh-HK"
+            lower.startsWith("zh-hk") || lower.startsWith("zh-hant-hk") ||
+                lower.startsWith("zh-mo") || lower.startsWith("zh-hant-mo") -> "zh-HK"
             lower.startsWith("zh-tw") || lower.startsWith("zh-hant") -> "zh-TW"
             lower.startsWith("zh") -> "zh-CN"
             lower.startsWith("en") -> "en"

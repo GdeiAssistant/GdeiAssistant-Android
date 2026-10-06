@@ -1,5 +1,9 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 import cn.gdeiassistant.model.SpareRoomItem
 import cn.gdeiassistant.model.SpareRoomQuery
 import cn.gdeiassistant.network.api.SpareApi
@@ -12,6 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SpareRoomRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val spareApi: SpareApi
 ) {
 
@@ -40,11 +45,11 @@ class SpareRoomRepository @Inject constructor(
                         SpareRoomItem(
                             id = roomNumber,
                             roomNumber = roomNumber,
-                            roomName = dto.name?.trim().orEmpty().ifBlank { "空教室" },
-                            roomType = dto.type?.trim().orEmpty().ifBlank { "普通课室" },
-                            zoneName = dto.zone?.trim().orEmpty().ifBlank { "校区待定" },
+                            roomName = dto.name?.trim().orEmpty().ifBlank { context.getString(R.string.spare_room_unnamed) },
+                            roomType = dto.type?.trim().orEmpty().ifBlank { context.getString(R.string.spare_room_default_type) },
+                            zoneName = dto.zone?.trim().orEmpty().ifBlank { context.getString(R.string.spare_room_unknown_zone) },
                             classSeating = dto.classSeating?.trim().orEmpty().ifBlank { "0" },
-                            sectionText = dto.section?.trim().orEmpty().ifBlank { "时段待定" },
+                            sectionText = dto.section?.trim().orEmpty().ifBlank { context.getString(R.string.spare_room_unknown_section) },
                             examSeating = dto.examSeating?.trim().orEmpty().ifBlank { "0" }
                         )
                     }
