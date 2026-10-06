@@ -53,6 +53,9 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
 
     @Test
     fun appearanceSwitchesAllSixLocalesThroughTheActualLanguageControls() {
+        // Profile loading renders ShimmerScreen instead of the LazyColumn. Wait until the
+        // seeded profile and initial navigation are present before scrolling or clearing extras.
+        composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.identity"), 20_000)
         // Locale/route extras seed this fixture once; let a real configuration recreation retain
         // the user's language and navigation state, rather than reapplying the test bootstrap.
         composeRule.runOnUiThread {

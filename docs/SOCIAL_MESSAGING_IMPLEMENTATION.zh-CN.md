@@ -150,3 +150,9 @@
 - 本机实际通过 `python3 -B scripts/check_locale_resources.py`、七项 Python 检查回归、`git diff --check`、脚本语法及 actionlint/YAML 检查。临时 `/tmp/gdei-android-layout-locale-20261006/run-jvm.py` 直接编译实际纯 production 模型/DTO/URL/鉴权/图片元数据/合并/mock 和 locale 支持，再执行 JUnit，结果 `OK (62 tests)`；仅沿用 Compose Immutable / BuildConfig 编译标记，不替代业务。记录在同目录 `jvm/compile.log` 和 `jvm/test.log`。
 - 上述独立 JVM 检查不包含三处 Android Context repository、新增四项 Mockito repository 测试或 Compose 仪器测试。本机仍无 SDK、adb、emulator、sdkmanager 或 local.properties，未运行 Gradle/Android 编译或设备测试。完整单测、lint、APK 和新增两项 UI 用例须由本轮精确提交的 CI 验证，已有提交的通过结果不代表当前补丁通过。
 - Cursor CLI `2026.10.01-e373342` 从本仓以 `--resume 7d61bf30-5c1f-403c-8192-ad519ea886a4 --model auto --print` 执行无业务副作用探针，实际写入临时文件成功，但 Shell 内容校验被全局 allowlist 拒绝（`rejected`，reason 为空）；该精确进程已 exit 0，不能视作实现完成。已停止该通道，读回并清理本轮探针后按本次明确授权直接有界实现，未使用 force/yolo、放开全局权限或让 Cursor 绕过拒绝。
+
+### 个人页语言切换的首次实际 CI 返修
+
+- PR97 提交 `827894355a4d0125ff5880cebced05d05488e431` / run `37442927734` 的仪器 XML 记录十项实际执行、九项通过、零跳过；唯一失败是语言切换用例第一次滚动「界面和外观」，此时 `ScrollToIndex` 节点数为 0，尚未进入外观页或点击任何语言。资料头部/隐私入口用例以及原八项都通过，完整 unit/lint/APK job 也已成功。
+- 代码确认个人页和外观页均使用 `LazyScreen` / `LazyColumn`，不是普通 verticalScroll。个人页加载时则用 `ShimmerScreen` 替代 LazyColumn。已通过的资料头部用例先等待实际头部出现，语言切换用例原先直接滚动；因此最小修正在首次滚动和清除启动 extras 前，以原 20 秒期限等待 `profile.identity`，确认资料和初始导航已呈现。未修改生产页面、滚动动作、超时或六语言实际选择/locale/标题断言。
+- 失败 artifact 没有该用例的独立截图或完整 semantics 树；0 个滚动节点由真实 XML/日志确认，加载分支原因由源码和通过用例对比定位。返修本机仅执行可用静态检查，未运行 Android/设备；修正后全部十项结果须由下一精确提交的 CI 确认。
