@@ -324,7 +324,7 @@
     <string name="charge_order_status_label_failed">失败</string>
     <string name="charge_order_status_label_unknown">待确认</string>
     <string name="charge_order_status_label_manual_review">核实中</string>
-    <string name="notice_detail_subtitle">校园公告保留原文语义，当前页面只对信息摘要与正文层级做统一整理。</string>
+    <string name="notice_detail_subtitle">查看学校公告详情与原文。</string>
     <string name="notice_detail_body_title">通知正文</string>
     <string name="notice_detail_notice_id_label">公告编号</string>
     <string name="notice_detail_channel_default">校园公告</string>
@@ -778,13 +778,13 @@
     <string name="dating_title">卖室友</string>
     <string name="dating_feed_refresh">刷新卖室友</string>
     <string name="dating_feed_badge">资料大厅</string>
-    <string name="dating_feed_subtitle">统一按资料大厅 -> 详情 -> 撩一下 -> 互动中心的真实产品路径浏览和处理卖室友内容。</string>
+    <string name="dating_feed_subtitle">浏览校园交友资料，找到想认识的人。</string>
     <string name="dating_feed_empty">当前分区还没有新的卖室友资料</string>
     <string name="dating_center_entry_title">互动中心</string>
     <string name="dating_center_entry_subtitle">查看收到的撩和我的发布</string>
     <string name="dating_refresh">刷新互动中心</string>
     <string name="dating_badge">互动中心</string>
-    <string name="dating_subtitle">保持与 iOS 一致的互动中心结构，统一处理收到的撩、我发出的请求和自己的发布记录。</string>
+    <string name="dating_subtitle">查看收到的互动、发出的请求和自己的发布。</string>
     <string name="dating_metric_received">收到的撩</string>
     <string name="dating_metric_posts">我的发布</string>
     <string name="dating_tab_received">收到的撩</string>
@@ -874,7 +874,7 @@
     <string name="express_my_posts_title">我的表白</string>
     <string name="express_my_posts_subtitle">查看自己发过的内容</string>
     <string name="express_guide_title">互动说明</string>
-    <string name="express_guide_body">可猜名的内容支持输入名字尝试猜测，评论和点赞都会同步后端接口状态。</string>
+    <string name="express_guide_body">可以猜名字、留言和点赞，看看同学的回应。</string>
     <string name="express_empty">当前还没有表白内容</string>
     <string name="express_detail_title">表白详情</string>
     <string name="express_detail_missing">没有找到当前表白内容</string>
@@ -923,7 +923,7 @@
     <string name="topic_my_posts_title">我的话题</string>
     <string name="topic_my_posts_subtitle">查看自己发布过的话题</string>
     <string name="topic_guide_title">浏览提示</string>
-    <string name="topic_guide_body">带图的话题会保留后端返回的图片链接，详情页可逐张打开查看。</string>
+    <string name="topic_guide_body">查看话题内容与配图，点击图片可逐张查看。</string>
     <string name="topic_empty">当前还没有话题内容</string>
     <string name="topic_detail_title">话题详情</string>
     <string name="topic_detail_missing">没有找到当前话题内容</string>
@@ -1540,4 +1540,14 @@
     <string name="social_image_disabled">当前会话暂不支持图片私信</string>
     <string name="social_error_invalid_image">图片无效或超过大小限制</string>
 
+    <string name="social_profile_actions_title">社交与消息</string>
+    <string name="social_blocks_entry_subtitle">管理已屏蔽的用户，或解除屏蔽。</string>
+    <string name="spare_room_unnamed">空教室</string>
+    <string name="spare_room_default_type">普通课室</string>
+    <string name="spare_room_unknown_zone">校区待定</string>
+    <string name="spare_room_unknown_section">时段待定</string>
+    <string name="graduate_exam_no_result">暂无考研查询结果</string>
+    <string name="graduate_exam_unknown_candidate">未命名考生</string>
+    <string name="graduate_exam_unavailable">暂无</string>
+    <string name="profile_options_empty">资料选项暂不可用</string>
 </resources>

@@ -325,7 +325,7 @@
     <string name="charge_order_status_label_failed">失敗</string>
     <string name="charge_order_status_label_unknown">確認待ち</string>
     <string name="charge_order_status_label_manual_review">確認中</string>
-    <string name="notice_detail_subtitle">キャンパスのお知らせは原文を保持しており、このページでは要約と本文の整理のみ行っています。</string>
+    <string name="notice_detail_subtitle">学校のお知らせの詳細と原文を確認できます。</string>
     <string name="notice_detail_body_title">通知本文</string>
     <string name="notice_detail_notice_id_label">お知らせ番号</string>
     <string name="notice_detail_channel_default">キャンパスのお知らせ</string>
@@ -779,13 +779,13 @@
     <string name="dating_title">ルームメイト紹介</string>
     <string name="dating_feed_refresh">ルームメイト紹介を更新</string>
     <string name="dating_feed_badge">プロフィール一覧</string>
-    <string name="dating_feed_subtitle">プロフィール一覧、詳細、アプローチ、インタラクションセンターの流れでルームメイト紹介を閲覧・処理します。</string>
+    <string name="dating_feed_subtitle">学内のプロフィールを見て、気になる人を見つけましょう。</string>
     <string name="dating_feed_empty">現在のセクションには新しいプロフィールがありません</string>
     <string name="dating_center_entry_title">インタラクションセンター</string>
     <string name="dating_center_entry_subtitle">受け取ったアプローチとマイ投稿を確認</string>
     <string name="dating_refresh">インタラクションセンターを更新</string>
     <string name="dating_badge">インタラクションセンター</string>
-    <string name="dating_subtitle">iOS と一致するインタラクションセンター構造を維持し、受け取ったアプローチ、送信済みリクエスト、マイ投稿を統一管理します。</string>
+    <string name="dating_subtitle">届いた交流、送ったリクエスト、自分の投稿を確認できます。</string>
     <string name="dating_metric_received">受け取ったアプローチ</string>
     <string name="dating_metric_posts">マイ投稿</string>
     <string name="dating_tab_received">受け取ったアプローチ</string>
@@ -875,7 +875,7 @@
     <string name="express_my_posts_title">マイ告白</string>
     <string name="express_my_posts_subtitle">自分の投稿を見る</string>
     <string name="express_guide_title">インタラクション説明</string>
-    <string name="express_guide_body">名前当て可能な投稿では名前を入力して推測できます。コメントといいねはバックエンドに同期されます。</string>
+    <string name="express_guide_body">名前当てやコメント、いいねで、同級生と交流できます。</string>
     <string name="express_empty">まだ告白コンテンツがありません</string>
     <string name="express_detail_title">告白詳細</string>
     <string name="express_detail_missing">この告白コンテンツが見つかりません</string>
@@ -924,7 +924,7 @@
     <string name="topic_my_posts_title">マイトピック</string>
     <string name="topic_my_posts_subtitle">自分が投稿したトピックを見る</string>
     <string name="topic_guide_title">閲覧のヒント</string>
-    <string name="topic_guide_body">画像付きのトピックではバックエンドから返された画像リンクが保持され、詳細ページで1枚ずつ開けます。</string>
+    <string name="topic_guide_body">話題の内容や画像を確認できます。画像をタップすると、1枚ずつ表示できます。</string>
     <string name="topic_empty">まだトピックがありません</string>
     <string name="topic_detail_title">トピック詳細</string>
     <string name="topic_detail_missing">このトピックが見つかりません</string>
@@ -1541,4 +1541,14 @@
     <string name="social_image_disabled">この会話では画像メッセージを利用できません</string>
     <string name="social_error_invalid_image">画像が無効か、サイズ制限を超えています</string>
 
+    <string name="social_profile_actions_title">交流とメッセージ</string>
+    <string name="social_blocks_entry_subtitle">ブロックしたユーザーの管理や解除ができます。</string>
+    <string name="spare_room_unnamed">空き教室</string>
+    <string name="spare_room_default_type">一般教室</string>
+    <string name="spare_room_unknown_zone">キャンパス未設定</string>
+    <string name="spare_room_unknown_section">時間帯未設定</string>
+    <string name="graduate_exam_no_result">大学院入学試験の結果がありません</string>
+    <string name="graduate_exam_unknown_candidate">氏名未登録の受験者</string>
+    <string name="graduate_exam_unavailable">未登録</string>
+    <string name="profile_options_empty">プロフィール項目を利用できません</string>
 </resources>

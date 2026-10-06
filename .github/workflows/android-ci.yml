@@ -53,6 +53,11 @@ jobs:
       - name: Run Android lint
         run: ./gradlew lintDebug --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-lint.log
 
+      - name: Check every supported locale resource
+        run: |
+          python3 scripts/check_locale_resources.py --json locale-resource-report.json
+          python3 -m unittest discover -s scripts/tests -p 'test_*.py' -v 2>&1 | tee locale-resource-checks.log
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon --stacktrace --console=plain 2>&1 | tee gradle-unit-tests.log
 
@@ -66,6 +71,8 @@ jobs:
           name: android-test-reports
           path: |
             gradle-*.log
+            locale-resource-report.json
+            locale-resource-checks.log
             app/build/reports/tests/
             app/build/test-results/
             app/build/reports/lint-results*

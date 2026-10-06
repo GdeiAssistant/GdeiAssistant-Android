@@ -325,7 +325,7 @@
     <string name="charge_order_status_label_failed">Failed</string>
     <string name="charge_order_status_label_unknown">Pending confirmation</string>
     <string name="charge_order_status_label_manual_review">Reviewing</string>
-    <string name="notice_detail_subtitle">Campus notices preserve original wording. This page only reorganizes the summary and body.</string>
+    <string name="notice_detail_subtitle">Read the details and original school announcement.</string>
     <string name="notice_detail_body_title">Body</string>
     <string name="notice_detail_notice_id_label">Notice ID</string>
     <string name="notice_detail_channel_default">Campus Notice</string>
@@ -779,13 +779,13 @@
     <string name="dating_title">Roommate Match</string>
     <string name="dating_feed_refresh">Refresh profiles</string>
     <string name="dating_feed_badge">Profile Hall</string>
-    <string name="dating_feed_subtitle">Browse profiles, view details, send a wave, and manage interactions — all in one flow.</string>
+    <string name="dating_feed_subtitle">Browse campus profiles and find people you would like to meet.</string>
     <string name="dating_feed_empty">No new profiles in this section</string>
     <string name="dating_center_entry_title">Interaction Center</string>
     <string name="dating_center_entry_subtitle">View received waves and my posts</string>
     <string name="dating_refresh">Refresh interactions</string>
     <string name="dating_badge">Interaction Center</string>
-    <string name="dating_subtitle">A unified interaction center to handle received waves, sent requests, and your published profiles.</string>
+    <string name="dating_subtitle">View received interactions, sent requests and your posts.</string>
     <string name="dating_metric_received">Received</string>
     <string name="dating_metric_posts">My Posts</string>
     <string name="dating_tab_received">Received</string>
@@ -875,7 +875,7 @@
     <string name="express_my_posts_title">My Confessions</string>
     <string name="express_my_posts_subtitle">View your posted confessions</string>
     <string name="express_guide_title">How It Works</string>
-    <string name="express_guide_body">Guessable posts let you try guessing the name. Comments and likes sync with the backend.</string>
+    <string name="express_guide_body">Guess names, leave comments and like posts to see how classmates respond.</string>
     <string name="express_empty">No confessions yet</string>
     <string name="express_detail_title">Confession Details</string>
     <string name="express_detail_missing">Confession not found</string>
@@ -924,7 +924,7 @@
     <string name="topic_my_posts_title">My Topics</string>
     <string name="topic_my_posts_subtitle">View your posted topics</string>
     <string name="topic_guide_title">Browsing Tips</string>
-    <string name="topic_guide_body">Topics with photos show image links from the backend. You can open each photo in details.</string>
+    <string name="topic_guide_body">Read the topic and tap each image to view it.</string>
     <string name="topic_empty">No topics yet</string>
     <string name="topic_detail_title">Topic Details</string>
     <string name="topic_detail_missing">Topic not found</string>
@@ -1541,4 +1541,14 @@
     <string name="social_image_disabled">Image messaging is unavailable in this conversation</string>
     <string name="social_error_invalid_image">Invalid image or size limit exceeded</string>
 
+    <string name="social_profile_actions_title">People and messages</string>
+    <string name="social_blocks_entry_subtitle">Manage blocked users or unblock them.</string>
+    <string name="spare_room_unnamed">Available classroom</string>
+    <string name="spare_room_default_type">Standard classroom</string>
+    <string name="spare_room_unknown_zone">Campus not specified</string>
+    <string name="spare_room_unknown_section">Time not specified</string>
+    <string name="graduate_exam_no_result">No graduate entrance exam result available</string>
+    <string name="graduate_exam_unknown_candidate">Unnamed candidate</string>
+    <string name="graduate_exam_unavailable">Unavailable</string>
+    <string name="profile_options_empty">Profile options are unavailable</string>
 </resources>

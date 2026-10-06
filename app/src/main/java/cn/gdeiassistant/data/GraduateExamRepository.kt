@@ -1,5 +1,9 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 import cn.gdeiassistant.model.GraduateExamQuery
 import cn.gdeiassistant.model.GraduateExamScore
 import cn.gdeiassistant.network.api.GraduateExamApi
@@ -12,6 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class GraduateExamRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val graduateExamApi: GraduateExamApi
 ) {
 
@@ -25,11 +30,11 @@ class GraduateExamRepository @Inject constructor(
                 )
             )
         }.mapCatching { dto ->
-            val score = dto ?: throw IllegalStateException("暂无考研查询结果")
+            val score = dto ?: throw IllegalStateException(context.getString(R.string.graduate_exam_no_result))
             GraduateExamScore(
-                name = score.name?.trim().orEmpty().ifBlank { "未命名考生" },
-                signupNumber = score.signUpNumber?.trim().orEmpty().ifBlank { "暂无" },
-                examNumber = score.examNumber?.trim().orEmpty().ifBlank { "暂无" },
+                name = score.name?.trim().orEmpty().ifBlank { context.getString(R.string.graduate_exam_unknown_candidate) },
+                signupNumber = score.signUpNumber?.trim().orEmpty().ifBlank { context.getString(R.string.graduate_exam_unavailable) },
+                examNumber = score.examNumber?.trim().orEmpty().ifBlank { context.getString(R.string.graduate_exam_unavailable) },
                 totalScore = score.totalScore?.trim().orEmpty().ifBlank { "0" },
                 politicsScore = score.firstScore?.trim().orEmpty().ifBlank { "0" },
                 foreignLanguageScore = score.secondScore?.trim().orEmpty().ifBlank { "0" },

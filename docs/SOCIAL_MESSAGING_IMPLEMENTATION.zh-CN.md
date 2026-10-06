@@ -128,3 +128,25 @@
 - 本轮只在 `gdeiEmulator=true` 时处理系统 `android` 包下 `android:id/alertTitle` 精确匹配的 `Pixel Launcher isn't responding` / `Messages isn't responding`。每个用例、每个标题最多操作一次 `android:id/aerr_close`，操作前保存原模态框的截图及窗口树；同一标题仍在关闭或再次出现时不重复点击、不读取背后的 picker，仍沿用原 20 秒期限，弹窗持续阻塞则测试失败。其他标题、本应用或 provider 的 ANR 不处理。每个用例记录实际收到的 CI 模式布尔值，匹配与关闭时记录精确标题，不输出完整 Runner 参数 Bundle。
 - 仪器 CI 在模拟器启动前先执行 `assembleDebug assembleDebugAndroidTest`，避免首次系统广播与 APK 重编译同时争用资源；`gradle-instrumentation-prebuild.log` 随原仪器 artifact 上传。API 35、Google APIs、机器、超时和全部八项 connected 测试不变；系统选图、原 bytes/ID、隐私、取消和清理断言保持原样。
 - 本机通过 `git diff --check`、`bash -n scripts/run-emulator-tests.sh`、`actionlint .github/workflows/android-ci.yml` 和 YAML 解析。实际执行当前 shell 入口的四组临时合成命令，验证 Gradle 原退出码 0/37 在诊断成功/失败时均保留，CI 标记及完整 connected 命令不变，原目录拉取和 ZIP 解压仍生效；另外两组验证预编译任务、日志和失败退出码。以上只证明配置/脚本控制流，本机仍无 Android SDK，未执行 APK/Compose 构建或设备测试；本轮真实八项流程及 CI 模式记录须由随后精确提交的 CI 再验证。
+
+## 2026-10-06 个人页布局与六语言检查
+
+- 以 `ef85a762a04e8689faab126b95dc4310a1504047` 为本轮基线。关注、粉丝、好友数量移到头像昵称资料头部下方、资料表单之前，继续打开原有关系列表。私信权限入口保留在已有隐私设置，黑名单也移入该页，个人页不再提供独立黑名单入口；搜索和私信列表入口保留。单向关注、互关好友及后端权限契约不变。
+- 按 UIUXProMax 检查本次布局，复用现有主题和 Row/Column，三个数量区域等宽，新增可点区域至少 48dp，并提供 Button 语义。新增两项 Compose 仪器测试检查资料头部的实际位置、隐私设置中两项入口及返回导航，以及通过真实语言选择控件依次切换全部六种语言。原八项仪器测试保留，CI 继续执行全部 connected 测试。小屏、横屏、大字体、暗色对比仍需设备确认。
+- 扫描全部 254 个 production Kotlin 文件，其中 UI 文件 120 个；UI 中文字面量只留下支持语言菜单的原生语言名称。发现空教室、考研成绩、个人资料选项在空数据时的硬编码中文，改为已有 Android/Hilt Context 读取六语言资源，保留服务端提供的名称、数值及失败语义。新增四项 repository 回归测试，现有两个直接构造调用同步适配；不改 API 或添加依赖。
+- 资源扫描从实际 `supportedLanguageOptions` 读取语言范围，检查各资源目录全部 XML 的字符串重复/缺失/空值、格式占位符及生产 `R.string` 引用。六种语言各有 1480 项，缺失、多余、空值、占位符差异和未解析引用均为 0。与基线相比，各语言修改或新增数量如下（每种均新增 10 项）：
+
+| 语言 | 字符串总数 | 修改或新增 |
+| --- | ---: | ---: |
+| zh-CN | 1480 | 15 |
+| zh-HK | 1480 | 416 |
+| zh-TW | 1480 | 35 |
+| en | 1480 | 15 |
+| ja | 1480 | 15 |
+| ko | 1480 | 15 |
+
+- 港澳说明、操作提示、错误和状态按完整句子改为自然粤语并复查，保留常见名词、学校/图书资料专名及用户内容；台湾采用大头贴、确定、还原等台湾用语，未发现「嘅、唔、咗、啲、撳、搵」混入。英文、韩文资源未发现汉字混用候选；日文的「学期」「保存」、图书馆「登錄號」有实际用途，未盲目替换。五项原有功能说明中的 iOS/API/后端实现细节改为用户需要的功能说明。
+- locale 归一化新增空白/下划线/大小写及首个 Accept-Language 值处理，忽略质量参数；澳门 `zh-MO` / `zh-Hant-MO` 与香港 Hant/扩展标签归入 zh-HK，保留原六语言范围及简体默认值。新增三项 JVM 回归检查标签映射和连续切换不会残留旧语言。
+- 本机实际通过 `python3 -B scripts/check_locale_resources.py`、七项 Python 检查回归、`git diff --check`、脚本语法及 actionlint/YAML 检查。临时 `/tmp/gdei-android-layout-locale-20261006/run-jvm.py` 直接编译实际纯 production 模型/DTO/URL/鉴权/图片元数据/合并/mock 和 locale 支持，再执行 JUnit，结果 `OK (62 tests)`；仅沿用 Compose Immutable / BuildConfig 编译标记，不替代业务。记录在同目录 `jvm/compile.log` 和 `jvm/test.log`。
+- 上述独立 JVM 检查不包含三处 Android Context repository、新增四项 Mockito repository 测试或 Compose 仪器测试。本机仍无 SDK、adb、emulator、sdkmanager 或 local.properties，未运行 Gradle/Android 编译或设备测试。完整单测、lint、APK 和新增两项 UI 用例须由本轮精确提交的 CI 验证，已有提交的通过结果不代表当前补丁通过。
+- Cursor CLI `2026.10.01-e373342` 从本仓以 `--resume 7d61bf30-5c1f-403c-8192-ad519ea886a4 --model auto --print` 执行无业务副作用探针，实际写入临时文件成功，但 Shell 内容校验被全局 allowlist 拒绝（`rejected`，reason 为空）；该精确进程已 exit 0，不能视作实现完成。已停止该通道，读回并清理本轮探针后按本次明确授权直接有界实现，未使用 force/yolo、放开全局权限或让 Cursor 绕过拒绝。

@@ -35,7 +35,7 @@ class ProfileRepositoryContractTest {
         repository = ProfileRepository(
             context = mock<Context>(),
             profileApi = profileApi,
-            profileOptionsRepository = ProfileOptionsRepository(mock())
+            profileOptionsRepository = ProfileOptionsRepository(context = mock(), profileApi = mock())
         )
     }
 

@@ -58,7 +58,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -287,7 +289,9 @@ fun PrivacySettingsScreen(navController: NavHostController) {
             SectionCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navController.navigate(Routes.SOCIAL_DM_PRIVACY) }
+                    .heightIn(min = 48.dp)
+                    .testTag("profile.privacy.dm")
+                    .clickable(role = Role.Button) { navController.navigate(Routes.SOCIAL_DM_PRIVACY) }
             ) {
                 Text(
                     text = stringResource(R.string.social_dm_privacy_title),
@@ -297,6 +301,27 @@ fun PrivacySettingsScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.social_dm_privacy_entry_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        item {
+            SectionCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .testTag("profile.privacy.blocks")
+                    .clickable(role = Role.Button) { navController.navigate(Routes.SOCIAL_BLOCKS) }
+            ) {
+                Text(
+                    text = stringResource(R.string.social_blocks_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.social_blocks_entry_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

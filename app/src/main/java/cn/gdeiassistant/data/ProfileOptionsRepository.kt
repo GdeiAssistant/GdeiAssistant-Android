@@ -1,5 +1,9 @@
 package cn.gdeiassistant.data
 
+import android.content.Context
+import cn.gdeiassistant.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 import cn.gdeiassistant.model.ProfileDictionaryOption
 import cn.gdeiassistant.model.ProfileFacultyOption
 import cn.gdeiassistant.model.ProfileFormSupport
@@ -17,6 +21,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ProfileOptionsRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val profileApi: ProfileApi
 ) {
 
@@ -35,7 +40,7 @@ class ProfileOptionsRepository @Inject constructor(
 
         safeApiCall { profileApi.getProfileOptions() }
             .mapCatching { dto ->
-                val mapped = dto?.let(::mapProfileOptions) ?: throw IllegalStateException("资料字典为空")
+                val mapped = dto?.let(::mapProfileOptions) ?: throw IllegalStateException(context.getString(R.string.profile_options_empty))
                 cachedOptions = mapped
                 hasLoadedRemoteOptions = true
                 mapped
