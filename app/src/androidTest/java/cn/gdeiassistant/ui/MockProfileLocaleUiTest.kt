@@ -46,6 +46,7 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
         waitForText(localized("zh-CN", R.string.social_dm_privacy_title))
         composeRule.onNodeWithText(localized("zh-CN", R.string.social_dm_privacy_title)).assertIsDisplayed()
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitForText(localized("zh-CN", R.string.profile_privacy_title))
         scrollToTag("profile.privacy.blocks").performClick()
         waitForText(localized("zh-CN", R.string.social_blocks_title))
         composeRule.onNodeWithText(localized("zh-CN", R.string.social_blocks_title)).assertIsDisplayed()

@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.junit4.v2.AndroidComposeTestRule as createScheduledComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -29,7 +30,9 @@ private fun createMockComposeRule(
     if (initialRoute == Routes.SOCIAL_CONVERSATIONS) {
         MockSocialProvider.resetDemoGraph()
     }
-    return AndroidComposeTestRule(
+    // Queue recomposition on Compose's test scheduler. The legacy unconfined rule
+    // can resume DataStore locale changes on a worker thread during activity recreation.
+    return createScheduledComposeRule(
         ActivityScenarioRule<MainActivity>(
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java).apply {
                 putExtra(MainActivity.EXTRA_UI_USE_MOCK, true)
