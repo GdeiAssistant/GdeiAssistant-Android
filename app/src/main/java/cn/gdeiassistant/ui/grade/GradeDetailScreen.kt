@@ -138,25 +138,7 @@ private fun DetailMetric(
     label: String,
     value: String
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier)
 }
 
 @Composable

@@ -81,7 +81,7 @@ fun TopicPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.topic_publish_subtitle),
                     style = MaterialTheme.typography.titleMedium,
-                    color = androidx.compose.ui.graphics.Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

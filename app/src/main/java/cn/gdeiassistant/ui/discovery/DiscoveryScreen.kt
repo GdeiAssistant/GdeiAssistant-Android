@@ -25,6 +25,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.TextButton
+import cn.gdeiassistant.ui.components.ListGroup
+import cn.gdeiassistant.ui.components.SectionHeader
+import cn.gdeiassistant.ui.components.StatItem
+import cn.gdeiassistant.ui.components.StatStrip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -194,32 +200,25 @@ fun DiscoveryScreen(navController: NavHostController) {
 
 @Composable
 private fun DiscoveryOverviewCard(summary: DiscoverySummary) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         BadgePill(text = stringResource(R.string.discovery_badge))
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.discovery_subtitle),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            DiscoveryMetric(
-                label = stringResource(R.string.discovery_metric_secret),
-                value = summary.secretPosts.size.toString(),
-                modifier = Modifier.weight(1f)
+        StatStrip(
+            items = listOf(
+                StatItem(stringResource(R.string.discovery_metric_secret), summary.secretPosts.size.toString()),
+                StatItem(stringResource(R.string.discovery_metric_express), summary.expressPosts.size.toString()),
+                StatItem(stringResource(R.string.discovery_metric_topic), summary.topicPosts.size.toString())
             )
-            DiscoveryMetric(
-                label = stringResource(R.string.discovery_metric_express),
-                value = summary.expressPosts.size.toString(),
-                modifier = Modifier.weight(1f)
-            )
-            DiscoveryMetric(
-                label = stringResource(R.string.discovery_metric_topic),
-                value = summary.topicPosts.size.toString(),
-                modifier = Modifier.weight(1f)
-            )
-        }
+        )
     }
 }
 
@@ -233,54 +232,19 @@ private fun DiscoverySection(
     onOpen: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    color = tint.copy(alpha = 0.12f),
-                    shape = MaterialTheme.shapes.large
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = tint,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(20.dp)
-                    )
-                }
-                Column {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(
+            title = title,
+            supporting = subtitle,
+            action = {
+                TextButton(onClick = onOpen) {
+                    Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.size(6.dp))
+                    Text(text = actionTitle)
                 }
             }
-            GhostButton(
-                text = actionTitle,
-                onClick = onOpen,
-                modifier = Modifier.padding(start = 12.dp),
-                borderColor = tint.copy(alpha = 0.2f),
-                contentColor = tint
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
+        )
+        ListGroup(content = content)
     }
 }
 
@@ -291,35 +255,33 @@ private fun DiscoveryPreviewRow(
     meta: String,
     onClick: () -> Unit
 ) {
-    Surface(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.32f)
+            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = meta,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = meta,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f))
 }
 
 @Composable
@@ -328,23 +290,5 @@ private fun DiscoveryMetric(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier)
 }

@@ -70,7 +70,7 @@ fun ExpressPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.express_publish_subtitle),
                     style = MaterialTheme.typography.titleMedium,
-                    color = androidx.compose.ui.graphics.Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

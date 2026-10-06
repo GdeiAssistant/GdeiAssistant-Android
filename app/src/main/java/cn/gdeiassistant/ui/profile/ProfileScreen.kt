@@ -21,6 +21,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import cn.gdeiassistant.ui.components.ListDivider
+import cn.gdeiassistant.ui.components.ListGroup
+import cn.gdeiassistant.ui.components.ListRow
+import cn.gdeiassistant.ui.components.SectionHeader
+import cn.gdeiassistant.ui.components.StatItem
+import cn.gdeiassistant.ui.components.StatStrip
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -124,6 +131,9 @@ fun ProfileScreen(navController: NavHostController) {
     val screenTitle = stringResource(R.string.profile_title)
     val accountActionsTitle = stringResource(R.string.profile_account_actions_title)
     val moreServicesTitle = stringResource(R.string.profile_more_services_title)
+    val socialActionsTitle = stringResource(R.string.social_profile_actions_title)
+    val socialSearchTitle = stringResource(R.string.social_search_title)
+    val socialConversationsTitle = stringResource(R.string.social_conversations_title)
     val accountActionItems = listOf(
         ProfileMenuItem(Icons.Rounded.Lock, stringResource(R.string.profile_privacy_title)) {
             navController.navigate(Routes.PROFILE_PRIVACY)
@@ -219,28 +229,19 @@ fun ProfileScreen(navController: NavHostController) {
                     )
                 }
                 state.socialMe?.let {
-                    item {
-                        SectionCard(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = stringResource(R.string.social_profile_actions_title),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            ProfileMenuRow(
-                                item = ProfileMenuItem(
-                                    Icons.Rounded.PersonSearch,
-                                    stringResource(R.string.social_search_title)
-                                ) { navController.navigate(Routes.SOCIAL_SEARCH) }
-                            )
-                            ProfileMenuRow(
-                                item = ProfileMenuItem(
-                                    Icons.Rounded.Chat,
-                                    stringResource(R.string.social_conversations_title)
-                                ) { navController.navigate(Routes.SOCIAL_CONVERSATIONS) }
-                            )
-                        }
-                    }
+                    profileMenuSection(
+                        title = socialActionsTitle,
+                        items = listOf(
+                            ProfileMenuItem(
+                                Icons.Rounded.PersonSearch,
+                                socialSearchTitle
+                            ) { navController.navigate(Routes.SOCIAL_SEARCH) },
+                            ProfileMenuItem(
+                                Icons.Rounded.Chat,
+                                socialConversationsTitle
+                            ) { navController.navigate(Routes.SOCIAL_CONVERSATIONS) }
+                        )
+                    )
                 }
             }
         }
@@ -266,21 +267,13 @@ private fun LazyListScope.profileMenuSection(
     items: List<ProfileMenuItem>
 ) {
     item {
-        SectionCard(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            items.forEachIndexed { index, item ->
-                if (index > 0) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(start = 60.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SectionHeader(title = title)
+            ListGroup {
+                items.forEachIndexed { index, item ->
+                    if (index > 0) ListDivider()
+                    ProfileMenuRow(item = item)
                 }
-                ProfileMenuRow(item = item)
             }
         }
     }
@@ -320,34 +313,36 @@ private fun ProfileAccountCard(
     val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
     val selectCollegeFirstText = stringResource(R.string.profile_select_college_first)
 
-    SectionCard(modifier = Modifier.fillMaxWidth().testTag("profile.account")) {
-        Text(
-            text = stringResource(R.string.profile_account_data_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier.fillMaxWidth().testTag("profile.account"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().testTag("profile.identity"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+                .testTag("profile.identity"),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileAvatar(
                 imageModel = profile.avatar?.trim()?.takeIf(String::isNotBlank),
                 fallbackLabel = avatarFallbackLabel,
                 size = 72.dp,
-                modifier = Modifier.clickable(onClick = onOpenAvatarManager)
+                modifier = Modifier.clickable(role = Role.Button, onClick = onOpenAvatarManager)
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = displayName,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = stringResource(R.string.profile_username_label, profile.username),
@@ -366,68 +361,67 @@ private fun ProfileAccountCard(
         }
 
         state.socialMe?.let { socialMe ->
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth().testTag("profile.social.stats"),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ProfileSocialStat(
-                    label = stringResource(R.string.social_stat_following),
-                    value = socialMe.followingCount.toString(),
-                    modifier = Modifier.weight(1f).testTag("profile.social.following"),
-                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWING) }
+            StatStrip(
+                modifier = Modifier.testTag("profile.social.stats"),
+                emphasizeFirst = false,
+                items = listOf(
+                    StatItem(
+                        label = stringResource(R.string.social_stat_following),
+                        value = socialMe.followingCount.toString(),
+                        onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWING) },
+                        testTag = "profile.social.following"
+                    ),
+                    StatItem(
+                        label = stringResource(R.string.social_stat_followers),
+                        value = socialMe.followerCount.toString(),
+                        onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWERS) },
+                        testTag = "profile.social.followers"
+                    ),
+                    StatItem(
+                        label = stringResource(R.string.social_stat_friends),
+                        value = socialMe.friendCount.toString(),
+                        onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FRIENDS) },
+                        testTag = "profile.social.friends"
+                    )
                 )
-                ProfileSocialStat(
-                    label = stringResource(R.string.social_stat_followers),
-                    value = socialMe.followerCount.toString(),
-                    modifier = Modifier.weight(1f).testTag("profile.social.followers"),
-                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FOLLOWERS) }
-                )
-                ProfileSocialStat(
-                    label = stringResource(R.string.social_stat_friends),
-                    value = socialMe.friendCount.toString(),
-                    modifier = Modifier.weight(1f).testTag("profile.social.friends"),
-                    onClick = { onOpenRelations(socialMe.id, SocialRelationshipKind.FRIENDS) }
-                )
-            }
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ProfileSummaryContent(
-            profile = profile,
-            profileOptions = profileOptions,
-            isSaving = state.isSaving,
-            onEditNickname = {
-                textEditorValue = profile.nickname.orEmpty()
-                activeTextEditor = ProfileTextEditorField.Nickname
-            },
-            onEditBirthday = { showBirthdayPicker = true },
-            onEditCollege = { activeSelectionEditor = ProfileSelectionEditorField.College },
-            onEditMajor = {
-                if (!canSelectMajor) {
-                    Toast.makeText(context, selectCollegeFirstText, Toast.LENGTH_LONG).show()
-                } else {
-                    activeSelectionEditor = ProfileSelectionEditorField.Major
+        SectionHeader(title = stringResource(R.string.profile_account_data_title))
+        ListGroup {
+            ProfileSummaryContent(
+                profile = profile,
+                profileOptions = profileOptions,
+                isSaving = state.isSaving,
+                onEditNickname = {
+                    textEditorValue = profile.nickname.orEmpty()
+                    activeTextEditor = ProfileTextEditorField.Nickname
+                },
+                onEditBirthday = { showBirthdayPicker = true },
+                onEditCollege = { activeSelectionEditor = ProfileSelectionEditorField.College },
+                onEditMajor = {
+                    if (!canSelectMajor) {
+                        Toast.makeText(context, selectCollegeFirstText, Toast.LENGTH_LONG).show()
+                    } else {
+                        activeSelectionEditor = ProfileSelectionEditorField.Major
+                    }
+                },
+                onEditEnrollment = { activeSelectionEditor = ProfileSelectionEditorField.Enrollment },
+                onEditLocation = { activeLocationField = ProfileLocationField.Location },
+                onEditHometown = { activeLocationField = ProfileLocationField.Hometown },
+                onEditBio = {
+                    textEditorValue = profile.introduction.orEmpty()
+                    activeTextEditor = ProfileTextEditorField.Bio
                 }
-            },
-            onEditEnrollment = { activeSelectionEditor = ProfileSelectionEditorField.Enrollment },
-            onEditLocation = { activeLocationField = ProfileLocationField.Location },
-            onEditHometown = { activeLocationField = ProfileLocationField.Hometown },
-            onEditBio = {
-                textEditorValue = profile.introduction.orEmpty()
-                activeTextEditor = ProfileTextEditorField.Bio
-            }
-        )
+            )
+        }
 
         state.saveError?.takeIf(String::isNotBlank)?.let { errorMessage ->
-            Spacer(modifier = Modifier.height(14.dp))
             Text(
                 text = errorMessage,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
     }
@@ -534,31 +528,35 @@ private fun ProfileSummaryContent(
     val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
     val faculty = profileOptions.facultyNameFor(profile.facultyCode) ?: profile.faculty
     val major = profileOptions.majorLabelFor(faculty.orEmpty(), profile.majorCode.orEmpty()) ?: profile.major
-    Column(modifier = Modifier.testTag("profile.details"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(modifier = Modifier.testTag("profile.details")) {
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_nickname),
             value = displayText(profile.nickname, stringResource(R.string.profile_info_not_set)),
             onClick = onEditNickname,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_birthday),
             value = displayText(profile.birthday, stringResource(R.string.profile_not_selected)),
             onClick = onEditBirthday,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_college_label),
             value = displayText(faculty, stringResource(R.string.profile_not_selected)),
             onClick = onEditCollege,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_major),
             value = displayText(major, stringResource(R.string.profile_not_selected)),
             onClick = onEditMajor,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_enrollment),
             value = displayText(profile.enrollment, stringResource(R.string.profile_not_selected)),
@@ -566,18 +564,21 @@ private fun ProfileSummaryContent(
             onClick = onEditEnrollment,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_country_region_label),
             value = displayText(ProfileLocationCatalog.selectionDisplayName(profile.locationSelection, profile.location, locale), stringResource(R.string.profile_not_selected)),
             onClick = onEditLocation,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_hometown),
             value = displayText(ProfileLocationCatalog.selectionDisplayName(profile.hometownSelection, profile.hometown, locale), stringResource(R.string.profile_not_selected)),
             onClick = onEditHometown,
             enabled = !isSaving
         )
+        ListDivider(inset = 16.dp)
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_intro),
             value = displayText(profile.introduction, stringResource(R.string.profile_info_not_set)),
@@ -871,21 +872,21 @@ private fun ProfileSummaryRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(AppShapes.button)
-            .clickable(enabled = enabled && onClick != null) { onClick?.invoke() }
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .heightIn(min = 52.dp)
+            .clickable(enabled = enabled && onClick != null, role = Role.Button) { onClick?.invoke() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = if (multiline) Alignment.Top else Alignment.CenterVertically
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.widthIn(min = 72.dp)
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
             fontFamily = if (monospace) FontFamily.Monospace else FontFamily.Default,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
@@ -896,20 +897,20 @@ private fun ProfileSummaryRow(
         actionLabel?.let { label ->
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .clip(AppShapes.pill)
                     .clickable(enabled = enabled && onActionClick != null) { onActionClick?.invoke() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 12.dp, vertical = 12.dp)
             )
         }
         if (onClick != null) {
             Icon(
                 imageVector = Icons.Rounded.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                modifier = Modifier.padding(top = if (multiline) 2.dp else 0.dp)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                modifier = Modifier.size(20.dp)
             )
         }
     }
@@ -1078,55 +1079,20 @@ private fun ProfileTintButton(
 
 @Composable
 private fun ProfileMenuRow(item: ProfileMenuItem) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { role = Role.Button }
-            .clickable(onClick = item.onClick)
-            .padding(vertical = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.52f),
-                    shape = AppShapes.small
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = item.icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-
-        Text(
-            text = item.label,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1f)
-        )
-
-        Icon(
-            imageVector = Icons.Rounded.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
-        )
-    }
+    ListRow(title = item.label, icon = item.icon, onClick = item.onClick)
 }
 
 @Composable
 private fun ProfileLogoutButton(onClick: () -> Unit) {
-    ProfileTintButton(
-        text = stringResource(R.string.profile_logout),
-        onClick = onClick,
-        destructive = true,
-        modifier = Modifier.fillMaxWidth()
-    )
+    ListGroup(modifier = Modifier.padding(top = 8.dp)) {
+        ListRow(
+            title = stringResource(R.string.profile_logout),
+            icon = Icons.AutoMirrored.Rounded.Logout,
+            destructive = true,
+            showChevron = false,
+            onClick = onClick
+        )
+    }
 }
 
 @Composable
