@@ -114,3 +114,9 @@
 - 两项失败在 `waitForRetry`：XML 与窗口树显示实际文案为「发送失败，可重试」，而 `assertTextContains("发送失败")` 缺少 `substring=true`，按完整文本匹配失败。修正为明确的子串断言，继续检查原消息失败状态及重试控件。
 - 取消项失败在 `pressSystemBack` 的 DOWN 事件；同期 logcat 明确 `Dropped event because it is stale`，截图仍是系统 picker。返回键改用当前 `SystemClock.uptimeMillis()`，DOWN/UP 共用同一 `downTime`，保留真实系统事件和取消/清理断言。未改生产业务或增加等待；本机差异检查通过，修正后的三项须由下一精确提交的模拟器 CI 验证。
 - 实际发送截图还显示原始 ISO 纳秒时间。显示层增加局部 `formatSocialTime`，沿用项目已有 `java.time`，将会话列表、聊天头部及已发送消息时间按设备时区转成 `yyyy-MM-dd HH:mm`；原始字段、消息排序与 API 不变，不新增依赖。无效或空字符串保留原值，便于沿用已发送占位。实际 helper 的 JVM 示例验证中国/纽约时区、跨日、带偏移时间和空/无效输入；UI 渲染仍由下一提交 CI 验证。
+
+### 第三次 CI 的模拟器系统弹窗
+
+- 提交 `f5e192c586e2e8e9ee3f3b561346304b92e0653c` 的 run `37418045113` 又在四项图片测试的窗口检测处失败。日志确认四次实际 `PICK_IMAGES` 均启动并显示，窗口 flags 仍为 `65618`，与第二次成功一致；第三次截图及树则明确是 `Pixel Launcher isn't responding` 系统 ANR 模态框遮住已打开的 picker/合成照片。系统只暴露可交互的 ANR 框，不能把这次现象当作应用未选图或权限回归。
+- 仅在脚本显式传入 `gdeiEmulator=true` 的隔离 CI 环境，测试辅助函数对精确匹配的 Pixel Launcher ANR 保存截图/树，再操作 `android:id/aerr_close`；每个用例最多一次。应用或 picker 的 ANR、重复 Launcher ANR不在处理范围，仍导致测试失败；未跳过任何选图、字节、ID、隐私、取消或文件清理断言，原 20 秒限制及前两轮修正保持不变。
+- 本机完成差异/脚本语法及实际新旧证据检查，模拟器弹窗处理后的真实八项流程仍须下一精确提交 CI 验证。

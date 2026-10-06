@@ -17,4 +17,5 @@ collect_evidence() {
 trap collect_evidence EXIT
 
 ./gradlew connectedDebugAndroidTest --no-daemon --stacktrace --console=plain \
+  -Pandroid.testInstrumentationRunnerArguments.gdeiEmulator=true \
   2>&1 | tee gradle-connected-tests.log

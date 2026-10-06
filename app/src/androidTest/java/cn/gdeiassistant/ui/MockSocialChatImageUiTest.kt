@@ -59,6 +59,7 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     private var originalAccessibilityFlags = 0
     private var conversationId = ""
     private var evidencePrefix = "social-image"
+    private var dismissedLauncherAnr = false
 
     @Before
     fun prepareRealGalleryImageAndOpenConversation() {
@@ -352,11 +353,32 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     private fun waitNativeNode(message: String, select: (AccessibilityNodeInfo) -> AccessibilityNodeInfo?): AccessibilityNodeInfo {
         val deadline = SystemClock.uptimeMillis() + 20_000
         while (SystemClock.uptimeMillis() < deadline) {
-            for (root in nativeRoots()) select(root)?.let { return it }
+            val roots = nativeRoots()
+            if (dismissKnownEmulatorLauncherAnr(roots)) continue
+            for (root in roots) select(root)?.let { return it }
             SystemClock.sleep(200)
         }
         saveEvidence("native-timeout")
         throw AssertionError(message)
+    }
+
+    private fun dismissKnownEmulatorLauncherAnr(roots: List<AccessibilityNodeInfo>): Boolean {
+        if (dismissedLauncherAnr || InstrumentationRegistry.getArguments().getString("gdeiEmulator") != "true") return false
+        val dialog = roots.firstOrNull { root ->
+            walk(root).any { node ->
+                node.viewIdResourceName == "android:id/alertTitle" &&
+                    node.text?.toString() == "Pixel Launcher isn't responding"
+            }
+        } ?: return false
+        val close = walk(dialog).firstOrNull { it.viewIdResourceName == "android:id/aerr_close" }
+            ?: return false
+        // The isolated AVD's launcher is unrelated to this app or the real system picker.
+        // Preserve the ANR evidence; app/picker ANRs and repeat launcher ANRs remain failures.
+        saveEvidence("launcher-anr")
+        assertTrue("System launcher ANR could not be dismissed", clickNodeOrParent(close))
+        dismissedLauncherAnr = true
+        Log.w("SocialImageUiTest", "Closed known Pixel Launcher ANR in isolated CI emulator")
+        return true
     }
 
     private fun waitForAppWindow() {
