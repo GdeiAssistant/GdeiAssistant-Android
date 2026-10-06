@@ -1,7 +1,5 @@
 package cn.gdeiassistant.data
 
-import android.content.Context
-import cn.gdeiassistant.R
 import cn.gdeiassistant.model.UserProfileSummary
 
 internal data class CommunityProfileHeader(
@@ -9,14 +7,6 @@ internal data class CommunityProfileHeader(
     val avatarUrl: String?,
     val headline: String
 )
-
-internal fun Context.toCommunityProfileHeader(profile: UserProfileSummary?): CommunityProfileHeader {
-    return buildCommunityProfileHeader(
-        profile = profile,
-        defaultDisplayName = getString(R.string.profile_default_username),
-        defaultHeadline = getString(R.string.profile_subtitle_default)
-    )
-}
 
 internal fun buildCommunityProfileHeader(
     profile: UserProfileSummary?,

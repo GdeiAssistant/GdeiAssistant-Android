@@ -38,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.ElectricityBill
-import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
@@ -115,8 +114,6 @@ private fun ElectricityOverviewCard(
     totalBill: String?
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = stringResource(R.string.electricity_badge))
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.electricity_subtitle),
             style = MaterialTheme.typography.headlineSmall,

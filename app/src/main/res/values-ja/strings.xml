@@ -161,7 +161,6 @@
     <string name="schedule_grid_title">週間時間割</string>
     <string name="schedule_grid_subtitle">科目カードをタップすると教室・教員・対象週を確認できます</string>
     <string name="schedule_list_title">全授業リスト</string>
-    <string name="schedule_list_subtitle">曜日ごとに表示し、長い科目名・教室・教員名も確認できます。</string>
     <string name="schedule_section_header">コマ</string>
     <string name="schedule_empty_grid">今週は授業の予定がありません</string>
     <string name="schedule_select_week_title">週を選択</string>
@@ -260,7 +259,7 @@
     <string name="about_mock_mode_restart_hint">切り替え後はアプリを再起動し、通信と画面状態を完全に更新してください。</string>
     <string name="about_mock_mode_toast">デモデータ設定を切り替えました。再起動後に続行してください</string>
     <string name="about_checking">更新を確認中…</string>
-    <string name="about_update_none">アップグレードAPIから利用可能なバージョン情報が返されませんでした</string>
+    <string name="about_update_none">最新バージョンです</string>
     <string name="about_open_failed">外部リンクを開けません</string>
     <string name="about_file_size">ファイルサイズ %s</string>
     <string name="about_metric_version">現在のバージョン</string>
@@ -369,7 +368,6 @@
     <string name="cet_refresh_checkcode">認証コードを更新</string>
     <string name="cet_no_data">成績データがありません</string>
     <string name="cet_form_title">照会フォーム</string>
-    <string name="cet_form_subtitle">認証コードは個別に更新できます。照会に失敗しても入力済みの情報は保持されます。</string>
     <string name="cet_result_title">照会結果</string>
     <string name="cet_total_score">合計点</string>
     <string name="cet_query_hint">認証コードが読みにくい場合は画像を更新できます。</string>
@@ -415,15 +413,12 @@
     <string name="tab_profile">マイページ</string>
     <string name="tab_messages">ニュース</string>
     <string name="news_title">ニュース</string>
-    <string name="news_subtitle">大学公式サイトの公開カテゴリから最新情報を閲覧できます。教務システムアカウントでの取得は不要です。</string>
     <string name="news_empty">表示できるニュースがありません</string>
     <string name="news_category_school_headlines">大学ニュース</string>
     <string name="news_category_college_notice">学部通知</string>
     <string name="news_category_campus_notice">お知らせ</string>
     <string name="news_category_academic_update">学術動向</string>
     <string name="messages_title">ニュース情報</string>
-    <string name="messages_badge">メッセージハブ</string>
-    <string name="messages_subtitle">ニュース、システムのお知らせ、インタラクションメッセージを一つの入口にまとめました。</string>
     <string name="messages_metric_news">ニュース</string>
     <string name="messages_metric_unread">未読</string>
     <string name="messages_news_action_subtitle">大学公式サイトで公開された最新情報を見る</string>
@@ -446,10 +441,8 @@
     <string name="messages_module_dating">ルームメイト紹介</string>
     <string name="messages_module_delivery">みんなの配達</string>
     <string name="messages_module_photograph">キャンパスフォト</string>
-    <string name="messages_festival_badge">今日の記念日 / 歴史</string>
     <string name="spare_title">空き教室</string>
     <string name="spare_subtitle">キャンパス、教室タイプ、曜日、隔週区分とコマで空き教室を検索できます。</string>
-    <string name="spare_hero_badge">教室検索</string>
     <string name="spare_metric_zone">キャンパス</string>
     <string name="spare_metric_time">コマ</string>
     <string name="spare_metric_results">結果</string>
@@ -473,7 +466,6 @@
     <string name="graduate_exam_title">大学院入試照会</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">照会情報</string>
-    <string name="graduate_exam_form_subtitle">入力完了後に照会できます。公式の代替入口はページ内に残ります。</string>
     <string name="graduate_exam_name_hint">氏名</string>
     <string name="graduate_exam_exam_number_hint">受験番号</string>
     <string name="graduate_exam_id_number_hint">身分証番号</string>
@@ -496,8 +488,6 @@
     <string name="graduate_exam_business_one_label">専門科目一</string>
     <string name="graduate_exam_business_two_label">専門科目二</string>
     <string name="data_center_title">データ照会</string>
-    <string name="data_center_badge">キャンパスツールボックス</string>
-    <string name="data_center_subtitle">よく使うキャンパス照会をまとめました。電気料金や部署連絡先をすぐに調べられます。</string>
     <string name="data_center_metric_tools">ツール</string>
     <string name="data_center_metric_scope">対象範囲</string>
     <string name="data_center_metric_scope_value">電気料金 / イエローページ</string>
@@ -505,7 +495,6 @@
     <string name="electricity_title">電気料金照会</string>
     <string name="electricity_subtitle">氏名、学籍番号、年度を入力すると、寮の年間電気料金と使用状況を確認できます。</string>
     <string name="electricity_subtitle_short">寮の電気料金を照会</string>
-    <string name="electricity_badge">寮の電気料金</string>
     <string name="electricity_metric_year">年度</string>
     <string name="electricity_metric_total">電気料金合計</string>
     <string name="electricity_form_title">検索条件</string>
@@ -529,9 +518,7 @@
     <string name="electricity_error_incomplete">氏名と学籍番号を入力してください</string>
     <string name="electricity_error_student_number">正しい学籍番号を入力してください（11桁の数字）</string>
     <string name="yellow_page_title">キャンパスイエローページ</string>
-    <string name="yellow_page_subtitle">大学の各部署の連絡先を一覧にまとめました。検索後はそのまま電話、SMS、メールが可能です。</string>
     <string name="yellow_page_subtitle_short">キャンパス内の部署連絡先を検索</string>
-    <string name="yellow_page_badge">連絡先イエローページ</string>
     <string name="yellow_page_metric_categories">カテゴリ</string>
     <string name="yellow_page_metric_entries">件数</string>
     <string name="yellow_page_refresh">イエローページを更新</string>
@@ -556,7 +543,6 @@
 
     <!-- マイページ -->
     <string name="profile_title">マイページ</string>
-    <string name="profile_subtitle_default">アカウント情報、連携状態、データエクスポートの入口を管理できます。</string>
     <string name="profile_phone_title">電話番号</string>
     <string name="profile_email_title">メールアドレス</string>
     <string name="profile_export_state_idle">まだエクスポート記録がありません。いつでもエクスポートをリクエストできます。</string>
@@ -740,7 +726,6 @@
     <string name="secret_my_posts_title">マイ投稿</string>
     <string name="secret_my_posts_subtitle">自分が投稿した匿名コンテンツを見る</string>
     <string name="secret_voice_section_title">音声コンテンツ</string>
-    <string name="secret_voice_section_subtitle">アプリ内で直接再生できます。ウェブページへの遷移は不要です。</string>
     <string name="secret_empty">掲示板はまだ静かです。閲覧できるコンテンツがありません</string>
     <string name="secret_detail_title">投稿詳細</string>
     <string name="secret_detail_missing">この投稿が見つかりません</string>
@@ -760,7 +745,6 @@
     <string name="secret_toast_like_failed">いいね操作に失敗しました</string>
     <string name="secret_missing_id">投稿番号がありません</string>
     <string name="secret_profile_title">マイ投稿</string>
-    <string name="secret_profile_badge">マイ匿名投稿</string>
     <string name="secret_profile_subtitle">自分が投稿したテキストと音声の匿名コンテンツをまとめて確認できます。</string>
     <string name="secret_profile_empty">自分が投稿した匿名コンテンツはまだありません</string>
     <string name="secret_voice_badge">音声投稿</string>
@@ -778,13 +762,11 @@
     <!-- ルームメイト紹介 -->
     <string name="dating_title">ルームメイト紹介</string>
     <string name="dating_feed_refresh">ルームメイト紹介を更新</string>
-    <string name="dating_feed_badge">プロフィール一覧</string>
     <string name="dating_feed_subtitle">学内のプロフィールを見て、気になる人を見つけましょう。</string>
     <string name="dating_feed_empty">現在のセクションには新しいプロフィールがありません</string>
     <string name="dating_center_entry_title">インタラクションセンター</string>
     <string name="dating_center_entry_subtitle">受け取ったアプローチとマイ投稿を確認</string>
     <string name="dating_refresh">インタラクションセンターを更新</string>
-    <string name="dating_badge">インタラクションセンター</string>
     <string name="dating_subtitle">届いた交流、送ったリクエスト、自分の投稿を確認できます。</string>
     <string name="dating_metric_received">受け取ったアプローチ</string>
     <string name="dating_metric_posts">マイ投稿</string>
@@ -880,7 +862,6 @@
     <string name="express_detail_title">告白詳細</string>
     <string name="express_detail_missing">この告白コンテンツが見つかりません</string>
     <string name="express_profile_title">マイ告白</string>
-    <string name="express_profile_badge">マイメッセージ</string>
     <string name="express_profile_subtitle">自分が投稿した告白コンテンツとインタラクション状態をまとめて確認できます。</string>
     <string name="express_profile_empty">自分の告白はまだありません</string>
     <string name="express_content_title">本文</string>
@@ -929,7 +910,6 @@
     <string name="topic_detail_title">トピック詳細</string>
     <string name="topic_detail_missing">このトピックが見つかりません</string>
     <string name="topic_profile_title">マイトピック</string>
-    <string name="topic_profile_badge">マイディスカッション</string>
     <string name="topic_profile_subtitle">自分が投稿したトピックをまとめて確認できます。</string>
     <string name="topic_profile_empty">自分が投稿したトピックはまだありません</string>
     <string name="topic_content_title">トピック本文</string>
@@ -996,13 +976,11 @@
     <string name="delivery_toast_accept_failed">受注に失敗しました</string>
     <string name="delivery_toast_finish_failed">操作に失敗しました</string>
     <string name="delivery_mine_title">マイオーダー</string>
-    <string name="delivery_mine_badge">マイ配達</string>
     <string name="delivery_mine_subtitle">自分が投稿したオーダーと受注した配達記録をまとめて確認できます。</string>
     <string name="delivery_mine_empty">このグループにはまだオーダーがありません</string>
     <string name="delivery_mine_tab_published">投稿したオーダー</string>
     <string name="delivery_mine_tab_accepted">受注したオーダー</string>
     <string name="delivery_publish_title">配達依頼を投稿</string>
-    <string name="delivery_publish_badge">タスク作成</string>
     <string name="delivery_publish_subtitle">受取場所、届け先、報酬を入力すると、スムーズに受注してもらえます。</string>
     <string name="delivery_publish_pickup_place">受取場所</string>
     <string name="delivery_publish_pickup_code">受取コード</string>
@@ -1042,7 +1020,6 @@
     <string name="photograph_detail_title">作品詳細</string>
     <string name="photograph_detail_missing">この作品が見つかりません</string>
     <string name="photograph_profile_title">マイ作品</string>
-    <string name="photograph_profile_badge">マイフォト</string>
     <string name="photograph_profile_subtitle">自分が投稿したキャンパスフォトをまとめて確認できます。</string>
     <string name="photograph_profile_empty">自分が投稿した作品はまだありません</string>
     <string name="photograph_stat_photo">写真</string>
@@ -1084,8 +1061,6 @@
     <string name="feature_photograph_subtitle">みんなが撮ったキャンパスの一瞬を見てみよう</string>
 
     <!-- アカウントセンターと蔵書リニューアル補足 -->
-    <string name="library_collection_badge">蔵書サービス</string>
-    <string name="library_collection_subtitle">まず蔵書を検索し、詳細と貸出状況を確認。よく使う図書館の操作を1ページにまとめました。</string>
     <string name="library_collection_metric_borrowed">貸出中</string>
     <string name="library_collection_metric_search">検索結果</string>
     <string name="library_collection_search_title">蔵書検索</string>
@@ -1101,7 +1076,6 @@
     <string name="library_page_next">次のページ</string>
     <string name="library_page_indicator">%1$d / %2$d ページ</string>
     <string name="library_collection_detail_title">蔵書詳細</string>
-    <string name="library_collection_detail_badge">蔵書情報</string>
     <string name="library_collection_detail_loading">蔵書詳細を読み込み中…</string>
     <string name="library_collection_detail_missing_url">利用可能な蔵書詳細のアドレスがありません。</string>
     <string name="library_collection_detail_principal">責任者</string>
@@ -1194,7 +1168,7 @@
     <string name="profile_export_exporting_badge">準備中</string>
     <string name="profile_export_exported_badge">ダウンロード可</string>
     <string name="profile_export_start_action">エクスポートを開始</string>
-    <string name="profile_export_start_hint">バックエンドに新しいデータエクスポートリクエストを送信します</string>
+    <string name="profile_export_start_hint">個人データの新しいエクスポートを申請します</string>
     <string name="profile_export_download_action">ファイルをダウンロード</string>
     <string name="profile_export_started">データエクスポートリクエストが送信されました</string>
     <string name="profile_export_submit_failed">エクスポートリクエストの送信に失敗しました</string>
@@ -1206,7 +1180,6 @@
     <string name="profile_bind_email_form_title">メールアドレスの連携</string>
     <string name="profile_privacy_title">プライバシー設定</string>
     <string name="profile_privacy_subtitle">プロフィールの公開範囲やプラットフォームのキャッシュ・検索動作を管理できます。</string>
-    <string name="profile_privacy_badge">プライバシー管理</string>
     <string name="profile_privacy_profile_title">公開プロフィール項目</string>
     <string name="profile_privacy_platform_title">プラットフォーム設定</string>
     <string name="profile_privacy_faculty">学部</string>
@@ -1265,7 +1238,6 @@
     <string name="profile_unbind_action">連携を解除</string>
     <string name="profile_feedback_title">ヘルプとフィードバック</string>
     <string name="profile_feedback_subtitle">問題点、提案、体験フィードバックをメンテナンスチームに送信できます。</string>
-    <string name="profile_feedback_badge">フィードバック</string>
     <string name="profile_feedback_type_label">フィードバック種別</string>
     <string name="profile_feedback_contact_label">連絡先</string>
     <string name="profile_feedback_content_label">フィードバック内容</string>
@@ -1299,10 +1271,10 @@
     <string name="profile_settings_campus_credentials_quick_auth_on">有効</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">無効</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">無効にすると、保存済み資格情報に基づくクイック認証やセッション同期が停止します。</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">有効にするには、有効な同意と保存済み資格情報が必要です。条件を満たさない場合は、バックエンドが失敗理由を返します。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">有効にするには、先に同意してキャンパス資格情報を保存してください。</string>
     <string name="profile_settings_campus_credentials_revoke_title">キャンパス資格情報の同意を撤回</string>
     <string name="profile_settings_campus_credentials_revoke_action">同意を撤回</string>
-    <string name="profile_settings_campus_credentials_revoke_confirmation">同意を撤回すると、保存済みキャンパス資格情報に基づくクイック認証やセッション同期が停止します。サーバー側の安全優先設定によっては、保存済み資格情報も削除される場合があります。</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">同意を撤回すると、保存済みのキャンパス資格情報はクイック認証やセッション同期に使われなくなり、削除される場合もあります。</string>
     <string name="profile_settings_campus_credentials_delete_title">保存済みキャンパス資格情報を削除</string>
     <string name="profile_settings_campus_credentials_delete_action">保存済み資格情報を削除</string>
     <string name="profile_settings_campus_credentials_delete_confirmation">削除後は、時間割、成績、キャンパスカード、図書館などの機能で再ログインまたは再認可が必要になる場合があります。</string>
@@ -1313,7 +1285,7 @@
     <string name="profile_settings_campus_credentials_action_failed">キャンパス資格情報の操作に失敗しました。後でもう一度お試しください。</string>
     <string name="profile_delete_title">アカウント削除</string>
     <string name="profile_delete_warning_title">この操作は元に戻せません</string>
-    <string name="profile_delete_warning_body">削除申請後、現在のアカウントはバックエンドの規定に従いクローズ処理に入ります。パスワードに間違いがないことを確認し、事前に個人データをバックアップしてください。</string>
+    <string name="profile_delete_warning_body">削除を申請すると、このアカウントは削除手続きに入ります。パスワードを確認し、事前に個人データをバックアップしてください。</string>
     <string name="profile_delete_password_label">現在のログインパスワード</string>
     <string name="profile_delete_password_required">現在のログインパスワードを入力してください</string>
     <string name="profile_delete_confirm_action">削除を確認</string>
@@ -1335,8 +1307,6 @@
 
 
     <string name="discovery_title">発見</string>
-    <string name="discovery_badge">コミュニティ広場</string>
-    <string name="discovery_subtitle">掲示板、告白ボード、トピックをまとめて、キャンパスの今をチェックできます。</string>
     <string name="discovery_metric_secret">掲示板</string>
     <string name="discovery_metric_express">告白</string>
     <string name="discovery_metric_topic">トピック</string>
@@ -1390,7 +1360,7 @@
     <string name="express_publish_failed">告白の投稿に失敗しました</string>
 
     <string name="secret_publish_title">匿名投稿</string>
-    <string name="secret_publish_subtitle">テキストと音声の2つのモードがあり、24時間後の自動削除にも対応しています。</string>
+    <string name="secret_publish_subtitle">テキストまたは音声で投稿でき、24時間後の自動削除も設定できます。</string>
     <string name="secret_publish_mode_text">テキスト投稿</string>
     <string name="secret_publish_mode_voice">音声投稿</string>
     <string name="secret_publish_content_label">投稿内容</string>

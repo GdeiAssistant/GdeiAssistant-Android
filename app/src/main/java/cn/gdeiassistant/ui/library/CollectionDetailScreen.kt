@@ -33,7 +33,6 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.LibraryRepository
 import cn.gdeiassistant.model.CollectionDetailInfo
-import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
@@ -147,8 +146,6 @@ fun CollectionDetailScreen(navController: NavHostController) {
                 val detail = requireNotNull(state.detail)
                 item {
                     SectionCard(modifier = Modifier.fillMaxWidth()) {
-                        BadgePill(text = stringResource(R.string.library_collection_detail_badge))
-                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = detail.title,
                             style = MaterialTheme.typography.headlineSmall,

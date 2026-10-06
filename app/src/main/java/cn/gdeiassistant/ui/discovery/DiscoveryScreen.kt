@@ -33,7 +33,6 @@ import cn.gdeiassistant.ui.components.StatItem
 import cn.gdeiassistant.ui.components.StatStrip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -44,7 +43,6 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DiscoveryRepository
 import cn.gdeiassistant.model.DiscoverySummary
-import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
@@ -206,12 +204,6 @@ private fun DiscoveryOverviewCard(summary: DiscoverySummary) {
             .padding(horizontal = 4.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        BadgePill(text = stringResource(R.string.discovery_badge))
-        Text(
-            text = stringResource(R.string.discovery_subtitle),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold
-        )
         StatStrip(
             items = listOf(
                 StatItem(stringResource(R.string.discovery_metric_secret), summary.secretPosts.size.toString()),

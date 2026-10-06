@@ -126,7 +126,6 @@ fun NativeImageGallery(
 @Composable
 fun NativeAudioPlayerCard(
     title: String,
-    subtitle: String,
     url: String,
     modifier: Modifier = Modifier
 ) {
@@ -202,12 +201,6 @@ fun NativeAudioPlayerCard(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(

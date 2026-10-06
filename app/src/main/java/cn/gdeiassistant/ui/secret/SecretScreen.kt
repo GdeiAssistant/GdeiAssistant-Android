@@ -190,7 +190,6 @@ fun SecretDetailScreen(navController: NavHostController) {
                     item {
                         NativeAudioPlayerCard(
                             title = stringResource(R.string.secret_voice_section_title),
-                            subtitle = stringResource(R.string.secret_voice_section_subtitle),
                             url = detail.post.voiceUrl.orEmpty(),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -327,8 +326,6 @@ fun SecretProfileScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth(),
                         containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
                     ) {
-                        BadgePill(text = stringResource(R.string.secret_profile_badge))
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                         Text(
                             text = stringResource(R.string.secret_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,

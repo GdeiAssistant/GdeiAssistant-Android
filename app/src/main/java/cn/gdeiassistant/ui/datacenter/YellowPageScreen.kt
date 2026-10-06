@@ -160,14 +160,6 @@ private fun YellowPageOverviewCard(
     entryCount: Int
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = stringResource(R.string.yellow_page_badge))
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.yellow_page_subtitle),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             YellowPageMetric(
                 label = stringResource(R.string.yellow_page_metric_categories),

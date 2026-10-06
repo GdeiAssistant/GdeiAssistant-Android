@@ -347,8 +347,6 @@ fun TopicProfileScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth(),
                         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                     ) {
-                        BadgePill(text = stringResource(R.string.topic_profile_badge))
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                         Text(
                             text = stringResource(R.string.topic_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,

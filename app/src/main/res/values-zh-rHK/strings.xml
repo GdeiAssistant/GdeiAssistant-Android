@@ -160,7 +160,6 @@
     <string name="schedule_grid_title">周課表</string>
     <string name="schedule_grid_subtitle">撳課程卡片可查看上課地點、教師與周次</string>
     <string name="schedule_list_title">完整課程列表</string>
-    <string name="schedule_list_subtitle">按星期展開，長課程名、地點和教師會完整顯示。</string>
     <string name="schedule_section_header">節次</string>
     <string name="schedule_empty_grid">呢個星期冇課程安排</string>
     <string name="schedule_select_week_title">選擇周數</string>
@@ -259,7 +258,7 @@
     <string name="about_mock_mode_restart_hint">切換後建議重啟應用，確保網絡請求與頁面狀態全部刷新。</string>
     <string name="about_mock_mode_toast">已切換示例數據設定，建議重啟應用後繼續使用</string>
     <string name="about_checking">檢查緊更新…</string>
-    <string name="about_update_none">升級接口未返回可用版本信息</string>
+    <string name="about_update_none">而家已經係最新版本</string>
     <string name="about_open_failed">唔可以打開外部連結</string>
     <string name="about_file_size">文件大小 %s</string>
     <string name="about_metric_version">而家版本</string>
@@ -368,7 +367,6 @@
     <string name="cet_refresh_checkcode">刷新驗證碼</string>
     <string name="cet_no_data">暫時未有成績數據</string>
     <string name="cet_form_title">查詢表單</string>
-    <string name="cet_form_subtitle">驗證碼可以單獨重新整理；就算查詢失敗，已填嘅資料都會保留。</string>
     <string name="cet_result_title">查詢結果</string>
     <string name="cet_total_score">總分</string>
     <string name="cet_query_hint">看不清驗證碼時可直接刷新圖片。</string>
@@ -414,15 +412,12 @@
     <string name="tab_profile">我</string>
     <string name="tab_messages">資訊</string>
     <string name="news_title">新聞</string>
-    <string name="news_subtitle">按學校官網公開欄目瀏覽最新資訊，不再依賴教務系統帳戶抓取。</string>
     <string name="news_empty">而家冇新聞可以顯示</string>
     <string name="news_category_school_headlines">學校要聞</string>
     <string name="news_category_college_notice">院部通知</string>
     <string name="news_category_campus_notice">通知公告</string>
     <string name="news_category_academic_update">學術動態</string>
     <string name="messages_title">資訊信息</string>
-    <string name="messages_badge">消息中樞</string>
-    <string name="messages_subtitle">把新聞、系統公告和互動消息整理到一個統一入口。</string>
     <string name="messages_metric_news">新聞</string>
     <string name="messages_metric_unread">未讀</string>
     <string name="messages_news_action_subtitle">睇學校官網最新公開資訊</string>
@@ -445,10 +440,8 @@
     <string name="messages_module_dating">賣室友</string>
     <string name="messages_module_delivery">全民快遞</string>
     <string name="messages_module_photograph">拍好校園</string>
-    <string name="messages_festival_badge">今日節日 / 歷史</string>
     <string name="spare_title">空課室</string>
     <string name="spare_subtitle">按校區、課室類別、星期、單雙周與課節組查詢空課室。</string>
-    <string name="spare_hero_badge">教室查詢</string>
     <string name="spare_metric_zone">校區</string>
     <string name="spare_metric_time">節次</string>
     <string name="spare_metric_results">結果</string>
@@ -472,7 +465,6 @@
     <string name="graduate_exam_title">考研查詢</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">查詢信息</string>
-    <string name="graduate_exam_form_subtitle">完成填寫後即可查詢，官方備用入口會保留在頁面裏。</string>
     <string name="graduate_exam_name_hint">姓名</string>
     <string name="graduate_exam_exam_number_hint">准考證號</string>
     <string name="graduate_exam_id_number_hint">證件號碼</string>
@@ -495,8 +487,6 @@
     <string name="graduate_exam_business_one_label">業務課一</string>
     <string name="graduate_exam_business_two_label">業務課二</string>
     <string name="data_center_title">數據查詢</string>
-    <string name="data_center_badge">校園工具箱</string>
-    <string name="data_center_subtitle">常用校園查詢放埋一齊，查電費同部門聯絡方法更方便。</string>
     <string name="data_center_metric_tools">工具</string>
     <string name="data_center_metric_scope">覆蓋</string>
     <string name="data_center_metric_scope_value">電費 / 黃頁</string>
@@ -504,7 +494,6 @@
     <string name="electricity_title">電費查詢</string>
     <string name="electricity_subtitle">輸入姓名、學號同年份，就可以睇宿舍嗰一年嘅電費同用電情況。</string>
     <string name="electricity_subtitle_short">查詢宿舍電費信息</string>
-    <string name="electricity_badge">宿舍電費</string>
     <string name="electricity_metric_year">年份</string>
     <string name="electricity_metric_total">總電費</string>
     <string name="electricity_form_title">查詢條件</string>
@@ -528,9 +517,7 @@
     <string name="electricity_error_incomplete">請填寫姓名與學號</string>
     <string name="electricity_error_student_number">請輸入正確學號（11 位數字）</string>
     <string name="yellow_page_title">校園黃頁</string>
-    <string name="yellow_page_subtitle">把學校常用部門聯繫方式整理成冊，查到以後可以直接撥號、發短訊或發郵件。</string>
     <string name="yellow_page_subtitle_short">查詢校園部門聯繫方式</string>
-    <string name="yellow_page_badge">聯絡黃頁</string>
     <string name="yellow_page_metric_categories">分類</string>
     <string name="yellow_page_metric_entries">條目</string>
     <string name="yellow_page_refresh">刷新黃頁</string>
@@ -555,7 +542,6 @@
 
     <!-- 個人中心 -->
     <string name="profile_title">個人中心</string>
-    <string name="profile_subtitle_default">整理帳戶資料、綁定狀態和數據導出入口。</string>
     <string name="profile_phone_title">手機號</string>
     <string name="profile_email_title">郵箱</string>
     <string name="profile_export_state_idle">而家仲未有導出記錄，可隨時發起導出請求。</string>
@@ -739,7 +725,6 @@
     <string name="secret_my_posts_title">我嘅樹洞</string>
     <string name="secret_my_posts_subtitle">睇自己發過嘅匿名內容</string>
     <string name="secret_voice_section_title">語音內容</string>
-    <string name="secret_voice_section_subtitle">支援在應用內直接播放，不再跳轉網頁。</string>
     <string name="secret_empty">樹洞仲好靜，暫時未有內容可以睇</string>
     <string name="secret_detail_title">樹洞詳情</string>
     <string name="secret_detail_missing">搵唔到而家樹洞內容</string>
@@ -759,7 +744,6 @@
     <string name="secret_toast_like_failed">點贊操作失敗</string>
     <string name="secret_missing_id">缺少樹洞編號</string>
     <string name="secret_profile_title">我嘅樹洞</string>
-    <string name="secret_profile_badge">我嘅匿名</string>
     <string name="secret_profile_subtitle">睇自己發佈過嘅文字同語音樹洞。</string>
     <string name="secret_profile_empty">你仲未發佈樹洞內容</string>
     <string name="secret_voice_badge">語音樹洞</string>
@@ -777,13 +761,11 @@
     <!-- 賣室友 -->
     <string name="dating_title">賣室友</string>
     <string name="dating_feed_refresh">刷新賣室友</string>
-    <string name="dating_feed_badge">資料大廳</string>
     <string name="dating_feed_subtitle">睇吓校園交友資料，搵你想認識嘅人。</string>
     <string name="dating_feed_empty">呢個分區暫時未有新嘅賣室友資料</string>
     <string name="dating_center_entry_title">互動中心</string>
     <string name="dating_center_entry_subtitle">睇收到嘅互動同自己嘅發佈</string>
     <string name="dating_refresh">刷新互動中心</string>
-    <string name="dating_badge">互動中心</string>
     <string name="dating_subtitle">睇收到嘅互動、發出嘅請求，同自己嘅發佈。</string>
     <string name="dating_metric_received">收到嘅互動</string>
     <string name="dating_metric_posts">我嘅發佈</string>
@@ -879,7 +861,6 @@
     <string name="express_detail_title">表白詳情</string>
     <string name="express_detail_missing">搵唔到而家表白內容</string>
     <string name="express_profile_title">我嘅表白</string>
-    <string name="express_profile_badge">我嘅留言</string>
     <string name="express_profile_subtitle">睇自己發佈過嘅表白同互動狀態。</string>
     <string name="express_profile_empty">你仲未發佈表白</string>
     <string name="express_content_title">正文內容</string>
@@ -928,7 +909,6 @@
     <string name="topic_detail_title">話題詳情</string>
     <string name="topic_detail_missing">搵唔到而家話題內容</string>
     <string name="topic_profile_title">我嘅話題</string>
-    <string name="topic_profile_badge">我嘅討論</string>
     <string name="topic_profile_subtitle">睇自己發佈過嘅話題。</string>
     <string name="topic_profile_empty">你仲未發佈話題</string>
     <string name="topic_content_title">話題正文</string>
@@ -995,13 +975,11 @@
     <string name="delivery_toast_accept_failed">接單失敗</string>
     <string name="delivery_toast_finish_failed">操作失敗</string>
     <string name="delivery_mine_title">我嘅訂單</string>
-    <string name="delivery_mine_badge">我嘅跑腿</string>
     <string name="delivery_mine_subtitle">睇自己發佈嘅訂單同接單配送記錄。</string>
     <string name="delivery_mine_empty">而家分組下仲未有相關訂單</string>
     <string name="delivery_mine_tab_published">我發佈嘅</string>
     <string name="delivery_mine_tab_accepted">我接嘅</string>
     <string name="delivery_publish_title">發佈全民快遞</string>
-    <string name="delivery_publish_badge">創建任務</string>
     <string name="delivery_publish_subtitle">把取件地點、送達地址和賞金一次填清楚，方便同學快速接單。</string>
     <string name="delivery_publish_pickup_place">取件地點</string>
     <string name="delivery_publish_pickup_code">取件碼</string>
@@ -1041,7 +1019,6 @@
     <string name="photograph_detail_title">作品詳情</string>
     <string name="photograph_detail_missing">搵唔到而家作品內容</string>
     <string name="photograph_profile_title">我嘅作品</string>
-    <string name="photograph_profile_badge">我嘅攝影</string>
     <string name="photograph_profile_subtitle">睇自己發佈過嘅校園攝影作品。</string>
     <string name="photograph_profile_empty">你仲未發佈作品</string>
     <string name="photograph_stat_photo">照片</string>
@@ -1083,8 +1060,6 @@
     <string name="feature_photograph_subtitle">睇吓同學影低嘅校園瞬間</string>
 
     <!-- 賬號中心與館藏重構補充 -->
-    <string name="library_collection_badge">館藏服務</string>
-    <string name="library_collection_subtitle">查館藏、睇詳情同借閱情況，常用圖書館功能都喺呢度。</string>
     <string name="library_collection_metric_borrowed">借閱中</string>
     <string name="library_collection_metric_search">搜索結果</string>
     <string name="library_collection_search_title">館藏檢索</string>
@@ -1100,7 +1075,6 @@
     <string name="library_page_next">下一頁</string>
     <string name="library_page_indicator">第 %1$d / %2$d 頁</string>
     <string name="library_collection_detail_title">館藏詳情</string>
-    <string name="library_collection_detail_badge">館藏信息</string>
     <string name="library_collection_detail_loading">載入緊館藏詳情…</string>
     <string name="library_collection_detail_missing_url">而家冇用得嘅館藏詳情地址。</string>
     <string name="library_collection_detail_principal">責任者</string>
@@ -1205,7 +1179,6 @@
     <string name="profile_bind_email_form_title">郵箱綁定</string>
     <string name="profile_privacy_title">私隱設定</string>
     <string name="profile_privacy_subtitle">管理個人資料嘅公開範圍，以及平台快取同搜尋設定。</string>
-    <string name="profile_privacy_badge">私隱控制</string>
     <string name="profile_privacy_profile_title">資料公開項</string>
     <string name="profile_privacy_platform_title">平台設定</string>
     <string name="profile_privacy_faculty">學院</string>
@@ -1264,7 +1237,6 @@
     <string name="profile_unbind_action">解除綁定</string>
     <string name="profile_feedback_title">幫助與反饋</string>
     <string name="profile_feedback_subtitle">把問題、建議或體驗反饋發給維護團隊。</string>
-    <string name="profile_feedback_badge">意見反饋</string>
     <string name="profile_feedback_type_label">反饋類型</string>
     <string name="profile_feedback_contact_label">聯繫方式</string>
     <string name="profile_feedback_content_label">反饋內容</string>
@@ -1298,10 +1270,10 @@
     <string name="profile_settings_campus_credentials_quick_auth_on">已開啟</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">已關閉</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">關閉後，平台將停止基於已儲存憑證進行快速認證或會話同步。</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">開啟前需要有效授權和已儲存憑證；如條件不滿足，服務端會返回失敗原因。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">開啟前需要先授權並儲存校園憑證。</string>
     <string name="profile_settings_campus_credentials_revoke_title">撤回校園帳戶憑證授權</string>
     <string name="profile_settings_campus_credentials_revoke_action">撤回授權</string>
-    <string name="profile_settings_campus_credentials_revoke_confirmation">撤回授權後，平台會停止用已儲存嘅校園憑證進行快速認證或者會話同步。如果伺服器設定係安全優先，已儲存嘅憑證亦可能一併刪除。</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">撤回授權後，將唔再用已儲存嘅校園憑證進行快速認證或者會話同步，已儲存嘅憑證亦可能一併刪除。</string>
     <string name="profile_settings_campus_credentials_delete_title">刪除已儲存嘅校園憑證</string>
     <string name="profile_settings_campus_credentials_delete_action">刪除已儲存憑證</string>
     <string name="profile_settings_campus_credentials_delete_confirmation">刪除後，課表、成績、校園卡、圖書館等查詢可能需要重新登入或重新授權。</string>
@@ -1312,7 +1284,7 @@
     <string name="profile_settings_campus_credentials_action_failed">校園憑證操作失敗，請稍後再試</string>
     <string name="profile_delete_title">註銷帳戶</string>
     <string name="profile_delete_warning_title">此操作不可恢復</string>
-    <string name="profile_delete_warning_body">提交註銷申請後，而家帳戶將按後端規則進入關閉流程，請確認密碼無誤並提前備份個人數據。</string>
+    <string name="profile_delete_warning_body">提交註銷申請後，而家帳戶將進入註銷流程，請確認密碼無誤並提前備份個人數據。</string>
     <string name="profile_delete_password_label">而家登入密碼</string>
     <string name="profile_delete_password_required">請輸入而家登入密碼</string>
     <string name="profile_delete_confirm_action">確認註銷</string>
@@ -1334,8 +1306,6 @@
 
 
     <string name="discovery_title">發現</string>
-    <string name="discovery_badge">社區廣場</string>
-    <string name="discovery_subtitle">樹洞、表白牆同話題放埋一齊，方便睇吓校園最近有乜新鮮事。</string>
     <string name="discovery_metric_secret">樹洞</string>
     <string name="discovery_metric_express">表白</string>
     <string name="discovery_metric_topic">話題</string>
@@ -1389,7 +1359,7 @@
     <string name="express_publish_failed">發佈表白失敗</string>
 
     <string name="secret_publish_title">發佈樹洞</string>
-    <string name="secret_publish_subtitle">文本和語音兩種模式都保留，並支援 24 小時後自動刪除。</string>
+    <string name="secret_publish_subtitle">發佈文字或語音樹洞，可設為 24 小時後自動刪除。</string>
     <string name="secret_publish_mode_text">文本樹洞</string>
     <string name="secret_publish_mode_voice">語音樹洞</string>
     <string name="secret_publish_content_label">樹洞內容</string>

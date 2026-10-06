@@ -161,7 +161,6 @@
     <string name="schedule_grid_title">주간 시간표</string>
     <string name="schedule_grid_subtitle">수업 카드를 탭하면 장소, 교수 및 주차를 확인할 수 있습니다</string>
     <string name="schedule_list_title">전체 수업 목록</string>
-    <string name="schedule_list_subtitle">요일별로 펼쳐 긴 수업명, 장소와 교수 정보를 확인할 수 있습니다.</string>
     <string name="schedule_section_header">교시</string>
     <string name="schedule_empty_grid">이번 주에는 수업 일정이 없습니다</string>
     <string name="schedule_select_week_title">주차 선택</string>
@@ -260,7 +259,7 @@
     <string name="about_mock_mode_restart_hint">전환 후 앱을 재시작하여 요청과 화면 상태를 완전히 새로고침하세요.</string>
     <string name="about_mock_mode_toast">데모 데이터 설정이 변경되었습니다. 앱을 재시작한 뒤 계속 이용하세요</string>
     <string name="about_checking">업데이트 확인 중…</string>
-    <string name="about_update_none">업그레이드 인터페이스에서 사용 가능한 버전 정보를 반환하지 않았습니다</string>
+    <string name="about_update_none">최신 버전입니다</string>
     <string name="about_open_failed">외부 링크를 열 수 없습니다</string>
     <string name="about_file_size">파일 크기 %s</string>
     <string name="about_metric_version">현재 버전</string>
@@ -369,7 +368,6 @@
     <string name="cet_refresh_checkcode">인증코드 새로고침</string>
     <string name="cet_no_data">성적 데이터가 없습니다</string>
     <string name="cet_form_title">조회 양식</string>
-    <string name="cet_form_subtitle">인증코드는 개별 새로고침이 가능하며, 조회 실패 시 이미 입력한 정보가 유지됩니다.</string>
     <string name="cet_result_title">조회 결과</string>
     <string name="cet_total_score">총점</string>
     <string name="cet_query_hint">인증코드가 안 보이면 이미지를 새로고침하세요.</string>
@@ -415,15 +413,12 @@
     <string name="tab_profile">마이</string>
     <string name="tab_messages">자료</string>
     <string name="news_title">뉴스</string>
-    <string name="news_subtitle">학교 공식 웹사이트의 공개 섹션별로 최신 뉴스를 탐색하며, 더 이상 교무 시스템 계정 크롤링에 의존하지 않습니다.</string>
     <string name="news_empty">표시할 수 있는 뉴스가 없습니다</string>
     <string name="news_category_school_headlines">학교 주요 뉴스</string>
     <string name="news_category_college_notice">학과 공지</string>
     <string name="news_category_campus_notice">공지사항</string>
     <string name="news_category_academic_update">학술 동향</string>
     <string name="messages_title">자료 정보</string>
-    <string name="messages_badge">메시지 허브</string>
-    <string name="messages_subtitle">뉴스, 시스템 공지 및 소통 메시지를 하나의 통합 입구로 정리합니다.</string>
     <string name="messages_metric_news">뉴스</string>
     <string name="messages_metric_unread">읽지 않음</string>
     <string name="messages_news_action_subtitle">학교 공식 웹사이트에 공개된 최신 뉴스 보기</string>
@@ -446,10 +441,8 @@
     <string name="messages_module_dating">룸메이트 소개</string>
     <string name="messages_module_delivery">캠퍼스 배달</string>
     <string name="messages_module_photograph">캠퍼스 포토</string>
-    <string name="messages_festival_badge">오늘의 기념일 / 역사</string>
     <string name="spare_title">빈 강의실</string>
     <string name="spare_subtitle">캠퍼스, 강의실 유형, 요일, 홀짝주 및 교시 그룹별로 빈 강의실을 조회합니다.</string>
-    <string name="spare_hero_badge">강의실 조회</string>
     <string name="spare_metric_zone">캠퍼스</string>
     <string name="spare_metric_time">교시</string>
     <string name="spare_metric_results">결과</string>
@@ -473,7 +466,6 @@
     <string name="graduate_exam_title">대학원 입시 조회</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">조회 정보</string>
-    <string name="graduate_exam_form_subtitle">입력을 완료하면 바로 조회할 수 있으며, 공식 보조 입구는 페이지에 유지됩니다.</string>
     <string name="graduate_exam_name_hint">이름</string>
     <string name="graduate_exam_exam_number_hint">수험번호</string>
     <string name="graduate_exam_id_number_hint">신분증 번호</string>
@@ -496,8 +488,6 @@
     <string name="graduate_exam_business_one_label">전공과목 1</string>
     <string name="graduate_exam_business_two_label">전공과목 2</string>
     <string name="data_center_title">데이터 조회</string>
-    <string name="data_center_badge">캠퍼스 도구함</string>
-    <string name="data_center_subtitle">자주 쓰는 캠퍼스 조회를 한곳에 모아, 전기료와 부서 연락처를 찾기 더 편리합니다.</string>
     <string name="data_center_metric_tools">도구</string>
     <string name="data_center_metric_scope">범위</string>
     <string name="data_center_metric_scope_value">전기료 / 연락처</string>
@@ -505,7 +495,6 @@
     <string name="electricity_title">전기료 조회</string>
     <string name="electricity_subtitle">이름, 학번, 연도를 입력하면 기숙사의 해당 연도 전기료 및 전기 사용 현황을 확인할 수 있습니다.</string>
     <string name="electricity_subtitle_short">기숙사 전기료 정보 조회</string>
-    <string name="electricity_badge">기숙사 전기료</string>
     <string name="electricity_metric_year">연도</string>
     <string name="electricity_metric_total">총 전기료</string>
     <string name="electricity_form_title">조회 조건</string>
@@ -529,9 +518,7 @@
     <string name="electricity_error_incomplete">이름과 학번을 입력해 주세요</string>
     <string name="electricity_error_student_number">올바른 학번을 입력해 주세요 (11자리 숫자)</string>
     <string name="yellow_page_title">캠퍼스 연락처</string>
-    <string name="yellow_page_subtitle">학교 주요 부서의 연락처를 정리했으며, 검색 후 바로 전화, 문자 또는 이메일을 보낼 수 있습니다.</string>
     <string name="yellow_page_subtitle_short">캠퍼스 부서 연락처 조회</string>
-    <string name="yellow_page_badge">연락처 목록</string>
     <string name="yellow_page_metric_categories">분류</string>
     <string name="yellow_page_metric_entries">항목</string>
     <string name="yellow_page_refresh">연락처 새로고침</string>
@@ -556,7 +543,6 @@
 
     <!-- 개인 센터 -->
     <string name="profile_title">개인 센터</string>
-    <string name="profile_subtitle_default">계정 정보, 연동 상태 및 데이터 내보내기 입구를 정리합니다.</string>
     <string name="profile_phone_title">전화번호</string>
     <string name="profile_email_title">이메일</string>
     <string name="profile_export_state_idle">아직 내보내기 기록이 없으며, 언제든지 내보내기 요청을 할 수 있습니다.</string>
@@ -740,7 +726,6 @@
     <string name="secret_my_posts_title">내 비밀게시판</string>
     <string name="secret_my_posts_subtitle">내가 올린 익명 콘텐츠 보기</string>
     <string name="secret_voice_section_title">음성 콘텐츠</string>
-    <string name="secret_voice_section_subtitle">앱 내에서 바로 재생할 수 있으며, 더 이상 웹으로 이동하지 않습니다.</string>
     <string name="secret_empty">비밀게시판이 아직 조용합니다. 탐색할 콘텐츠가 없습니다</string>
     <string name="secret_detail_title">비밀게시판 상세</string>
     <string name="secret_detail_missing">해당 비밀게시판 콘텐츠를 찾을 수 없습니다</string>
@@ -760,7 +745,6 @@
     <string name="secret_toast_like_failed">좋아요 작업 실패</string>
     <string name="secret_missing_id">비밀게시판 번호가 없습니다</string>
     <string name="secret_profile_title">내 비밀게시판</string>
-    <string name="secret_profile_badge">내 익명 글</string>
     <string name="secret_profile_subtitle">내가 올린 텍스트 및 음성 비밀게시판을 통합 관리합니다.</string>
     <string name="secret_profile_empty">아직 내가 올린 비밀게시판 콘텐츠가 없습니다</string>
     <string name="secret_voice_badge">음성 비밀게시판</string>
@@ -778,13 +762,11 @@
     <!-- 룸메이트 소개 -->
     <string name="dating_title">룸메이트 소개</string>
     <string name="dating_feed_refresh">룸메이트 소개 새로고침</string>
-    <string name="dating_feed_badge">프로필 로비</string>
     <string name="dating_feed_subtitle">교내 프로필을 살펴보고 만나고 싶은 사람을 찾아보세요.</string>
     <string name="dating_feed_empty">현재 구역에 새로운 룸메이트 소개 프로필이 없습니다</string>
     <string name="dating_center_entry_title">소통 센터</string>
     <string name="dating_center_entry_subtitle">받은 관심과 내 등록 보기</string>
     <string name="dating_refresh">소통 센터 새로고침</string>
-    <string name="dating_badge">소통 센터</string>
     <string name="dating_subtitle">받은 반응, 보낸 요청, 내 게시물을 확인하세요.</string>
     <string name="dating_metric_received">받은 관심</string>
     <string name="dating_metric_posts">내 등록</string>
@@ -880,7 +862,6 @@
     <string name="express_detail_title">고백 상세</string>
     <string name="express_detail_missing">해당 고백 콘텐츠를 찾을 수 없습니다</string>
     <string name="express_profile_title">내 고백</string>
-    <string name="express_profile_badge">내 메시지</string>
     <string name="express_profile_subtitle">내가 올린 고백 콘텐츠와 소통 상태를 통합 관리합니다.</string>
     <string name="express_profile_empty">아직 내가 올린 고백이 없습니다</string>
     <string name="express_content_title">본문 내용</string>
@@ -929,7 +910,6 @@
     <string name="topic_detail_title">토픽 상세</string>
     <string name="topic_detail_missing">해당 토픽 콘텐츠를 찾을 수 없습니다</string>
     <string name="topic_profile_title">내 토픽</string>
-    <string name="topic_profile_badge">내 토론</string>
     <string name="topic_profile_subtitle">내가 참여하여 올린 토픽 콘텐츠를 통합 관리합니다.</string>
     <string name="topic_profile_empty">아직 내가 올린 토픽이 없습니다</string>
     <string name="topic_content_title">토픽 본문</string>
@@ -996,13 +976,11 @@
     <string name="delivery_toast_accept_failed">수주 실패</string>
     <string name="delivery_toast_finish_failed">작업 실패</string>
     <string name="delivery_mine_title">내 주문</string>
-    <string name="delivery_mine_badge">내 배달</string>
     <string name="delivery_mine_subtitle">내가 등록한 주문과 내가 수주한 배달 기록을 통합 관리합니다.</string>
     <string name="delivery_mine_empty">현재 그룹에 관련 주문이 없습니다</string>
     <string name="delivery_mine_tab_published">내가 등록한</string>
     <string name="delivery_mine_tab_accepted">내가 수주한</string>
     <string name="delivery_publish_title">캠퍼스 배달 등록</string>
-    <string name="delivery_publish_badge">임무 생성</string>
     <string name="delivery_publish_subtitle">픽업 장소, 배달 주소 및 보수를 한 번에 입력하면 학우가 빠르게 수주할 수 있습니다.</string>
     <string name="delivery_publish_pickup_place">픽업 장소</string>
     <string name="delivery_publish_pickup_code">픽업 코드</string>
@@ -1042,7 +1020,6 @@
     <string name="photograph_detail_title">작품 상세</string>
     <string name="photograph_detail_missing">해당 작품 콘텐츠를 찾을 수 없습니다</string>
     <string name="photograph_profile_title">내 작품</string>
-    <string name="photograph_profile_badge">내 사진</string>
     <string name="photograph_profile_subtitle">내가 올린 캠퍼스 사진 콘텐츠를 통합 관리합니다.</string>
     <string name="photograph_profile_empty">아직 내가 올린 작품이 없습니다</string>
     <string name="photograph_stat_photo">사진</string>
@@ -1084,8 +1061,6 @@
     <string name="feature_photograph_subtitle">학우들의 렌즈에 담긴 캠퍼스 순간을 살펴보세요</string>
 
     <!-- 계정 센터 및 소장 리팩토링 보충 -->
-    <string name="library_collection_badge">소장 서비스</string>
-    <string name="library_collection_subtitle">먼저 소장을 검색하고, 상세 및 대출 상태를 확인하며, 자주 쓰는 도서관 기능을 한 페이지에 모았습니다.</string>
     <string name="library_collection_metric_borrowed">대출 중</string>
     <string name="library_collection_metric_search">검색 결과</string>
     <string name="library_collection_search_title">소장 검색</string>
@@ -1101,7 +1076,6 @@
     <string name="library_page_next">다음 페이지</string>
     <string name="library_page_indicator">%1$d / %2$d 페이지</string>
     <string name="library_collection_detail_title">소장 상세</string>
-    <string name="library_collection_detail_badge">소장 정보</string>
     <string name="library_collection_detail_loading">소장 상세 로딩 중…</string>
     <string name="library_collection_detail_missing_url">현재 사용 가능한 소장 상세 주소가 없습니다.</string>
     <string name="library_collection_detail_principal">책임자</string>
@@ -1194,7 +1168,7 @@
     <string name="profile_export_exporting_badge">준비 중</string>
     <string name="profile_export_exported_badge">다운로드 가능</string>
     <string name="profile_export_start_action">내보내기 시작</string>
-    <string name="profile_export_start_hint">백엔드에 새로운 데이터 내보내기 요청 제출</string>
+    <string name="profile_export_start_hint">개인 데이터 내보내기를 새로 신청합니다</string>
     <string name="profile_export_download_action">파일 다운로드</string>
     <string name="profile_export_started">데이터 내보내기 요청이 제출되었습니다</string>
     <string name="profile_export_submit_failed">내보내기 요청 제출 실패</string>
@@ -1206,7 +1180,6 @@
     <string name="profile_bind_email_form_title">이메일 연동</string>
     <string name="profile_privacy_title">개인정보 설정</string>
     <string name="profile_privacy_subtitle">프로필 공개 범위와 플랫폼 캐시 및 검색 동작을 관리합니다.</string>
-    <string name="profile_privacy_badge">개인정보 관리</string>
     <string name="profile_privacy_profile_title">프로필 공개 항목</string>
     <string name="profile_privacy_platform_title">플랫폼 설정</string>
     <string name="profile_privacy_faculty">학과</string>
@@ -1265,7 +1238,6 @@
     <string name="profile_unbind_action">연동 해제</string>
     <string name="profile_feedback_title">도움말 및 피드백</string>
     <string name="profile_feedback_subtitle">문제, 제안 또는 사용 소감을 유지보수 팀에 전달합니다.</string>
-    <string name="profile_feedback_badge">의견 피드백</string>
     <string name="profile_feedback_type_label">피드백 유형</string>
     <string name="profile_feedback_contact_label">연락처</string>
     <string name="profile_feedback_content_label">피드백 내용</string>
@@ -1299,10 +1271,10 @@
     <string name="profile_settings_campus_credentials_quick_auth_on">켜짐</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">꺼짐</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">끄면 저장된 자격 정보 기반의 빠른 인증 및 세션 동기화가 중지됩니다.</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">켜려면 유효한 동의와 저장된 자격 정보가 필요합니다. 조건이 맞지 않으면 백엔드가 실패 사유를 반환합니다.</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">켜기 전에 먼저 동의하고 캠퍼스 자격 정보를 저장해 주세요.</string>
     <string name="profile_settings_campus_credentials_revoke_title">캠퍼스 자격 정보 동의 철회</string>
     <string name="profile_settings_campus_credentials_revoke_action">동의 철회</string>
-    <string name="profile_settings_campus_credentials_revoke_confirmation">동의를 철회하면 저장된 캠퍼스 자격 정보 기반의 빠른 인증 및 세션 동기화가 중지됩니다. 서버의 안전 우선 설정에 따라 저장된 자격 정보도 함께 삭제될 수 있습니다.</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">동의를 철회하면 저장된 캠퍼스 자격 정보는 빠른 인증이나 세션 동기화에 더 이상 사용되지 않으며, 함께 삭제될 수도 있습니다.</string>
     <string name="profile_settings_campus_credentials_delete_title">저장된 캠퍼스 자격 정보 삭제</string>
     <string name="profile_settings_campus_credentials_delete_action">저장된 자격 정보 삭제</string>
     <string name="profile_settings_campus_credentials_delete_confirmation">삭제 후에는 시간표, 성적, 캠퍼스 카드, 도서관 등의 기능을 다시 로그인하거나 재인증해야 할 수 있습니다.</string>
@@ -1313,7 +1285,7 @@
     <string name="profile_settings_campus_credentials_action_failed">캠퍼스 자격 정보 작업에 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
     <string name="profile_delete_title">계정 탈퇴</string>
     <string name="profile_delete_warning_title">이 작업은 되돌릴 수 없습니다</string>
-    <string name="profile_delete_warning_body">탈퇴 신청 제출 후, 현재 계정은 백엔드 규칙에 따라 폐쇄 절차에 들어갑니다. 비밀번호가 정확한지 확인하고 미리 개인 데이터를 백업해 주세요.</string>
+    <string name="profile_delete_warning_body">탈퇴를 신청하면 현재 계정은 탈퇴 절차에 들어갑니다. 비밀번호를 확인하고 개인 데이터를 미리 백업해 주세요.</string>
     <string name="profile_delete_password_label">현재 로그인 비밀번호</string>
     <string name="profile_delete_password_required">현재 로그인 비밀번호를 입력해 주세요</string>
     <string name="profile_delete_confirm_action">탈퇴 확인</string>
@@ -1335,8 +1307,6 @@
 
 
     <string name="discovery_title">발견</string>
-    <string name="discovery_badge">커뮤니티 광장</string>
-    <string name="discovery_subtitle">비밀게시판, 고백 게시판, 토픽을 한곳에 모아 캠퍼스에서 무슨 일이 일어나고 있는지 손쉽게 확인할 수 있습니다.</string>
     <string name="discovery_metric_secret">비밀게시판</string>
     <string name="discovery_metric_express">고백</string>
     <string name="discovery_metric_topic">토픽</string>
@@ -1390,7 +1360,7 @@
     <string name="express_publish_failed">고백 등록 실패</string>
 
     <string name="secret_publish_title">비밀게시판 등록</string>
-    <string name="secret_publish_subtitle">텍스트와 음성 두 가지 모드를 모두 유지하며, 24시간 후 자동 삭제를 지원합니다.</string>
+    <string name="secret_publish_subtitle">텍스트나 음성으로 게시할 수 있으며, 24시간 후 자동 삭제를 설정할 수 있습니다.</string>
     <string name="secret_publish_mode_text">텍스트 비밀게시판</string>
     <string name="secret_publish_mode_voice">음성 비밀게시판</string>
     <string name="secret_publish_content_label">비밀게시판 내용</string>

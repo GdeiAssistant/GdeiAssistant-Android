@@ -167,14 +167,6 @@ private fun MessagesOverviewCard(state: MessagesUiState) {
     )
 
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = stringResource(R.string.messages_badge))
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.messages_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -358,18 +350,11 @@ private fun FestivalCard(festival: Festival) {
                     )
                 }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = festival.name.orEmpty(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = stringResource(R.string.messages_festival_badge),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = festival.name.orEmpty(),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
         Spacer(modifier = Modifier.height(14.dp))
         festival.description?.forEach { line ->

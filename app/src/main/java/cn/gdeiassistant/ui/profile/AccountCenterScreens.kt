@@ -208,7 +208,7 @@ fun PrivacySettingsScreen(navController: NavHostController) {
     ) {
         item {
             AccountIntroCard(
-                badge = stringResource(R.string.profile_privacy_badge),
+                badge = null,
                 title = stringResource(R.string.profile_privacy_title),
                 subtitle = stringResource(R.string.profile_privacy_subtitle),
                 icon = Icons.Rounded.Lock,
@@ -677,7 +677,7 @@ fun FeedbackScreen(navController: NavHostController) {
     ) {
         item {
             AccountIntroCard(
-                badge = stringResource(R.string.profile_feedback_badge),
+                badge = null,
                 title = stringResource(R.string.profile_feedback_title),
                 subtitle = stringResource(R.string.profile_feedback_subtitle),
                 icon = Icons.Rounded.Feedback,
@@ -1165,7 +1165,7 @@ private fun CampusCredentialConfirmationDialog(
 
 @Composable
 private fun AccountIntroCard(
-    badge: String,
+    badge: String?,
     title: String,
     subtitle: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -1173,8 +1173,10 @@ private fun AccountIntroCard(
     body: String? = null
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = badge, tint = tint)
-        Spacer(modifier = Modifier.height(16.dp))
+        if (badge != null) {
+            BadgePill(text = badge, tint = tint)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(14.dp),

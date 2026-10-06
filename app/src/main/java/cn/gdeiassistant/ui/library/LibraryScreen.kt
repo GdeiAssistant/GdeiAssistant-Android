@@ -49,7 +49,6 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.CollectionBorrowItem
 import cn.gdeiassistant.model.CollectionSearchItem
-import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
@@ -210,14 +209,6 @@ private fun LibraryOverviewCard(
     searchCount: Int
 ) {
     SectionCard(modifier = Modifier.fillMaxWidth()) {
-        BadgePill(text = stringResource(R.string.library_collection_badge))
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.library_collection_subtitle),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             LibraryMetricCard(
                 label = stringResource(R.string.library_collection_metric_borrowed),

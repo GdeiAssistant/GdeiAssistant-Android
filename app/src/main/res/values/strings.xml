@@ -160,7 +160,6 @@
     <string name="schedule_grid_title">周课表</string>
     <string name="schedule_grid_subtitle">点按课程卡片可查看上课地点、教师与周次</string>
     <string name="schedule_list_title">完整课程列表</string>
-    <string name="schedule_list_subtitle">按星期展开，长课程名、地点和教师会完整显示。</string>
     <string name="schedule_section_header">节次</string>
     <string name="schedule_empty_grid">当前周没有课程安排</string>
     <string name="schedule_select_week_title">选择周数</string>
@@ -259,7 +258,7 @@
     <string name="about_mock_mode_restart_hint">切换后建议重启应用，确保网络请求与页面状态全部刷新。</string>
     <string name="about_mock_mode_toast">已切换示例数据设置，建议重启应用后继续使用</string>
     <string name="about_checking">正在检查更新…</string>
-    <string name="about_update_none">升级接口未返回可用版本信息</string>
+    <string name="about_update_none">当前已是最新版本</string>
     <string name="about_open_failed">无法打开外部链接</string>
     <string name="about_file_size">文件大小 %s</string>
     <string name="about_metric_version">当前版本</string>
@@ -368,7 +367,6 @@
     <string name="cet_refresh_checkcode">刷新验证码</string>
     <string name="cet_no_data">暂无成绩数据</string>
     <string name="cet_form_title">查询表单</string>
-    <string name="cet_form_subtitle">验证码支持单独刷新，查询失败后已填写的信息会保留。</string>
     <string name="cet_result_title">查询结果</string>
     <string name="cet_total_score">总分</string>
     <string name="cet_query_hint">看不清验证码时可直接刷新图片。</string>
@@ -414,15 +412,12 @@
     <string name="tab_profile">我的</string>
     <string name="tab_messages">资讯</string>
     <string name="news_title">新闻</string>
-    <string name="news_subtitle">按学校官网公开栏目浏览最新资讯，不再依赖教务系统账号抓取。</string>
     <string name="news_empty">当前没有可展示的新闻</string>
     <string name="news_category_school_headlines">学校要闻</string>
     <string name="news_category_college_notice">院部通知</string>
     <string name="news_category_campus_notice">通知公告</string>
     <string name="news_category_academic_update">学术动态</string>
     <string name="messages_title">资讯信息</string>
-    <string name="messages_badge">消息中枢</string>
-    <string name="messages_subtitle">把新闻、系统公告和互动消息整理到一个统一入口。</string>
     <string name="messages_metric_news">新闻</string>
     <string name="messages_metric_unread">未读</string>
     <string name="messages_news_action_subtitle">查看学校官网公开发布的最新资讯</string>
@@ -445,10 +440,8 @@
     <string name="messages_module_dating">卖室友</string>
     <string name="messages_module_delivery">全民快递</string>
     <string name="messages_module_photograph">拍好校园</string>
-    <string name="messages_festival_badge">今日节日 / 历史</string>
     <string name="spare_title">空课室</string>
     <string name="spare_subtitle">按校区、课室类别、星期、单双周与课节组查询空课室。</string>
-    <string name="spare_hero_badge">教室查询</string>
     <string name="spare_metric_zone">校区</string>
     <string name="spare_metric_time">节次</string>
     <string name="spare_metric_results">结果</string>
@@ -472,7 +465,6 @@
     <string name="graduate_exam_title">考研查询</string>
     <string name="graduate_exam_backup_url">https://yz.chsi.com.cn/apply/cjcxa/</string>
     <string name="graduate_exam_form_title">查询信息</string>
-    <string name="graduate_exam_form_subtitle">完成填写后即可查询，官方备用入口会保留在页面里。</string>
     <string name="graduate_exam_name_hint">姓名</string>
     <string name="graduate_exam_exam_number_hint">准考证号</string>
     <string name="graduate_exam_id_number_hint">证件号码</string>
@@ -495,8 +487,6 @@
     <string name="graduate_exam_business_one_label">业务课一</string>
     <string name="graduate_exam_business_two_label">业务课二</string>
     <string name="data_center_title">数据查询</string>
-    <string name="data_center_badge">校园工具箱</string>
-    <string name="data_center_subtitle">把常用的校园查询整理到一起，日常找电费和部门联系方式会更顺手。</string>
     <string name="data_center_metric_tools">工具</string>
     <string name="data_center_metric_scope">覆盖</string>
     <string name="data_center_metric_scope_value">电费 / 黄页</string>
@@ -504,7 +494,6 @@
     <string name="electricity_title">电费查询</string>
     <string name="electricity_subtitle">输入姓名、学号和年份，就能查看宿舍这一年的电费与用电情况。</string>
     <string name="electricity_subtitle_short">查询宿舍电费信息</string>
-    <string name="electricity_badge">宿舍电费</string>
     <string name="electricity_metric_year">年份</string>
     <string name="electricity_metric_total">总电费</string>
     <string name="electricity_form_title">查询条件</string>
@@ -528,9 +517,7 @@
     <string name="electricity_error_incomplete">请填写姓名与学号</string>
     <string name="electricity_error_student_number">请输入正确的学号（11位数字）</string>
     <string name="yellow_page_title">校园黄页</string>
-    <string name="yellow_page_subtitle">把学校常用部门联系方式整理成册，查到以后可以直接拨号、发短信或发邮件。</string>
     <string name="yellow_page_subtitle_short">查询校园部门联系方式</string>
-    <string name="yellow_page_badge">联络黄页</string>
     <string name="yellow_page_metric_categories">分类</string>
     <string name="yellow_page_metric_entries">条目</string>
     <string name="yellow_page_refresh">刷新黄页</string>
@@ -555,7 +542,6 @@
 
     <!-- 个人中心 -->
     <string name="profile_title">个人中心</string>
-    <string name="profile_subtitle_default">整理账号资料、绑定状态和数据导出入口。</string>
     <string name="profile_phone_title">手机号</string>
     <string name="profile_email_title">邮箱</string>
     <string name="profile_export_state_idle">当前还没有导出记录，可随时发起导出请求。</string>
@@ -739,7 +725,6 @@
     <string name="secret_my_posts_title">我的树洞</string>
     <string name="secret_my_posts_subtitle">查看自己发过的匿名内容</string>
     <string name="secret_voice_section_title">语音内容</string>
-    <string name="secret_voice_section_subtitle">支持在应用内直接播放，不再跳转网页。</string>
     <string name="secret_empty">树洞还很安静，暂时没有可浏览的内容</string>
     <string name="secret_detail_title">树洞详情</string>
     <string name="secret_detail_missing">没有找到当前树洞内容</string>
@@ -759,7 +744,6 @@
     <string name="secret_toast_like_failed">点赞操作失败</string>
     <string name="secret_missing_id">缺少树洞编号</string>
     <string name="secret_profile_title">我的树洞</string>
-    <string name="secret_profile_badge">我的匿名</string>
     <string name="secret_profile_subtitle">统一查看自己发布过的文本和语音树洞。</string>
     <string name="secret_profile_empty">当前还没有自己发布的树洞内容</string>
     <string name="secret_voice_badge">语音树洞</string>
@@ -777,13 +761,11 @@
     <!-- 卖室友 -->
     <string name="dating_title">卖室友</string>
     <string name="dating_feed_refresh">刷新卖室友</string>
-    <string name="dating_feed_badge">资料大厅</string>
     <string name="dating_feed_subtitle">浏览校园交友资料，找到想认识的人。</string>
     <string name="dating_feed_empty">当前分区还没有新的卖室友资料</string>
     <string name="dating_center_entry_title">互动中心</string>
     <string name="dating_center_entry_subtitle">查看收到的撩和我的发布</string>
     <string name="dating_refresh">刷新互动中心</string>
-    <string name="dating_badge">互动中心</string>
     <string name="dating_subtitle">查看收到的互动、发出的请求和自己的发布。</string>
     <string name="dating_metric_received">收到的撩</string>
     <string name="dating_metric_posts">我的发布</string>
@@ -879,7 +861,6 @@
     <string name="express_detail_title">表白详情</string>
     <string name="express_detail_missing">没有找到当前表白内容</string>
     <string name="express_profile_title">我的表白</string>
-    <string name="express_profile_badge">我的留言</string>
     <string name="express_profile_subtitle">统一查看自己发布过的表白内容与互动状态。</string>
     <string name="express_profile_empty">当前还没有自己发布的表白</string>
     <string name="express_content_title">正文内容</string>
@@ -928,7 +909,6 @@
     <string name="topic_detail_title">话题详情</string>
     <string name="topic_detail_missing">没有找到当前话题内容</string>
     <string name="topic_profile_title">我的话题</string>
-    <string name="topic_profile_badge">我的讨论</string>
     <string name="topic_profile_subtitle">统一查看自己参与发布的话题内容。</string>
     <string name="topic_profile_empty">当前还没有自己发布的话题</string>
     <string name="topic_content_title">话题正文</string>
@@ -995,13 +975,11 @@
     <string name="delivery_toast_accept_failed">接单失败</string>
     <string name="delivery_toast_finish_failed">操作失败</string>
     <string name="delivery_mine_title">我的订单</string>
-    <string name="delivery_mine_badge">我的跑腿</string>
     <string name="delivery_mine_subtitle">统一查看我发布的订单和我接单的配送记录。</string>
     <string name="delivery_mine_empty">当前分组下还没有相关订单</string>
     <string name="delivery_mine_tab_published">我发布的</string>
     <string name="delivery_mine_tab_accepted">我接的</string>
     <string name="delivery_publish_title">发布全民快递</string>
-    <string name="delivery_publish_badge">创建任务</string>
     <string name="delivery_publish_subtitle">把取件地点、送达地址和赏金一次填清楚，方便同学快速接单。</string>
     <string name="delivery_publish_pickup_place">取件地点</string>
     <string name="delivery_publish_pickup_code">取件码</string>
@@ -1041,7 +1019,6 @@
     <string name="photograph_detail_title">作品详情</string>
     <string name="photograph_detail_missing">没有找到当前作品内容</string>
     <string name="photograph_profile_title">我的作品</string>
-    <string name="photograph_profile_badge">我的摄影</string>
     <string name="photograph_profile_subtitle">统一查看自己发布过的校园摄影内容。</string>
     <string name="photograph_profile_empty">当前还没有自己发布的作品</string>
     <string name="photograph_stat_photo">照片</string>
@@ -1083,8 +1060,6 @@
     <string name="feature_photograph_subtitle">看看同学镜头里拍下的校园瞬间</string>
 
     <!-- 账号中心与馆藏重构补充 -->
-    <string name="library_collection_badge">馆藏服务</string>
-    <string name="library_collection_subtitle">先查馆藏，再看详情和借阅情况，把常用的图书馆操作放在一个页面里。</string>
     <string name="library_collection_metric_borrowed">借阅中</string>
     <string name="library_collection_metric_search">搜索结果</string>
     <string name="library_collection_search_title">馆藏检索</string>
@@ -1100,7 +1075,6 @@
     <string name="library_page_next">下一页</string>
     <string name="library_page_indicator">第 %1$d / %2$d 页</string>
     <string name="library_collection_detail_title">馆藏详情</string>
-    <string name="library_collection_detail_badge">馆藏信息</string>
     <string name="library_collection_detail_loading">正在加载馆藏详情…</string>
     <string name="library_collection_detail_missing_url">当前没有可用的馆藏详情地址。</string>
     <string name="library_collection_detail_principal">责任者</string>
@@ -1193,7 +1167,7 @@
     <string name="profile_export_exporting_badge">准备中</string>
     <string name="profile_export_exported_badge">可下载</string>
     <string name="profile_export_start_action">发起导出</string>
-    <string name="profile_export_start_hint">向后端提交一次新的数据导出请求</string>
+    <string name="profile_export_start_hint">申请导出一份新的个人数据</string>
     <string name="profile_export_download_action">下载文件</string>
     <string name="profile_export_started">已提交数据导出请求</string>
     <string name="profile_export_submit_failed">提交导出请求失败</string>
@@ -1205,7 +1179,6 @@
     <string name="profile_bind_email_form_title">邮箱绑定</string>
     <string name="profile_privacy_title">隐私设置</string>
     <string name="profile_privacy_subtitle">管理资料公开范围，以及平台缓存和检索行为。</string>
-    <string name="profile_privacy_badge">隐私控制</string>
     <string name="profile_privacy_profile_title">资料公开项</string>
     <string name="profile_privacy_platform_title">平台设置</string>
     <string name="profile_privacy_faculty">学院</string>
@@ -1264,7 +1237,6 @@
     <string name="profile_unbind_action">解除绑定</string>
     <string name="profile_feedback_title">帮助与反馈</string>
     <string name="profile_feedback_subtitle">把问题、建议或体验反馈发给维护团队。</string>
-    <string name="profile_feedback_badge">意见反馈</string>
     <string name="profile_feedback_type_label">反馈类型</string>
     <string name="profile_feedback_contact_label">联系方式</string>
     <string name="profile_feedback_content_label">反馈内容</string>
@@ -1298,10 +1270,10 @@
     <string name="profile_settings_campus_credentials_quick_auth_on">已开启</string>
     <string name="profile_settings_campus_credentials_quick_auth_off">已关闭</string>
     <string name="profile_settings_campus_credentials_quick_auth_enabled_subtitle">关闭后，平台将停止基于已保存凭证进行快速认证或会话同步。</string>
-    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">开启前需要有效授权和已保存凭证；如条件不满足，服务端会返回失败原因。</string>
+    <string name="profile_settings_campus_credentials_quick_auth_disabled_subtitle">开启前需要先授权并保存校园凭证。</string>
     <string name="profile_settings_campus_credentials_revoke_title">撤回校园账号凭证授权</string>
     <string name="profile_settings_campus_credentials_revoke_action">撤回授权</string>
-    <string name="profile_settings_campus_credentials_revoke_confirmation">撤回授权将停止后续基于已保存校园凭证的快速认证或会话同步；如服务端配置为安全优先处理，已保存凭证也可能被同步删除。</string>
+    <string name="profile_settings_campus_credentials_revoke_confirmation">撤回授权后，将不再使用已保存的校园凭证进行快速认证或会话同步，已保存的凭证也可能被一并删除。</string>
     <string name="profile_settings_campus_credentials_delete_title">删除已保存的校园凭证</string>
     <string name="profile_settings_campus_credentials_delete_action">删除已保存凭证</string>
     <string name="profile_settings_campus_credentials_delete_confirmation">删除后，课表、成绩、校园卡、图书馆等查询可能需要重新登录或重新授权。</string>
@@ -1312,7 +1284,7 @@
     <string name="profile_settings_campus_credentials_action_failed">校园凭证操作失败，请稍后重试</string>
     <string name="profile_delete_title">注销账号</string>
     <string name="profile_delete_warning_title">此操作不可恢复</string>
-    <string name="profile_delete_warning_body">提交注销申请后，当前账号将按后端规则进入关闭流程，请确认密码无误并提前备份个人数据。</string>
+    <string name="profile_delete_warning_body">提交注销申请后，当前账号将进入注销流程，请确认密码无误并提前备份个人数据。</string>
     <string name="profile_delete_password_label">当前登录密码</string>
     <string name="profile_delete_password_required">请输入当前登录密码</string>
     <string name="profile_delete_confirm_action">确认注销</string>
@@ -1334,8 +1306,6 @@
 
 
     <string name="discovery_title">发现</string>
-    <string name="discovery_badge">社区广场</string>
-    <string name="discovery_subtitle">把树洞、表白墙和话题收在一起，方便随手看看校园里正在发生什么。</string>
     <string name="discovery_metric_secret">树洞</string>
     <string name="discovery_metric_express">表白</string>
     <string name="discovery_metric_topic">话题</string>
@@ -1389,7 +1359,7 @@
     <string name="express_publish_failed">发布表白失败</string>
 
     <string name="secret_publish_title">发布树洞</string>
-    <string name="secret_publish_subtitle">文本和语音两种模式都保留，并支持 24 小时后自动删除。</string>
+    <string name="secret_publish_subtitle">发布文字或语音树洞，可设为 24 小时后自动删除。</string>
     <string name="secret_publish_mode_text">文本树洞</string>
     <string name="secret_publish_mode_voice">语音树洞</string>
     <string name="secret_publish_content_label">树洞内容</string>

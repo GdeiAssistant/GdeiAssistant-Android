@@ -386,15 +386,17 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                             )
                             Column(modifier = Modifier.weight(1f)) {
                                 BadgePill(text = summary.nickname)
-                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
-                                Text(
-                                    text = summary.introduction,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis
-                                )
+                                if (summary.introduction.isNotBlank()) {
+                                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
+                                    Text(
+                                        text = summary.introduction,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 3,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
                             }
                         }
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
