@@ -48,6 +48,106 @@ class ProfileLocationCatalogTest {
     }
 
     @Test
+    fun internationalCitiesUseStandardNamesAndKeepSavedPickerCodesAcrossLocales() {
+        val examples = listOf(
+            Triple(listOf("USA", "NY", "QEE"), "纽约市", listOf("New York City", "ニューヨーク", "뉴욕")),
+            Triple(listOf("USA", "CA", "LAX"), "洛杉矶", listOf("Los Angeles", "ロサンゼルス", "로스앤젤레스")),
+            Triple(listOf("GBR", "ENG", "LND"), "伦敦", listOf("London", "ロンドン", "런던")),
+            Triple(listOf("FRA", "FRA", "PAR"), "巴黎", listOf("Paris", "パリ", "파리"))
+        )
+        examples.forEach { (codes, sourceName, expectedNames) ->
+            val saved = checkNotNull(ProfileLocationCatalog.selection(codes[0], codes[1], codes[2], "zh-CN"))
+            listOf("en", "ja", "ko").forEachIndexed { index, locale ->
+                val selected = checkNotNull(ProfileLocationCatalog.selection(codes[0], codes[1], codes[2], locale))
+                val city = ProfileLocationCatalog.regionsForLocale(locale)
+                    .single { it.code == codes[0] }.states
+                    .single { it.code == codes[1] }.cities
+                    .single { it.code == codes[2] }
+                assertEquals("$codes / $locale", expectedNames[index], city.name)
+                assertEquals(expectedNames[index], ProfileLocationCatalog.localizeCityName(codes[0], codes[1], codes[2], sourceName, locale))
+                assertEquals(codes, listOf(selected.regionCode, selected.stateCode, selected.cityCode))
+                assertEquals(selected.displayName, ProfileLocationCatalog.selectionDisplayName(saved, saved.displayName, locale))
+            }
+            assertEquals(codes, listOf(saved.regionCode, saved.stateCode, saved.cityCode))
+        }
+    }
+
+    @Test
+    fun newYorkCityAndStateStaySeparateAndAmbiguousTextIsNotGuessed() {
+        assertEquals("New York", ProfileLocationCatalog.localizeStateName("USA", "NY", "纽约", "en"))
+        assertEquals("New York City", ProfileLocationCatalog.localizeCityName("USA", "NY", "QEE", "纽约市", "en"))
+        assertEquals("ニューヨーク州", ProfileLocationCatalog.localizeStateName("USA", "NY", "纽约", "ja"))
+        assertEquals("ニューヨーク", ProfileLocationCatalog.localizeCityName("USA", "NY", "QEE", "纽约市", "ja"))
+        assertEquals("뉴욕주", ProfileLocationCatalog.localizeStateName("USA", "NY", "纽约", "ko"))
+        assertEquals("뉴욕", ProfileLocationCatalog.localizeCityName("USA", "NY", "QEE", "纽约市", "ko"))
+        mapOf("en" to "New York", "ja" to "ニューヨーク州", "ko" to "뉴욕주").forEach { (locale, stateName) ->
+            assertEquals(stateName, ProfileLocationCatalog.localizeIpArea("New York", locale))
+            assertEquals("Custom area near London", ProfileLocationCatalog.localizeIpArea("Custom area near London", locale))
+        }
+    }
+
+    @Test
+    fun frenchGuianaAndGuyanaKeepDistinctCountryCodesAndNamesInAllSixLocales() {
+        val frenchGuiana = ProfileLocationCatalog.regions.single { it.code == "GUF" }
+        val guyana = ProfileLocationCatalog.regions.single { it.code == "GUY" }
+        assertEquals("GF", frenchGuiana.iso)
+        assertEquals("GY", guyana.iso)
+        assertEquals("圭亚那", frenchGuiana.name)
+        assertEquals("圭亚那", guyana.name)
+        mapOf(
+            "zh-CN" to ("法属圭亚那" to "圭亚那"),
+            "zh-HK" to ("法屬圭亞那" to "圭亞那"),
+            "zh-TW" to ("法屬圭亞那" to "圭亞那"),
+            "en" to ("French Guiana" to "Guyana"),
+            "ja" to ("仏領ギアナ" to "ガイアナ"),
+            "ko" to ("프랑스령 기아나" to "가이아나")
+        ).forEach { (locale, names) ->
+            val localized = ProfileLocationCatalog.regionsForLocale(locale)
+            assertEquals(names.first, localized.single { it.code == "GUF" }.name)
+            assertEquals(names.second, localized.single { it.code == "GUY" }.name)
+            assertEquals(names.first, ProfileLocationCatalog.localizeIpArea("法属圭亚那", locale))
+            assertEquals(names.first, ProfileLocationCatalog.localizeIpArea("French Guiana", locale))
+            assertEquals("圭亚那", ProfileLocationCatalog.localizeIpArea("圭亚那", locale))
+            val selected = checkNotNull(ProfileLocationCatalog.selection("GUF", "", "", locale))
+            assertEquals("GUF", selected.regionCode)
+            assertEquals(names.first, selected.displayName)
+        }
+    }
+
+    @Test
+    fun japanesePrefecturesRetainAll47CodesAndUseTheirJapaneseAdministrativeNames() {
+        val expectedJapaneseNames = listOf(
+            "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県",
+            "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県",
+            "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県",
+            "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県",
+            "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+        )
+        val source = ProfileLocationCatalog.regions.single { it.code == "JPN" }.states.single().cities
+        assertEquals((1..47).map(Int::toString).toSet(), source.map { it.code }.toSet())
+        listOf("en", "ja", "ko").forEach { locale ->
+            val localized = ProfileLocationCatalog.regionsForLocale(locale).single { it.code == "JPN" }.states.single().cities
+            assertEquals(source.map { it.code }, localized.map { it.code })
+            source.forEach { city ->
+                assertEquals(true, city.localizedNames?.get(locale)?.isNotBlank())
+                val selection = checkNotNull(ProfileLocationCatalog.selection("JPN", "JPN", city.code, locale))
+                assertEquals(listOf("JPN", "JPN", city.code), listOf(selection.regionCode, selection.stateCode, selection.cityCode))
+            }
+            if (locale == "ja") {
+                localized.forEach { city -> assertEquals(city.code, expectedJapaneseNames[city.code.toInt() - 1], city.name) }
+            }
+        }
+        assertEquals("Tokyo", ProfileLocationCatalog.localizeCityName("JPN", "JPN", "13", "东京", "en"))
+        assertEquals("도쿄 도", ProfileLocationCatalog.localizeCityName("JPN", "JPN", "13", "东京", "ko"))
+        assertEquals("Tochigi", ProfileLocationCatalog.localizeCityName("JPN", "JPN", "9", "枥木", "en"))
+        assertEquals("도치기 현", ProfileLocationCatalog.localizeCityName("JPN", "JPN", "9", "枥木", "ko"))
+        listOf("zh-CN", "zh-HK", "zh-TW").forEach { locale ->
+            assertEquals("栃木", ProfileLocationCatalog.localizeCityName("JPN", "JPN", "9", "枥木", locale))
+        }
+        assertEquals("枥木", source.single { it.code == "9" }.name)
+    }
+
+    @Test
     fun localizedPickerDirectoriesPreserveEveryCodeAndTheSourceCatalog() {
         val original = ProfileLocationCatalog.regions
         val codes = original.map { region -> region.code to region.states.map { state -> state.code to state.cities.map { it.code } } }
@@ -87,7 +187,7 @@ class ProfileLocationCatalogTest {
         listOf("", "未知地区", "林广东喜欢广州", "广东 广州 / 自定义", "Guangdong user text").forEach { unknown ->
             assertEquals(unknown, ProfileLocationCatalog.localizeIpArea(unknown, "zh-HK"))
         }
-        // The raw catalog has two regions named 圭亚那 with different English labels.
+        // The legacy raw name is shared by French Guiana and Guyana; do not guess a country.
         assertEquals("圭亚那", ProfileLocationCatalog.localizeIpArea("圭亚那", "en"))
     }
 
