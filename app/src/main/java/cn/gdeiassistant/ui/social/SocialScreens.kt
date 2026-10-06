@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,6 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -420,7 +421,7 @@ fun ConversationListScreen(navController: NavHostController) {
         showLoadingPlaceholder = state.isLoading && state.items.isEmpty(),
         actions = {
             IconButton(onClick = { navController.navigate(Routes.SOCIAL_SEARCH) }) {
-                Icon(Icons.Rounded.PersonSearch, contentDescription = stringResource(R.string.social_search_title))
+                Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.social_search_title))
             }
             IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
                 Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
@@ -894,29 +895,30 @@ private fun SocialUserRow(user: SocialUser, onClick: () -> Unit) {
             SocialUserAvatar(user = user, size = 44.dp)
             Column(modifier = Modifier.weight(1f)) {
                 Text(user.nickname, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = user.introduction ?: stringResource(R.string.social_no_introduction),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                user.introduction?.let { introduction ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = introduction,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        FilterChip(
-            selected = false,
-            onClick = onClick,
-            label = { Text(relationshipLabel(user.relationship)) }
-        )
+        BadgePill(text = relationshipLabel(user.relationship))
     }
 }
 
 @Composable
 private fun StatChip(label: String, value: String, onClick: () -> Unit) {
     Column(
-        modifier = Modifier.clickable(onClick = onClick),
+        modifier = Modifier
+            .defaultMinSize(minHeight = 48.dp)
+            .clickable(onClick = onClick)
+            .semantics(mergeDescendants = true) {},
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)

@@ -1449,7 +1449,7 @@
     <string name="social_list_followers">フォロワー一覧</string>
     <string name="social_list_friends">友だち一覧</string>
     <string name="social_list_empty_title">リストは空です</string>
-    <string name="social_list_empty_body">表示できる関係がありません。</string>
+    <string name="social_list_empty_body">まだフォローやフォロワーがいません。気になる人を探してみましょう。</string>
     <string name="social_blocks_title">ブロックリスト</string>
     <string name="social_blocks_empty_title">ブロックはありません</string>
     <string name="social_blocks_empty_body">まだ誰もブロックしていません。</string>
@@ -1480,7 +1480,7 @@
     <string name="social_relationship_self">自分</string>
     <string name="social_relationship_none">未フォロー</string>
     <string name="social_relationship_following">フォロー中</string>
-    <string name="social_relationship_followed_by">フォローされています</string>
+    <string name="social_relationship_followed_by">あなたをフォローしています</string>
     <string name="social_relationship_mutual">相互フォロー</string>
     <string name="social_default_nickname">ユーザー</string>
     <string name="social_dm_privacy_title">メッセージを受信できる人</string>
