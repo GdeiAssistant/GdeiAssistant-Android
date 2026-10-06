@@ -70,6 +70,10 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
             composeRule.waitUntilAtLeastOneExists(hasText(localized(option.code, R.string.appearance_title)), 20_000)
             composeRule.onNodeWithText(localized(option.code, R.string.appearance_title)).assertIsDisplayed()
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitForText(localized(option.code, R.string.profile_title))
+            // Navigation restores the LazyColumn near the appearance menu. Its off-screen
+            // identity item is not composed until we scroll back to it.
+            scrollToTag("profile.identity").assertIsDisplayed()
             composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.identity"), 20_000)
             val (location, hometown, ipArea) = when (option.code) {
                 "zh-HK", "zh-TW" -> Triple("中國 廣東 廣州", "中國 廣東 汕頭", "廣東")
@@ -102,10 +106,12 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
             composeRule.onNode(hasText(country) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
             composeRule.onNode(hasText(ipArea) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            composeRule.waitUntilDoesNotExist(hasTestTag("profile.location.picker"), 20_000)
             scrollToText(hometown).performClick()
             composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.location.picker"), 20_000)
             composeRule.onNode(hasText(hometown) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            composeRule.waitUntilDoesNotExist(hasTestTag("profile.location.picker"), 20_000)
             scrollToText(localized(option.code, R.string.appearance_title)).performClick()
         }
     }

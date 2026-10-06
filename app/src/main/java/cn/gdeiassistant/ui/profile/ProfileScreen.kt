@@ -71,7 +71,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -301,7 +300,7 @@ private fun ProfileAccountCard(
     onSaveLocation: (ProfileLocationField, ProfileLocationSelection) -> Unit
 ) {
     val context = LocalContext.current
-    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val locale = AppLocaleSupport.normalizeLocale(context.resources.configuration.locales[0].toLanguageTag())
     var showBirthdayPicker by rememberSaveable { mutableStateOf(false) }
     var activeLocationField by remember { mutableStateOf<ProfileLocationField?>(null) }
     var activeTextEditor by remember { mutableStateOf<ProfileTextEditorField?>(null) }
@@ -531,7 +530,7 @@ private fun ProfileSummaryContent(
     onEditHometown: () -> Unit,
     onEditBio: () -> Unit
 ) {
-    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val locale = AppLocaleSupport.normalizeLocale(LocalContext.current.resources.configuration.locales[0].toLanguageTag())
     val faculty = profileOptions.facultyNameFor(profile.facultyCode) ?: profile.faculty
     val major = profileOptions.majorLabelFor(faculty.orEmpty(), profile.majorCode.orEmpty()) ?: profile.major
     Column(modifier = Modifier.testTag("profile.details"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -602,7 +601,7 @@ private fun ProfileEditingContent(
     onSave: () -> Unit,
     onShowBirthdayPicker: () -> Unit
 ) {
-    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val locale = AppLocaleSupport.normalizeLocale(LocalContext.current.resources.configuration.locales[0].toLanguageTag())
     val draft = state.draft
     val profileOptions = state.profileOptions
     val majorOptions = profileOptions.majorOptionsFor(draft.college)
@@ -1200,7 +1199,7 @@ private fun ProfileLocationPickerSheet(
     onDismiss: () -> Unit,
     onConfirm: (ProfileLocationSelection) -> Unit
 ) {
-    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
+    val locale = AppLocaleSupport.normalizeLocale(LocalContext.current.resources.configuration.locales[0].toLanguageTag())
     val pickerRegions = remember(regions, locale) { ProfileLocationCatalog.localizeRegions(regions, locale) }
     val initialSelection = remember(pickerRegions, currentSelection) {
         currentSelection?.takeIf { selection ->
