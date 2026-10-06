@@ -100,3 +100,10 @@
 - PR 的 Android CI 继续在 API 35 / Google APIs / x86_64 / Pixel 6 执行全部 `connectedDebugAndroidTest`（原四项 smoke 加新增四项）。入口为 `bash scripts/run-emulator-tests.sh`，退出前采集截图/可访问性树和 logcat，上传到 `android-instrumentation-reports` 的 `android-ui-evidence/`、`android-emulator-logcat.log`，同时保留 Gradle 报告。
 - 签名发布 workflow 只补与已验证 CI 相同的 `platforms;android-37.0` 安装步骤，放在 release secrets 检查之后；未修改签名或执行发布。
 - 仍需实际设备确认 OEM/旧版 picker、相机/HEIC 输入、键盘交互及真实服务环境；本轮相册仅使用合成 PNG，退出测试时删除该测试创建的 URI。
+
+### 首次真实 CI 结果与定向返修
+
+- 提交 `97172915d05d237836f6cd740b60dcfa036ab030` 的 CI run `37415567394`：原四项 smoke 通过，新增四项均在系统窗口检测报 `Photo picker did not open`。实际 logcat 四次记录 `PICK_IMAGES` 启动及 `com.google.android.providers.media.module/...PhotoPickerActivity` 显示，用时 829–1207ms；因此应用已经启动系统 picker，未增加超时或替换/跳过系统选图。
+- 窗口检测由仅读取 `rootInActiveWindow` 改为启用 `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` 并遍历交互窗口、检查实际节点包名。返回应用还必须确认 picker 窗口已消失，防止把透明窗口后面的应用误判为已返回；原 20 秒限制保留。首次未取得控件树，具体活动根节点状态仍待新 CI 的窗口记录确认。
+- 首次 `adb pull` 对应用私有外部目录返回不存在；真实 applicationId 和日志均为 `cn.gdeiassistant`，不是包名猜错。本轮改用 `MediaStore.Downloads` 保存到 `Download/GdeiSocialUiEvidence`，避免应用清理丢掉文件。截图装入 ZIP，防止诊断 PNG 混入后续系统相册；CI 拉取后解压，窗口树单独保存，诊断写入错误及实际窗口包名写入 logcat。
+- 本机通过 `git diff --check`、脚本语法检查；临时合成命令实际验证新采集路径、ZIP 解压和保留原退出码 0/37。本轮不改生产业务，未重复纯 JVM 测试；修正后的实际窗口检测、选图与截图保存须由新精确提交的 API 35 CI 验证。

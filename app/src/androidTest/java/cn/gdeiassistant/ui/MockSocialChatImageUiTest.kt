@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -37,7 +38,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.io.OutputStream
 import java.util.UUID
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 /** Uses the actual OS picker and Android image pipeline; only the remote service is an in-memory demo. */
 @SdkSuppress(minSdkVersion = 33)
@@ -50,7 +54,7 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     private val automation get() = instrumentation.uiAutomation
     private val context get() = instrumentation.targetContext
     private val cacheDirectory get() = File(context.cacheDir, "social_chat_images")
-    private val evidenceDirectory get() = File(context.getExternalFilesDir(null), "social-ui-evidence").apply { mkdirs() }
+    private val evidenceRelativePath = "${Environment.DIRECTORY_DOWNLOADS}/GdeiSocialUiEvidence"
     private var fixtureUri: Uri? = null
     private var originalAccessibilityFlags = 0
     private var conversationId = ""
@@ -60,7 +64,9 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     fun prepareRealGalleryImageAndOpenConversation() {
         val info = automation.serviceInfo
         originalAccessibilityFlags = info.flags
-        info.flags = info.flags or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+        info.flags = info.flags or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+            AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS or
+            AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
         automation.serviceInfo = info
         assertTrue("Previous test left private image files", cacheFiles().isEmpty())
         fixtureUri = insertSyntheticPhoto()
@@ -288,9 +294,10 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
         // Modern picker modules may require a Done/Add confirmation even for a single selection.
         val deadline = SystemClock.uptimeMillis() + 20_000
         while (SystemClock.uptimeMillis() < deadline) {
-            val root = automation.rootInActiveWindow
-            if (root != null && root.packageName?.toString() == context.packageName) break
-            if (root != null && isSystemPicker(root)) {
+            val roots = nativeRoots()
+            val pickerRoots = roots.filter(::isSystemPicker)
+            if (pickerRoots.isEmpty() && roots.any(::isAppWindow)) break
+            for (root in pickerRoots) {
                 val confirm = walk(root).firstOrNull { node ->
                     val label = node.text?.toString() ?: node.contentDescription?.toString().orEmpty()
                     node.isVisibleToUser && (label in setOf("Add", "Done", "Select", "添加", "完成", "选择") || label.startsWith("Add ("))
@@ -305,9 +312,23 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     }
 
     private fun isSystemPicker(root: AccessibilityNodeInfo): Boolean {
-        val pkg = root.packageName?.toString().orEmpty()
-        return pkg.contains("providers.media") || pkg.contains("photopicker") || pkg.endsWith("documentsui")
+        return walk(root).any { node ->
+            val pkg = node.packageName?.toString().orEmpty()
+            pkg.contains("providers.media") || pkg.contains("photopicker") || pkg.endsWith("documentsui")
+        }
     }
+
+    private fun isAppWindow(root: AccessibilityNodeInfo): Boolean =
+        walk(root).any { it.packageName?.toString() == context.packageName }
+
+    // The system picker is a separate translucent window. The previously touched app window
+    // can remain the accessibility "active" window, so inspect every interactive window.
+    private fun nativeRoots(): List<AccessibilityNodeInfo> = buildList {
+        automation.windows.sortedByDescending { it.layer }.forEach { window ->
+            window.root?.let { add(it) }
+        }
+        automation.rootInActiveWindow?.let { add(it) }
+    }.distinctBy { it.windowId }
 
     private fun walk(root: AccessibilityNodeInfo): Sequence<AccessibilityNodeInfo> = sequence {
         yield(root)
@@ -331,14 +352,18 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     private fun waitNativeNode(message: String, select: (AccessibilityNodeInfo) -> AccessibilityNodeInfo?): AccessibilityNodeInfo {
         val deadline = SystemClock.uptimeMillis() + 20_000
         while (SystemClock.uptimeMillis() < deadline) {
-            automation.rootInActiveWindow?.let { root -> select(root)?.let { return it } }
+            for (root in nativeRoots()) select(root)?.let { return it }
             SystemClock.sleep(200)
         }
         saveEvidence("native-timeout")
         throw AssertionError(message)
     }
 
-    private fun waitForAppWindow() = waitNative("Picker did not return to app") { it.packageName?.toString() == context.packageName }
+    private fun waitForAppWindow() {
+        waitNative("Picker did not return to app") { root ->
+            isAppWindow(root) && nativeRoots().none(::isSystemPicker)
+        }
+    }
 
     private fun pressSystemBack() {
         assertTrue(automation.injectInputEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK), true))
@@ -366,19 +391,54 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     }
 
     private fun saveEvidence(stage: String) {
+        // MediaStore Downloads survive UTP's app cleanup, unlike app-owned external files.
+        // These files contain only synthetic mock test data.
         runCatching {
-            automation.takeScreenshot()?.let { screenshot ->
-                File(evidenceDirectory, "$evidencePrefix-$stage.png").outputStream().use {
-                    screenshot.compress(Bitmap.CompressFormat.PNG, 100, it)
+            val screenshot = automation.takeScreenshot()
+            if (screenshot == null) Log.w("SocialImageUiTest", "Screenshot unavailable at $stage")
+            screenshot?.let { captured ->
+                try {
+                    // A PNG in Downloads would itself appear as the newest picker photo.
+                    persistEvidence("$evidencePrefix-$stage.zip", "application/zip") { output ->
+                        ZipOutputStream(output).use { zip ->
+                            zip.putNextEntry(ZipEntry("$evidencePrefix-$stage.png"))
+                            check(captured.compress(Bitmap.CompressFormat.PNG, 100, zip))
+                            zip.closeEntry()
+                        }
+                    }
+                } finally {
+                    captured.recycle()
                 }
-                screenshot.recycle()
             }
-            val root = automation.rootInActiveWindow
-            File(evidenceDirectory, "$evidencePrefix-$stage.txt").writeText(
-                root?.let { walk(it).joinToString("\n") { node ->
+        }.onFailure { Log.e("SocialImageUiTest", "Screenshot evidence failed at $stage", it) }
+        runCatching {
+            val roots = nativeRoots()
+            Log.i("SocialImageUiTest", "stage=$stage target=${context.packageName} flags=${automation.serviceInfo.flags} windows=${roots.map { it.packageName }}")
+            val tree = roots.joinToString("\n\n") { root ->
+                "Window ${root.windowId}\n" + walk(root).joinToString("\n") { node ->
                     "${node.packageName} | ${node.viewIdResourceName} | ${node.text} | ${node.contentDescription} | clickable=${node.isClickable}"
-                } } ?: "No active accessibility window"
-            )
+                }
+            }.ifEmpty { "No interactive accessibility windows" }
+            persistEvidence("$evidencePrefix-$stage.txt", "text/plain") { it.write(tree.toByteArray(Charsets.UTF_8)) }
+        }.onFailure { Log.e("SocialImageUiTest", "Window evidence failed at $stage", it) }
+    }
+
+    private fun persistEvidence(name: String, mimeType: String, write: (OutputStream) -> Unit) {
+        val values = ContentValues().apply {
+            put(MediaStore.Downloads.DISPLAY_NAME, name)
+            put(MediaStore.Downloads.MIME_TYPE, mimeType)
+            put(MediaStore.Downloads.RELATIVE_PATH, evidenceRelativePath)
+            put(MediaStore.Downloads.IS_PENDING, 1)
+        }
+        val uri = checkNotNull(context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values))
+        try {
+            checkNotNull(context.contentResolver.openOutputStream(uri)).use(write)
+            values.clear()
+            values.put(MediaStore.Downloads.IS_PENDING, 0)
+            check(context.contentResolver.update(uri, values, null, null) == 1)
+        } catch (error: Throwable) {
+            context.contentResolver.delete(uri, null, null)
+            throw error
         }
     }
 }
