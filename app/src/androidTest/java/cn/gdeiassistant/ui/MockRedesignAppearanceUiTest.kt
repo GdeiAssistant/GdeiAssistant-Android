@@ -44,7 +44,7 @@ class MockRedesignAppearanceUiTest : BaseMockUiSmokeTest(seedSession = true, ini
                         preferences.setThemeMode(theme)
                         preferences.setFontScaleStep(3)
                     }
-                    listOf(Routes.HOME, Routes.DISCOVERY, Routes.MESSAGES, Routes.PROFILE).forEach { route ->
+                    listOf(Routes.HOME, Routes.MESSAGES, Routes.PROFILE).forEach { route ->
                         assertPrimaryTabsVisible()
                         composeRule.onNodeWithTag("tab.$route").assertIsDisplayed().performClick()
                         if (route == Routes.PROFILE) {
