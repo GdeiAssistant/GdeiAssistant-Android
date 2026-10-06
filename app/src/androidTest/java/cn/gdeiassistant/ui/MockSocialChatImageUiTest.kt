@@ -210,7 +210,7 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
 
     private fun waitForRetry(clientId: String) {
         composeRule.waitUntilAtLeastOneExists(hasTestTag("social.message.retry.$clientId"), 20_000)
-        composeRule.onNodeWithTag("social.message.status.$clientId").assertTextContains("发送失败")
+        composeRule.onNodeWithTag("social.message.status.$clientId").assertTextContains("发送失败", substring = true)
     }
 
     private fun cacheFiles(): List<File> = cacheDirectory.listFiles()?.filter(File::isFile).orEmpty()
@@ -366,8 +366,13 @@ class MockSocialChatImageUiTest : BaseMockUiSmokeTest(
     }
 
     private fun pressSystemBack() {
-        assertTrue(automation.injectInputEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK), true))
-        assertTrue(automation.injectInputEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK), true))
+        val downTime = SystemClock.uptimeMillis()
+        assertTrue(automation.injectInputEvent(
+            KeyEvent(downTime, downTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK, 0), true
+        ))
+        assertTrue(automation.injectInputEvent(
+            KeyEvent(downTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK, 0), true
+        ))
     }
 
     private fun assertRenderedFixture(tag: String) {

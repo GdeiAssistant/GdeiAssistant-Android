@@ -476,7 +476,7 @@ fun ConversationListScreen(navController: NavHostController) {
                         )
                         if (conversation.updatedAt.isNotBlank()) {
                             Text(
-                                text = conversation.updatedAt,
+                                text = formatSocialTime(conversation.updatedAt),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -654,7 +654,7 @@ fun ChatScreen(navController: NavHostController) {
                             Text(conversation.peer.nickname, fontWeight = FontWeight.SemiBold)
                             if (conversation.updatedAt.isNotBlank()) {
                                 Text(
-                                    text = conversation.updatedAt,
+                                    text = formatSocialTime(conversation.updatedAt),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -753,7 +753,7 @@ fun ChatScreen(navController: NavHostController) {
                             text = when (message.sendStatus) {
                                 ChatSendStatus.PENDING -> stringResource(R.string.social_message_pending)
                                 ChatSendStatus.FAILED -> stringResource(R.string.social_message_failed)
-                                ChatSendStatus.SENT -> message.createdAt.ifBlank {
+                                ChatSendStatus.SENT -> formatSocialTime(message.createdAt).ifBlank {
                                     stringResource(R.string.social_message_sent)
                                 }
                             },

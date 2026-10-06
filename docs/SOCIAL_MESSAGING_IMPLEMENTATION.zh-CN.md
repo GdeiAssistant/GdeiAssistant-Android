@@ -107,3 +107,10 @@
 - 窗口检测由仅读取 `rootInActiveWindow` 改为启用 `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` 并遍历交互窗口、检查实际节点包名。返回应用还必须确认 picker 窗口已消失，防止把透明窗口后面的应用误判为已返回；原 20 秒限制保留。首次未取得控件树，具体活动根节点状态仍待新 CI 的窗口记录确认。
 - 首次 `adb pull` 对应用私有外部目录返回不存在；真实 applicationId 和日志均为 `cn.gdeiassistant`，不是包名猜错。本轮改用 `MediaStore.Downloads` 保存到 `Download/GdeiSocialUiEvidence`，避免应用清理丢掉文件。截图装入 ZIP，防止诊断 PNG 混入后续系统相册；CI 拉取后解压，窗口树单独保存，诊断写入错误及实际窗口包名写入 logcat。
 - 本机通过 `git diff --check`、脚本语法检查；临时合成命令实际验证新采集路径、ZIP 解压和保留原退出码 0/37。本轮不改生产业务，未重复纯 JVM 测试；修正后的实际窗口检测、选图与截图保存须由新精确提交的 API 35 CI 验证。
+
+### 第二次 CI 结果与断言修正
+
+- 提交 `dead5b4fadc4002ab3fe3fee5592340bb13e71da` 的 run `37416746107`：八项仪器测试中五项通过，包含实际系统选图、真实图片 bytes 上传、气泡渲染和完整查看器；截图/窗口树已成功采集。已通过的窗口遍历、上传与查看实现保持不变。
+- 两项失败在 `waitForRetry`：XML 与窗口树显示实际文案为「发送失败，可重试」，而 `assertTextContains("发送失败")` 缺少 `substring=true`，按完整文本匹配失败。修正为明确的子串断言，继续检查原消息失败状态及重试控件。
+- 取消项失败在 `pressSystemBack` 的 DOWN 事件；同期 logcat 明确 `Dropped event because it is stale`，截图仍是系统 picker。返回键改用当前 `SystemClock.uptimeMillis()`，DOWN/UP 共用同一 `downTime`，保留真实系统事件和取消/清理断言。未改生产业务或增加等待；本机差异检查通过，修正后的三项须由下一精确提交的模拟器 CI 验证。
+- 实际发送截图还显示原始 ISO 纳秒时间。显示层增加局部 `formatSocialTime`，沿用项目已有 `java.time`，将会话列表、聊天头部及已发送消息时间按设备时区转成 `yyyy-MM-dd HH:mm`；原始字段、消息排序与 API 不变，不新增依赖。无效或空字符串保留原值，便于沿用已发送占位。实际 helper 的 JVM 示例验证中国/纽约时区、跨日、带偏移时间和空/无效输入；UI 渲染仍由下一提交 CI 验证。
