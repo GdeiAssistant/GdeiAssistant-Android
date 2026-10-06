@@ -379,27 +379,7 @@ private fun ScheduleMetricCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.84f)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier)
 }
 
 @Composable

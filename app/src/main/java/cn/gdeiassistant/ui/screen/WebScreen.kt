@@ -451,13 +451,13 @@ private fun WebHeroCard(
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.web_service_hint),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.88f)
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.88f)
         )
         Spacer(modifier = Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

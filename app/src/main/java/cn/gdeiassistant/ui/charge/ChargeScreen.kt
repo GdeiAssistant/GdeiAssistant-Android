@@ -350,26 +350,7 @@ private fun ChargeMetricCard(
     modifier: Modifier = Modifier,
     mono: Boolean = false
 ) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = if (mono) FontFamily.Monospace else null
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier, monospace = mono)
 }
 
 @Composable

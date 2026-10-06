@@ -5,6 +5,21 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import cn.gdeiassistant.ui.components.ListDivider
+import cn.gdeiassistant.ui.components.ListGroup
+import cn.gdeiassistant.ui.components.ListRow
+import cn.gdeiassistant.ui.components.SectionHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.EventAvailable
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +49,6 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Schedule
 import cn.gdeiassistant.ui.components.LazyScreen
-import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.home.HomeViewModel
 import cn.gdeiassistant.ui.navigation.AppFeature
 import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
@@ -140,10 +147,11 @@ private fun GreetingHeader(
     val balanceSummary = cardBalance
         ?.takeIf { it.isNotBlank() }
         ?.let { stringResource(R.string.home_stats_card_balance, it) }
-    val statsLine = listOfNotNull(courseSummary, balanceSummary).joinToString(" · ")
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp, end = 4.dp, bottom = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = dateLabel,
@@ -151,10 +159,17 @@ private fun GreetingHeader(
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = statsLine,
-            style = MaterialTheme.typography.titleMedium,
+            text = courseSummary,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
+        balanceSummary?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -164,30 +179,21 @@ private fun TodayScheduleCard(
     error: String?,
     onOpenSchedule: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppShapes.card,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.home_today_schedule_title)) },
-                supportingContent = {
-                    Text(
-                        text = if (courses.isEmpty()) {
-                            stringResource(R.string.home_today_schedule_empty_summary)
-                        } else {
-                            stringResource(R.string.home_today_schedule_count, courses.size)
-                        }
-                    )
-                },
-                trailingContent = {
-                    TextButton(onClick = onOpenSchedule) {
-                        Text(stringResource(R.string.home_view_schedule))
-                    }
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(
+            title = stringResource(R.string.home_today_schedule_title),
+            supporting = if (courses.isEmpty()) {
+                stringResource(R.string.home_today_schedule_empty_summary)
+            } else {
+                stringResource(R.string.home_today_schedule_count, courses.size)
+            },
+            action = {
+                TextButton(onClick = onOpenSchedule) {
+                    Text(stringResource(R.string.home_view_schedule))
+                }
+            }
+        )
+        ListGroup {
             AnimatedContent(
                 targetState = error to courses,
                 label = "schedule_grid",
@@ -197,27 +203,23 @@ private fun TodayScheduleCard(
                     !err.isNullOrBlank() -> {
                         Text(
                             text = err,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                     items.isEmpty() -> {
-                        ListItem(
-                            headlineContent = {
-                                Text(stringResource(R.string.home_today_schedule_empty_title))
-                            },
-                            supportingContent = {
-                                Text(stringResource(R.string.home_today_schedule_empty_body))
-                            },
-                            leadingContent = {
-                                Icon(Icons.Rounded.EventAvailable, contentDescription = null)
-                            },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        ListRow(
+                            title = stringResource(R.string.home_today_schedule_empty_title),
+                            supporting = stringResource(R.string.home_today_schedule_empty_body),
+                            icon = Icons.Rounded.EventAvailable
                         )
                     }
                     else -> Column {
-                        items.forEach { course -> CourseRow(course) }
+                        items.forEachIndexed { index, course ->
+                            if (index > 0) ListDivider(inset = 88.dp)
+                            CourseRow(course)
+                        }
                     }
                 }
             }
@@ -237,27 +239,52 @@ private fun CourseRow(course: Schedule) {
     val startTime = SectionStartTimes[course.row ?: 0] ?: ""
     val subtitle = listOfNotNull(course.scheduleLocation, course.scheduleTeacher)
         .joinToString(" · ")
-    ListItem(
-        headlineContent = {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 64.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.width(48.dp)) {
+            Text(
+                text = startTime,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = slotLabel,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Box(
+            modifier = Modifier
+                .width(3.dp)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.primary, AppShapes.pill)
+        )
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        },
-        supportingContent = {
             if (subtitle.isNotBlank()) {
-                Text(text = subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-        },
-        leadingContent = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = startTime, style = MaterialTheme.typography.labelLarge)
-                Text(text = slotLabel, style = MaterialTheme.typography.labelSmall)
-            }
-        },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-    )
+        }
+    }
 }
 
 @Composable
@@ -266,32 +293,22 @@ private fun NoticeSection(
     onOpenAll: () -> Unit,
     onOpenNotice: (AnnouncementItem) -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppShapes.card,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
-    ) {
-        Column {
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.home_system_notice_title)) },
-                trailingContent = {
-                    TextButton(onClick = onOpenAll) {
-                        Text(stringResource(R.string.home_view_all))
-                    }
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(
+            title = stringResource(R.string.home_system_notice_title),
+            action = {
+                TextButton(onClick = onOpenAll) {
+                    Text(stringResource(R.string.home_view_all))
+                }
+            }
+        )
+        ListGroup {
             notices.take(5).forEachIndexed { index, notice ->
-                if (index > 0) HorizontalDivider()
-                ListItem(
-                    headlineContent = {
-                        Text(text = notice.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    },
-                    supportingContent = { Text(text = notice.publishTime) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOpenNotice(notice) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                if (index > 0) ListDivider(inset = 16.dp)
+                ListRow(
+                    title = notice.title,
+                    supporting = notice.publishTime,
+                    onClick = { onOpenNotice(notice) }
                 )
             }
         }
@@ -304,22 +321,18 @@ private fun FeatureGroupSection(
     features: List<AppFeature>,
     onNavigate: (String) -> Unit
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(group.titleRes),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = stringResource(group.subtitleRes),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(
+            title = stringResource(group.titleRes),
+            supporting = stringResource(group.subtitleRes)
+        )
+        ListGroup {
+            Column(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 features.chunked(4).forEach { rowItems ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row {
                         rowItems.forEach { feature ->
                             FeatureGridItem(
                                 feature = feature,
@@ -347,19 +360,33 @@ private fun FeatureGridItem(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.testTag("home.entry.${feature.route}"),
+        modifier = modifier
+            .testTag("home.entry.${feature.route}")
+            .clip(AppShapes.button)
+            .clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = 84.dp)
+            .padding(horizontal = 4.dp, vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        FilledTonalIconButton(onClick = onClick) {
-            Icon(
-                imageVector = feature.icon,
-                contentDescription = stringResource(feature.titleRes)
-            )
+        Surface(
+            modifier = Modifier.size(44.dp),
+            shape = AppShapes.button,
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = feature.icon,
+                    contentDescription = stringResource(feature.titleRes),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
         }
         Text(
             text = stringResource(feature.titleRes),
             style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center

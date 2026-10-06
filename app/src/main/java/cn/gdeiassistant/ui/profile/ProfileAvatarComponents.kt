@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -32,17 +31,10 @@ internal fun ProfileAvatar(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-                    )
-                )
-            )
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
@@ -68,7 +60,7 @@ private fun ProfileAvatarFallback(label: String) {
     Text(
         text = label,
         style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onPrimaryContainer
     )
 }

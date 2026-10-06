@@ -293,25 +293,7 @@ private fun SpareMetricCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier)
 }
 
 @Composable

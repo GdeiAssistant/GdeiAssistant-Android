@@ -129,16 +129,8 @@ private fun LanguageSection(selected: String, onSelect: (String) -> Unit) {
 @Composable
 private fun AppearanceSectionCard(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
-        ) {
-            content()
-        }
+        cn.gdeiassistant.ui.components.SectionHeader(title = title)
+        Spacer(Modifier.height(8.dp))
+        cn.gdeiassistant.ui.components.ListGroup(content = content)
     }
 }

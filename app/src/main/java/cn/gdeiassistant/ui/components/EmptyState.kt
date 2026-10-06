@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/** 全站统一空状态：淡色圆形图标 + titleMedium 提示文案 + 可选说明 */
+/** 全站统一空状态：描边方形图标块 + titleMedium 提示文案 + 可选说明 */
 @Composable
 fun EmptyState(
     icon: ImageVector,
@@ -37,8 +37,9 @@ fun EmptyState(
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            shape = CircleShape,
-            color = tint.copy(alpha = 0.10f)
+            shape = cn.gdeiassistant.ui.theme.AppShapes.card,
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            border = hairline()
         ) {
             Box(
                 modifier = Modifier
@@ -49,8 +50,8 @@ fun EmptyState(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(30.dp),
-                    tint = tint.copy(alpha = 0.88f)
+                    modifier = Modifier.size(28.dp),
+                    tint = tint
                 )
             }
         }

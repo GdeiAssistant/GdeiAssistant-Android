@@ -1,6 +1,13 @@
 package cn.gdeiassistant.ui.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -55,11 +62,20 @@ fun SectionCard(
     borderColor: Color = Color.Unspecified,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
+    // Flat surface with a hairline; tinted containers drop the outline so they read as a fill.
+    val isNeutral = containerColor == MaterialTheme.colorScheme.surfaceContainerLowest ||
+        containerColor == MaterialTheme.colorScheme.surface
+    val stroke = when {
+        borderColor != Color.Unspecified -> BorderStroke(1.dp, borderColor)
+        isNeutral -> hairline()
+        else -> null
+    }
+    Surface(
         modifier = modifier.animateContentSize(),
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        color = containerColor,
+        contentColor = contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
+        border = stroke
     ) {
         Column(
             modifier = Modifier
@@ -70,30 +86,32 @@ fun SectionCard(
     }
 }
 
+/**
+ * The one solid emerald block a screen may use. Content defaults to onPrimary, so callers must not
+ * hard-code white text (it fails contrast on the dark-theme primary).
+ */
 @Composable
 fun HeroCard(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
+    Surface(
         modifier = modifier,
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColorFor(containerColor)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        color = containerColor,
+        contentColor = contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onPrimary }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             content = content
         )
     }
 }
 
+/** Small status tag, fully rounded. Not interactive. */
 @Composable
 fun BadgePill(
     text: String,
@@ -105,37 +123,33 @@ fun BadgePill(
     val container = if (onGradient) {
         MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)
     } else {
-        MaterialTheme.colorScheme.secondaryContainer
+        MaterialTheme.colorScheme.primaryContainer
     }
     val content = if (onGradient) {
         MaterialTheme.colorScheme.onPrimary
     } else {
-        MaterialTheme.colorScheme.onSecondaryContainer
+        MaterialTheme.colorScheme.onPrimaryContainer
     }
-    androidx.compose.material3.AssistChip(
-        onClick = {},
-        modifier = modifier,
-        enabled = false,
-        label = { Text(text = text, style = MaterialTheme.typography.labelMedium, color = content) },
-        leadingIcon = icon?.let { image ->
-            {
-                Icon(
-                    imageVector = image,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = content
-                )
+    Surface(modifier = modifier, shape = AppShapes.pill, color = container, contentColor = content) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (icon != null) {
+                Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(14.dp))
             }
-        },
-        colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-            disabledContainerColor = container,
-            disabledLabelColor = content,
-            disabledLeadingIconContentColor = content
-        ),
-        border = null
-    )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
 
+/** Entry row: icon tile, title, optional subtitle, trailing chevron. Min height 64dp. */
 @Composable
 fun ActionTile(
     title: String,
@@ -146,50 +160,51 @@ fun ActionTile(
     tint: Color = MaterialTheme.colorScheme.primary,
     emphasized: Boolean = false
 ) {
-    Card(
+    val container = if (emphasized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLowest
+    Surface(
         onClick = onClick,
         modifier = modifier,
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(
-            containerColor = if (emphasized) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceContainerLowest
-            }
-        )
+        color = container,
+        border = if (emphasized) null else hairline()
     ) {
-        ListItem(
-            headlineContent = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 64.dp)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconTile(
+                icon = icon,
+                container = if (emphasized) MaterialTheme.colorScheme.surfaceContainerLowest else MaterialTheme.colorScheme.primaryContainer,
+                tint = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
+                    color = if (emphasized) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-            },
-            supportingContent = subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
-                {
+                subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
                     Text(
                         text = sub,
                         style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-            },
-            leadingContent = {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = if (emphasized) {
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    } else {
-                        tint
-                    }
-                )
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        }
     }
 }
 
@@ -205,7 +220,7 @@ fun LazyScreen(
     secondaryGlow: Color = Color.Unspecified,
     actions: @Composable RowScope.() -> Unit = {},
     showLoadingPlaceholder: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+    contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(12.dp),
     content: LazyListScope.() -> Unit
 ) {
@@ -213,7 +228,7 @@ fun LazyScreen(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = pageBackground.takeOrElse { MaterialTheme.colorScheme.background },
         topBar = {
             AppTopBar(
                 title = title,
@@ -242,6 +257,10 @@ fun LazyScreen(
     }
 }
 
+/**
+ * A typographic figure: value over label, no container. Placed side by side these read as one stat
+ * line rather than a stack of equal cards.
+ */
 @Composable
 fun MetricChip(
     label: String,
@@ -249,13 +268,8 @@ fun MetricChip(
     modifier: Modifier = Modifier,
     onGradient: Boolean = false
 ) {
-    val container = if (onGradient) {
-        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHigh
-    }
     val labelColor = if (onGradient) {
-        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.82f)
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant
     }
@@ -264,31 +278,28 @@ fun MetricChip(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    Card(
-        modifier = modifier,
-        shape = AppShapes.button,
-        colors = CardDefaults.cardColors(containerColor = container)
+    Column(
+        modifier = modifier.padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = labelColor,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                color = valueColor,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            color = valueColor,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = labelColor,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
+/** Inline notice: tonal fill, icon on the left, title and body stacked. Defaults to the error tone. */
 @Composable
 fun StatusBanner(
     title: String,
@@ -299,22 +310,37 @@ fun StatusBanner(
     border: Color = Color.Unspecified,
     tint: Color = MaterialTheme.colorScheme.error
 ) {
-    Card(
-        modifier = modifier,
+    Surface(
+        modifier = modifier.fillMaxWidth(),
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(containerColor = surface)
+        color = surface,
+        border = if (border != Color.Unspecified) BorderStroke(1.dp, border) else null
     ) {
-        ListItem(
-            headlineContent = {
-                Text(text = title, style = MaterialTheme.typography.titleSmall)
-            },
-            supportingContent = {
-                Text(text = body, style = MaterialTheme.typography.bodySmall)
-            },
-            leadingContent = {
-                Icon(imageVector = icon, contentDescription = null, tint = tint)
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(20.dp)
+            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                if (body.isNotBlank()) {
+                    Text(
+                        text = body,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
     }
 }

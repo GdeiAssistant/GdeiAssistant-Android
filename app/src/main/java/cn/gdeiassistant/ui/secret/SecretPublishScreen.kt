@@ -86,7 +86,7 @@ fun SecretPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.secret_publish_subtitle),
                     style = MaterialTheme.typography.titleMedium,
-                    color = androidx.compose.ui.graphics.Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

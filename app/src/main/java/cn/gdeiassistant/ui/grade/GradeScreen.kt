@@ -206,63 +206,41 @@ private fun TermSnapshotCard(
     igp: String,
     grades: List<Grade>
 ) {
-    SectionCard(
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    BadgePill(
-                        text = stringResource(yearLabelRes),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    BadgePill(
-                        text = stringResource(term.labelResId()),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-                Spacer(modifier = Modifier.height(14.dp))
-                Text(
-                    text = stringResource(R.string.grade_summary_title, grades.size),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = if (grades.isEmpty()) {
-                        stringResource(R.string.grade_term_empty)
-                    } else {
-                        stringResource(R.string.grade_summary_subtitle)
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(18.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            GradeMetricCard(
-                label = stringResource(R.string.grade_metric_courses),
-                value = grades.size.toString(),
-                modifier = Modifier.weight(1f)
-            )
-            GradeMetricCard(
-                label = stringResource(R.string.grade_gpa),
-                value = gpa,
-                modifier = Modifier.weight(1f)
-            )
-            GradeMetricCard(
-                label = stringResource(R.string.grade_metric_igp),
-                value = igp,
-                modifier = Modifier.weight(1f)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            BadgePill(text = stringResource(yearLabelRes))
+            BadgePill(
+                text = stringResource(term.labelResId()),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        Text(
+            text = stringResource(R.string.grade_summary_title, grades.size),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = if (grades.isEmpty()) {
+                stringResource(R.string.grade_term_empty)
+            } else {
+                stringResource(R.string.grade_summary_subtitle)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        cn.gdeiassistant.ui.components.StatStrip(
+            items = listOf(
+                cn.gdeiassistant.ui.components.StatItem(stringResource(R.string.grade_gpa), gpa),
+                cn.gdeiassistant.ui.components.StatItem(stringResource(R.string.grade_metric_igp), igp),
+                cn.gdeiassistant.ui.components.StatItem(stringResource(R.string.grade_metric_courses), grades.size.toString())
+            )
+        )
     }
 }
 
@@ -272,26 +250,7 @@ private fun GradeMetricCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier)
 }
 
 @Composable

@@ -1,6 +1,17 @@
 package cn.gdeiassistant.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,24 +66,23 @@ fun BentoCard(
     contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val colors = CardDefaults.cardColors(containerColor = containerColor)
     val cardModifier = modifier.fillMaxWidth()
     if (onClick != null) {
-        Card(
+        Surface(
             onClick = onClick,
             modifier = cardModifier,
             shape = AppShapes.card,
-            colors = colors,
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            color = containerColor,
+            border = hairline()
         ) {
             Column(modifier = Modifier.padding(contentPadding), content = content)
         }
     } else {
-        Card(
+        Surface(
             modifier = cardModifier,
             shape = AppShapes.card,
-            colors = colors,
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            color = containerColor,
+            border = hairline()
         ) {
             Column(modifier = Modifier.padding(contentPadding), content = content)
         }
@@ -91,7 +101,20 @@ fun SelectionPill(
         selected = selected,
         onClick = onClick,
         modifier = modifier,
-        label = { Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+        shape = AppShapes.pill,
+        label = { Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = MaterialTheme.colorScheme.outlineVariant,
+            selectedBorderColor = Color.Transparent
+        )
     )
 }
 
@@ -107,9 +130,10 @@ fun GhostButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minHeight = 40.dp),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
         enabled = enabled,
         shape = AppShapes.button,
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = contentColor),
         border = ButtonDefaults.outlinedButtonBorder(enabled).copy(
             brush = androidx.compose.ui.graphics.SolidColor(if (enabled) borderColor else borderColor.copy(alpha = 0.38f))
@@ -122,10 +146,12 @@ fun GhostButton(
                 modifier = Modifier.size(18.dp)
             )
         }
+        if (icon != null) Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
+/** Primary action. Solid emerald; only one per view should use it. */
 @Composable
 fun TintButton(
     text: String,
@@ -135,15 +161,19 @@ fun TintButton(
     enabled: Boolean = true,
     tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    FilledTonalButton(
+    // Error tint keeps the destructive meaning; everything else maps to the brand primary.
+    val destructive = tint == MaterialTheme.colorScheme.error
+    Button(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minHeight = 40.dp),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
         enabled = enabled,
         shape = AppShapes.button,
-        colors = ButtonDefaults.filledTonalButtonColors(
-            contentColor = tint,
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            contentColor = if (destructive) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp)
     ) {
         if (icon != null) {
             Icon(
@@ -151,6 +181,7 @@ fun TintButton(
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
         }
         Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
@@ -253,7 +284,7 @@ fun RemoteThumbnail(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** Segmented selector: neutral track, the selected segment is a raised surface with emerald label. */
 @Composable
 fun TextTabSelector(
     labels: List<String>,
@@ -262,23 +293,36 @@ fun TextTabSelector(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.primary
 ) {
-    PrimaryTabRow(
-        selectedTabIndex = selectedIndex,
-        modifier = modifier.fillMaxWidth(),
-        containerColor = Color.Transparent
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .selectableGroup(),
+        shape = AppShapes.button,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        labels.forEachIndexed { index, label ->
-            Tab(
-                selected = index == selectedIndex,
-                onClick = { onSelect(index) },
-                text = {
-                    Text(
-                        text = label,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+        Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            labels.forEachIndexed { index, label ->
+                val selected = index == selectedIndex
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 44.dp)
+                        .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(index) }),
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (selected) MaterialTheme.colorScheme.surfaceContainerLowest else Color.Transparent,
+                    border = if (selected) hairline() else null
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (selected) tint else MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 }
@@ -290,7 +334,7 @@ fun AppTopBar(
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surface
+    containerColor: Color = MaterialTheme.colorScheme.background
 ) {
     TopAppBar(
         title = {
@@ -314,7 +358,8 @@ fun AppTopBar(
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
         scrollBehavior = scrollBehavior
     )
