@@ -179,3 +179,9 @@
 - 个人页通过 LazyColumn 渲染，测试进入外观页前已滚到底部；返回恢复列表位置时，顶部身份 item 可不在已组合节点树中，不能用等待顶部节点代替返回页面后的滚动。本轮先等待当前语言的个人页固定标题，再用原真实滚动动作定位身份区域，保留身份等待并加强可见断言。两次地区 picker 的实际 BACK 后，以原 20 秒期限等待 modal 消失再滚向下个目标。所有十项用例、六语言实际选择、地区/院系/picker 断言和原超时保持不变。该失败用例未采到独立截图/semantics，具体离屏状态由 XML、生命周期日志及渲染/导航源码推导，修正后的真实流程仍需新精确提交 CI 验证。
 - MainActivity 已按当前设置提供包装的 LocalContext，而没有替换 LocalConfiguration；本次日志也未发生 Activity 重建。新增地区显示读取主机 LocalConfiguration 会与应用资源语言不一致。个人页及登录记录五处改为读取已有 LocalContext.resources.configuration，地区、院系和资源文案使用相同当前语言来源；没有改 MainActivity、导航或语言框架。既有六语言 UI 用例继续检查每次切换后实际名称及地区选择器。
 - 本机直接重新编译实际 AppLocaleSupport、SupportedLanguageOptions 和其回归，`OK (7 tests)`，日志在 `/tmp/gdei-region-labels-20261006/android-pr98-local/{compile.log,test.log}`。六语言资源扫描及七项 Python 回归、差异检查通过。未重复修改或重跑此前已通过的字典/图片逻辑；本机仍无 SDK，不能确认本轮 Android 编译或模拟器流程已通过。
+
+### 入口配置同步的 lint 返修
+
+- `48f3c17bbec50c90ffdbf9ed5b1ee85c05ee8907` / run `37454244546` 的模拟器 job 已实际成功，证明上一轮滚动和当前语言显示流程可运行；完整 run 仍失败，因为 lint 对五处 Compose 内直接读取 Context 配置报 `LocalContextConfigurationRead`。没有添加 Suppress、lint baseline 或降低规则。
+- 五处页面读取改回 LocalConfiguration。MainActivity 在已有 provider 外观察原 LocalConfiguration，并将它与当前设置语言共同作为 localizedContext 的 remember 条件；从该 Context 通过非 Composable helper 复制 Configuration 快照，和原 LocalContext 一起提供给页面。语言切换、方向/屏幕等系统配置变化都能更新配置，同时保留原导航、身份、会话和字体缩放代码；未新增框架或 key(locale) 重建页面。
+- 上轮十项仪器用例、全部六语言/地区/院系断言、BACK 和真实滚动修复未改变。差异检查、六语言各 1480 项资源检查及七项 Python 检查通过；此前纯 locale 七项回归结果仍适用，locale 模型和语言范围未修改。本机未运行 Android lint、构建或设备测试，本轮入口/页面补丁须新精确提交 CI 验证，不能用上一提交的模拟器成功替代。

@@ -57,6 +57,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -344,7 +345,7 @@ fun PrivacySettingsScreen(navController: NavHostController) {
 fun LoginRecordsScreen(navController: NavHostController) {
     val viewModel: LoginRecordsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val locale = AppLocaleSupport.normalizeLocale(LocalContext.current.resources.configuration.locales[0].toLanguageTag())
+    val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
 
     LazyScreen(
         title = stringResource(R.string.profile_login_records_title),
