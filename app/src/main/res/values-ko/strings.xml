@@ -491,7 +491,6 @@
     <string name="data_center_metric_tools">도구</string>
     <string name="data_center_metric_scope">범위</string>
     <string name="data_center_metric_scope_value">전기료 / 연락처</string>
-    <string name="data_center_section_body">기숙사 전기료와 캠퍼스 연락처 두 가지 자주 쓰는 도구를 먼저 수록했으며, 열면 바로 조회할 수 있습니다.</string>
     <string name="electricity_title">전기료 조회</string>
     <string name="electricity_subtitle">이름, 학번, 연도를 입력하면 기숙사의 해당 연도 전기료 및 전기 사용 현황을 확인할 수 있습니다.</string>
     <string name="electricity_subtitle_short">기숙사 전기료 정보 조회</string>

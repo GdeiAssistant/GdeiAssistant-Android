@@ -491,7 +491,6 @@
     <string name="data_center_metric_tools">ツール</string>
     <string name="data_center_metric_scope">対象範囲</string>
     <string name="data_center_metric_scope_value">電気料金 / イエローページ</string>
-    <string name="data_center_section_body">寮の電気料金とキャンパスイエローページの2つのツールをまとめました。開くだけですぐに検索でき、特別な操作は不要です。</string>
     <string name="electricity_title">電気料金照会</string>
     <string name="electricity_subtitle">氏名、学籍番号、年度を入力すると、寮の年間電気料金と使用状況を確認できます。</string>
     <string name="electricity_subtitle_short">寮の電気料金を照会</string>

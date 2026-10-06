@@ -490,7 +490,6 @@
     <string name="data_center_metric_tools">工具</string>
     <string name="data_center_metric_scope">覆盖</string>
     <string name="data_center_metric_scope_value">电费 / 黄页</string>
-    <string name="data_center_section_body">这里先收纳宿舍电费和校园黄页两个高频工具，打开就能直接查，不需要额外学习。</string>
     <string name="electricity_title">电费查询</string>
     <string name="electricity_subtitle">输入姓名、学号和年份，就能查看宿舍这一年的电费与用电情况。</string>
     <string name="electricity_subtitle_short">查询宿舍电费信息</string>

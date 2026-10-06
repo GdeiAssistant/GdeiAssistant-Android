@@ -491,7 +491,6 @@
     <string name="data_center_metric_tools">Tools</string>
     <string name="data_center_metric_scope">Scope</string>
     <string name="data_center_metric_scope_value">Electricity / Directory</string>
-    <string name="data_center_section_body">Dorm electricity bills and campus directory — two high-frequency tools, ready to use with no learning curve.</string>
     <string name="electricity_title">Electricity Bill</string>
     <string name="electricity_subtitle">Enter your name, student ID and year to check dorm electricity usage and fees.</string>
     <string name="electricity_subtitle_short">Check dorm electricity info</string>

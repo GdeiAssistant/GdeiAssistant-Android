@@ -41,12 +41,6 @@ fun DataCenterScreen(navController: NavHostController) {
     ) {
         item {
             SectionCard(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.data_center_section_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(18.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     DataCenterMetric(
                         label = stringResource(R.string.data_center_metric_tools),

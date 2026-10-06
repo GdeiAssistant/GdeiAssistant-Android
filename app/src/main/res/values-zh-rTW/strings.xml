@@ -490,7 +490,6 @@
     <string name="data_center_metric_tools">工具</string>
     <string name="data_center_metric_scope">涵蓋</string>
     <string name="data_center_metric_scope_value">電費 / 黃頁</string>
-    <string name="data_center_section_body">這裡先收納宿舍電費和校園黃頁兩個高頻工具，打開就能直接查，不需要額外學習。</string>
     <string name="electricity_title">電費查詢</string>
     <string name="electricity_subtitle">輸入姓名、學號和年份，就能查看宿舍這一年的電費與用電情況。</string>
     <string name="electricity_subtitle_short">查詢宿舍電費訊息</string>
