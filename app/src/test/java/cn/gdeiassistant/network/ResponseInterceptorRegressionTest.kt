@@ -96,7 +96,7 @@ class ResponseInterceptorRegressionTest {
             assertEquals(code, error.code)
             assertEquals("synthetic failure", error.message)
             assertEquals("SYNTHETIC_ERROR", error.errorCode)
-            if (code == 401) verify(session).clearTokens() else verify(session, never()).clearTokens()
+            if (code == 401) verify(session).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull()) else verify(session, never()).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull())
         } finally {
             client.dispatcher.cancelAll()
             executor.shutdownNow()
@@ -163,7 +163,7 @@ class ResponseInterceptorRegressionTest {
 
     @Test fun responseClosesWhenSessionCleanupFails() {
         val session: SessionManager = mock()
-        doThrow(IllegalStateException("synthetic cleanup failure")).whenever(session).clearTokens()
+        doThrow(IllegalStateException("synthetic cleanup failure")).whenever(session).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull())
         val body = TrackingBody("""{"message":"expired"}""")
         val error = runCatching { ResponseInterceptor(session).intercept(chain(401, body)) }.exceptionOrNull()
         assertTrue(error is IllegalStateException)

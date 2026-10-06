@@ -246,14 +246,14 @@ class MockInterceptorSmokeTest {
 
     @Test
     fun smokeCoversCommunityFlows() {
-        val marketplace = executeJson("/api/ershou/item/start/0")
+        val marketplace = executeJson("/api/marketplace/item/start/0")
         val marketplaceItems = marketplace.dataArray()
         assertTrue(marketplaceItems.size() > 0)
         val marketplaceId = marketplaceItems[0].asJsonObject.get("id").asString
 
-        val marketplaceDetail = executeJson("/api/ershou/item/id/$marketplaceId")
-        assertEquals(marketplaceId, marketplaceDetail.dataObject().getAsJsonObject("secondhandItem").get("id").asString)
-        val marketplaceProfile = executeJson("/api/ershou/profile")
+        val marketplaceDetail = executeJson("/api/marketplace/item/id/$marketplaceId")
+        assertEquals(marketplaceId, marketplaceDetail.dataObject().getAsJsonObject("item").get("id").asString)
+        val marketplaceProfile = executeJson("/api/marketplace/profile")
         assertTrue(marketplaceProfile.dataObject().has("doing"))
 
         val lostFound = executeJson("/api/lostandfound/lostitem/start/0")

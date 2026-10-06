@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -82,7 +83,7 @@ class DatingRepository @Inject constructor(
 
     suspend fun getCenterData(): Result<Triple<List<DatingReceivedPick>, List<DatingSentPick>, List<DatingMyPost>>> =
         withContext(Dispatchers.IO) {
-            runCatching {
+            cancellableRunCatching {
                 coroutineScope {
                     val receivedDeferred = async { safeApiCall { datingApi.getReceivedPicks() } }
                     val sentDeferred = async { safeApiCall { datingApi.getSentPicks() } }

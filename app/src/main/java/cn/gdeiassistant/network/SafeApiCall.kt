@@ -59,6 +59,8 @@ private suspend inline fun <Response, ResultType> safeResultCall(
                 )
             )
         }
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
     } catch (e: AppException) {
         Result.failure(e)
     } catch (e: HttpException) {
@@ -87,4 +89,13 @@ private fun parseErrorBody(bodyStr: String): Pair<String?, String?>? {
     } catch (_: Exception) {
         null
     }
+}
+
+/** Keep structured concurrency intact while converting ordinary failures to Result. */
+inline fun <T> cancellableRunCatching(block: () -> T): Result<T> = try {
+    Result.success(block())
+} catch (cancelled: kotlinx.coroutines.CancellationException) {
+    throw cancelled
+} catch (failure: Exception) {
+    Result.failure(failure)
 }

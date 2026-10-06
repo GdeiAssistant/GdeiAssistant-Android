@@ -21,7 +21,7 @@ class DeliveryDisplayMapper @Inject constructor(
 
     fun applyOrderDefaults(order: DeliveryOrder): DeliveryOrder {
         return order.copy(
-            username = order.username.ifBlank { textResolver.getString(R.string.delivery_default_username) },
+            displayName = order.displayName.ifBlank { textResolver.getString(R.string.delivery_default_username) },
             taskName = order.taskName.ifBlank { textResolver.getString(R.string.delivery_task_name) },
             pickupCode = order.pickupCode.ifBlank { textResolver.getString(R.string.delivery_default_pickup_code) },
             contactPhone = order.contactPhone.ifBlank { textResolver.getString(R.string.delivery_default_phone_mask) },
@@ -38,7 +38,7 @@ class DeliveryDisplayMapper @Inject constructor(
     fun applyTradeDefaults(trade: DeliveryTrade): DeliveryTrade {
         return trade.copy(
             createTime = trade.createTime.ifBlank { textResolver.getString(R.string.common_just_now) },
-            username = trade.username.ifBlank { textResolver.getString(R.string.delivery_default_runner) }
+            displayName = trade.displayName.ifBlank { textResolver.getString(R.string.delivery_default_runner) }
         )
     }
 

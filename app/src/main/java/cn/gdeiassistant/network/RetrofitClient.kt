@@ -55,8 +55,10 @@ class ResponseInterceptor @Inject constructor(
                 val bodyStr = response.peekBody(64 * 1024).string()
                 val parsed = parseErrorFromBody(bodyStr)
                 if (response.code == NetworkConstants.HTTP_UNAUTHORIZED) {
-                    sessionManager.clearTokens()
-                    GlobalEventManager.emit(GlobalEvent.Unauthorized)
+                    val requestToken = response.request.header("Authorization")?.removePrefix("Bearer ")
+                    if (sessionManager.clearTokensIfCurrent(requestToken)) {
+                        GlobalEventManager.emit(GlobalEvent.Unauthorized)
+                    }
                     throw AppException(
                         message = parsed.first ?: NetworkConstants.messageLoginExpired(),
                         code = response.code,
@@ -64,7 +66,6 @@ class ResponseInterceptor @Inject constructor(
                     )
                 }
                 val errorMessage = parsed.first ?: NetworkConstants.messageRequestFailed()
-                GlobalEventManager.emit(GlobalEvent.ShowToast(errorMessage))
                 throw AppException(errorMessage, response.code, parsed.second)
             }
         }

@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import cn.gdeiassistant.model.DiscoverySummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,7 +17,7 @@ class DiscoveryRepository @Inject constructor(
 ) {
 
     suspend fun getSummary(): Result<DiscoverySummary> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val expressDeferred = async { expressRepository.getPosts() }
                 val topicDeferred = async { topicRepository.getPosts() }

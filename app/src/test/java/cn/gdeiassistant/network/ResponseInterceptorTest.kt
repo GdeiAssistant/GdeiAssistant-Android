@@ -102,7 +102,7 @@ class ResponseInterceptorTest {
             // expected
         }
 
-        verify(sessionManager).clearTokens()
+        verify(sessionManager).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull())
     }
 
     @Test

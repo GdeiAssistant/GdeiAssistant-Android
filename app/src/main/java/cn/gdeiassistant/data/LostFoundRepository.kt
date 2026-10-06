@@ -1,5 +1,7 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -46,7 +48,7 @@ class LostFoundRepository @Inject constructor(
     }
 
     suspend fun getItems(): Result<List<LostFoundItem>> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val lostDeferred = async { safeApiCall { lostFoundApi.getLostItems(0) } }
                 val foundDeferred = async { safeApiCall { lostFoundApi.getFoundItems(0) } }
@@ -87,7 +89,7 @@ class LostFoundRepository @Inject constructor(
     }
 
     suspend fun getProfileSummary(): Result<LostFoundPersonalSummary> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val summaryDeferred = async { safeApiCall { lostFoundApi.getProfileSummary() } }
                 val profileDeferred = async { profileRepository.getProfile() }
@@ -136,7 +138,7 @@ class LostFoundRepository @Inject constructor(
                     .firstOrNull { it.id?.toString() == id }
                     ?: throw IllegalStateException("Editable item not found")
                 LostFoundEditableItem(
-                    id = (item.id ?: id.toLongOrNull() ?: System.nanoTime()).toString(),
+                    id = requireRemoteId(item.id),
                     title = item.name.orEmpty(),
                     type = LostFoundType.fromRemote(item.lostType),
                     itemTypeId = item.itemType ?: 0,
@@ -172,7 +174,7 @@ class LostFoundRepository @Inject constructor(
 
     private fun mapItem(dto: LostFoundItemDto): LostFoundItem {
         return LostFoundItem(
-            id = (dto.id ?: System.nanoTime()).toString(),
+            id = requireRemoteId(dto.id),
             title = dto.name.orEmpty(),
             type = LostFoundType.fromRemote(dto.lostType),
             itemTypeId = dto.itemType ?: 0,

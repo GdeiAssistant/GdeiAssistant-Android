@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -54,7 +55,7 @@ object SocialChatImageSupport {
         val bitmap = resolver.openInputStream(uri)?.use {
             BitmapFactory.decodeStream(it, null, decodeOpts)
         } ?: throw IllegalArgumentException("image_decode_failed")
-        val orientation = runCatching {
+        val orientation = cancellableRunCatching {
             resolver.openInputStream(uri)?.use {
                 ExifInterface(it).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
             }

@@ -20,9 +20,9 @@ interface LibraryApi {
         @Query("detailURL") detailUrl: String
     ): DataJsonResult<CollectionDetailDto>
 
-    @GET("api/library/borrow")
+    @POST("api/library/borrow")
     suspend fun getBorrowedBooks(
-        @Query("password") password: String? = null
+        @Body body: PasswordDto
     ): DataJsonResult<List<CollectionBorrowDto>>
 
     @POST("api/library/renew")
@@ -77,3 +77,5 @@ data class LibraryRenewDto(
     val code: String,
     val password: String
 )
+
+data class PasswordDto(val password: String?)

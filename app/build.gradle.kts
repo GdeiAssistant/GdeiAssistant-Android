@@ -11,7 +11,7 @@ val devBaseUrl = providers.gradleProperty("GDEI_BASE_URL_DEV").orNull ?: "http:/
 val stagingBaseUrl = providers.gradleProperty("GDEI_BASE_URL_STAGING").orNull
     ?: "https://gdeiassistant.azurewebsites.net/"
 val prodBaseUrl = providers.gradleProperty("GDEI_BASE_URL_PROD").orNull
-    ?: "https://gdeiassistant.cn/"
+    ?: "https://gdeiassistant.azurewebsites.net/"
 val certificatePins = providers.gradleProperty("GDEI_CERTIFICATE_PINS").orNull.orEmpty()
 val appVersionCode = providers.gradleProperty("GDEI_VERSION_CODE")
     .map { it.toInt() }

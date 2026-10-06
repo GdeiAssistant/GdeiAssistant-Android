@@ -31,6 +31,17 @@ class SessionManagerTest {
     }
 
     @Test
+    fun oldUnauthorizedResponseCannotClearNewSession() {
+        val manager = SessionManager(context)
+        manager.saveToken("new-session", "synthetic")
+        assertFalse(manager.clearTokensIfCurrent("old-session"))
+        assertFalse(manager.clearTokensIfCurrent(null))
+        assertEquals("new-session", manager.currentToken())
+        assertTrue(manager.clearTokensIfCurrent("new-session"))
+        tokenUtilsMock.verify { TokenUtils.ClearUserToken(context) }
+    }
+
+    @Test
     fun constructorRestoresCachedTokenAndUsername() {
         val token = "header.payload.signature"
         tokenUtilsMock.`when`<String?> { TokenUtils.GetUserAccessToken(context) }.thenReturn(token)

@@ -103,6 +103,6 @@ class LostFoundRepositoryDisplaySeparationTest {
         assertEquals(LostFoundItemState.ACTIVE, LostFoundItemState.fromRemote(0))
         assertEquals(LostFoundItemState.RESOLVED, LostFoundItemState.fromRemote(1))
         assertEquals(LostFoundItemState.SYSTEM_DELETED, LostFoundItemState.fromRemote(2))
-        assertEquals(LostFoundItemState.ACTIVE, LostFoundItemState.fromRemote(null))
+        assertEquals(LostFoundItemState.UNKNOWN, LostFoundItemState.fromRemote(null))
     }
 }

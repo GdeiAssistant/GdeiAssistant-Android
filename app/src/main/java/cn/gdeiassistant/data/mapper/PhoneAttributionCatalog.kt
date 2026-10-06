@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data.mapper
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import cn.gdeiassistant.model.PhoneAttribution
 import java.io.InputStream
@@ -7,7 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 object PhoneAttributionCatalog {
     fun load(context: Context): List<PhoneAttribution> {
-        return runCatching {
+        return cancellableRunCatching {
             context.assets.open("phone.xml").use(::parse)
         }.getOrDefault(emptyList())
     }

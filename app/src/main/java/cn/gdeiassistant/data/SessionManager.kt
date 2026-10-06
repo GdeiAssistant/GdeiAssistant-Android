@@ -79,17 +79,26 @@ class SessionManager @Inject constructor(
             ?: resolveUsername(currentToken(), null)?.also(usernameRef::set)
     }
 
+    @Synchronized
     fun saveToken(accessToken: String, username: String? = null) {
         TokenUtils.SaveUserToken(accessToken, context)
         accessTokenRef.set(accessToken)
         usernameRef.set(resolveUsername(accessToken, username))
     }
 
+    @Synchronized
     fun clearTokens() {
         TokenUtils.ClearUserToken(context)
         accessTokenRef.set(null)
         usernameRef.set(null)
         clearCookies()
+    }
+
+    @Synchronized
+    fun clearTokensIfCurrent(requestToken: String?): Boolean {
+        if (requestToken.isNullOrBlank() || requestToken != currentToken()) return false
+        clearTokens()
+        return true
     }
 
     fun clearCookies() {

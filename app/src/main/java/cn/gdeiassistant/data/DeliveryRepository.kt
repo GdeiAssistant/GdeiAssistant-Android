@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import cn.gdeiassistant.model.DeliveryDraft
 import cn.gdeiassistant.model.DeliveryMineSummary
 import cn.gdeiassistant.model.DeliveryOrder
@@ -21,7 +22,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import java.util.Locale
 
-private const val DELIVERY_PLACEHOLDER_PICKUP_CODE = "00000000000"
 
 @Singleton
 class DeliveryRepository @Inject constructor(
@@ -43,7 +43,7 @@ class DeliveryRepository @Inject constructor(
     }
 
     suspend fun getCombined(): Result<Pair<List<DeliveryOrder>, DeliveryMineSummary>> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val ordersDeferred = async { getOrders() }
                 val mineDeferred = async { getMine() }
@@ -77,15 +77,15 @@ class DeliveryRepository @Inject constructor(
 
     suspend fun publish(draft: DeliveryDraft, taskName: String): Result<Unit> = withContext(Dispatchers.IO) {
         safeJsonResultCall {
-            deliveryApi.publish(
-                name = taskName,
-                number = draft.pickupNumber.ifBlank { DELIVERY_PLACEHOLDER_PICKUP_CODE },
-                phone = draft.phone,
+            deliveryApi.publish(cn.gdeiassistant.network.api.DeliveryPublishDto(
+                taskName = taskName,
+                pickupCode = draft.pickupNumber,
+                contactPhone = draft.phone,
                 price = String.format(Locale.ROOT, "%.2f", draft.price),
-                company = draft.pickupPlace,
-                address = draft.address,
+                pickupLocation = draft.pickupPlace,
+                deliveryAddress = draft.address,
                 remarks = draft.remarks
-            )
+            ))
         }
     }
 
@@ -100,21 +100,21 @@ class DeliveryRepository @Inject constructor(
         val order = dto.order ?: throw IllegalStateException("Delivery detail not found")
         return DeliveryOrderDetail(
             order = mapOrder(order),
-            detailType = dto.detailType ?: 1,
+            detailType = dto.detailType ?: 2,
             trade = dto.trade?.let(::mapTrade)
         )
     }
 
     private fun mapOrder(dto: DeliveryOrderDto): DeliveryOrder {
         return DeliveryOrder(
-            orderId = dto.orderId?.toString() ?: System.nanoTime().toString(),
-            username = dto.username.orEmpty(),
-            taskName = dto.name.orEmpty(),
-            pickupCode = dto.number.orEmpty(),
-            contactPhone = dto.phone.orEmpty(),
+            orderId = dto.orderId?.takeIf { it > 0 }?.toString() ?: throw IllegalStateException("Missing delivery order ID"),
+            displayName = dto.displayName.orEmpty(),
+            taskName = dto.taskName.orEmpty(),
+            pickupCode = dto.pickupCode.orEmpty(),
+            contactPhone = dto.contactPhone.orEmpty(),
             price = dto.price ?: 0.0,
-            company = dto.company.orEmpty(),
-            address = dto.address.orEmpty(),
+            company = dto.pickupLocation.orEmpty(),
+            address = dto.deliveryAddress.orEmpty(),
             state = DeliveryOrderState.fromRemote(dto.state),
             remarks = dto.remarks.orEmpty(),
             orderTime = dto.orderTime.orEmpty()
@@ -123,11 +123,11 @@ class DeliveryRepository @Inject constructor(
 
     private fun mapTrade(dto: DeliveryTradeDto): DeliveryTrade {
         return DeliveryTrade(
-            tradeId = dto.tradeId?.toString() ?: System.nanoTime().toString(),
-            orderId = dto.orderId?.toString() ?: "",
+            tradeId = dto.tradeId?.takeIf { it > 0 }?.toString() ?: throw IllegalStateException("Missing delivery trade ID"),
+            orderId = dto.orderId?.takeIf { it > 0 }?.toString() ?: throw IllegalStateException("Missing delivery trade order ID"),
             createTime = dto.createTime.orEmpty(),
-            username = dto.username.orEmpty(),
-            state = dto.state ?: 0
+            displayName = dto.displayName.orEmpty(),
+            state = dto.state ?: -1
         )
     }
 }

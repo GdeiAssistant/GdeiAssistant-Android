@@ -77,7 +77,7 @@ class MarketplaceRepositoryDisplaySeparationTest {
             condition = "",
             description = "",     // was: context.getString(R.string.marketplace_description_empty)
             contactHint = "",     // was: context.getString(R.string.marketplace_contact_private)
-            sellerUsername = null,
+            sellerDisplayName = null,
             sellerNickname = null,
             sellerCollege = null,
             sellerMajor = null,

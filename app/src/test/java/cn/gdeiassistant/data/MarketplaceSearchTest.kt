@@ -31,7 +31,7 @@ class MarketplaceSearchTest {
 
     private val sellingDto = MarketplaceItemDto(
         id = 1,
-        username = "user1",
+        displayName = "user1",
         name = "测试商品",
         description = "测试描述",
         price = "50.0",
