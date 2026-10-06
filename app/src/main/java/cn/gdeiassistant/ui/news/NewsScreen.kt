@@ -58,12 +58,6 @@ fun NewsScreen(navController: NavHostController) {
     ) {
         item {
             SectionCard(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.news_subtitle),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(state.categories, key = { it.type }) { category ->
                         SelectionPill(

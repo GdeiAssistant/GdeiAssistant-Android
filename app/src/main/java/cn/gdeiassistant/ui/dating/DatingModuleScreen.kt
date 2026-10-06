@@ -124,8 +124,6 @@ fun DatingScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
             ) {
-                BadgePill(text = stringResource(R.string.dating_feed_badge))
-                Spacer(modifier = Modifier.size(16.dp))
                 Text(
                     text = stringResource(R.string.dating_feed_subtitle),
                     style = MaterialTheme.typography.headlineSmall,

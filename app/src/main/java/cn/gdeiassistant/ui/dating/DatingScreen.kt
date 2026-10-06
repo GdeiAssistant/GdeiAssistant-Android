@@ -78,8 +78,6 @@ fun DatingCenterScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
             ) {
-                BadgePill(text = stringResource(R.string.dating_badge))
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                 Text(
                     text = stringResource(R.string.dating_subtitle),
                     style = MaterialTheme.typography.titleLarge,

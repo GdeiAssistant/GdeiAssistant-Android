@@ -427,8 +427,6 @@ fun ExpressProfileScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth(),
                         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                     ) {
-                        BadgePill(text = stringResource(R.string.express_profile_badge))
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                         Text(
                             text = stringResource(R.string.express_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,

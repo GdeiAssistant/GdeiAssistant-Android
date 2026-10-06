@@ -343,8 +343,6 @@ fun DeliveryMineScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
             ) {
-                BadgePill(text = stringResource(R.string.delivery_mine_badge))
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                 Text(
                     text = stringResource(R.string.delivery_mine_subtitle),
                     style = MaterialTheme.typography.titleLarge,
@@ -458,8 +456,6 @@ fun DeliveryPublishScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
             ) {
-                BadgePill(text = stringResource(R.string.delivery_publish_badge))
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
                 Text(
                     text = stringResource(R.string.delivery_publish_subtitle),
                     style = MaterialTheme.typography.titleLarge,

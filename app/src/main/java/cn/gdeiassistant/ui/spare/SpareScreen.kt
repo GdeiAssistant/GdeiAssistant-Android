@@ -94,11 +94,6 @@ fun SpareScreen(navController: NavHostController) {
                     .animateContentSize(),
                 containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
             ) {
-                BadgePill(
-                    text = stringResource(R.string.spare_hero_badge),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
                 Text(
                     text = stringResource(R.string.spare_condition_title),
                     style = MaterialTheme.typography.headlineSmall,

@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.navigation.Routes
@@ -42,14 +41,6 @@ fun DataCenterScreen(navController: NavHostController) {
     ) {
         item {
             SectionCard(modifier = Modifier.fillMaxWidth()) {
-                BadgePill(text = stringResource(R.string.data_center_badge))
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.data_center_subtitle),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = stringResource(R.string.data_center_section_body),
                     style = MaterialTheme.typography.bodyMedium,

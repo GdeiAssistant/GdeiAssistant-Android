@@ -191,11 +191,6 @@ private fun QueryFormCard(
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
-            Text(
-                text = stringResource(R.string.cet_form_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
 
             OutlinedTextField(
                 value = state.ticketNumber,

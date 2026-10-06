@@ -47,7 +47,6 @@ class MarketplaceDisplayMapper @Inject constructor(
     fun applyPersonalSummaryDefaults(summary: MarketplacePersonalSummary): MarketplacePersonalSummary {
         return summary.copy(
             nickname = summary.nickname.ifBlank { textResolver.getString(R.string.profile_default_username) },
-            introduction = summary.introduction.ifBlank { textResolver.getString(R.string.profile_subtitle_default) },
             doing = applyItemDefaults(summary.doing),
             sold = applyItemDefaults(summary.sold),
             off = applyItemDefaults(summary.off)

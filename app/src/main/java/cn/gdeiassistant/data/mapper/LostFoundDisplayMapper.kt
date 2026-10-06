@@ -45,7 +45,6 @@ class LostFoundDisplayMapper @Inject constructor(
     fun applyPersonalSummaryDefaults(summary: LostFoundPersonalSummary): LostFoundPersonalSummary {
         return summary.copy(
             nickname = summary.nickname.ifBlank { textResolver.getString(R.string.profile_default_username) },
-            introduction = summary.introduction.ifBlank { textResolver.getString(R.string.profile_subtitle_default) },
             lost = applyItemDefaults(summary.lost),
             found = applyItemDefaults(summary.found),
             didFound = applyItemDefaults(summary.didFound)
