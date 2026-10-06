@@ -6,59 +6,38 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * GdeiAssistant 2026 Typography
- * Featuring bold headlines for visual hierarchy and monospace for data.
- */
+/** OpenType feature that keeps digits equal-width in grades, balances and times. */
+const val TabularNumbers = "tnum"
+
+private fun style(
+    size: Int,
+    lineHeight: Int,
+    weight: FontWeight,
+    letterSpacing: Float = 0f
+) = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = weight,
+    fontSize = size.sp,
+    lineHeight = lineHeight.sp,
+    letterSpacing = letterSpacing.sp,
+    fontFeatureSettings = TabularNumbers
+)
+
+/** System default typeface on the Material 3 type scale, with tabular figures. */
 val AppTypography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 48.sp,
-        lineHeight = 56.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineMedium = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = 0.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.sp
-    ),
-    // Specific style for numbers/data (e.g., grades, balance)
-    labelLarge = TextStyle(
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.sp
-    )
+    displayLarge = style(48, 56, FontWeight.Bold),
+    displayMedium = style(40, 48, FontWeight.Bold),
+    displaySmall = style(34, 42, FontWeight.Bold),
+    headlineLarge = style(30, 38, FontWeight.Bold),
+    headlineMedium = style(26, 34, FontWeight.SemiBold),
+    headlineSmall = style(22, 30, FontWeight.SemiBold),
+    titleLarge = style(20, 28, FontWeight.SemiBold),
+    titleMedium = style(16, 24, FontWeight.SemiBold),
+    titleSmall = style(14, 20, FontWeight.SemiBold),
+    bodyLarge = style(16, 24, FontWeight.Normal),
+    bodyMedium = style(14, 20, FontWeight.Normal),
+    bodySmall = style(12, 16, FontWeight.Normal),
+    labelLarge = style(14, 20, FontWeight.Medium),
+    labelMedium = style(12, 16, FontWeight.Medium),
+    labelSmall = style(11, 16, FontWeight.Medium, 0.2f)
 )

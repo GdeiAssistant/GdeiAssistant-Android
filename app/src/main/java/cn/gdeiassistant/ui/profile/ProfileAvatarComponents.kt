@@ -68,7 +68,7 @@ private fun ProfileAvatarFallback(label: String) {
     Text(
         text = label,
         style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.ExtraBold,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary
     )
 }

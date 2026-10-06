@@ -17,8 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.gdeiassistant.ui.theme.AppShapes
@@ -33,30 +31,20 @@ fun ShimmerBox(
     shape: RoundedCornerShape = AppShapes.small
 ) {
     val transition = rememberInfiniteTransition(label = "shimmer")
-    val progress by transition.animateFloat(
-        initialValue = 0f,
+    val alpha by transition.animateFloat(
+        initialValue = 0.55f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            animation = tween(900, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
         ),
-        label = "shimmer_progress"
+        label = "shimmer_alpha"
     )
     Box(
         modifier = modifier
             .clip(shape)
             .height(height)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.surfaceContainerLow,
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    start = Offset(progress * 2 - 1f, 0f),
-                    end = Offset(progress * 2, 0f)
-                )
-            )
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = alpha))
     )
 }
 
@@ -69,8 +57,8 @@ fun ShimmerScreen(
         androidx.compose.foundation.layout.Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+                .padding(16.dp),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
         ) {
             ShimmerBox(modifier = Modifier.fillMaxWidth(0.6f), height = 32.dp)
             ShimmerBox(modifier = Modifier.fillMaxWidth(), height = 20.dp)

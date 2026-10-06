@@ -104,7 +104,7 @@ fun LostFoundPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.lost_found_publish_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

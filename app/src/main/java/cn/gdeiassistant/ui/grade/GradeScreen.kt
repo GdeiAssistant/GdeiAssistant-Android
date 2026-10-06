@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.grade
 
 import androidx.compose.animation.AnimatedContent
+import cn.gdeiassistant.ui.theme.AppShapes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.School
@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -209,7 +208,7 @@ private fun TermSnapshotCard(
 ) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
+        containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -224,14 +223,14 @@ private fun TermSnapshotCard(
                     )
                     BadgePill(
                         text = stringResource(term.labelResId()),
-                        tint = MaterialTheme.colorScheme.tertiary
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
                 Spacer(modifier = Modifier.height(14.dp))
                 Text(
                     text = stringResource(R.string.grade_summary_title, grades.size),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.ExtraBold,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -275,8 +274,8 @@ private fun GradeMetricCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.78f)
+        shape = AppShapes.card,
+        color = MaterialTheme.colorScheme.surface
     ) {
         Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
             Text(
@@ -339,7 +338,7 @@ private fun GradeRow(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val (badgeBg, badgeFg) = scoreBadgeStyle(grade.gradeScore)
+    val (badgeBg, badgeFg) = gradeTone(grade.gradeScore)
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
@@ -378,7 +377,7 @@ private fun GradeRow(
             }
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Surface(shape = RoundedCornerShape(999.dp), color = badgeBg) {
+        Surface(shape = AppShapes.pill, color = badgeBg) {
             Text(
                 text = grade.gradeScore ?: "—",
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
@@ -394,18 +393,6 @@ private fun fmtMetric(value: Double?): String {
     if (value == null) return "—"
     return if (value % 1.0 == 0.0) value.toInt().toString()
     else String.format(java.util.Locale.US, "%.2f", value)
-}
-
-@Composable
-private fun scoreBadgeStyle(raw: String?): Pair<Color, Color> {
-    val score = raw?.toDoubleOrNull()
-        ?: return MaterialTheme.colorScheme.surfaceContainerHighest to MaterialTheme.colorScheme.onSurface
-    return when {
-        score >= 90 -> Color(0xFFE8FAF3) to Color(0xFF0E7A63)
-        score >= 80 -> Color(0xFFEFF6FF) to Color(0xFF1764F6)
-        score >= 60 -> Color(0xFFFFF4DE) to Color(0xFFB7791F)
-        else        -> Color(0xFFFFECE8) to Color(0xFFC2412D)
-    }
 }
 
 private fun GradeUiState.gradesFor(term: GradeTerm): List<Grade> = when (term) {

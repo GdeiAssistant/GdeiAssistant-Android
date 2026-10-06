@@ -352,7 +352,7 @@ fun TopicProfileScreen(navController: NavHostController) {
                         Text(
                             text = stringResource(R.string.topic_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -385,7 +385,7 @@ private fun TopicDetailHero(
         Text(
             text = detail.post.authorName,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = if (onAuthorClick != null) {
                 Modifier.clickable(onClick = onAuthorClick)

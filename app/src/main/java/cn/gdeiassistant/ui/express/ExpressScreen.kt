@@ -432,7 +432,7 @@ fun ExpressProfileScreen(navController: NavHostController) {
                         Text(
                             text = stringResource(R.string.express_profile_subtitle),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -478,7 +478,7 @@ private fun ExpressDetailHero(
         Text(
             text = "${detail.post.nickname}  ${stringResource(R.string.express_like_action)}  ${detail.post.targetName}",
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = if (onAuthorClick != null) {
                 Modifier.clickable(onClick = onAuthorClick)

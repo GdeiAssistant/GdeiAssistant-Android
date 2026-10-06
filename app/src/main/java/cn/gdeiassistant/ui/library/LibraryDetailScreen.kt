@@ -163,7 +163,7 @@ fun LibraryDetailScreen(
                     Text(
                         text = item.title,
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(

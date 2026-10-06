@@ -185,7 +185,7 @@ fun DeliveryDetailScreen(navController: NavHostController) {
                         Text(
                             text = stringResource(R.string.delivery_section_order),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold
+                            fontWeight = FontWeight.Bold
                         )
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                         DetailRow(
@@ -234,7 +234,7 @@ fun DeliveryDetailScreen(navController: NavHostController) {
                             Text(
                                 text = stringResource(R.string.delivery_section_trade),
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.ExtraBold
+                                fontWeight = FontWeight.Bold
                             )
                             androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                             DetailRow(
@@ -253,7 +253,7 @@ fun DeliveryDetailScreen(navController: NavHostController) {
                         Text(
                             text = stringResource(R.string.delivery_section_action),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold
+                            fontWeight = FontWeight.Bold
                         )
                         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                         if (!detail.canViewSensitiveInfo) {
@@ -348,7 +348,7 @@ fun DeliveryMineScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.delivery_mine_subtitle),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
@@ -463,7 +463,7 @@ fun DeliveryPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.delivery_publish_subtitle),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -549,7 +549,7 @@ private fun DeliveryDetailHero(detail: DeliveryOrderDetail) {
         Text(
             text = detail.order.taskName,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
@@ -600,7 +600,7 @@ private fun DeliveryOrderCard(
                 text = "¥%.2f".format(order.price),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
         }
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
@@ -643,7 +643,7 @@ private fun DeliveryRouteRow(
                 text = marker,
                 modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.ExtraBold,
+                fontWeight = FontWeight.Bold,
                 color = tint
             )
         }

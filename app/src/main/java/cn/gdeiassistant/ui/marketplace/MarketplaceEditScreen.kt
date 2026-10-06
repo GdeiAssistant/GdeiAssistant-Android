@@ -207,7 +207,7 @@ private fun MarketplaceEditContent(
             Text(
                 text = stringResource(R.string.marketplace_edit_subtitle),
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Bold
             )
         }
         if (imageUrls.isNotEmpty()) {

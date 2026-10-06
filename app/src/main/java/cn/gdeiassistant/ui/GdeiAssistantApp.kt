@@ -1,17 +1,13 @@
 package cn.gdeiassistant.ui
 
 import android.widget.Toast
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import cn.gdeiassistant.event.GlobalEvent
 import cn.gdeiassistant.event.GlobalEventManager
 import cn.gdeiassistant.model.CollectionBorrowItem
@@ -192,19 +187,10 @@ fun GdeiAssistantApp(
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
-                    tonalElevation = 0.dp,
-                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     MainTabs.destinations.forEach { destination ->
                         val selected = currentRoute == destination.route
-                        val iconTint by animateColorAsState(
-                            targetValue = if (selected)
-                                androidx.compose.material3.MaterialTheme.colorScheme.onSecondaryContainer
-                            else
-                                androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                            animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                            label = "navIconTint"
-                        )
                         NavigationBarItem(
                             selected = selected,
                             modifier = Modifier.testTag("tab.${destination.route}"),
@@ -218,28 +204,13 @@ fun GdeiAssistantApp(
                                 }
                             },
                             icon = {
-                                Box(contentAlignment = androidx.compose.ui.Alignment.Center) {
-                                    Icon(
-                                        imageVector = if (selected) destination.selectedIcon
-                                        else destination.unselectedIcon,
-                                        contentDescription = stringResource(destination.labelRes),
-                                        tint = iconTint
-                                    )
-                                }
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(destination.labelRes),
-                                    style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                                Icon(
+                                    imageVector = if (selected) destination.selectedIcon
+                                    else destination.unselectedIcon,
+                                    contentDescription = stringResource(destination.labelRes)
                                 )
                             },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = androidx.compose.material3.MaterialTheme.colorScheme.onSecondaryContainer,
-                                indicatorColor = androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer,
-                                unselectedIconColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                                selectedTextColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
-                                unselectedTextColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            label = { Text(text = stringResource(destination.labelRes)) }
                         )
                     }
                 }

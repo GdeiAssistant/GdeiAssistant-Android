@@ -1,32 +1,39 @@
 package cn.gdeiassistant.ui.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import cn.gdeiassistant.R
 import cn.gdeiassistant.ui.theme.AppShapes
 
 @Composable
@@ -44,23 +51,20 @@ fun Atmosphere(
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    borderColor: Color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    borderColor: Color = Color.Unspecified,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
         modifier = modifier.animateContentSize(),
         shape = AppShapes.card,
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor
-        ),
-        border = BorderStroke(1.dp, borderColor),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(16.dp),
             content = content
         )
     }
@@ -69,27 +73,22 @@ fun SectionCard(
 @Composable
 fun HeroCard(
     modifier: Modifier = Modifier,
-    start: Color = MaterialTheme.colorScheme.primary,
-    end: Color = MaterialTheme.colorScheme.secondary,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
         modifier = modifier,
-        shape = AppShapes.container, // Larger corners for Hero
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        shape = AppShapes.card,
+        colors = CardDefaults.cardColors(
+            containerColor = containerColor,
+            contentColor = contentColorFor(containerColor)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(start, end),
-                        start = Offset.Zero,
-                        end = Offset(Float.POSITIVE_INFINITY, 0f)
-                    )
-                )
-                .padding(24.dp),
+                .padding(20.dp),
             content = content
         )
     }
@@ -103,35 +102,38 @@ fun BadgePill(
     tint: Color = MaterialTheme.colorScheme.primary,
     onGradient: Boolean = false
 ) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.pill,
-        color = if (onGradient) Color.White.copy(alpha = 0.2f) else tint.copy(alpha = 0.12f),
-        border = if (onGradient) null else BorderStroke(1.dp, tint.copy(alpha = 0.2f))
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            icon?.let {
-                Icon(
-                    imageVector = it,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = if (onGradient) Color.White else tint
-                )
-                Spacer(modifier = Modifier.size(6.dp))
-            }
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.sp
-                ),
-                color = if (onGradient) Color.White else tint
-            )
-        }
+    val container = if (onGradient) {
+        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)
+    } else {
+        MaterialTheme.colorScheme.secondaryContainer
     }
+    val content = if (onGradient) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    }
+    androidx.compose.material3.AssistChip(
+        onClick = {},
+        modifier = modifier,
+        enabled = false,
+        label = { Text(text = text, style = MaterialTheme.typography.labelMedium, color = content) },
+        leadingIcon = icon?.let { image ->
+            {
+                Icon(
+                    imageVector = image,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = content
+                )
+            }
+        },
+        colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
+            disabledContainerColor = container,
+            disabledLabelColor = content,
+            disabledLeadingIconContentColor = content
+        ),
+        border = null
+    )
 }
 
 @Composable
@@ -144,55 +146,50 @@ fun ActionTile(
     tint: Color = MaterialTheme.colorScheme.primary,
     emphasized: Boolean = false
 ) {
-    val containerColor = if (emphasized) tint.copy(alpha = 0.08f)
-    else MaterialTheme.colorScheme.surface
-
-    Surface(
+    Card(
         onClick = onClick,
-        modifier = modifier.animateContentSize(),
+        modifier = modifier,
         shape = AppShapes.card,
-        color = containerColor,
-        shadowElevation = if (emphasized) 0.dp else 2.dp,
-        tonalElevation = if (emphasized) 4.dp else 0.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(tint.copy(alpha = 0.15f), AppShapes.small),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = tint,
-                    modifier = Modifier.size(24.dp)
-                )
+        colors = CardDefaults.cardColors(
+            containerColor = if (emphasized) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerLowest
             }
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
-                Spacer(modifier = Modifier.size(4.dp))
+        )
+    ) {
+        ListItem(
+            headlineContent = {
                 Text(
-                    text = sub,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-            }
-        }
+            },
+            supportingContent = subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
+                {
+                    Text(
+                        text = sub,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            },
+            leadingContent = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = if (emphasized) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        tint
+                    }
+                )
+            },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+        )
     }
 }
 
@@ -202,15 +199,14 @@ fun LazyScreen(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
-    // Keep parameters for compatibility but use Theme colors internally
     pageBackground: Color = MaterialTheme.colorScheme.background,
     pageBackgroundElevated: Color = MaterialTheme.colorScheme.background,
     primaryGlow: Color = Color.Unspecified,
     secondaryGlow: Color = Color.Unspecified,
     actions: @Composable RowScope.() -> Unit = {},
     showLoadingPlaceholder: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(20.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(12.dp),
     content: LazyListScope.() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -253,28 +249,41 @@ fun MetricChip(
     modifier: Modifier = Modifier,
     onGradient: Boolean = false
 ) {
-    Surface(
+    val container = if (onGradient) {
+        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+    val labelColor = if (onGradient) {
+        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val valueColor = if (onGradient) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    Card(
         modifier = modifier,
-        shape = AppShapes.small,
-        color = if (onGradient) Color.White.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        shape = AppShapes.button,
+        colors = CardDefaults.cardColors(containerColor = container)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = if (onGradient) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = labelColor,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp), // Monospace from labelLarge
-                color = if (onGradient) Color.White else MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+                color = valueColor,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -287,44 +296,25 @@ fun StatusBanner(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     surface: Color = MaterialTheme.colorScheme.errorContainer,
-    border: Color = MaterialTheme.colorScheme.error.copy(alpha = 0.28f),
+    border: Color = Color.Unspecified,
     tint: Color = MaterialTheme.colorScheme.error
 ) {
-    Surface(
-        modifier = modifier.animateContentSize(),
+    Card(
+        modifier = modifier,
         shape = AppShapes.card,
-        color = surface,
-        border = BorderStroke(1.dp, border)
+        colors = CardDefaults.cardColors(containerColor = surface)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(tint.copy(alpha = 0.14f)),
-                contentAlignment = Alignment.Center
-            ) {
+        ListItem(
+            headlineContent = {
+                Text(text = title, style = MaterialTheme.typography.titleSmall)
+            },
+            supportingContent = {
+                Text(text = body, style = MaterialTheme.typography.bodySmall)
+            },
+            leadingContent = {
                 Icon(imageVector = icon, contentDescription = null, tint = tint)
-            }
-            Spacer(modifier = Modifier.size(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = body,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+            },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+        )
     }
 }

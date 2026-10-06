@@ -137,7 +137,7 @@ private fun LostOverviewCard() {
         Text(
             text = stringResource(R.string.lost_subtitle),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
     }
 }

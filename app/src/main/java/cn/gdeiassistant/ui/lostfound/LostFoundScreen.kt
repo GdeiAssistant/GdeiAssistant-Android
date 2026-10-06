@@ -217,7 +217,7 @@ fun LostFoundDetailScreen(navController: NavHostController) {
                             Text(
                                 text = stringResource(R.string.lost_found_images_title),
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.ExtraBold
+                                fontWeight = FontWeight.Bold
                             )
                             androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                             NativeImageGallery(
@@ -390,7 +390,7 @@ fun LostFoundProfileScreen(navController: NavHostController) {
                                 Text(
                                     text = summary.introduction,
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.ExtraBold,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     maxLines = 3,
                                     overflow = TextOverflow.Ellipsis
@@ -520,7 +520,7 @@ private fun LostFoundDetailHero(detail: LostFoundDetail) {
         Text(
             text = detail.item.title,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))

@@ -129,7 +129,7 @@ fun DatingScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.dating_feed_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -326,7 +326,7 @@ fun DatingPublishScreen(navController: NavHostController) {
                 Text(
                     text = stringResource(R.string.dating_publish_page_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -492,7 +492,7 @@ private fun DatingFeedCard(
                 Text(
                     text = item.nickname,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "${item.grade} · ${LocalizedProfileCatalog.localizeFacultyName(item.faculty)}",
@@ -529,7 +529,7 @@ private fun DatingDetailHero(
         Text(
             text = detail.profile.nickname,
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.size(8.dp))
         Text(

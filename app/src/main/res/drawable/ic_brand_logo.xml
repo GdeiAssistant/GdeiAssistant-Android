@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Full-colour GdeiAssistant brand mark for in-app use (Compose painterResource cannot load adaptive icons). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <path
+        android:fillColor="#0E8F6E"
+        android:pathData="M0,0 H1024 V1024 H0 Z" />
+    <group
+        android:translateX="512"
+        android:translateY="512">
+        <group
+            android:scaleX="0.9"
+            android:scaleY="0.9">
+            <group
+                android:translateX="-512"
+                android:translateY="-493">
+                <path
+                    android:fillColor="#CFEFE3"
+                    android:pathData="M330,452 L330,612 C330,612 410,686 512,686 C614,686 694,612 694,612 L694,452 L512,540 Z" />
+                <path
+                    android:fillColor="#FFFFFF"
+                    android:strokeColor="#FFFFFF"
+                    android:strokeWidth="24"
+                    android:strokeLineJoin="round"
+                    android:pathData="M512,262 L812,404 L512,546 L212,404 Z" />
+                <path
+                    android:fillColor="#00000000"
+                    android:strokeColor="#F2B33D"
+                    android:strokeWidth="26"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:pathData="M512,404 L752,450 L752,610" />
+                <path
+                    android:fillColor="#F2B33D"
+                    android:pathData="M486,404 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0" />
+                <path
+                    android:fillColor="#F2B33D"
+                    android:pathData="M724,600 h56 l12,92 a40,40 0 0,1 -40,32 a40,40 0 0,1 -40,-32 z" />
+            </group>
+        </group>
+    </group>
+</vector>
