@@ -1,5 +1,7 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -102,7 +104,7 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun updateProfile(request: ProfileUpdateRequest): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             val normalizedNickname = request.nickname.trim()
             val normalizedCollege = ProfileFormSupport.normalizeSelection(request.college)
             val profileOptions = profileOptionsRepository.getOptions().getOrElse {
@@ -205,7 +207,7 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun uploadAvatar(uri: Uri): Result<AvatarState> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             val payload = avatarUploadPayload(uri)
             safeJsonResultCall {
                 profileApi.uploadAvatar(
@@ -262,7 +264,7 @@ class ProfileRepository @Inject constructor(
             .mapCatching { items ->
                 items.orEmpty().map { dto ->
                     LoginRecordItem(
-                        id = dto.id?.toString() ?: System.nanoTime().toString(),
+                        id = requireRemoteId(dto.id),
                         timeText = dto.time.orEmpty(),
                         ip = dto.ip.orEmpty(),
                         area = listOfNotNull(
@@ -360,7 +362,7 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun deleteAccount(password: String): Result<Unit> = withContext(Dispatchers.IO) {
-        safeJsonResultCall { profileApi.deleteAccount(password = password) }
+        safeJsonResultCall { profileApi.deleteAccount(cn.gdeiassistant.network.api.PasswordDto(password)) }
     }
 
     private fun mapPhoneStatus(dto: PhoneStatusDto?): ContactBindingStatus {

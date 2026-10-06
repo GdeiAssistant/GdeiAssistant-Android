@@ -43,17 +43,17 @@ class DeliveryRepositoryDisplaySeparationTest {
     }
 
     @Test
-    fun publishUsesStablePlaceholderPickupCodeForBlankDraftValue() = runTest(testDispatcher) {
+    fun publishPreservesBlankOptionalPickupCode() = runTest(testDispatcher) {
         whenever(
-            deliveryApi.publish(
-                name = "代收",
-                number = "00000000000",
-                phone = "13800138000",
+            deliveryApi.publish(cn.gdeiassistant.network.api.DeliveryPublishDto(
+                taskName = "代收",
+                pickupCode = "",
+                contactPhone = "13800138000",
                 price = "5.50",
-                company = "菜鸟驿站",
-                address = "南苑5栋307",
+                pickupLocation = "菜鸟驿站",
+                deliveryAddress = "南苑5栋307",
                 remarks = "轻拿轻放"
-            )
+            ))
         ).thenReturn(JsonResult(success = true))
 
         val repository = DeliveryRepository(deliveryApi)
@@ -70,15 +70,15 @@ class DeliveryRepositoryDisplaySeparationTest {
         )
 
         assertTrue(result.isSuccess)
-        verify(deliveryApi).publish(
-            name = "代收",
-            number = "00000000000",
-            phone = "13800138000",
+        verify(deliveryApi).publish(cn.gdeiassistant.network.api.DeliveryPublishDto(
+            taskName = "代收",
+            pickupCode = "",
+            contactPhone = "13800138000",
             price = "5.50",
-            company = "菜鸟驿站",
-            address = "南苑5栋307",
+            pickupLocation = "菜鸟驿站",
+            deliveryAddress = "南苑5栋307",
             remarks = "轻拿轻放"
-        )
+        ))
     }
 
     @Test
@@ -87,7 +87,7 @@ class DeliveryRepositoryDisplaySeparationTest {
         // with all-null string fields: empty strings, not localized display text.
         val order = DeliveryOrder(
             orderId = "1",
-            username = "",     // was: context.getString(R.string.delivery_default_username)
+            displayName = "",     // was: context.getString(R.string.delivery_default_username)
             taskName = "",     // was: context.getString(R.string.delivery_task_name)
             pickupCode = "",   // was: context.getString(R.string.delivery_default_pickup_code)
             contactPhone = "", // was: context.getString(R.string.delivery_default_phone_mask)
@@ -99,7 +99,7 @@ class DeliveryRepositoryDisplaySeparationTest {
             orderTime = ""     // was: context.getString(R.string.common_just_now)
         )
 
-        assertTrue("username should be blank for null API value", order.username.isBlank())
+        assertTrue("username should be blank for null API value", order.displayName.isBlank())
         assertTrue("taskName should be blank for null API value", order.taskName.isBlank())
         assertTrue("pickupCode should be blank for null API value", order.pickupCode.isBlank())
         assertTrue("contactPhone should be blank for null API value", order.contactPhone.isBlank())
@@ -112,7 +112,7 @@ class DeliveryRepositoryDisplaySeparationTest {
     fun deliveryOrderWithPopulatedFieldsPreservesValues() {
         val order = DeliveryOrder(
             orderId = "42",
-            username = "testuser",
+            displayName = "testuser",
             taskName = "Package pickup",
             pickupCode = "A12345",
             contactPhone = "13800138000",
@@ -124,7 +124,7 @@ class DeliveryRepositoryDisplaySeparationTest {
             orderTime = "2025-03-15 14:00"
         )
 
-        assertEquals("testuser", order.username)
+        assertEquals("testuser", order.displayName)
         assertEquals("Package pickup", order.taskName)
         assertEquals("A12345", order.pickupCode)
         assertEquals("13800138000", order.contactPhone)
@@ -139,12 +139,12 @@ class DeliveryRepositoryDisplaySeparationTest {
             tradeId = "1",
             orderId = "",
             createTime = "", // was: context.getString(R.string.common_just_now)
-            username = "",   // was: context.getString(R.string.delivery_default_runner)
+            displayName = "",   // was: context.getString(R.string.delivery_default_runner)
             state = 0
         )
 
         assertTrue("createTime should be blank for null API value", trade.createTime.isBlank())
-        assertTrue("username should be blank for null API value", trade.username.isBlank())
+        assertTrue("username should be blank for null API value", trade.displayName.isBlank())
     }
 
     @Test
@@ -153,19 +153,19 @@ class DeliveryRepositoryDisplaySeparationTest {
             tradeId = "99",
             orderId = "42",
             createTime = "2025-03-15 15:00",
-            username = "runner_user",
+            displayName = "runner_user",
             state = 1
         )
 
         assertEquals("2025-03-15 15:00", trade.createTime)
-        assertEquals("runner_user", trade.username)
+        assertEquals("runner_user", trade.displayName)
     }
 
     @Test
     fun deliveryOrderPriceDefaultsToZeroForNullApiValue() {
         val order = DeliveryOrder(
             orderId = "1",
-            username = "",
+            displayName = "",
             taskName = "",
             pickupCode = "",
             contactPhone = "",

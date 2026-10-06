@@ -713,5 +713,6 @@ private fun lostFoundProfileTabLabel(tab: LostFoundProfileTab): String {
 private fun lostFoundStateLabel(state: cn.gdeiassistant.model.LostFoundItemState): String = when (state) {
     cn.gdeiassistant.model.LostFoundItemState.ACTIVE -> stringResource(R.string.lost_found_status_active)
     cn.gdeiassistant.model.LostFoundItemState.RESOLVED -> stringResource(R.string.lost_found_status_resolved)
+    cn.gdeiassistant.model.LostFoundItemState.UNKNOWN -> "—"
     cn.gdeiassistant.model.LostFoundItemState.SYSTEM_DELETED -> stringResource(R.string.lost_found_status_deleted)
 }

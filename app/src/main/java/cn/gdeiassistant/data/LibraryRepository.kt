@@ -60,7 +60,7 @@ class LibraryRepository @Inject constructor(
     }
 
     suspend fun getBorrowedBooks(password: String? = null): Result<List<CollectionBorrowItem>> = withContext(Dispatchers.IO) {
-        safeApiCall { libraryApi.getBorrowedBooks(password = password?.takeIf(String::isNotBlank)) }
+        safeApiCall { libraryApi.getBorrowedBooks(cn.gdeiassistant.network.api.PasswordDto(password)) }
             .mapCatching { items ->
                 items.orEmpty().map {
                     mapCollectionBorrowItem(

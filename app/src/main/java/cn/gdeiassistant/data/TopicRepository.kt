@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -102,7 +103,7 @@ class TopicRepository @Inject constructor(
         val firstImage = dto.firstImageUrl?.trim()?.ifBlank { null } ?: imageUrls.firstOrNull()
         val imageCount = maxOf(dto.count ?: 0, imageUrls.size, if (firstImage == null) 0 else 1)
         return TopicPost(
-            id = dto.id?.toString() ?: System.nanoTime().toString(),
+            id = requireRemoteId(dto.id),
             topic = dto.topic.orEmpty(),
             contentPreview = content.take(64),
             authorName = dto.username.orEmpty(),

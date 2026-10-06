@@ -15,38 +15,38 @@ import retrofit2.http.Query
 
 interface MarketplaceApi {
 
-    @GET("api/ershou/item/start/{start}")
+    @GET("api/marketplace/item/start/{start}")
     suspend fun getItems(
         @Path("start") start: Int
     ): DataJsonResult<List<MarketplaceItemDto>>
 
-    @GET("api/ershou/item/type/{type}/start/{start}")
+    @GET("api/marketplace/item/type/{type}/start/{start}")
     suspend fun getItemsByType(
         @Path("type") type: Int,
         @Path("start") start: Int
     ): DataJsonResult<List<MarketplaceItemDto>>
 
-    @GET("api/ershou/keyword/{keyword}/start/{start}")
+    @GET("api/marketplace/keyword/{keyword}/start/{start}")
     suspend fun searchItems(
         @Path("keyword") keyword: String,
         @Path("start") start: Int
     ): DataJsonResult<List<MarketplaceItemDto>>
 
-    @GET("api/ershou/item/id/{id}")
+    @GET("api/marketplace/item/id/{id}")
     suspend fun getItemDetail(
         @Path("id") id: String
     ): DataJsonResult<MarketplaceDetailDto>
 
-    @GET("api/ershou/item/id/{id}/preview")
+    @GET("api/marketplace/item/id/{id}/preview")
     suspend fun getItemPreview(
         @Path("id") id: String
     ): DataJsonResult<String>
 
-    @GET("api/ershou/profile")
+    @GET("api/marketplace/profile")
     suspend fun getProfileSummary(): DataJsonResult<MarketplacePersonalSummaryDto>
 
     @Multipart
-    @POST("api/ershou/item")
+    @POST("api/marketplace/item")
     suspend fun publish(
         @Part("name") name: RequestBody,
         @Part("description") description: RequestBody,
@@ -59,7 +59,7 @@ interface MarketplaceApi {
     ): JsonResult
 
     @FormUrlEncoded
-    @POST("api/ershou/item/id/{id}")
+    @POST("api/marketplace/item/id/{id}")
     suspend fun updateItem(
         @Path("id") id: String,
         @Field("name") name: String,
@@ -71,7 +71,7 @@ interface MarketplaceApi {
         @Field("phone") phone: String? = null
     ): JsonResult
 
-    @POST("api/ershou/item/state/id/{id}")
+    @POST("api/marketplace/item/state/id/{id}")
     suspend fun updateItemState(
         @Path("id") id: String,
         @Query("state") state: Int
@@ -80,7 +80,7 @@ interface MarketplaceApi {
 
 data class MarketplaceItemDto(
     val id: Int? = null,
-    val username: String? = null,
+    val displayName: String? = null,
     val authorId: String? = null,
     val name: String? = null,
     val description: String? = null,
@@ -96,12 +96,12 @@ data class MarketplaceItemDto(
 
 data class MarketplaceDetailDto(
     val profile: MarketplaceProfileDto? = null,
-    val secondhandItem: MarketplaceItemDto? = null
+    val item: MarketplaceItemDto? = null
 )
 
 data class MarketplaceProfileDto(
     val avatarURL: String? = null,
-    val username: String? = null,
+    val displayName: String? = null,
     val nickname: String? = null,
     val faculty: Int? = null,
     val enrollment: Int? = null,

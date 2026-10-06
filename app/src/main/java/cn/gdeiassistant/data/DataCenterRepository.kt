@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
 import android.content.Context
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.ElectricityBill
@@ -85,7 +86,7 @@ class DataCenterRepository @Inject constructor(
 
     private fun mapYellowPageEntry(dto: cn.gdeiassistant.network.api.YellowPageEntryDto): YellowPageEntry {
         return YellowPageEntry(
-            id = (dto.id ?: System.nanoTime()).toString(),
+            id = requireRemoteId(dto.id),
             section = dto.section?.trim().orEmpty()
                 .ifBlank { context.getString(R.string.yellow_page_fallback_section) },
             campus = dto.campus?.trim().orEmpty(),

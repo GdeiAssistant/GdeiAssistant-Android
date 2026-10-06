@@ -134,10 +134,9 @@ interface ProfileApi {
     @POST("api/feedback")
     suspend fun submitFeedback(@Body body: FeedbackSubmissionDto): JsonResult
 
-    @FormUrlEncoded
     @POST("api/close/submit")
     suspend fun deleteAccount(
-        @Field("password") password: String
+        @Body body: PasswordDto
     ): JsonResult
 }
 

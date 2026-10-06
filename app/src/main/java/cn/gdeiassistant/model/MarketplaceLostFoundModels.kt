@@ -5,6 +5,7 @@ import java.io.Serializable
 
 @Immutable
 enum class MarketplaceItemState(val remoteValue: Int) {
+    UNKNOWN(-1),
     OFF_SHELF(0),
     SELLING(1),
     SOLD(2);
@@ -14,7 +15,8 @@ enum class MarketplaceItemState(val remoteValue: Int) {
             return when (value) {
                 0 -> OFF_SHELF
                 2 -> SOLD
-                else -> SELLING
+                1 -> SELLING
+                else -> UNKNOWN
             }
         }
     }
@@ -51,7 +53,7 @@ data class MarketplaceDetail(
     val contactHint: String,
     val contactQQ: String? = null,
     val contactPhone: String? = null,
-    val sellerUsername: String? = null,
+    val sellerDisplayName: String? = null,
     val sellerNickname: String? = null,
     val sellerAuthorId: String? = null,
     val sellerCollege: String? = null,
@@ -144,6 +146,7 @@ enum class LostFoundType(val remoteValue: Int) {
 
 @Immutable
 enum class LostFoundItemState(val remoteValue: Int) {
+    UNKNOWN(-1),
     ACTIVE(0),
     RESOLVED(1),
     SYSTEM_DELETED(2);
@@ -153,7 +156,8 @@ enum class LostFoundItemState(val remoteValue: Int) {
             return when (value) {
                 1 -> RESOLVED
                 2 -> SYSTEM_DELETED
-                else -> ACTIVE
+                0 -> ACTIVE
+                else -> UNKNOWN
             }
         }
     }

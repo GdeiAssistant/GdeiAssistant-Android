@@ -194,7 +194,7 @@ fun DeliveryDetailScreen(navController: NavHostController) {
                         )
                         DetailRow(
                             label = stringResource(R.string.delivery_info_publisher),
-                            value = detail.order.username
+                            value = detail.order.displayName
                         )
                         DetailRow(
                             label = stringResource(R.string.delivery_info_pickup_place),
@@ -239,7 +239,7 @@ fun DeliveryDetailScreen(navController: NavHostController) {
                             androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                             DetailRow(
                                 label = stringResource(R.string.delivery_info_runner),
-                                value = trade.username
+                                value = trade.displayName
                             )
                             DetailRow(
                                 label = stringResource(R.string.delivery_info_accept_time),
@@ -667,6 +667,7 @@ private fun deliveryStatusDescription(detail: DeliveryOrderDetail): String {
             else -> stringResource(R.string.delivery_status_delivering_desc)
         }
 
+        DeliveryOrderState.UNKNOWN -> "—"
         DeliveryOrderState.COMPLETED -> stringResource(R.string.delivery_status_completed_any)
     }
 }
@@ -710,6 +711,7 @@ private fun deliveryStateLabel(state: DeliveryOrderState): String {
     return when (state) {
         DeliveryOrderState.PENDING -> stringResource(R.string.delivery_state_pending)
         DeliveryOrderState.DELIVERING -> stringResource(R.string.delivery_state_delivering)
+        DeliveryOrderState.UNKNOWN -> "—"
         DeliveryOrderState.COMPLETED -> stringResource(R.string.delivery_state_completed)
     }
 }

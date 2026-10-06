@@ -68,7 +68,12 @@ object MockUtils {
         val body = body ?: return emptyMap()
         val buffer = Buffer()
         body.writeTo(buffer)
-        return buffer.readUtf8()
+        val raw = buffer.readUtf8()
+        if (body.contentType()?.subtype?.contains("json") == true) {
+            val json = com.google.gson.JsonParser.parseString(raw).asJsonObject
+            return json.entrySet().associate { (key, value) -> key to if (value.isJsonNull) "" else value.asString }
+        }
+        return raw
             .split('&')
             .filter { it.contains('=') }
             .associate { entry ->

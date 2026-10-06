@@ -131,14 +131,14 @@ class MockInterceptor : Interceptor {
     private fun routeCommunity(request: Request): String? {
         val path = request.url.encodedPath
         return when {
-            path.endsWith("/api/ershou/item") && request.method == "POST" -> MockCommunityProvider.mockMarketplacePublish(request)
-            path.contains("api/ershou/item/state/id/") -> MockCommunityProvider.mockMarketplaceStateUpdate(request)
-            path.contains("api/ershou/item/id/") && request.method == "POST" -> MockCommunityProvider.mockMarketplaceUpdate(request)
-            path.contains("api/ershou/item/id/") && path.endsWith("/preview") -> MockCommunityProvider.mockMarketplacePreview(request)
-            path.contains("api/ershou/item/id/") -> MockCommunityProvider.mockMarketplaceDetail(request)
-            path.contains("api/ershou/item/type/") -> MockCommunityProvider.mockMarketplaceItemsByType(request)
-            path.contains("api/ershou/item/start/") -> MockCommunityProvider.mockMarketplaceItemList(request)
-            path.contains("api/ershou/profile") -> MockCommunityProvider.mockMarketplaceProfile(request)
+            path.endsWith("/api/marketplace/item") && request.method == "POST" -> MockCommunityProvider.mockMarketplacePublish(request)
+            path.contains("api/marketplace/item/state/id/") -> MockCommunityProvider.mockMarketplaceStateUpdate(request)
+            path.contains("api/marketplace/item/id/") && request.method == "POST" -> MockCommunityProvider.mockMarketplaceUpdate(request)
+            path.contains("api/marketplace/item/id/") && path.endsWith("/preview") -> MockCommunityProvider.mockMarketplacePreview(request)
+            path.contains("api/marketplace/item/id/") -> MockCommunityProvider.mockMarketplaceDetail(request)
+            path.contains("api/marketplace/item/type/") -> MockCommunityProvider.mockMarketplaceItemsByType(request)
+            path.contains("api/marketplace/item/start/") -> MockCommunityProvider.mockMarketplaceItemList(request)
+            path.contains("api/marketplace/profile") -> MockCommunityProvider.mockMarketplaceProfile(request)
             path.endsWith("/api/lostandfound/item") && request.method == "POST" -> MockCommunityProvider.mockLostFoundPublish(request)
             path.contains("api/lostandfound/item/id/") && path.endsWith("/didfound") -> MockCommunityProvider.mockLostFoundDidFound(request)
             path.contains("api/lostandfound/item/id/") && request.method == "POST" -> MockCommunityProvider.mockLostFoundUpdate(request)

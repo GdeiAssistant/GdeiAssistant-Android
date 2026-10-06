@@ -41,29 +41,21 @@ interface DeliveryApi {
         @Path("id") orderId: String
     ): JsonResult
 
-    @FormUrlEncoded
     @POST("api/delivery/order")
-    suspend fun publish(
-        @Field("name") name: String,
-        @Field("number") number: String,
-        @Field("phone") phone: String,
-        @Field("price") price: String,
-        @Field("company") company: String,
-        @Field("address") address: String,
-        @Field("remarks") remarks: String
-    ): JsonResult
+    suspend fun publish(@retrofit2.http.Body body: DeliveryPublishDto): JsonResult
+
 }
 
 data class DeliveryOrderDto(
     val orderId: Int? = null,
-    val username: String? = null,
+    val displayName: String? = null,
     val orderTime: String? = null,
-    val name: String? = null,
-    val number: String? = null,
-    val phone: String? = null,
+    val taskName: String? = null,
+    val pickupCode: String? = null,
+    val contactPhone: String? = null,
     val price: Double? = null,
-    val company: String? = null,
-    val address: String? = null,
+    val pickupLocation: String? = null,
+    val deliveryAddress: String? = null,
     val state: Int? = null,
     val remarks: String? = null
 )
@@ -72,7 +64,7 @@ data class DeliveryTradeDto(
     val tradeId: Int? = null,
     val orderId: Int? = null,
     val createTime: String? = null,
-    val username: String? = null,
+    val displayName: String? = null,
     val state: Int? = null
 )
 
@@ -85,4 +77,14 @@ data class DeliveryDetailDto(
 data class DeliveryMineDto(
     val published: List<DeliveryOrderDto>? = null,
     val accepted: List<DeliveryOrderDto>? = null
+)
+
+data class DeliveryPublishDto(
+    val taskName: String,
+    val pickupCode: String,
+    val contactPhone: String,
+    val price: String,
+    val pickupLocation: String,
+    val deliveryAddress: String,
+    val remarks: String
 )

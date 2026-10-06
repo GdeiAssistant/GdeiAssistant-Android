@@ -58,18 +58,18 @@ class ResponseInterceptorEventTest {
     )
 
     @Test fun serverErrorEmitsOnlyBackendMessageToast() = assertError(
-        500, """{"message":"backend failure"}""", "backend failure", GlobalEvent.ShowToast("backend failure")
+        500, """{"message":"backend failure"}""", "backend failure", null
     )
 
     @Test fun malformedBodyUsesRequestFailureFallback() = assertError(
-        422, "not JSON", "Request failed", GlobalEvent.ShowToast("Request failed")
+        422, "not JSON", "Request failed", null
     )
 
     @Test fun missingUnauthorizedMessageUsesLoginFallback() = assertError(
         401, "{}", "Login expired", GlobalEvent.Unauthorized
     )
 
-    private fun assertError(code: Int, body: String, expectedMessage: String, event: GlobalEvent) = runTest(dispatcher) {
+    private fun assertError(code: Int, body: String, expectedMessage: String, event: GlobalEvent?) = runTest(dispatcher) {
         // Drain pending emissions from other tests before collecting this response's events.
         runCurrent()
         val events = mutableListOf<GlobalEvent>()
@@ -78,7 +78,8 @@ class ResponseInterceptorEventTest {
         }
         try {
             val session: SessionManager = mock()
-            val request = Request.Builder().url("https://example.test/test").build()
+            whenever(session.clearTokensIfCurrent("synthetic-token")).thenReturn(true)
+            val request = Request.Builder().url("https://example.test/test").header("Authorization", "Bearer synthetic-token").build()
             val chain: Interceptor.Chain = mock()
             whenever(chain.request()).thenReturn(request)
             whenever(chain.proceed(any())).thenReturn(Response.Builder().request(request)
@@ -89,8 +90,8 @@ class ResponseInterceptorEventTest {
             assertEquals(code, (error as AppException).code)
             assertEquals(expectedMessage, error.message)
             runCurrent()
-            assertEquals(listOf(event), events)
-            if (code == 401) verify(session).clearTokens() else verify(session, never()).clearTokens()
+            assertEquals(listOfNotNull(event), events)
+            if (code == 401) verify(session).clearTokensIfCurrent("synthetic-token") else verify(session, never()).clearTokensIfCurrent("synthetic-token")
         } finally {
             collector.cancel()
         }

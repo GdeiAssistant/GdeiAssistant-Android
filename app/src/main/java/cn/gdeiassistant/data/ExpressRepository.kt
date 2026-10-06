@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
 import cn.gdeiassistant.model.ExpressCommentItem
 import cn.gdeiassistant.model.ExpressDraft
 import cn.gdeiassistant.model.ExpressGender
@@ -94,7 +95,7 @@ class ExpressRepository @Inject constructor(
     private fun mapPost(dto: ExpressPostDto): ExpressPost {
         val preview = dto.content.orEmpty().take(72)
         return ExpressPost(
-            id = dto.id?.toString() ?: System.nanoTime().toString(),
+            id = requireRemoteId(dto.id),
             nickname = dto.nickname.orEmpty().ifBlank { dto.username.orEmpty() },
             authorId = dto.authorId?.trim()?.takeIf(String::isNotBlank),
             targetName = dto.name.orEmpty(),
@@ -113,7 +114,7 @@ class ExpressRepository @Inject constructor(
 
     private fun mapComment(dto: ExpressCommentDto): ExpressCommentItem {
         return ExpressCommentItem(
-            id = dto.id?.toString() ?: System.nanoTime().toString(),
+            id = requireRemoteId(dto.id),
             authorName = dto.nickname.orEmpty().ifBlank { dto.username.orEmpty() },
             content = dto.comment.orEmpty(),
             publishTime = dto.publishTime.orEmpty()

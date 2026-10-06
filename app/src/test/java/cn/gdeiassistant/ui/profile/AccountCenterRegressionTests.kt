@@ -14,7 +14,8 @@ class AccountCenterRegressionTests {
 
     @Test
     fun bindPhoneUsesSearchableAreaCodeSheetInsteadOfInlineDropdown() {
-        val source = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/AccountCenterScreens.kt")
+        val source = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/BindPhoneScreen.kt") +
+            sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/AccountCenterComponents.kt")
 
         assertFalse(
             "BindPhoneScreen should no longer use the old inline dropdown helper for area codes.",
@@ -22,14 +23,14 @@ class AccountCenterRegressionTests {
         )
         assertTrue(
             "BindPhoneScreen should expose a dedicated searchable area-code sheet.",
-            source.contains("private fun BindPhoneAreaCodeSheet(")
+            source.contains("internal fun BindPhoneAreaCodeSheet(")
         )
     }
 
     @Test
     fun downloadDataBodyIsDerivedAtRenderTimeInsteadOfStoredInUiState() {
         val viewModelSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/AccountCenterViewModels.kt")
-        val screenSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/AccountCenterScreens.kt")
+        val screenSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/DownloadDataScreen.kt")
         val downloadStateSection = viewModelSource.substringAfter("data class DownloadDataUiState(")
             .substringBefore("sealed interface DownloadDataEvent")
 

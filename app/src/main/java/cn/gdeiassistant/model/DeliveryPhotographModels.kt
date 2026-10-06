@@ -8,14 +8,16 @@ import java.io.Serializable
 enum class DeliveryOrderState(val remoteValue: Int) {
     PENDING(0),
     DELIVERING(1),
-    COMPLETED(2);
+    COMPLETED(2),
+    UNKNOWN(-1);
 
     companion object {
         fun fromRemote(value: Int?): DeliveryOrderState {
             return when (value) {
+                0 -> PENDING
                 1 -> DELIVERING
                 2 -> COMPLETED
-                else -> PENDING
+                else -> UNKNOWN
             }
         }
     }
@@ -24,7 +26,7 @@ enum class DeliveryOrderState(val remoteValue: Int) {
 @Immutable
 data class DeliveryOrder(
     val orderId: String,
-    val username: String,
+    val displayName: String,
     val taskName: String,
     val pickupCode: String,
     val contactPhone: String,
@@ -41,7 +43,7 @@ data class DeliveryTrade(
     val tradeId: String,
     val orderId: String,
     val createTime: String,
-    val username: String,
+    val displayName: String,
     val state: Int
 ) : Serializable
 
@@ -58,7 +60,7 @@ data class DeliveryOrderDetail(
         get() = detailType == 0 && order.state == DeliveryOrderState.DELIVERING && trade != null
 
     val canViewSensitiveInfo: Boolean
-        get() = detailType == 0 || detailType == 3 || order.state != DeliveryOrderState.PENDING
+        get() = detailType == 0 || detailType == 3
 }
 
 @Immutable

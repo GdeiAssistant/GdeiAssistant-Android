@@ -63,6 +63,7 @@ class LostFoundDisplayMapper @Inject constructor(
         return when (state) {
             LostFoundItemState.ACTIVE -> textResolver.getString(R.string.lost_found_status_active)
             LostFoundItemState.RESOLVED -> textResolver.getString(R.string.lost_found_status_resolved)
+            LostFoundItemState.UNKNOWN -> "—"
             LostFoundItemState.SYSTEM_DELETED -> textResolver.getString(R.string.lost_found_status_deleted)
         }
     }

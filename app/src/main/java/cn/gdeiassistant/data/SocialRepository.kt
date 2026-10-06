@@ -1,5 +1,6 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import cn.gdeiassistant.R
@@ -256,7 +257,7 @@ class SocialRepository @Inject constructor(
 
     suspend fun prepareChatImage(uri: Uri): Result<SocialChatImageSupport.PreparedImage> =
         withContext(Dispatchers.IO) {
-            runCatching { SocialChatImageSupport.prepareJpeg(context, uri) }
+            cancellableRunCatching { SocialChatImageSupport.prepareJpeg(context, uri) }
                 .fold(
                     onSuccess = { Result.success(it) },
                     onFailure = {

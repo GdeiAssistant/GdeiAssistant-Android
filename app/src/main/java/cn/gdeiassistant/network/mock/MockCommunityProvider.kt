@@ -588,9 +588,9 @@ object MockCommunityProvider {
 
     private fun MockDeliveryOrderRecord.toDeliveryOrderPayload(locale: String): Map<String, Any?> {
         return linkedMapOf(
-            "orderId" to orderId, "username" to username, "orderTime" to orderTime,
-            "name" to communitySeedText(locale, name), "number" to number, "phone" to phone, "price" to price,
-            "company" to communitySeedText(locale, company), "address" to communitySeedText(locale, address), "state" to state, "remarks" to communitySeedText(locale, remarks)
+            "orderId" to orderId, "displayName" to username, "orderTime" to orderTime,
+            "taskName" to communitySeedText(locale, name), "pickupCode" to number, "contactPhone" to phone, "price" to price,
+            "pickupLocation" to communitySeedText(locale, company), "deliveryAddress" to communitySeedText(locale, address), "state" to state, "remarks" to communitySeedText(locale, remarks)
         )
     }
 
@@ -1036,7 +1036,7 @@ object MockCommunityProvider {
         return MockUtils.successDataJson(
             linkedMapOf(
                 "profile" to profile?.toMarketplaceProfilePayload(locale),
-                "secondhandItem" to item.toMarketplaceItemPayload(locale)
+                "item" to item.toMarketplaceItemPayload(locale)
             )
         )
     }
@@ -1786,17 +1786,17 @@ object MockCommunityProvider {
     fun mockDeliveryPublish(request: Request): String {
         val locale = request.requestLocale()
         val fields = request.formFields()
-        val pickupPlace = fields["company"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_company") }
+        val pickupPlace = fields["pickupLocation"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_company") }
         val order = MockDeliveryOrderRecord(
             orderId = (mockDeliveryOrderRecords.maxOfOrNull { it.orderId } ?: 12800) + 1,
             username = MockUtils.MOCK_CURRENT_USERNAME,
             orderTime = communityMessage(locale, "just_now"),
-            name = fields["name"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_name") },
-            number = fields["number"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_number") },
-            phone = fields["phone"].orEmpty().ifBlank { "13800138000" },
+            name = fields["taskName"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_name") },
+            number = fields["pickupCode"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_number") },
+            phone = fields["contactPhone"].orEmpty().ifBlank { "13800138000" },
             price = fields["price"]?.toDoubleOrNull() ?: 3.0,
             company = pickupPlace,
-            address = fields["address"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_address") },
+            address = fields["deliveryAddress"].orEmpty().ifBlank { communityMessage(locale, "delivery_default_address") },
             state = 0,
             remarks = fields["remarks"].orEmpty()
         )

@@ -54,6 +54,7 @@ jobs:
       - name: Validate release secrets
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release-keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -75,6 +76,7 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
+          umask 077
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release-keystore.jks"
 
       - name: Grant execute permission for gradlew
@@ -82,6 +84,7 @@ jobs:
 
       - name: Build release artifacts
         env:
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release-keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -90,10 +93,6 @@ jobs:
             --no-daemon \
             --max-workers=1 \
             -Dorg.gradle.jvmargs=-Xmx768m \
-            -PGDEI_RELEASE_STORE_FILE="$RUNNER_TEMP/release-keystore.jks" \
-            -PGDEI_RELEASE_STORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD" \
-            -PGDEI_RELEASE_KEY_ALIAS="$ANDROID_KEY_ALIAS" \
-            -PGDEI_RELEASE_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
             -PGDEI_VERSION_NAME="${{ inputs.version_name }}" \
             -PGDEI_VERSION_CODE="${{ inputs.version_code }}"
 
@@ -117,3 +116,7 @@ jobs:
           files: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
+
+      - name: Remove temporary signing keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release-keystore.jks"

@@ -1,5 +1,7 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -33,7 +35,7 @@ class PhotographRepository @Inject constructor(
 ) {
 
     suspend fun getStats(): Result<PhotographStats> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val photosDeferred = async { safeApiCall { photographApi.getPhotoCount() } }
                 val commentsDeferred = async { safeApiCall { photographApi.getCommentCount() } }
@@ -133,7 +135,7 @@ class PhotographRepository @Inject constructor(
         val firstImage = dto.firstImageUrl?.trim()?.ifBlank { null } ?: imageUrls.firstOrNull()
         val photoCount = maxOf(dto.count ?: 0, imageUrls.size, if (firstImage == null) 0 else 1)
         return PhotographPost(
-            id = dto.id?.toString() ?: System.nanoTime().toString(),
+            id = requireRemoteId(dto.id),
             title = dto.title.orEmpty().ifBlank { context.getString(R.string.photograph_default_title) },
             contentPreview = dto.content.orEmpty().ifBlank {
                 context.getString(R.string.photograph_default_content)
@@ -163,7 +165,7 @@ class PhotographRepository @Inject constructor(
 
     private fun mapComment(dto: PhotographCommentDto): PhotographCommentItem {
         return PhotographCommentItem(
-            id = dto.commentId?.toString() ?: System.nanoTime().toString(),
+            id = requireRemoteId(dto.commentId),
             photoId = dto.photoId?.toString(),
             authorName = dto.nickname.orEmpty()
                 .ifBlank { dto.username.orEmpty().ifBlank { context.getString(R.string.photograph_default_comment_author) } },

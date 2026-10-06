@@ -1,5 +1,7 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
+import cn.gdeiassistant.network.cancellableRunCatching
 import cn.gdeiassistant.model.SecretComment
 import cn.gdeiassistant.model.SecretDetail
 import cn.gdeiassistant.model.SecretDraft
@@ -48,7 +50,7 @@ class SecretRepository @Inject constructor(
     }
 
     suspend fun getDetail(id: String): Result<SecretDetail> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val detailDeferred = async { safeApiCall { secretApi.getDetail(id) } }
                 val commentsDeferred = async { safeApiCall { secretApi.getComments(id) } }
@@ -89,7 +91,7 @@ class SecretRepository @Inject constructor(
         val type = dto.type ?: 0
         val content = dto.content.orEmpty().ifBlank { dto.voiceURL.orEmpty() }
         return SecretPost(
-            id = (dto.id ?: System.nanoTime()).toString(),
+            id = requireRemoteId(dto.id),
             username = dto.username.orEmpty(),
             themeId = (dto.theme ?: 1).coerceIn(1, 12),
             title = if (type == 0) content.take(18) else "",
@@ -107,7 +109,7 @@ class SecretRepository @Inject constructor(
 
     private fun mapComment(dto: SecretCommentDto): SecretComment {
         return SecretComment(
-            id = (dto.id ?: System.nanoTime()).toString(),
+            id = requireRemoteId(dto.id),
             authorName = dto.username.orEmpty(),
             content = dto.comment.orEmpty(),
             createdAt = dto.publishTime.orEmpty(),

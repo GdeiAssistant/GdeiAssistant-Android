@@ -1,5 +1,7 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.network.requireRemoteId
+import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -64,34 +66,34 @@ class MarketplaceRepository @Inject constructor(
             .mapCatching { dto ->
                 val detail = dto ?: throw IllegalStateException("Item detail not found")
                 val item = mapItem(
-                    detail.secondhandItem ?: throw IllegalStateException("Item detail not found")
+                    detail.item ?: throw IllegalStateException("Item detail not found")
                 )
                 val profile = detail.profile
-                val images = detail.secondhandItem.pictureURL.orEmpty().filter { it.isNotBlank() }.ifEmpty {
+                val images = detail.item.pictureURL.orEmpty().filter { it.isNotBlank() }.ifEmpty {
                     listOfNotNull(safeApiCall { marketplaceApi.getItemPreview(id) }.getOrNull())
                 }
                 MarketplaceDetail(
                     item = item,
-                    condition = currentProfileOptions().marketplaceTypeTitle(detail.secondhandItem.type),
-                    description = detail.secondhandItem.description.orEmpty(),
+                    condition = currentProfileOptions().marketplaceTypeTitle(detail.item.type),
+                    description = detail.item.description.orEmpty(),
                     contactHint = "",
-                    contactQQ = detail.secondhandItem.qq?.trim()?.ifBlank { null },
-                    contactPhone = detail.secondhandItem.phone?.trim()?.ifBlank { null },
-                    sellerUsername = profile?.username ?: detail.secondhandItem.username,
+                    contactQQ = detail.item.qq?.trim()?.ifBlank { null },
+                    contactPhone = detail.item.phone?.trim()?.ifBlank { null },
+                    sellerDisplayName = profile?.displayName ?: detail.item.displayName,
                     sellerNickname = profile?.nickname?.trim()?.ifBlank { null },
-                    sellerAuthorId = detail.secondhandItem.authorId?.trim()?.takeIf(String::isNotBlank),
+                    sellerAuthorId = detail.item.authorId?.trim()?.takeIf(String::isNotBlank),
                     sellerCollege = currentProfileOptions().facultyNameFor(profile?.faculty),
                     sellerMajor = profile?.major?.trim()?.ifBlank { null },
                     sellerEnrollment = profile?.enrollment,
                     imageUrls = images,
-                    typeId = detail.secondhandItem.type,
+                    typeId = detail.item.type,
                     sellerFacultyCode = profile?.faculty
                 )
             }
     }
 
     suspend fun getProfileSummary(): Result<MarketplacePersonalSummary> = withContext(Dispatchers.IO) {
-        runCatching {
+        cancellableRunCatching {
             coroutineScope {
                 val summaryDeferred = async { safeApiCall { marketplaceApi.getProfileSummary() } }
                 val profileDeferred = async { profileRepository.getProfile() }
@@ -124,7 +126,7 @@ class MarketplaceRepository @Inject constructor(
                     .firstOrNull { it.id?.toString() == id }
                     ?: throw IllegalStateException("Editable item not found")
                 MarketplaceEditableItem(
-                    id = (item.id ?: id.toLongOrNull() ?: System.nanoTime()).toString(),
+                    id = requireRemoteId(item.id),
                     title = item.name.orEmpty(),
                     price = item.price?.toDoubleOrNull() ?: 0.0,
                     description = item.description.orEmpty(),
@@ -173,11 +175,11 @@ class MarketplaceRepository @Inject constructor(
 
     private fun mapItem(dto: MarketplaceItemDto): MarketplaceItem {
         return MarketplaceItem(
-            id = (dto.id ?: System.nanoTime()).toString(),
+            id = requireRemoteId(dto.id),
             title = dto.name.orEmpty(),
             price = dto.price?.toDoubleOrNull() ?: 0.0,
             summary = dto.description.orEmpty().take(60),
-            sellerName = dto.username.orEmpty(),
+            sellerName = dto.displayName.orEmpty(),
             postedAt = dto.publishTime.orEmpty(),
             location = dto.location.orEmpty(),
             state = MarketplaceItemState.fromRemote(dto.state),
