@@ -6,6 +6,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -45,7 +46,7 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
         scrollToTag("profile.privacy.dm").performClick()
         waitForText(localized("zh-CN", R.string.social_dm_privacy_title))
         composeRule.onNodeWithText(localized("zh-CN", R.string.social_dm_privacy_title)).assertIsDisplayed()
-        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        composeRule.onNode(hasContentDescription(localized("zh-CN", R.string.back))).performClick()
         waitForText(localized("zh-CN", R.string.profile_privacy_title))
         scrollToTag("profile.privacy.blocks").performClick()
         waitForText(localized("zh-CN", R.string.social_blocks_title))
@@ -70,7 +71,7 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
             composeRule.waitUntil(20_000) { AppLocaleSupport.currentLocale() == option.code }
             composeRule.waitUntilAtLeastOneExists(hasText(localized(option.code, R.string.appearance_title)), 20_000)
             composeRule.onNodeWithText(localized(option.code, R.string.appearance_title)).assertIsDisplayed()
-            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            composeRule.onNode(hasContentDescription(localized(option.code, R.string.back))).performClick()
             waitForText(localized(option.code, R.string.profile_title))
             // Navigation restores the LazyColumn near the appearance menu. Its off-screen
             // identity item is not composed until we scroll back to it.
