@@ -43,7 +43,7 @@ interface MarketplaceApi {
     ): DataJsonResult<String>
 
     @GET("api/marketplace/profile")
-    suspend fun getProfileSummary(): DataJsonResult<MarketplacePersonalSummaryDto>
+    suspend fun getProfileSummary(@retrofit2.http.Query("start") start: Int = 0): DataJsonResult<MarketplacePersonalSummaryDto>
 
     @Multipart
     @POST("api/marketplace/item")
@@ -111,5 +111,7 @@ data class MarketplaceProfileDto(
 data class MarketplacePersonalSummaryDto(
     val doing: List<MarketplaceItemDto>? = null,
     val sold: List<MarketplaceItemDto>? = null,
-    val off: List<MarketplaceItemDto>? = null
+    val off: List<MarketplaceItemDto>? = null,
+    val hasMore: Boolean = false,
+    val nextStart: Int? = null
 )

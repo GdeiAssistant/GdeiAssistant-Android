@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,15 +23,22 @@ class GradeViewModel @Inject constructor(
     private val _state = MutableStateFlow(GradeUiState())
     val state: StateFlow<GradeUiState> = _state.asStateFlow()
 
+
+    private var loadJob: Job? = null
+    private var loadGeneration = 0
+
     init {
         loadGrades()
     }
 
     fun loadGrades(year: Int? = null) {
-        viewModelScope.launch {
+        val generation = ++loadGeneration
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             repository.loadGrades(year).fold(
                 onSuccess = { result ->
+                    if (generation != loadGeneration) return@fold
                     val resolvedYear = year ?: _state.value.selectedYear
                     val firstTermGrades = result?.firstTermGradeList.orEmpty().toPersistentList()
                     val secondTermGrades = result?.secondTermGradeList.orEmpty().toPersistentList()
@@ -49,6 +57,7 @@ class GradeViewModel @Inject constructor(
                     }
                 },
                 onFailure = { throwable ->
+                    if (generation != loadGeneration) return@fold
                     _state.update {
                         it.copy(
                             isLoading = false,

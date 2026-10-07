@@ -92,14 +92,34 @@ class MarketplaceRepository @Inject constructor(
             }
     }
 
+    private suspend fun loadProfilePages(): Result<cn.gdeiassistant.network.api.MarketplacePersonalSummaryDto> = cancellableRunCatching {
+        var page = safeApiCall { marketplaceApi.getProfileSummary(0) }.getOrThrow()
+            ?: throw IllegalStateException("Profile summary not found")
+        var all = page
+        var previousStart = 0
+        while (page.hasMore) {
+            val start = page.nextStart ?: throw IllegalStateException("Missing next page")
+            if (start <= previousStart) throw IllegalStateException("Non-advancing next page")
+            previousStart = start
+            page = safeApiCall { marketplaceApi.getProfileSummary(start) }.getOrThrow()
+                ?: throw IllegalStateException("Profile summary not found")
+            all = all.copy(
+                doing = all.doing.orEmpty() + page.doing.orEmpty(),
+                sold = all.sold.orEmpty() + page.sold.orEmpty(),
+                off = all.off.orEmpty() + page.off.orEmpty()
+            )
+        }
+        all
+    }
+
     suspend fun getProfileSummary(): Result<MarketplacePersonalSummary> = withContext(Dispatchers.IO) {
         cancellableRunCatching {
             coroutineScope {
-                val summaryDeferred = async { safeApiCall { marketplaceApi.getProfileSummary() } }
+                val summaryDeferred = async { loadProfilePages() }
                 val profileDeferred = async { profileRepository.getProfile() }
                 val dto = summaryDeferred.await().getOrThrow()
                 val profile = profileDeferred.await().getOrNull()
-                val summary = dto ?: throw IllegalStateException("Profile summary not found")
+                val summary = dto
                 val header = buildCommunityProfileHeader(
                     profile = profile,
                     defaultDisplayName = "",
@@ -118,13 +138,9 @@ class MarketplaceRepository @Inject constructor(
     }
 
     suspend fun getEditableItem(id: String): Result<MarketplaceEditableItem> = withContext(Dispatchers.IO) {
-        safeApiCall { marketplaceApi.getProfileSummary() }
-            .mapCatching { dto ->
-                val summary = dto ?: throw IllegalStateException("Profile summary not found")
-                val item = sequenceOf(summary.doing, summary.sold, summary.off)
-                    .flatMap { it.orEmpty().asSequence() }
-                    .firstOrNull { it.id?.toString() == id }
-                    ?: throw IllegalStateException("Editable item not found")
+        safeApiCall { marketplaceApi.getItemDetail(id) }
+            .mapCatching { detail ->
+                val item = detail?.item ?: throw IllegalStateException("Editable item not found")
                 MarketplaceEditableItem(
                     id = requireRemoteId(item.id),
                     title = item.name.orEmpty(),

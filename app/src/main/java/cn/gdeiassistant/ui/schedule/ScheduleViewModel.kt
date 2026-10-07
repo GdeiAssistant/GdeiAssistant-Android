@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +27,10 @@ class ScheduleViewModel @Inject constructor(
     private val _state = MutableStateFlow(ScheduleUiState())
     val state: StateFlow<ScheduleUiState> = _state.asStateFlow()
 
+
+    private var loadJob: Job? = null
+    private var loadGeneration = 0
+
     init {
         val current = currentWeekNumber()
         _state.update { it.copy(selectedWeek = current) }
@@ -33,11 +38,15 @@ class ScheduleViewModel @Inject constructor(
         loadSchedule(current)
     }
 
+
     fun loadSchedule(week: Int) {
-        viewModelScope.launch {
+        val generation = ++loadGeneration
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             repository.loadSchedule(week).fold(
                 onSuccess = { result ->
+                    if (generation != loadGeneration) return@fold
                     val list = result?.scheduleList.orEmpty()
                     val maxRow = list.maxOfOrNull { (it.row ?: 0) + (it.scheduleLength ?: 1).coerceAtLeast(1) - 1 } ?: 0
                     _state.update {
@@ -50,6 +59,7 @@ class ScheduleViewModel @Inject constructor(
                     }
                 },
                 onFailure = { e ->
+                    if (generation != loadGeneration) return@fold
                     _state.update {
                         it.copy(isLoading = false, error = e.message ?: context.getString(R.string.load_failed))
                     }
