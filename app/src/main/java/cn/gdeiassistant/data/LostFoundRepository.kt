@@ -88,14 +88,34 @@ class LostFoundRepository @Inject constructor(
             }
     }
 
+    private suspend fun loadProfilePages(): Result<cn.gdeiassistant.network.api.LostFoundPersonalSummaryDto> = cancellableRunCatching {
+        var page = safeApiCall { lostFoundApi.getProfileSummary(0) }.getOrThrow()
+            ?: throw IllegalStateException("Profile summary not found")
+        var all = page
+        var previousStart = 0
+        while (page.hasMore) {
+            val start = page.nextStart ?: throw IllegalStateException("Missing next page")
+            if (start <= previousStart) throw IllegalStateException("Non-advancing next page")
+            previousStart = start
+            page = safeApiCall { lostFoundApi.getProfileSummary(start) }.getOrThrow()
+                ?: throw IllegalStateException("Profile summary not found")
+            all = all.copy(
+                lost = all.lost.orEmpty() + page.lost.orEmpty(),
+                found = all.found.orEmpty() + page.found.orEmpty(),
+                didfound = all.didfound.orEmpty() + page.didfound.orEmpty()
+            )
+        }
+        all
+    }
+
     suspend fun getProfileSummary(): Result<LostFoundPersonalSummary> = withContext(Dispatchers.IO) {
         cancellableRunCatching {
             coroutineScope {
-                val summaryDeferred = async { safeApiCall { lostFoundApi.getProfileSummary() } }
+                val summaryDeferred = async { loadProfilePages() }
                 val profileDeferred = async { profileRepository.getProfile() }
                 val dto = summaryDeferred.await().getOrThrow()
                 val profile = profileDeferred.await().getOrNull()
-                val summary = dto ?: throw IllegalStateException("Profile summary not found")
+                val summary = dto
                 val header = buildCommunityProfileHeader(
                     profile = profile,
                     defaultDisplayName = "",
@@ -130,13 +150,9 @@ class LostFoundRepository @Inject constructor(
     }
 
     suspend fun getEditableItem(id: String): Result<LostFoundEditableItem> = withContext(Dispatchers.IO) {
-        safeApiCall { lostFoundApi.getProfileSummary() }
-            .mapCatching { dto ->
-                val summary = dto ?: throw IllegalStateException("Profile summary not found")
-                val item = sequenceOf(summary.lost, summary.found, summary.didfound)
-                    .flatMap { it.orEmpty().asSequence() }
-                    .firstOrNull { it.id?.toString() == id }
-                    ?: throw IllegalStateException("Editable item not found")
+        safeApiCall { lostFoundApi.getItemDetail(id) }
+            .mapCatching { detail ->
+                val item = detail?.item ?: throw IllegalStateException("Editable item not found")
                 LostFoundEditableItem(
                     id = requireRemoteId(item.id),
                     title = item.name.orEmpty(),

@@ -35,7 +35,7 @@ interface LostFoundApi {
     ): DataJsonResult<String>
 
     @GET("api/lostandfound/profile")
-    suspend fun getProfileSummary(): DataJsonResult<LostFoundPersonalSummaryDto>
+    suspend fun getProfileSummary(@retrofit2.http.Query("start") start: Int = 0): DataJsonResult<LostFoundPersonalSummaryDto>
 
     @Multipart
     @POST("api/lostandfound/item")
@@ -103,5 +103,7 @@ data class LostFoundProfileDto(
 data class LostFoundPersonalSummaryDto(
     val lost: List<LostFoundItemDto>? = null,
     val found: List<LostFoundItemDto>? = null,
-    val didfound: List<LostFoundItemDto>? = null
+    val didfound: List<LostFoundItemDto>? = null,
+    val hasMore: Boolean = false,
+    val nextStart: Int? = null
 )
