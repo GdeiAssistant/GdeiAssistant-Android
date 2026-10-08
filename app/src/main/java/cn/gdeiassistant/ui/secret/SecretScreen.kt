@@ -4,12 +4,15 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
@@ -51,7 +54,10 @@ import cn.gdeiassistant.ui.components.MetricChip
 import cn.gdeiassistant.ui.components.NativeAudioPlayerCard
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.TwoPaneScreen
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.util.GdeiWindowWidthClass
+import cn.gdeiassistant.ui.util.rememberGdeiWindowWidthClass
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -69,67 +75,132 @@ fun SecretScreen(navController: NavHostController) {
         }
     }
 
-    LazyScreen(
-        title = stringResource(R.string.secret_title),
-        onBack = navController::popBackStack,
-        actions = {
-            IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.secret_refresh))
+    val widthClass = rememberGdeiWindowWidthClass()
+    var selectedPostId by rememberSaveable { mutableStateOf<String?>(null) }
+    val isTwoPane = widthClass == GdeiWindowWidthClass.Expanded
+
+    if (!isTwoPane) {
+        val pendingPostId = selectedPostId
+        if (pendingPostId != null) {
+            // Window shrank below the expanded bucket: fall back to route navigation.
+            LaunchedEffect(pendingPostId) {
+                selectedPostId = null
+                navController.navigate(Routes.secretDetail(pendingPostId))
             }
         }
-    ) {
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionTile(
-                    title = stringResource(R.string.secret_my_posts_title),
-                    subtitle = stringResource(R.string.secret_my_posts_subtitle),
-                    icon = Icons.Rounded.Person,
-                    onClick = { navController.navigate(Routes.SECRET_PROFILE) },
-                    tint = MaterialTheme.colorScheme.primary,
-                    emphasized = true,
-                    modifier = Modifier.weight(1f)
-                )
-                ActionTile(
-                    title = stringResource(R.string.secret_publish_title),
-                    subtitle = stringResource(R.string.secret_publish_subtitle),
-                    icon = Icons.AutoMirrored.Rounded.NoteAdd,
-                    onClick = { navController.navigate(Routes.SECRET_PUBLISH) },
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.weight(1f)
-                )
+        LazyScreen(
+            title = stringResource(R.string.secret_title),
+            onBack = navController::popBackStack,
+            actions = {
+                IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
+                    Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.secret_refresh))
+                }
             }
+        ) {
+            secretListItems(
+                state = state,
+                onOpenProfile = { navController.navigate(Routes.SECRET_PROFILE) },
+                onOpenPublish = { navController.navigate(Routes.SECRET_PUBLISH) },
+                onOpenPost = { postId -> navController.navigate(Routes.secretDetail(postId)) }
+            )
         }
-        if (!state.error.isNullOrBlank()) {
-            item {
-                StatusBanner(
-                    title = stringResource(R.string.load_failed),
-                    body = state.error.orEmpty(),
-                    icon = Icons.Rounded.AutoStories,
-                )
-            }
-        }
-        when {
-            state.isLoading && state.posts.isEmpty() -> item { SecretLoadingPane() }
-            state.posts.isEmpty() -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
+    } else {
+        val detailViewModel: SecretDetailViewModel = hiltViewModel()
+        TwoPaneScreen(
+            title = stringResource(R.string.secret_title),
+            onBack = navController::popBackStack,
+            actions = {
+                IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
+                    Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.secret_refresh))
+                }
+            },
+            listPane = {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    secretListItems(
+                        state = state,
+                        onOpenProfile = { navController.navigate(Routes.SECRET_PROFILE) },
+                        onOpenPublish = { navController.navigate(Routes.SECRET_PUBLISH) },
+                        onOpenPost = { postId -> selectedPostId = postId }
+                    )
+                }
+            },
+            detailPane = {
+                val postId = selectedPostId
+                if (postId == null) {
                     EmptyState(
                         icon = Icons.Rounded.AutoStories,
-                        message = stringResource(R.string.secret_empty),
+                        message = stringResource(R.string.two_pane_empty_hint),
                         modifier = Modifier.fillMaxSize()
                     )
+                } else {
+                    SecretDetailPane(viewModel = detailViewModel, postId = postId)
                 }
             }
-            else -> {
-                items(state.posts, key = { it.id }) { post ->
-                    SecretPostCard(
-                        post = post,
-                        onClick = { navController.navigate(Routes.secretDetail(post.id)) }
-                    )
-                }
+        )
+    }
+}
+
+private fun LazyListScope.secretListItems(
+    state: SecretUiState,
+    onOpenProfile: () -> Unit,
+    onOpenPublish: () -> Unit,
+    onOpenPost: (String) -> Unit
+) {
+    item {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ActionTile(
+                title = stringResource(R.string.secret_my_posts_title),
+                subtitle = stringResource(R.string.secret_my_posts_subtitle),
+                icon = Icons.Rounded.Person,
+                onClick = onOpenProfile,
+                tint = MaterialTheme.colorScheme.primary,
+                emphasized = true,
+                modifier = Modifier.weight(1f)
+            )
+            ActionTile(
+                title = stringResource(R.string.secret_publish_title),
+                subtitle = stringResource(R.string.secret_publish_subtitle),
+                icon = Icons.AutoMirrored.Rounded.NoteAdd,
+                onClick = onOpenPublish,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+    if (!state.error.isNullOrBlank()) {
+        item {
+            StatusBanner(
+                title = stringResource(R.string.load_failed),
+                body = state.error.orEmpty(),
+                icon = Icons.Rounded.AutoStories,
+            )
+        }
+    }
+    when {
+        state.isLoading && state.posts.isEmpty() -> item { SecretLoadingPane() }
+        state.posts.isEmpty() -> item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(260.dp)
+            ) {
+                EmptyState(
+                    icon = Icons.Rounded.AutoStories,
+                    message = stringResource(R.string.secret_empty),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+        else -> {
+            items(state.posts, key = { it.id }) { post ->
+                SecretPostCard(
+                    post = post,
+                    onClick = { onOpenPost(post.id) }
+                )
             }
         }
     }
@@ -161,121 +232,160 @@ fun SecretDetailScreen(navController: NavHostController) {
             }
         }
     ) {
-        when {
-            state.isLoading -> item { SecretLoadingPane() }
-            !state.error.isNullOrBlank() -> item {
-                StatusBanner(
-                    title = stringResource(R.string.load_failed),
-                    body = state.error.orEmpty(),
+        secretDetailItems(
+            state = state,
+            viewModel = viewModel,
+            commentText = commentText,
+            onCommentChange = { commentText = it }
+        )
+    }
+}
+
+/** Detail pane hosted inside the two-pane secret layout; binds the shared detail ViewModel to [postId]. */
+@Composable
+private fun SecretDetailPane(
+    viewModel: SecretDetailViewModel,
+    postId: String
+) {
+    LaunchedEffect(postId) {
+        viewModel.bindPost(postId)
+    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var commentText by rememberSaveable { mutableStateOf("") }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        secretDetailItems(
+            state = state,
+            viewModel = viewModel,
+            commentText = commentText,
+            onCommentChange = { commentText = it }
+        )
+    }
+}
+
+private fun LazyListScope.secretDetailItems(
+    state: SecretDetailUiState,
+    viewModel: SecretDetailViewModel,
+    commentText: String,
+    onCommentChange: (String) -> Unit
+) {
+    when {
+        state.isLoading -> item { SecretLoadingPane() }
+        !state.error.isNullOrBlank() -> item {
+            StatusBanner(
+                title = stringResource(R.string.load_failed),
+                body = state.error.orEmpty(),
+                icon = Icons.Rounded.AutoStories,
+            )
+        }
+        state.detail == null -> item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(260.dp)
+            ) {
+                EmptyState(
                     icon = Icons.Rounded.AutoStories,
+                    message = stringResource(R.string.secret_detail_missing),
+                    modifier = Modifier.fillMaxSize()
                 )
             }
-            state.detail == null -> item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                ) {
-                    EmptyState(
-                        icon = Icons.Rounded.AutoStories,
-                        message = stringResource(R.string.secret_detail_missing),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-            else -> {
-                val detail = requireNotNull(state.detail)
-                item { SecretDetailHero(detail = detail) }
-                if (!detail.post.voiceUrl.isNullOrBlank()) {
-                    item {
-                        NativeAudioPlayerCard(
-                            title = stringResource(R.string.secret_voice_section_title),
-                            url = detail.post.voiceUrl.orEmpty(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
+        }
+        else -> {
+            val detail = requireNotNull(state.detail)
+            item { SecretDetailHero(detail = detail) }
+            if (!detail.post.voiceUrl.isNullOrBlank()) {
                 item {
-                    ActionTile(
-                        title = if (detail.post.isLiked) {
-                            stringResource(R.string.secret_unlike_action)
-                        } else {
-                            stringResource(R.string.secret_like_action)
-                        },
-                        subtitle = stringResource(
-                            R.string.secret_like_count_value,
-                            detail.post.likeCount
-                        ),
-                        icon = Icons.Rounded.Favorite,
-                        onClick = viewModel::toggleLike,
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        emphasized = true,
+                    NativeAudioPlayerCard(
+                        title = stringResource(R.string.secret_voice_section_title),
+                        url = detail.post.voiceUrl.orEmpty(),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                item {
-                    SectionCard(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.secret_content_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                        Text(
-                            text = detail.content,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+            }
+            item {
+                ActionTile(
+                    title = if (detail.post.isLiked) {
+                        stringResource(R.string.secret_unlike_action)
+                    } else {
+                        stringResource(R.string.secret_like_action)
+                    },
+                    subtitle = stringResource(
+                        R.string.secret_like_count_value,
+                        detail.post.likeCount
+                    ),
+                    icon = Icons.Rounded.Favorite,
+                    onClick = viewModel::toggleLike,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    emphasized = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.secret_content_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
+                    Text(
+                        text = detail.content,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
-                item {
-                    SectionCard(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.secret_comment_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                        OutlinedTextField(
-                            value = commentText,
-                            onValueChange = { commentText = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            minLines = 2,
-                            maxLines = 4,
-                            placeholder = {
-                                Text(text = stringResource(R.string.secret_comment_placeholder))
-                            }
-                        )
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-                        Button(
-                            onClick = {
-                                viewModel.submitComment(commentText)
-                                commentText = ""
-                            },
-                            enabled = !state.isSubmittingComment && commentText.isNotBlank()
-                        ) {
-                            Text(text = stringResource(R.string.secret_comment_send))
+            }
+            item {
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.secret_comment_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
+                    OutlinedTextField(
+                        value = commentText,
+                        onValueChange = onCommentChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                        maxLines = 4,
+                        placeholder = {
+                            Text(text = stringResource(R.string.secret_comment_placeholder))
                         }
+                    )
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+                    Button(
+                        onClick = {
+                            viewModel.submitComment(commentText)
+                            onCommentChange("")
+                        },
+                        enabled = !state.isSubmittingComment && commentText.isNotBlank()
+                    ) {
+                        Text(text = stringResource(R.string.secret_comment_send))
                     }
                 }
-                item {
-                    SectionCard(modifier = Modifier.fillMaxWidth()) {
+            }
+            item {
+                SectionCard(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.secret_comment_list_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
+                    if (detail.comments.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.secret_comment_list_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
+                            text = stringResource(R.string.secret_comment_empty),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
-                        if (detail.comments.isEmpty()) {
-                            Text(
-                                text = stringResource(R.string.secret_comment_empty),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            detail.comments.forEach { comment ->
-                                SecretCommentRow(comment = comment)
-                            }
+                    } else {
+                        detail.comments.forEach { comment ->
+                            SecretCommentRow(comment = comment)
                         }
                     }
                 }

@@ -41,7 +41,19 @@ class SecretDetailViewModel @Inject constructor(
     private val displayMapper: SecretDisplayMapper
 ) : ViewModel() {
 
-    private val postId: String = savedStateHandle.get<String>(Routes.SECRET_POST_ID).orEmpty()
+    private var postId: String = savedStateHandle.get<String>(Routes.SECRET_POST_ID).orEmpty()
+
+    /**
+     * Binds the ViewModel to a post at runtime; used by the two-pane layout, where the detail
+     * ViewModel is hosted by the list entry and has no nav argument. Route-based screens get the
+     * id from [SavedStateHandle] instead and never call this.
+     */
+    fun bindPost(id: String) {
+        val trimmed = id.trim()
+        if (trimmed.isBlank() || trimmed == postId) return
+        postId = trimmed
+        refresh()
+    }
 
     private val _state = MutableStateFlow(SecretDetailUiState())
     val state: StateFlow<SecretDetailUiState> = _state.asStateFlow()

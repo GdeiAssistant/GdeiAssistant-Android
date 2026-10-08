@@ -60,6 +60,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.model.Charge
 import cn.gdeiassistant.model.ChargeOrder
 import cn.gdeiassistant.model.ChargeOrderStatuses
@@ -330,7 +331,7 @@ private fun ProcessStep(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(AppSpacing.sm)
                         .size(18.dp)
                 )
             }

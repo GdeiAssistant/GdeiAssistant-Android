@@ -58,6 +58,7 @@ import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -340,7 +341,7 @@ private fun FestivalCard(festival: Festival) {
                 shape = AppShapes.small
             ) {
                 Box(
-                    modifier = Modifier.padding(10.dp),
+                    modifier = Modifier.padding(AppSpacing.sm),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

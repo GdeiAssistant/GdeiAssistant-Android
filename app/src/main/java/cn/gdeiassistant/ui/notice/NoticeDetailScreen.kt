@@ -32,6 +32,7 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 
 @Composable
 fun NoticeDetailScreen(
@@ -191,7 +192,7 @@ private fun NoticeBodyCard(paragraphs: List<String>) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(AppSpacing.lg),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.Top
                     ) {

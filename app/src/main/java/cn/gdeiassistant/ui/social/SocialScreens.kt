@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -47,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,7 +79,10 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
+import cn.gdeiassistant.ui.components.TwoPaneScreen
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.util.GdeiWindowWidthClass
+import cn.gdeiassistant.ui.util.rememberGdeiWindowWidthClass
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -409,94 +415,153 @@ fun SocialBlockListScreen(navController: NavHostController) {
 fun ConversationListScreen(navController: NavHostController) {
     val viewModel: ConversationListViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val widthClass = rememberGdeiWindowWidthClass()
+    var selectedConversationId by rememberSaveable { mutableStateOf<String?>(null) }
+    val isTwoPane = widthClass == GdeiWindowWidthClass.Expanded
 
     DisposableEffect(Unit) {
         viewModel.onVisible(true)
         onDispose { viewModel.onVisible(false) }
     }
 
-    LazyScreen(
-        title = stringResource(R.string.social_conversations_title),
-        onBack = navController::popBackStack,
-        showLoadingPlaceholder = state.isLoading && state.items.isEmpty(),
-        actions = {
-            IconButton(onClick = { navController.navigate(Routes.SOCIAL_SEARCH) }) {
-                Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.social_search_title))
-            }
-            IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+    val actions: @Composable RowScope.() -> Unit = {
+        IconButton(onClick = { navController.navigate(Routes.SOCIAL_SEARCH) }) {
+            Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.social_search_title))
+        }
+        IconButton(onClick = viewModel::refresh, enabled = !state.isLoading) {
+            Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.schedule_refresh))
+        }
+    }
+
+    if (!isTwoPane) {
+        val pendingConversationId = selectedConversationId
+        if (pendingConversationId != null) {
+            // Window shrank below the expanded bucket: fall back to route navigation.
+            LaunchedEffect(pendingConversationId) {
+                selectedConversationId = null
+                navController.navigate(Routes.socialChat(pendingConversationId))
             }
         }
-    ) {
+        LazyScreen(
+            title = stringResource(R.string.social_conversations_title),
+            onBack = navController::popBackStack,
+            showLoadingPlaceholder = state.isLoading && state.items.isEmpty(),
+            actions = actions
+        ) {
+            conversationListItems(
+                state = state,
+                onOpenConversation = { conversationId -> navController.navigate(Routes.socialChat(conversationId)) },
+                onLoadMore = viewModel::loadMore
+            )
+        }
+    } else {
+        val chatViewModel: ChatViewModel = hiltViewModel()
+        TwoPaneScreen(
+            title = stringResource(R.string.social_conversations_title),
+            onBack = navController::popBackStack,
+            actions = actions,
+            listPane = {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    conversationListItems(
+                        state = state,
+                        onOpenConversation = { conversationId -> selectedConversationId = conversationId },
+                        onLoadMore = viewModel::loadMore
+                    )
+                }
+            },
+            detailPane = {
+                val conversationId = selectedConversationId
+                if (conversationId == null) {
+                    EmptyState(
+                        icon = Icons.Rounded.Chat,
+                        message = stringResource(R.string.two_pane_empty_hint),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    ChatPane(viewModel = chatViewModel, conversationId = conversationId)
+                }
+            }
+        )
+    }
+}
+
+private fun LazyListScope.conversationListItems(
+    state: ConversationListUiState,
+    onOpenConversation: (String) -> Unit,
+    onLoadMore: () -> Unit
+) {
+    item {
+        SectionCard(modifier = Modifier.fillMaxWidth()) {
+            BadgePill(text = stringResource(R.string.social_dm_badge))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.social_conversations_subtitle, state.unreadTotal),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+    if (state.items.isEmpty() && !state.isLoading) {
         item {
-            SectionCard(modifier = Modifier.fillMaxWidth()) {
-                BadgePill(text = stringResource(R.string.social_dm_badge))
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.social_conversations_subtitle, state.unreadTotal),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            EmptyState(
+                icon = Icons.Rounded.Chat,
+                message = stringResource(R.string.social_conversations_empty_title),
+                supporting = stringResource(R.string.social_conversations_empty_body)
+            )
         }
-        if (state.items.isEmpty() && !state.isLoading) {
-            item {
-                EmptyState(
-                    icon = Icons.Rounded.Chat,
-                    message = stringResource(R.string.social_conversations_empty_title),
-                    supporting = stringResource(R.string.social_conversations_empty_body)
-                )
-            }
-        }
-        items(state.items, key = { it.id }) { conversation ->
-            SectionCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-                    .testTag("social.conversation.${conversation.peer.id}")
-                    .clickable { navController.navigate(Routes.socialChat(conversation.id)) }
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    SocialUserAvatar(user = conversation.peer, size = 44.dp)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(conversation.peer.nickname, fontWeight = FontWeight.SemiBold)
-                        val last = conversation.lastMessage
-                        val preview = when {
-                            last == null -> stringResource(R.string.social_conversation_no_message)
-                            last.type == ChatMessageType.IMAGE ->
-                                stringResource(R.string.social_message_image_summary)
-                            else -> last.content
-                        }
+    }
+    items(state.items, key = { it.id }) { conversation ->
+        SectionCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .testTag("social.conversation.${conversation.peer.id}")
+                .clickable { onOpenConversation(conversation.id) }
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                SocialUserAvatar(user = conversation.peer, size = 44.dp)
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(conversation.peer.nickname, fontWeight = FontWeight.SemiBold)
+                    val last = conversation.lastMessage
+                    val preview = when {
+                        last == null -> stringResource(R.string.social_conversation_no_message)
+                        last.type == ChatMessageType.IMAGE ->
+                            stringResource(R.string.social_message_image_summary)
+                        else -> last.content
+                    }
+                    Text(
+                        text = preview,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (conversation.updatedAt.isNotBlank()) {
                         Text(
-                            text = preview,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        if (conversation.updatedAt.isNotBlank()) {
-                            Text(
-                                text = formatSocialTime(conversation.updatedAt),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                    if (conversation.unreadCount > 0) {
-                        BadgePill(
-                            text = conversation.unreadCount.toString(),
-                            tint = MaterialTheme.colorScheme.error
+                            text = formatSocialTime(conversation.updatedAt),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+                if (conversation.unreadCount > 0) {
+                    BadgePill(
+                        text = conversation.unreadCount.toString(),
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
-        if (state.hasMore) {
-            item {
-                TextButton(onClick = viewModel::loadMore, enabled = !state.isLoading) {
-                    Text(stringResource(R.string.social_load_more))
-                }
+    }
+    if (state.hasMore) {
+        item {
+            TextButton(onClick = onLoadMore, enabled = !state.isLoading) {
+                Text(stringResource(R.string.social_load_more))
             }
         }
     }
@@ -505,8 +570,32 @@ fun ConversationListScreen(navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(navController: NavHostController) {
-    val context = LocalContext.current
     val viewModel: ChatViewModel = hiltViewModel()
+    DisposableEffect(Unit) {
+        viewModel.onVisible(true)
+        onDispose { viewModel.onVisible(false) }
+    }
+    ChatScreenBody(viewModel = viewModel, onBack = navController::popBackStack)
+}
+
+/** Chat pane hosted inside the two-pane conversation layout; binds the shared chat ViewModel. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChatPane(viewModel: ChatViewModel, conversationId: String) {
+    DisposableEffect(Unit) {
+        viewModel.onVisible(true)
+        onDispose { viewModel.onVisible(false) }
+    }
+    LaunchedEffect(conversationId) {
+        viewModel.bindConversation(conversationId)
+    }
+    ChatScreenBody(viewModel = viewModel, onBack = null)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChatScreenBody(viewModel: ChatViewModel, onBack: (() -> Unit)?) {
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val conversation = state.conversation
     val listState = rememberLazyListState()
@@ -524,11 +613,6 @@ fun ChatScreen(navController: NavHostController) {
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) viewModel.onImagePicked(uri)
-    }
-
-    DisposableEffect(Unit) {
-        viewModel.onVisible(true)
-        onDispose { viewModel.onVisible(false) }
     }
 
     LaunchedEffect(viewModel) {
@@ -622,7 +706,7 @@ fun ChatScreen(navController: NavHostController) {
         topBar = {
             AppTopBar(
                 title = conversation?.peer?.nickname ?: stringResource(R.string.social_chat_title),
-                onBackClick = navController::popBackStack,
+                onBackClick = onBack,
                 actions = {
                     IconButton(onClick = viewModel::refreshAll, enabled = !state.isLoading, modifier = Modifier.testTag("social.chat.refresh")) {
                         Icon(

@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui.schedule
 
 import android.content.ContentResolver
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.ui.theme.extendedColors
 import android.content.Intent
 import android.graphics.Bitmap
@@ -529,7 +530,7 @@ private fun ScheduleGridCard(
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val dayColumnWidth = (maxWidth - sectionLabelWidth) / dayLabels.size
                 val gridWidth = dayColumnWidth * dayLabels.size
-                Column(modifier = Modifier.padding(12.dp)) {
+                Column(modifier = Modifier.padding(AppSpacing.md)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier

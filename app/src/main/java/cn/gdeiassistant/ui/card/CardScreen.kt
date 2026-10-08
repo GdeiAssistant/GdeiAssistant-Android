@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
@@ -294,7 +295,7 @@ private fun CardOverviewCard(state: CardUiState) {
                     imageVector = Icons.Rounded.CreditCard,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(14.dp)
+                    modifier = Modifier.padding(AppSpacing.md)
                 )
             }
         }
@@ -358,7 +359,7 @@ private fun ActionCard(
         border = BorderStroke(1.dp, tint.copy(alpha = 0.14f)),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.xl)) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -429,7 +430,7 @@ private fun RecordItem(record: Card) {
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.xl)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

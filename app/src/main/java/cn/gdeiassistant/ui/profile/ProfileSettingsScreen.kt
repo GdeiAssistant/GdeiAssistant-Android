@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.profile
 
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -160,7 +161,7 @@ fun ProfileSettingsScreen(navController: NavHostController) {
                             imageVector = Icons.Rounded.Settings,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(12.dp)
+                            modifier = Modifier.padding(AppSpacing.md)
                         )
                     }
                     Column(modifier = Modifier.weight(1f)) {
