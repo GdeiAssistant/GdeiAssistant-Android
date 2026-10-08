@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui.cet
 
 import android.graphics.BitmapFactory
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import android.util.Base64
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
@@ -283,7 +284,7 @@ private fun CaptchaCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {

@@ -55,6 +55,7 @@ import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
 import cn.gdeiassistant.ui.navigation.AppFeatureGroup
 import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -203,7 +204,7 @@ private fun TodayScheduleCard(
                     !err.isNullOrBlank() -> {
                         Text(
                             text = err,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(AppSpacing.lg),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error
                         )

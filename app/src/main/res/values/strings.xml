@@ -410,7 +410,7 @@
     <!-- 资讯与消息 -->
     <string name="tab_home">首页</string>
     <string name="tab_profile">我的</string>
-    <string name="tab_messages">资讯</string>
+    <string name="tab_messages">消息</string>
     <string name="news_title">新闻</string>
     <string name="news_empty">当前没有可展示的新闻</string>
     <string name="news_category_school_headlines">学校要闻</string>
@@ -432,13 +432,13 @@
     <string name="messages_interaction_badge">互动消息</string>
     <string name="messages_read">已读</string>
     <string name="messages_unread">未读</string>
-    <string name="messages_module_secret">校园树洞</string>
+    <string name="messages_module_secret">树洞</string>
     <string name="messages_module_marketplace">二手交易</string>
     <string name="messages_module_lost_found">失物招领</string>
     <string name="messages_module_topic">话题</string>
     <string name="messages_module_express">表白墙</string>
     <string name="messages_module_dating">卖室友</string>
-    <string name="messages_module_delivery">全民快递</string>
+    <string name="messages_module_delivery">快递代取</string>
     <string name="messages_module_photograph">拍好校园</string>
     <string name="spare_title">空课室</string>
     <string name="spare_subtitle">按校区、课室类别、星期、单双周与课节组查询空课室。</string>
@@ -719,7 +719,7 @@
     <string name="feature_lost_found_subtitle">浏览校园失物招领</string>
 
     <!-- 校园树洞 -->
-    <string name="secret_title">校园树洞</string>
+    <string name="secret_title">树洞</string>
     <string name="secret_refresh">刷新树洞列表</string>
     <string name="secret_my_posts_title">我的树洞</string>
     <string name="secret_my_posts_subtitle">查看自己发过的匿名内容</string>
@@ -923,11 +923,11 @@
     <string name="topic_missing_id">缺少话题编号</string>
     <string name="topic_toast_like_failed">点赞失败</string>
     <string name="feature_topic_subtitle">最近校园里在聊什么，这里一眼能看见</string>
-    <string name="delivery_title">全民快递</string>
-    <string name="delivery_refresh">刷新跑腿大厅</string>
+    <string name="delivery_title">快递代取</string>
+    <string name="delivery_refresh">刷新代取大厅</string>
     <string name="delivery_action_mine_title">我的订单</string>
     <string name="delivery_action_mine_subtitle">查看我发布的和我接的单</string>
-    <string name="delivery_action_publish_title">发布全民快递</string>
+    <string name="delivery_action_publish_title">发布快递代取</string>
     <string name="delivery_action_publish_subtitle">填写取件地点、赏金和送达地址</string>
     <string name="delivery_empty">当前筛选下没有可展示的订单</string>
     <string name="delivery_filter_all">全部</string>
@@ -938,7 +938,7 @@
     <string name="delivery_state_delivering">配送中</string>
     <string name="delivery_state_completed">已完成</string>
     <string name="delivery_detail_title">任务详情</string>
-    <string name="delivery_detail_missing">没有找到当前跑腿任务</string>
+    <string name="delivery_detail_missing">没有找到当前代取任务</string>
     <string name="delivery_info_role">我的角色</string>
     <string name="delivery_info_publisher">发布者</string>
     <string name="delivery_info_pickup_place">取件地点</string>
@@ -978,22 +978,22 @@
     <string name="delivery_mine_empty">当前分组下还没有相关订单</string>
     <string name="delivery_mine_tab_published">我发布的</string>
     <string name="delivery_mine_tab_accepted">我接的</string>
-    <string name="delivery_publish_title">发布全民快递</string>
+    <string name="delivery_publish_title">发布快递代取</string>
     <string name="delivery_publish_subtitle">把取件地点、送达地址和赏金一次填清楚，方便同学快速接单。</string>
     <string name="delivery_publish_pickup_place">取件地点</string>
     <string name="delivery_publish_pickup_code">取件码</string>
     <string name="delivery_publish_phone">联系电话</string>
-    <string name="delivery_publish_reward">跑腿费</string>
+    <string name="delivery_publish_reward">代取费</string>
     <string name="delivery_publish_address">送达地址</string>
     <string name="delivery_publish_remarks">备注</string>
     <string name="delivery_publish_submit">发布任务</string>
     <string name="delivery_publish_submitting">发布中…</string>
-    <string name="delivery_publish_success">跑腿任务已发布</string>
+    <string name="delivery_publish_success">代取任务已发布</string>
     <string name="delivery_publish_failed">发布失败</string>
     <string name="delivery_publish_pickup_place_required">请输入取件地点</string>
     <string name="delivery_publish_phone_required">请输入联系电话</string>
     <string name="delivery_publish_address_required">请输入送达地址</string>
-    <string name="delivery_publish_reward_invalid">请输入有效的跑腿费</string>
+    <string name="delivery_publish_reward_invalid">请输入有效的代取费</string>
     <string name="delivery_publish_pickup_place_limit">取件地点不能超过 10 个字</string>
     <string name="delivery_publish_phone_limit">联系电话不能超过 11 位</string>
     <string name="delivery_publish_address_limit">送达地址不能超过 50 个字</string>
@@ -1005,11 +1005,11 @@
     <string name="delivery_default_address">待补充</string>
     <string name="delivery_default_runner">runner</string>
     <string name="delivery_default_phone_mask">****</string>
-    <string name="feature_delivery_subtitle">发跑腿需求，也能顺手接单赚点零花</string>
+    <string name="feature_delivery_subtitle">发代取需求，也能顺手接单赚点零花</string>
     <string name="photograph_title">拍好校园</string>
-    <string name="photograph_refresh">刷新摄影内容</string>
+    <string name="photograph_refresh">刷新拍好校园</string>
     <string name="photograph_action_mine_title">我的作品</string>
-    <string name="photograph_action_mine_subtitle">查看自己发布过的摄影作品</string>
+    <string name="photograph_action_mine_subtitle">查看自己发布过的校园作品</string>
     <string name="photograph_action_publish_title">发布作品</string>
     <string name="photograph_action_publish_subtitle">选择图片并填写标题内容</string>
     <string name="photograph_category_campus">最美校园照</string>
@@ -1018,7 +1018,7 @@
     <string name="photograph_detail_title">作品详情</string>
     <string name="photograph_detail_missing">没有找到当前作品内容</string>
     <string name="photograph_profile_title">我的作品</string>
-    <string name="photograph_profile_subtitle">统一查看自己发布过的校园摄影内容。</string>
+    <string name="photograph_profile_subtitle">统一查看自己发布过的拍好校园内容。</string>
     <string name="photograph_profile_empty">当前还没有自己发布的作品</string>
     <string name="photograph_stat_photo">照片</string>
     <string name="photograph_stat_comment">评论</string>
@@ -1308,7 +1308,7 @@
     <string name="discovery_metric_secret">树洞</string>
     <string name="discovery_metric_express">表白</string>
     <string name="discovery_metric_topic">话题</string>
-    <string name="discovery_secret_title">校园树洞</string>
+    <string name="discovery_secret_title">树洞</string>
     <string name="discovery_secret_subtitle">看看最近的匿名心情和同学们的回应。</string>
     <string name="discovery_express_title">表白墙</string>
     <string name="discovery_express_subtitle">浏览最新留言，也可以继续进入详情互动。</string>
@@ -1519,4 +1519,5 @@
     <string name="graduate_exam_unknown_candidate">未命名考生</string>
     <string name="graduate_exam_unavailable">暂无</string>
     <string name="profile_options_empty">资料选项暂不可用</string>
+    <string name="two_pane_empty_hint">选择一条内容查看详情</string>
 </resources>

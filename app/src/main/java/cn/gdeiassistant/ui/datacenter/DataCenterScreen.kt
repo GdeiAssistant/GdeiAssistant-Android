@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.navigation.Routes
@@ -94,7 +95,7 @@ private fun ToolEntryCard(
         border = BorderStroke(1.dp, tint.copy(alpha = 0.14f)),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.xl)) {
             Box(
                 modifier = Modifier
                     .size(44.dp)

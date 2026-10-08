@@ -63,8 +63,20 @@ class ChatViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val conversationId: String =
+    private var conversationId: String =
         savedStateHandle.get<String>(Routes.SOCIAL_CONVERSATION_ID).orEmpty()
+
+    /**
+     * Binds the ViewModel to a conversation at runtime; used by the two-pane conversation layout,
+     * where the chat ViewModel is hosted by the list entry and has no nav argument. Route-based
+     * screens get the id from [SavedStateHandle] instead and never call this.
+     */
+    fun bindConversation(id: String) {
+        val trimmed = id.trim()
+        if (trimmed.isBlank() || trimmed == conversationId) return
+        conversationId = trimmed
+        refreshAll()
+    }
 
     private val _state = MutableStateFlow(ChatUiState())
     val state: StateFlow<ChatUiState> = _state.asStateFlow()
@@ -167,7 +179,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun refreshAll() {
-        if (!isCurrent(pageEpoch)) return
+        if (!isCurrent(pageEpoch) || conversationId.isBlank()) return
         viewModelScope.launch {
             val epoch = pageEpoch
             _state.update { it.copy(isLoading = true, error = null) }
@@ -516,7 +528,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun pullNewer() {
-        if (!isCurrent(pageEpoch)) return
+        if (!isCurrent(pageEpoch) || conversationId.isBlank()) return
         viewModelScope.launch {
             val epoch = pageEpoch
             val afterSeq = _state.value.messages

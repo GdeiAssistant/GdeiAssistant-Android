@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui.profile
 
 import android.content.Intent
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,7 +73,7 @@ internal fun AccountIntroCard(
                     imageVector = icon,
                     contentDescription = null,
                     tint = tint,
-                    modifier = Modifier.padding(14.dp)
+                    modifier = Modifier.padding(AppSpacing.md)
                 )
             }
             Column(
@@ -170,7 +171,7 @@ internal fun BindingStatusCard(
                     imageVector = icon,
                     contentDescription = null,
                     tint = tint,
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(AppSpacing.md)
                 )
             }
             Text(

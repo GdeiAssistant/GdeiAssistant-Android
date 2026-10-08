@@ -1,5 +1,6 @@
 package cn.gdeiassistant.ui.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Surface
@@ -43,6 +43,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,12 +69,14 @@ fun BentoCard(
 ) {
     val cardModifier = modifier.fillMaxWidth()
     if (onClick != null) {
+        val interactionSource = remember { MutableInteractionSource() }
         Surface(
             onClick = onClick,
-            modifier = cardModifier,
+            modifier = cardModifier.gdeiPressScale(interactionSource),
             shape = AppShapes.card,
             color = containerColor,
-            border = hairline()
+            border = hairline(),
+            interactionSource = interactionSource
         ) {
             Column(modifier = Modifier.padding(contentPadding), content = content)
         }
@@ -306,9 +309,9 @@ fun TextTabSelector(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .heightIn(min = 44.dp)
+                        .heightIn(min = 48.dp)
                         .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(index) }),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = AppShapes.compact,
                     color = if (selected) MaterialTheme.colorScheme.surfaceContainerLowest else Color.Transparent,
                     border = if (selected) hairline() else null
                 ) {

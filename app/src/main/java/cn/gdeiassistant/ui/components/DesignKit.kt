@@ -2,6 +2,8 @@ package cn.gdeiassistant.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +28,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.GdeiMotion
 
 /**
  * GdeiAssistant v2 design kit.
@@ -52,6 +57,21 @@ const val ValuePlaceholder = "\u2014"
 /** Hairline used by every grouped surface. */
 @Composable
 fun hairline(color: Color = MaterialTheme.colorScheme.outlineVariant): BorderStroke = BorderStroke(1.dp, color)
+
+/**
+ * Press feedback per the design spec: 0.12s settle at scale 0.98. Pair with the same
+ * [MutableInteractionSource] that the clickable Surface / button receives.
+ */
+@Composable
+fun Modifier.gdeiPressScale(interactionSource: MutableInteractionSource): Modifier {
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = if (isPressed) GdeiMotion.pressScaleTarget else 1f,
+        animationSpec = androidx.compose.animation.core.tween(GdeiMotion.pressDurationMs),
+        label = "gdeiPressScale"
+    )
+    return this.graphicsLayer { scaleX = scale; scaleY = scale }
+}
 
 /** Section label placed above a group, left aligned, with an optional trailing action. */
 @Composable

@@ -410,7 +410,7 @@
     <!-- 資訊與消息 -->
     <string name="tab_home">首頁</string>
     <string name="tab_profile">我</string>
-    <string name="tab_messages">資訊</string>
+    <string name="tab_messages">訊息</string>
     <string name="news_title">新聞</string>
     <string name="news_empty">而家冇新聞可以顯示</string>
     <string name="news_category_school_headlines">學校要聞</string>
@@ -432,13 +432,13 @@
     <string name="messages_interaction_badge">互動消息</string>
     <string name="messages_read">已讀</string>
     <string name="messages_unread">未讀</string>
-    <string name="messages_module_secret">校園樹洞</string>
+    <string name="messages_module_secret">樹洞</string>
     <string name="messages_module_marketplace">二手交易</string>
     <string name="messages_module_lost_found">失物招領</string>
     <string name="messages_module_topic">話題</string>
     <string name="messages_module_express">表白牆</string>
     <string name="messages_module_dating">賣室友</string>
-    <string name="messages_module_delivery">全民快遞</string>
+    <string name="messages_module_delivery">快遞代取</string>
     <string name="messages_module_photograph">拍好校園</string>
     <string name="spare_title">空課室</string>
     <string name="spare_subtitle">按校區、課室類別、星期、單雙周與課節組查詢空課室。</string>
@@ -719,7 +719,7 @@
     <string name="feature_lost_found_subtitle">瀏覽校園失物招領</string>
 
     <!-- 校園樹洞 -->
-    <string name="secret_title">校園樹洞</string>
+    <string name="secret_title">樹洞</string>
     <string name="secret_refresh">刷新樹洞列表</string>
     <string name="secret_my_posts_title">我嘅樹洞</string>
     <string name="secret_my_posts_subtitle">睇自己發過嘅匿名內容</string>
@@ -923,11 +923,11 @@
     <string name="topic_missing_id">缺少話題編號</string>
     <string name="topic_toast_like_failed">點贊失敗</string>
     <string name="feature_topic_subtitle">想知同學最近傾緊乜，嚟呢度睇吓</string>
-    <string name="delivery_title">全民快遞</string>
-    <string name="delivery_refresh">刷新跑腿大廳</string>
+    <string name="delivery_title">快遞代取</string>
+    <string name="delivery_refresh">刷新代取大廳</string>
     <string name="delivery_action_mine_title">我嘅訂單</string>
     <string name="delivery_action_mine_subtitle">睇自己發佈同接咗嘅訂單</string>
-    <string name="delivery_action_publish_title">發佈全民快遞</string>
+    <string name="delivery_action_publish_title">發佈快遞代取</string>
     <string name="delivery_action_publish_subtitle">填寫取件地點、賞金和送達地址</string>
     <string name="delivery_empty">暫時未有符合條件嘅訂單</string>
     <string name="delivery_filter_all">全部</string>
@@ -938,7 +938,7 @@
     <string name="delivery_state_delivering">配送中</string>
     <string name="delivery_state_completed">已完成</string>
     <string name="delivery_detail_title">任務詳情</string>
-    <string name="delivery_detail_missing">搵唔到而家跑腿任務</string>
+    <string name="delivery_detail_missing">搵唔到而家代取任務</string>
     <string name="delivery_info_role">我嘅角色</string>
     <string name="delivery_info_publisher">發佈者</string>
     <string name="delivery_info_pickup_place">取件地點</string>
@@ -978,22 +978,22 @@
     <string name="delivery_mine_empty">而家分組下仲未有相關訂單</string>
     <string name="delivery_mine_tab_published">我發佈嘅</string>
     <string name="delivery_mine_tab_accepted">我接嘅</string>
-    <string name="delivery_publish_title">發佈全民快遞</string>
+    <string name="delivery_publish_title">發佈快遞代取</string>
     <string name="delivery_publish_subtitle">把取件地點、送達地址和賞金一次填清楚，方便同學快速接單。</string>
     <string name="delivery_publish_pickup_place">取件地點</string>
     <string name="delivery_publish_pickup_code">取件碼</string>
     <string name="delivery_publish_phone">聯繫電話</string>
-    <string name="delivery_publish_reward">跑腿費</string>
+    <string name="delivery_publish_reward">代取費</string>
     <string name="delivery_publish_address">送達地址</string>
     <string name="delivery_publish_remarks">備註</string>
     <string name="delivery_publish_submit">發佈任務</string>
     <string name="delivery_publish_submitting">發佈中…</string>
-    <string name="delivery_publish_success">跑腿任務已發佈</string>
+    <string name="delivery_publish_success">代取任務已發佈</string>
     <string name="delivery_publish_failed">發佈失敗</string>
     <string name="delivery_publish_pickup_place_required">請輸入取件地點</string>
     <string name="delivery_publish_phone_required">請輸入聯繫電話</string>
     <string name="delivery_publish_address_required">請輸入送達地址</string>
-    <string name="delivery_publish_reward_invalid">請輸入有效跑腿費</string>
+    <string name="delivery_publish_reward_invalid">請輸入有效代取費</string>
     <string name="delivery_publish_pickup_place_limit">取件地點唔可以超過 10 個字</string>
     <string name="delivery_publish_phone_limit">聯繫電話唔可以超過 11 位</string>
     <string name="delivery_publish_address_limit">送達地址唔可以超過 50 個字</string>
@@ -1005,11 +1005,11 @@
     <string name="delivery_default_address">待補充</string>
     <string name="delivery_default_runner">runner</string>
     <string name="delivery_default_phone_mask">****</string>
-    <string name="feature_delivery_subtitle">發跑腿需求，也能順手接單賺點零花</string>
+    <string name="feature_delivery_subtitle">發代取需求，也能順手接單賺點零花</string>
     <string name="photograph_title">拍好校園</string>
-    <string name="photograph_refresh">刷新攝影內容</string>
+    <string name="photograph_refresh">刷新拍好校園</string>
     <string name="photograph_action_mine_title">我嘅作品</string>
-    <string name="photograph_action_mine_subtitle">睇自己發佈過嘅攝影作品</string>
+    <string name="photograph_action_mine_subtitle">睇自己發佈過嘅校園作品</string>
     <string name="photograph_action_publish_title">發佈作品</string>
     <string name="photograph_action_publish_subtitle">選擇圖片並填寫標題內容</string>
     <string name="photograph_category_campus">最美校園照</string>
@@ -1018,7 +1018,7 @@
     <string name="photograph_detail_title">作品詳情</string>
     <string name="photograph_detail_missing">搵唔到而家作品內容</string>
     <string name="photograph_profile_title">我嘅作品</string>
-    <string name="photograph_profile_subtitle">睇自己發佈過嘅校園攝影作品。</string>
+    <string name="photograph_profile_subtitle">睇自己發佈過嘅拍好校園作品。</string>
     <string name="photograph_profile_empty">你仲未發佈作品</string>
     <string name="photograph_stat_photo">照片</string>
     <string name="photograph_stat_comment">評論</string>
@@ -1308,7 +1308,7 @@
     <string name="discovery_metric_secret">樹洞</string>
     <string name="discovery_metric_express">表白</string>
     <string name="discovery_metric_topic">話題</string>
-    <string name="discovery_secret_title">校園樹洞</string>
+    <string name="discovery_secret_title">樹洞</string>
     <string name="discovery_secret_subtitle">睇吓最近嘅匿名心情同同學嘅回應。</string>
     <string name="discovery_express_title">表白牆</string>
     <string name="discovery_express_subtitle">瀏覽最新留言，也可以繼續進入詳情互動。</string>
@@ -1519,4 +1519,5 @@
     <string name="graduate_exam_unknown_candidate">考生未有姓名</string>
     <string name="graduate_exam_unavailable">暫時未有</string>
     <string name="profile_options_empty">個人資料選項暫時用唔到</string>
+    <string name="two_pane_empty_hint">揀左邊一條內容睇詳情</string>
 </resources>

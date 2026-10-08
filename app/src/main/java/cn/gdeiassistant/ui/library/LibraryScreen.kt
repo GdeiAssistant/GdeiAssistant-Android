@@ -47,6 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.model.CollectionBorrowItem
 import cn.gdeiassistant.model.CollectionSearchItem
 import cn.gdeiassistant.ui.components.EmptyState
@@ -484,7 +485,7 @@ private fun SearchResultCard(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier
-                        .padding(14.dp)
+                        .padding(AppSpacing.md)
                         .size(24.dp)
                 )
             }

@@ -35,6 +35,7 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.CheckUpgradeResult
 import cn.gdeiassistant.ui.components.*
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
 import androidx.core.net.toUri
@@ -271,7 +272,7 @@ private fun UpdateSnapshot(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(AppSpacing.lg),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(

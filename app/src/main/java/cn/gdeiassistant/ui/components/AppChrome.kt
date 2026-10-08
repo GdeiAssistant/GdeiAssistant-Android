@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Card
@@ -33,8 +35,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.contentColorFor
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -42,6 +47,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 
 @Composable
 fun Atmosphere(
@@ -80,7 +86,7 @@ fun SectionCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(AppSpacing.lg),
             content = content
         )
     }
@@ -161,12 +167,14 @@ fun ActionTile(
     emphasized: Boolean = false
 ) {
     val container = if (emphasized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLowest
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.gdeiPressScale(interactionSource),
         shape = AppShapes.card,
         color = container,
-        border = if (emphasized) null else hairline()
+        border = if (emphasized) null else hairline(),
+        interactionSource = interactionSource
     ) {
         Row(
             modifier = Modifier
@@ -253,6 +261,50 @@ fun LazyScreen(
                 verticalArrangement = verticalArrangement,
                 content = content
             )
+        }
+    }
+}
+
+/**
+ * List + detail layout for expanded windows (tablets / foldables). Phone-width layouts stay
+ * single-pane and keep navigating to detail routes; only the expanded bucket uses this.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TwoPaneScreen(
+    title: String,
+    onBack: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
+    listPane: @Composable () -> Unit,
+    detailPane: @Composable () -> Unit
+) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            AppTopBar(
+                title = title,
+                onBackClick = onBack,
+                actions = actions,
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { innerPadding ->
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Box(modifier = Modifier.width(360.dp).fillMaxHeight()) {
+                listPane()
+            }
+            VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                detailPane()
+            }
         }
     }
 }

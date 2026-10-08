@@ -145,20 +145,13 @@ GdeiAssistant-Android/
 
 ### 4. UI 与导航
 
-应用界面基于 Jetpack Compose 构建，当前主导航已经拆分为：
-
-- `service graph`
-- `community graph`
-- `information graph`
-- `account graph`
-
-业务页面按模块拆分在 `ui/` 目录下，便于逐步迭代和独立维护。
+应用界面基于 Jetpack Compose 构建，主导航为底部 3 个 Tab：首页、消息、我的。业务页面按模块拆分在 `ui/` 目录下，并按域组织为 `service graph`、`community graph`、`information graph`、`account graph` 四个导航图，便于逐步迭代和独立维护。
 
 ### 5. 主题系统
 
 应用支持亮色/暗色主题切换，默认跟随系统：
 
-- Material You 动态取色（Android 12+），低版本回退到 Campus Green 静态色板
+- 固定 Campus Green 品牌色板（与 Web / iOS / 小程序四端统一，不使用 Material You 动态取色）
 - 用户可在"界面和外观"页面手动选择浅色/深色/跟随系统
 - 字体大小四档可调（小/标准/大/超大）
 - 主题与字体偏好通过独立 DataStore (`user_preferences`) 持久化
@@ -167,9 +160,9 @@ GdeiAssistant-Android/
 
 - Android Studio 最新稳定版
 - JDK 17
-- Gradle 9.3.1
-- Android Gradle Plugin 9.1.0
-- Kotlin 2.3.20
+- Gradle 9.6.1
+- Android Gradle Plugin 9.3.1
+- Kotlin 2.3.21
 - Android SDK 35
 - Android 8.0 及以上设备或模拟器
 

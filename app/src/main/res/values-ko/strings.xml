@@ -411,7 +411,7 @@
     <!-- 자료 및 메시지 -->
     <string name="tab_home">홈</string>
     <string name="tab_profile">마이</string>
-    <string name="tab_messages">자료</string>
+    <string name="tab_messages">메시지</string>
     <string name="news_title">뉴스</string>
     <string name="news_empty">표시할 수 있는 뉴스가 없습니다</string>
     <string name="news_category_school_headlines">학교 주요 뉴스</string>
@@ -439,7 +439,7 @@
     <string name="messages_module_topic">토픽</string>
     <string name="messages_module_express">고백 게시판</string>
     <string name="messages_module_dating">룸메이트 소개</string>
-    <string name="messages_module_delivery">캠퍼스 배달</string>
+    <string name="messages_module_delivery">택배 대리수령</string>
     <string name="messages_module_photograph">캠퍼스 포토</string>
     <string name="spare_title">빈 강의실</string>
     <string name="spare_subtitle">캠퍼스, 강의실 유형, 요일, 홀짝주 및 교시 그룹별로 빈 강의실을 조회합니다.</string>
@@ -924,11 +924,11 @@
     <string name="topic_missing_id">토픽 번호가 없습니다</string>
     <string name="topic_toast_like_failed">좋아요 실패</string>
     <string name="feature_topic_subtitle">최근 캠퍼스에서 무슨 이야기가 오가는지 한눈에 보기</string>
-    <string name="delivery_title">캠퍼스 배달</string>
-    <string name="delivery_refresh">배달 로비 새로고침</string>
+    <string name="delivery_title">택배 대리수령</string>
+    <string name="delivery_refresh">대리수령 로비 새로고침</string>
     <string name="delivery_action_mine_title">내 주문</string>
     <string name="delivery_action_mine_subtitle">내가 등록한 것과 내가 수주한 것 보기</string>
-    <string name="delivery_action_publish_title">캠퍼스 배달 등록</string>
+    <string name="delivery_action_publish_title">택배 대리수령 등록</string>
     <string name="delivery_action_publish_subtitle">픽업 장소, 보수 및 배달 주소 입력</string>
     <string name="delivery_empty">현재 필터에 표시할 주문이 없습니다</string>
     <string name="delivery_filter_all">전체</string>
@@ -939,7 +939,7 @@
     <string name="delivery_state_delivering">배달 중</string>
     <string name="delivery_state_completed">완료됨</string>
     <string name="delivery_detail_title">임무 상세</string>
-    <string name="delivery_detail_missing">해당 배달 임무를 찾을 수 없습니다</string>
+    <string name="delivery_detail_missing">해당 대리수령 임무를 찾을 수 없습니다</string>
     <string name="delivery_info_role">내 역할</string>
     <string name="delivery_info_publisher">등록자</string>
     <string name="delivery_info_pickup_place">픽업 장소</string>
@@ -979,22 +979,22 @@
     <string name="delivery_mine_empty">현재 그룹에 관련 주문이 없습니다</string>
     <string name="delivery_mine_tab_published">내가 등록한</string>
     <string name="delivery_mine_tab_accepted">내가 수주한</string>
-    <string name="delivery_publish_title">캠퍼스 배달 등록</string>
+    <string name="delivery_publish_title">택배 대리수령 등록</string>
     <string name="delivery_publish_subtitle">픽업 장소, 배달 주소 및 보수를 한 번에 입력하면 학우가 빠르게 수주할 수 있습니다.</string>
     <string name="delivery_publish_pickup_place">픽업 장소</string>
     <string name="delivery_publish_pickup_code">픽업 코드</string>
     <string name="delivery_publish_phone">연락처</string>
-    <string name="delivery_publish_reward">배달비</string>
+    <string name="delivery_publish_reward">대리수령비</string>
     <string name="delivery_publish_address">배달 주소</string>
     <string name="delivery_publish_remarks">비고</string>
     <string name="delivery_publish_submit">임무 등록</string>
     <string name="delivery_publish_submitting">등록 중…</string>
-    <string name="delivery_publish_success">배달 임무가 등록되었습니다</string>
+    <string name="delivery_publish_success">대리수령 임무가 등록되었습니다</string>
     <string name="delivery_publish_failed">등록 실패</string>
     <string name="delivery_publish_pickup_place_required">픽업 장소를 입력해 주세요</string>
     <string name="delivery_publish_phone_required">연락처를 입력해 주세요</string>
     <string name="delivery_publish_address_required">배달 주소를 입력해 주세요</string>
-    <string name="delivery_publish_reward_invalid">유효한 배달비를 입력해 주세요</string>
+    <string name="delivery_publish_reward_invalid">유효한 대리수령비를 입력해 주세요</string>
     <string name="delivery_publish_pickup_place_limit">픽업 장소는 10자를 초과할 수 없습니다</string>
     <string name="delivery_publish_phone_limit">연락처는 11자리를 초과할 수 없습니다</string>
     <string name="delivery_publish_address_limit">배달 주소는 50자를 초과할 수 없습니다</string>
@@ -1006,7 +1006,7 @@
     <string name="delivery_default_address">보완 필요</string>
     <string name="delivery_default_runner">runner</string>
     <string name="delivery_default_phone_mask">****</string>
-    <string name="feature_delivery_subtitle">배달 요청을 올리고, 다른 학우의 주문도 수주할 수 있어요</string>
+    <string name="feature_delivery_subtitle">대리수령 요청을 올리고, 다른 학우의 주문도 수주할 수 있어요</string>
     <string name="photograph_title">캠퍼스 포토</string>
     <string name="photograph_refresh">사진 콘텐츠 새로고침</string>
     <string name="photograph_action_mine_title">내 작품</string>
@@ -1520,4 +1520,5 @@
     <string name="graduate_exam_unknown_candidate">이름이 없는 응시자</string>
     <string name="graduate_exam_unavailable">없음</string>
     <string name="profile_options_empty">프로필 선택 항목을 사용할 수 없습니다</string>
+    <string name="two_pane_empty_hint">왼쪽 항목을 선택하면 자세히 볼 수 있어요</string>
 </resources>
