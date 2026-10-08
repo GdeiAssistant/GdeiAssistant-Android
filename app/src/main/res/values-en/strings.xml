@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">Campus Assistant</string>
+    <string name="app_name">GDEI Campus Assistant</string>
     <!-- General -->
     <string name="service_unavailable">Service temporarily unavailable</string>
     <string name="check_upgrade">Check for updates</string>
@@ -411,7 +411,7 @@
     <!-- News &amp; Messages -->
     <string name="tab_home">Home</string>
     <string name="tab_profile">Profile</string>
-    <string name="tab_messages">News</string>
+    <string name="tab_messages">Messages</string>
     <string name="news_title">News</string>
     <string name="news_empty">No news to display</string>
     <string name="news_category_school_headlines">Headlines</string>
@@ -439,7 +439,7 @@
     <string name="messages_module_topic">Topics</string>
     <string name="messages_module_express">Confession Wall</string>
     <string name="messages_module_dating">Roommate Match</string>
-    <string name="messages_module_delivery">Campus Delivery</string>
+    <string name="messages_module_delivery">Express Pickup</string>
     <string name="messages_module_photograph">Campus Photos</string>
     <string name="spare_title">Empty Rooms</string>
     <string name="spare_subtitle">Find available rooms by campus, room type, weekday, odd/even week and section.</string>
@@ -924,11 +924,11 @@
     <string name="topic_missing_id">Missing topic ID</string>
     <string name="topic_toast_like_failed">Like failed</string>
     <string name="feature_topic_subtitle">See what everyone on campus is talking about</string>
-    <string name="delivery_title">Campus Delivery</string>
-    <string name="delivery_refresh">Refresh delivery hall</string>
+    <string name="delivery_title">Express Pickup</string>
+    <string name="delivery_refresh">Refresh pickup hall</string>
     <string name="delivery_action_mine_title">My Orders</string>
     <string name="delivery_action_mine_subtitle">View orders I posted and accepted</string>
-    <string name="delivery_action_publish_title">Post Delivery Task</string>
+    <string name="delivery_action_publish_title">Post Pickup Request</string>
     <string name="delivery_action_publish_subtitle">Enter pickup, reward and delivery address</string>
     <string name="delivery_empty">No orders to display for this filter</string>
     <string name="delivery_filter_all">All</string>
@@ -939,7 +939,7 @@
     <string name="delivery_state_delivering">Delivering</string>
     <string name="delivery_state_completed">Completed</string>
     <string name="delivery_detail_title">Task Details</string>
-    <string name="delivery_detail_missing">Delivery task not found</string>
+    <string name="delivery_detail_missing">Pickup request not found</string>
     <string name="delivery_info_role">My role</string>
     <string name="delivery_info_publisher">Requester</string>
     <string name="delivery_info_pickup_place">Pickup location</string>
@@ -979,22 +979,22 @@
     <string name="delivery_mine_empty">No orders in this group</string>
     <string name="delivery_mine_tab_published">Posted</string>
     <string name="delivery_mine_tab_accepted">Accepted</string>
-    <string name="delivery_publish_title">Post Delivery Task</string>
+    <string name="delivery_publish_title">Post Pickup Request</string>
     <string name="delivery_publish_subtitle">Fill in pickup, delivery and reward details to help others accept quickly.</string>
     <string name="delivery_publish_pickup_place">Pickup location</string>
     <string name="delivery_publish_pickup_code">Pickup code</string>
     <string name="delivery_publish_phone">Phone</string>
-    <string name="delivery_publish_reward">Delivery fee</string>
+    <string name="delivery_publish_reward">Pickup fee</string>
     <string name="delivery_publish_address">Delivery address</string>
     <string name="delivery_publish_remarks">Remarks</string>
     <string name="delivery_publish_submit">Post Task</string>
     <string name="delivery_publish_submitting">Posting…</string>
-    <string name="delivery_publish_success">Delivery task posted</string>
+    <string name="delivery_publish_success">Pickup request posted</string>
     <string name="delivery_publish_failed">Failed to post</string>
     <string name="delivery_publish_pickup_place_required">Please enter pickup location</string>
     <string name="delivery_publish_phone_required">Please enter phone number</string>
     <string name="delivery_publish_address_required">Please enter delivery address</string>
-    <string name="delivery_publish_reward_invalid">Please enter a valid delivery fee</string>
+    <string name="delivery_publish_reward_invalid">Please enter a valid pickup fee</string>
     <string name="delivery_publish_pickup_place_limit">Pickup location cannot exceed 10 characters</string>
     <string name="delivery_publish_phone_limit">Phone number cannot exceed 11 digits</string>
     <string name="delivery_publish_address_limit">Delivery address cannot exceed 50 characters</string>
@@ -1006,7 +1006,7 @@
     <string name="delivery_default_address">TBD</string>
     <string name="delivery_default_runner">runner</string>
     <string name="delivery_default_phone_mask">****</string>
-    <string name="feature_delivery_subtitle">Post delivery tasks or accept orders for extra cash</string>
+    <string name="feature_delivery_subtitle">Post express pickup requests or accept orders for extra cash</string>
     <string name="photograph_title">Campus Photos</string>
     <string name="photograph_refresh">Refresh photos</string>
     <string name="photograph_action_mine_title">My Works</string>
@@ -1520,4 +1520,5 @@
     <string name="graduate_exam_unknown_candidate">Unnamed candidate</string>
     <string name="graduate_exam_unavailable">Unavailable</string>
     <string name="profile_options_empty">Profile options are unavailable</string>
+    <string name="two_pane_empty_hint">Select an item to view details</string>
 </resources>

@@ -411,7 +411,7 @@
     <!-- ニュースとメッセージ -->
     <string name="tab_home">ホーム</string>
     <string name="tab_profile">マイページ</string>
-    <string name="tab_messages">ニュース</string>
+    <string name="tab_messages">メッセージ</string>
     <string name="news_title">ニュース</string>
     <string name="news_empty">表示できるニュースがありません</string>
     <string name="news_category_school_headlines">大学ニュース</string>
@@ -439,7 +439,7 @@
     <string name="messages_module_topic">トピック</string>
     <string name="messages_module_express">告白ボード</string>
     <string name="messages_module_dating">ルームメイト紹介</string>
-    <string name="messages_module_delivery">みんなの配達</string>
+    <string name="messages_module_delivery">宅配代取</string>
     <string name="messages_module_photograph">キャンパスフォト</string>
     <string name="spare_title">空き教室</string>
     <string name="spare_subtitle">キャンパス、教室タイプ、曜日、隔週区分とコマで空き教室を検索できます。</string>
@@ -924,11 +924,11 @@
     <string name="topic_missing_id">トピック番号がありません</string>
     <string name="topic_toast_like_failed">いいねに失敗しました</string>
     <string name="feature_topic_subtitle">キャンパスで話題になっていることがひと目でわかります</string>
-    <string name="delivery_title">みんなの配達</string>
-    <string name="delivery_refresh">配達一覧を更新</string>
+    <string name="delivery_title">宅配代取</string>
+    <string name="delivery_refresh">代取一覧を更新</string>
     <string name="delivery_action_mine_title">マイオーダー</string>
     <string name="delivery_action_mine_subtitle">自分の投稿と受注したオーダーを見る</string>
-    <string name="delivery_action_publish_title">配達依頼を投稿</string>
+    <string name="delivery_action_publish_title">代取依頼を投稿</string>
     <string name="delivery_action_publish_subtitle">受取場所・報酬・届け先を入力</string>
     <string name="delivery_empty">現在の絞り込みでは表示できるオーダーがありません</string>
     <string name="delivery_filter_all">すべて</string>
@@ -939,7 +939,7 @@
     <string name="delivery_state_delivering">配達中</string>
     <string name="delivery_state_completed">完了</string>
     <string name="delivery_detail_title">タスク詳細</string>
-    <string name="delivery_detail_missing">この配達タスクが見つかりません</string>
+    <string name="delivery_detail_missing">この代取タスクが見つかりません</string>
     <string name="delivery_info_role">あなたの役割</string>
     <string name="delivery_info_publisher">依頼者</string>
     <string name="delivery_info_pickup_place">受取場所</string>
@@ -979,22 +979,22 @@
     <string name="delivery_mine_empty">このグループにはまだオーダーがありません</string>
     <string name="delivery_mine_tab_published">投稿したオーダー</string>
     <string name="delivery_mine_tab_accepted">受注したオーダー</string>
-    <string name="delivery_publish_title">配達依頼を投稿</string>
+    <string name="delivery_publish_title">代取依頼を投稿</string>
     <string name="delivery_publish_subtitle">受取場所、届け先、報酬を入力すると、スムーズに受注してもらえます。</string>
     <string name="delivery_publish_pickup_place">受取場所</string>
     <string name="delivery_publish_pickup_code">受取コード</string>
     <string name="delivery_publish_phone">連絡電話</string>
-    <string name="delivery_publish_reward">配達料</string>
+    <string name="delivery_publish_reward">代取料</string>
     <string name="delivery_publish_address">届け先</string>
     <string name="delivery_publish_remarks">備考</string>
     <string name="delivery_publish_submit">タスクを投稿</string>
     <string name="delivery_publish_submitting">投稿中…</string>
-    <string name="delivery_publish_success">配達タスクが投稿されました</string>
+    <string name="delivery_publish_success">代取タスクが投稿されました</string>
     <string name="delivery_publish_failed">投稿に失敗しました</string>
     <string name="delivery_publish_pickup_place_required">受取場所を入力してください</string>
     <string name="delivery_publish_phone_required">連絡電話を入力してください</string>
     <string name="delivery_publish_address_required">届け先を入力してください</string>
-    <string name="delivery_publish_reward_invalid">有効な配達料を入力してください</string>
+    <string name="delivery_publish_reward_invalid">有効な代取料を入力してください</string>
     <string name="delivery_publish_pickup_place_limit">受取場所は10文字以内で入力してください</string>
     <string name="delivery_publish_phone_limit">連絡電話は11桁以内で入力してください</string>
     <string name="delivery_publish_address_limit">届け先は50文字以内で入力してください</string>
@@ -1006,7 +1006,7 @@
     <string name="delivery_default_address">未入力</string>
     <string name="delivery_default_runner">runner</string>
     <string name="delivery_default_phone_mask">****</string>
-    <string name="feature_delivery_subtitle">配達依頼を出したり、ついでに受注してお小遣い稼ぎ</string>
+    <string name="feature_delivery_subtitle">代取依頼を出したり、ついでに受注してお小遣い稼ぎ</string>
     <string name="photograph_title">キャンパスフォト</string>
     <string name="photograph_refresh">フォトコンテンツを更新</string>
     <string name="photograph_action_mine_title">マイ作品</string>
@@ -1520,4 +1520,5 @@
     <string name="graduate_exam_unknown_candidate">氏名未登録の受験者</string>
     <string name="graduate_exam_unavailable">未登録</string>
     <string name="profile_options_empty">プロフィール項目を利用できません</string>
+    <string name="two_pane_empty_hint">左の項目を選択して詳細を表示</string>
 </resources>
