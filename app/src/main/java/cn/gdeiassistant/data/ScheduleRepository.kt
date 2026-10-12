@@ -30,11 +30,12 @@ class ScheduleRepository @Inject constructor(
     suspend fun loadTodaySchedule(): Result<List<Schedule>> = withContext(Dispatchers.IO) {
         loadSchedule(null).fold(
             onSuccess = { result ->
-                val all = result?.scheduleList.orEmpty()
-                val cal = java.util.Calendar.getInstance()
-                val dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK)
-                val column = if (dayOfWeek == java.util.Calendar.SUNDAY) 6 else dayOfWeek - 2
-                Result.success(all.filter { it.column == column })
+                val today = selectTodaySchedule(result)
+                if (today == null) {
+                    Result.failure(IllegalStateException(context.getString(R.string.service_unavailable)))
+                } else {
+                    Result.success(today)
+                }
             },
             onFailure = { e -> Result.failure(e) }
         )

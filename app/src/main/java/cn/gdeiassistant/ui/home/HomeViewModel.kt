@@ -75,7 +75,7 @@ class HomeViewModel @Inject constructor(
                     isLoading = false,
                     displayName = nickname,
                     todayCourses = todayList,
-                    scheduleError = todayResult.exceptionOrNull()?.message,
+                    scheduleError = todayResult.exceptionOrNull()?.let { error -> error.message.orEmpty() },
                     cardInfo = cardResult.getOrNull(),
                     cardError = cardResult.exceptionOrNull()?.message,
                     notices = noticeResult.getOrNull().orEmpty(),

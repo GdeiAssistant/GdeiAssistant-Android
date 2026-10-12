@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -86,6 +87,28 @@ class HomeViewModelTest {
         assertEquals("20230001", state.cardInfo?.cardNumber)
         assertEquals(1, state.notices.size)
         verify(announcementRepository).getAnnouncements(limit = 5)
+    }
+
+    @Test
+    fun failedScheduleWithoutExceptionMessageRetainsUnavailableState() = runTest(testDispatcher) {
+        whenever(sessionManager.currentUsername()).thenReturn("alice")
+        whenever(scheduleRepository.loadTodaySchedule()).thenReturn(Result.failure(IllegalStateException()))
+        whenever(cardRepository.getCardInfo()).thenReturn(Result.success(null))
+        whenever(announcementRepository.getAnnouncements(limit = 5)).thenReturn(Result.success(emptyList()))
+        whenever(profileRepository.getProfile()).thenReturn(Result.success(UserProfileSummary(username = "alice")))
+
+        val viewModel = HomeViewModel(
+            scheduleRepository,
+            cardRepository,
+            announcementRepository,
+            profileRepository,
+            sessionManager
+        )
+        advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.isLoading)
+        assertNotNull(viewModel.state.value.scheduleError)
+        assertEquals(emptyList<Schedule>(), viewModel.state.value.todayCourses)
     }
 
     @Test
