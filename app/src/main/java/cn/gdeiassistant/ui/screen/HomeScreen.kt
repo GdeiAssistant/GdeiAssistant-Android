@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -46,31 +45,30 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.data.CampusZone
+import cn.gdeiassistant.data.actualLessonLabel
 import cn.gdeiassistant.model.AnnouncementItem
 import cn.gdeiassistant.model.Schedule
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.home.HomeViewModel
+import cn.gdeiassistant.ui.home.HomeFeatureIcons
 import cn.gdeiassistant.ui.navigation.AppFeature
 import cn.gdeiassistant.ui.navigation.AppFeatureCatalog
 import cn.gdeiassistant.ui.navigation.AppFeatureGroup
 import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.theme.AppSpacing
+import cn.gdeiassistant.ui.theme.GeneratedDesignTokens
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-
-private val SectionStartTimes = mapOf(
-    0 to "08:00", 1 to "10:00", 2 to "14:00",
-    3 to "16:00", 4 to "19:00", 5 to "20:50"
-)
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val greeting = when (LocalTime.now().hour) {
+    val greeting = when (LocalTime.now(CampusZone).hour) {
         in 5..11 -> stringResource(R.string.home_greeting_morning)
         in 12..13 -> stringResource(R.string.home_greeting_noon)
         in 14..17 -> stringResource(R.string.home_greeting_afternoon)
@@ -88,7 +86,7 @@ fun HomeScreen(navController: NavController) {
         stringResource(R.string.home_greeting_without_name, greeting)
     }
     val datePattern = stringResource(R.string.home_date_format)
-    val todayLabel = LocalDate.now()
+    val todayLabel = LocalDate.now(CampusZone)
         .format(DateTimeFormatter.ofPattern(datePattern))
 
     LazyScreen(
@@ -98,7 +96,7 @@ fun HomeScreen(navController: NavController) {
         item {
             GreetingHeader(
                 dateLabel = todayLabel,
-                courseCount = state.todayCourses.size,
+                courseCount = state.todayCourses.size.takeIf { state.scheduleError == null },
                 cardBalance = state.cardInfo?.cardBalance
             )
         }
@@ -137,13 +135,13 @@ fun HomeScreen(navController: NavController) {
 private fun GreetingHeader(
     modifier: Modifier = Modifier,
     dateLabel: String,
-    courseCount: Int = 0,
+    courseCount: Int? = null,
     cardBalance: String? = null
 ) {
-    val courseSummary = if (courseCount > 0) {
-        stringResource(R.string.home_stats_course_count, courseCount)
-    } else {
-        stringResource(R.string.home_stats_no_course)
+    val courseSummary = when {
+        courseCount == null -> stringResource(R.string.service_unavailable)
+        courseCount > 0 -> stringResource(R.string.home_stats_course_count, courseCount)
+        else -> stringResource(R.string.home_stats_no_course)
     }
     val balanceSummary = cardBalance
         ?.takeIf { it.isNotBlank() }
@@ -156,12 +154,12 @@ private fun GreetingHeader(
     ) {
         Text(
             text = dateLabel,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.copy(fontSize = GeneratedDesignTokens.captionSize),
             color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = courseSummary,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall.copy(fontSize = GeneratedDesignTokens.headlineSize),
             color = MaterialTheme.colorScheme.onSurface
         )
         balanceSummary?.let {
@@ -180,46 +178,56 @@ private fun TodayScheduleCard(
     error: String?,
     onOpenSchedule: () -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(
-            title = stringResource(R.string.home_today_schedule_title),
-            supporting = if (courses.isEmpty()) {
-                stringResource(R.string.home_today_schedule_empty_summary)
-            } else {
-                stringResource(R.string.home_today_schedule_count, courses.size)
-            },
-            action = {
-                TextButton(onClick = onOpenSchedule) {
-                    Text(stringResource(R.string.home_view_schedule))
+    Surface(
+        shape = AppShapes.card,
+        color = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        Column(
+            modifier = Modifier.padding(GeneratedDesignTokens.pageSpacing),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            SectionHeader(
+                title = stringResource(R.string.home_today_schedule_title),
+                supporting = if (error != null) {
+                    stringResource(R.string.service_unavailable)
+                } else if (courses.isEmpty()) {
+                    stringResource(R.string.home_today_schedule_empty_summary)
+                } else {
+                    stringResource(R.string.home_today_schedule_count, courses.size)
+                },
+                action = {
+                    TextButton(onClick = onOpenSchedule) {
+                        Text(stringResource(R.string.home_view_schedule))
+                    }
                 }
-            }
-        )
-        ListGroup {
-            AnimatedContent(
-                targetState = error to courses,
-                label = "schedule_grid",
-                transitionSpec = { fadeIn() togetherWith fadeOut() }
-            ) { (err, items) ->
-                when {
-                    !err.isNullOrBlank() -> {
-                        Text(
-                            text = err,
-                            modifier = Modifier.padding(AppSpacing.lg),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                    items.isEmpty() -> {
-                        ListRow(
-                            title = stringResource(R.string.home_today_schedule_empty_title),
-                            supporting = stringResource(R.string.home_today_schedule_empty_body),
-                            icon = Icons.Rounded.EventAvailable
-                        )
-                    }
-                    else -> Column {
-                        items.forEachIndexed { index, course ->
-                            if (index > 0) ListDivider(inset = 88.dp)
-                            CourseRow(course)
+            )
+            Column {
+                AnimatedContent(
+                    targetState = error to courses,
+                    label = "schedule_grid",
+                    transitionSpec = { fadeIn() togetherWith fadeOut() }
+                ) { (err, items) ->
+                    when {
+                        err != null -> {
+                            Text(
+                                text = err.ifBlank { stringResource(R.string.service_unavailable) },
+                                modifier = Modifier.padding(AppSpacing.lg),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                        items.isEmpty() -> {
+                            ListRow(
+                                title = stringResource(R.string.home_today_schedule_empty_title),
+                                supporting = stringResource(R.string.home_today_schedule_empty_body),
+                                icon = Icons.Rounded.EventAvailable
+                            )
+                        }
+                        else -> Column {
+                            items.forEachIndexed { index, course ->
+                                if (index > 0) ListDivider(inset = 88.dp)
+                                CourseRow(course)
+                            }
                         }
                     }
                 }
@@ -230,14 +238,7 @@ private fun TodayScheduleCard(
 
 @Composable
 private fun CourseRow(course: Schedule) {
-    val slotLabel = remember(course.row, course.scheduleLength) {
-        val r = course.row ?: 0
-        val len = course.scheduleLength ?: 1
-        val s = r * 2 + 1
-        val e = (r + len - 1) * 2 + 2
-        "$s-$e"
-    }
-    val startTime = SectionStartTimes[course.row ?: 0] ?: ""
+    val slotLabel = actualLessonLabel(course)
     val subtitle = listOfNotNull(course.scheduleLocation, course.scheduleTeacher)
         .joinToString(" · ")
     Row(
@@ -249,17 +250,14 @@ private fun CourseRow(course: Schedule) {
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.width(48.dp)) {
-            Text(
-                text = startTime,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = slotLabel,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        if (slotLabel != null) {
+            Column(modifier = Modifier.width(64.dp)) {
+                Text(
+                    text = slotLabel,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = GeneratedDesignTokens.calloutSize),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
         Box(
             modifier = Modifier
@@ -270,7 +268,7 @@ private fun CourseRow(course: Schedule) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = course.scheduleName ?: stringResource(R.string.schedule_course_unnamed),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = GeneratedDesignTokens.titleSize),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -278,7 +276,7 @@ private fun CourseRow(course: Schedule) {
             if (subtitle.isNotBlank()) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = GeneratedDesignTokens.captionSize),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -377,16 +375,16 @@ private fun FeatureGridItem(
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = feature.icon,
+                    imageVector = HomeFeatureIcons.forRoute(feature.route) ?: feature.icon,
                     contentDescription = stringResource(feature.titleRes),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp)
                 )
             }
         }
         Text(
             text = stringResource(feature.titleRes),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(fontSize = GeneratedDesignTokens.calloutSize),
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
