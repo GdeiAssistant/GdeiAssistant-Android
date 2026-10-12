@@ -28,6 +28,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install Android SDK platform
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
