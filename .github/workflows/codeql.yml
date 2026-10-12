@@ -11,9 +11,8 @@ on:
 jobs:
   analyze:
     name: Analyze (Java/Kotlin)
-    # CodeQL 当前还不支持 Kotlin 2.3.20，先跳过这条检查，待上游支持后再恢复。
-    if: ${{ false }}
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       security-events: write
       contents: read
@@ -29,14 +28,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install Android SDK platform
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0"
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
+          build-mode: manual
+          tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.27.2/codeql-bundle-java-linux64.tar.zst
           queries: security-and-quality
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug -x test -x lint --no-daemon
+        run: ./gradlew assembleDebug -x test -x lint --no-daemon --no-build-cache --no-configuration-cache
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
