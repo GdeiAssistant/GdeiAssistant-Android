@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui
 
 import android.content.res.Configuration
+import android.util.Log
 import android.view.KeyEvent
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -15,6 +16,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.platform.app.InstrumentationRegistry
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AppLocaleSupport
@@ -107,14 +111,30 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
             }
             composeRule.onNode(hasText(country) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
             composeRule.onNode(hasText(ipArea) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            waitForPickerWindowReady()
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             composeRule.waitUntilDoesNotExist(hasTestTag("profile.location.picker"), 20_000)
             scrollToText(hometown).performClick()
             composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.location.picker"), 20_000)
             composeRule.onNode(hasText(hometown) and hasAnyAncestor(hasTestTag("profile.location.picker"))).assertIsDisplayed()
+            waitForPickerWindowReady()
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             composeRule.waitUntilDoesNotExist(hasTestTag("profile.location.picker"), 20_000)
             scrollToText(localized(option.code, R.string.appearance_title)).performClick()
+        }
+    }
+
+    private fun waitForPickerWindowReady() {
+        // Compose semantics can be ready before the dialog owns native input focus.
+        onView(isRoot()).inRoot(isDialog()).check { view, error ->
+            if (error != null) throw error
+            assertTrue("Picker dialog must own native window focus", view.hasWindowFocus())
+            assertTrue("Picker dialog layout must be ready", !view.isLayoutRequested)
+            assertTrue("Picker dialog must be shown", view.isShown)
+            Log.i(
+                "ProfilePickerUiTest",
+                "BACK-ready locale=${AppLocaleSupport.currentLocale()} focus=${view.hasWindowFocus()} layoutRequested=${view.isLayoutRequested}"
+            )
         }
     }
 
