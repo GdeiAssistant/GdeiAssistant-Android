@@ -142,7 +142,7 @@ Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持�
 
 ## 社交与私信
 
-客户端实现见 [`docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md`](docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md)。数据契约以主仓设计文档为准。
+客户端实现见 [`docs/social-messaging-implementation.zh-CN.md`](docs/social-messaging-implementation.zh-CN.md)。数据契约以主仓设计文档为准。
 
 ## 参与贡献
 
