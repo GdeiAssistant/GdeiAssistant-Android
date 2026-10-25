@@ -1,222 +1,75 @@
-# 广东二师助手安卓客户端
+# 广东二师助手 · Android 客户端
 
-广东二师助手安卓客户端，基于 Kotlin 与 Jetpack Compose 构建，面向广东第二师范学院校园场景，围绕教务查询、校园服务、社区互动与账号管理提供统一的 Android 端体验。
+广东第二师范学院校园助手的安卓客户端，Kotlin + Jetpack Compose 编写。当前版本 `2.0.0-PRO`。
 
-当前版本：`2.0.0-PRO`
+这个仓库只有客户端。成绩、课表、校园卡这些数据来自 [GdeiAssistant 后端](https://github.com/GdeiAssistant/GdeiAssistant)，本仓库不包含服务端代码和部署配置。项目由学生维护，不是学校官方服务。
 
-## 功能概览
+- [功能](#功能)
+- [技术栈](#技术栈)
+- [快速开始](#快速开始)
+- [接口环境](#接口环境)
+- [工程结构](#工程结构)
+- [架构说明](#架构说明)
+- [参与贡献](#参与贡献)
 
-### 校园服务
+## 功能
 
-- 成绩查询
-- 课表查询
-- 四六级查询
-- 考研查询
-- 教室查询
-- 教学评价
-- 图书馆
-- 校园卡
-- 校园卡充值
-- 校园卡挂失
-- 电费查询
-- 数据中心
-- 校园黄页
+| 模块 | 内容 |
+| --- | --- |
+| 教务 | 成绩、课表、四六级、考研、教室、教学评价、图书馆 |
+| 校园卡 | 余额查询、充值、挂失、电费 |
+| 生活 | 二手交易、全民快递、失物招领、校园树洞、卖室友、表白墙、校园话题、拍好校园 |
+| 资讯 | 新闻通知、系统公告、互动消息、私信会话 |
+| 社交 | 用户搜索与公开主页、关注/粉丝/互关、拉黑、四档私信接收设置 |
+| 个人中心 | 登录与登录态恢复、资料与头像、绑定手机/邮箱、隐私设置、登录记录、数据导出、主题与字体、意见反馈 |
 
-### 校园生活
-
-- 二手交易
-- 全民快递
-- 失物招领
-- 校园树洞
-- 卖室友
-- 表白墙
-- 校园话题
-- 拍好校园
-
-### 资讯信息
-
-- 新闻通知
-- 系统通知公告
-- 互动消息
-- 私信会话与文字聊天
-
-### 社交关系
-
-- 用户搜索与公开主页
-- 关注 / 粉丝 / 互关好友
-- 拉黑与黑名单
-- 四档私信接收设置
-- 公开社区作者主页入口（匿名树洞不暴露身份）
-
-### 个人中心
-
-- 登录与登录态恢复
-- 资料展示与编辑
-- 头像管理
-- 绑定手机
-- 绑定邮箱
-- 隐私设置（含私信接收范围）
-- 社交关系统计入口
-- 登录记录
-- 用户数据导出与下载
-- 意见反馈
-- 界面和外观（主题切换、字体大小、语言）
-- 关于应用
-- 退出登录
+匿名树洞不暴露作者身份；社区作者主页只在非匿名内容上显示入口。
 
 ## 技术栈
 
-- Kotlin
-- Jetpack Compose + Material 3
-- Hilt
-- Retrofit + OkHttp + Gson
-- DataStore
-- EncryptedSharedPreferences
-- Coil
-- JWT 登录态管理
+Kotlin · Jetpack Compose + Material 3 · Hilt · Retrofit + OkHttp + Gson · DataStore · EncryptedSharedPreferences · Coil · JWT
 
-## 工程结构
+## 快速开始
 
-```text
-GdeiAssistant-Android/
-├── app/src/main/java/cn/gdeiassistant/
-│   ├── data/
-│   ├── di/
-│   ├── model/
-│   ├── network/
-│   │   ├── api/
-│   │   └── mock/
-│   ├── service/
-│   ├── ui/
-│   │   ├── home/
-│   │   ├── messages/
-│   │   ├── social/
-│   │   ├── profile/
-│   │   ├── grade/
-│   │   ├── schedule/
-│   │   ├── card/
-│   │   ├── book/
-│   │   ├── marketplace/
-│   │   ├── lostfound/
-│   │   ├── secret/
-│   │   ├── dating/
-│   │   ├── delivery/
-│   │   ├── express/
-│   │   ├── topic/
-│   │   ├── photograph/
-│   │   └── navigation/
-│   └── util/
-├── app/src/main/res/
-└── github/
-```
+### 环境要求
 
-## 架构说明
+| 项 | 版本 |
+| --- | --- |
+| Android Studio | 最新稳定版 |
+| JDK | 17 |
+| Gradle | 9.6.1（使用仓库自带 wrapper） |
+| Android Gradle Plugin | 9.3.1 |
+| Kotlin | 2.3.21 |
+| Android SDK | 35 |
+| 设备 | Android 8.0 及以上 |
 
-### 1. 数据源模式
-
-项目支持两种数据源：
-
-- `remote`：请求真实后端接口
-- `mock`：使用本地模拟数据（仅 Debug 构建可在关于页切换）
-
-**默认行为：** `DEFAULT_MOCK_MODE_ENABLED=false`，即默认连接真实后端。Debug 构建可在关于页手动开启 mock 以便 UI 联调；**Release 构建强制 `remote` + `prod` 环境**，不可切换 mock 或 dev/staging 接口（见 `SettingsRepository.canUseDemoMode()` / `canChangeNetworkEnvironment()`）。
-
-本地示例登录能力仅用于开发调试、界面验证与联调演示，不应在公开发行说明中暴露测试账号或密码。
-
-### 2. 登录态与安全存储
-
-当前登录链路由以下组件协作完成：
-
-- `SessionManager`：统一管理当前用户、Token 与 Cookie 会话
-- `TokenUtils`：基于 `EncryptedSharedPreferences` 的本地安全存储
-- `AuthInterceptor`：注入鉴权头并处理登录态请求
-- `ResponseInterceptor`：统一响应拦截与错误处理
-
-### 3. 网络层
-
-网络层基于 Retrofit 与 OkHttp，统一负责：
-
-- API Service 注入
-- Bearer Token 注入
-- Cookie 持久化与线程安全管理
-- Mock 路由分发
-- Gson JSON 序列化与反序列化
-- 统一错误归一化处理
-
-### 4. UI 与导航
-
-应用界面基于 Jetpack Compose 构建，主导航为底部 3 个 Tab：首页、消息、我的。业务页面按模块拆分在 `ui/` 目录下，并按域组织为 `service graph`、`community graph`、`information graph`、`account graph` 四个导航图，便于逐步迭代和独立维护。
-
-### 5. 主题系统
-
-应用支持亮色/暗色主题切换，默认跟随系统：
-
-- 固定 Campus Green 品牌色板（与 Web / iOS / 小程序四端统一，不使用 Material You 动态取色）
-- 用户可在"界面和外观"页面手动选择浅色/深色/跟随系统
-- 字体大小四档可调（小/标准/大/超大）
-- 主题与字体偏好通过独立 DataStore (`user_preferences`) 持久化
-
-## 运行环境
-
-- Android Studio 最新稳定版
-- JDK 17
-- Gradle 9.6.1
-- Android Gradle Plugin 9.3.1
-- Kotlin 2.3.21
-- Android SDK 35
-- Android 8.0 及以上设备或模拟器
-
-## 快速部署
-
-### 1. 克隆仓库
+### 构建并安装 Debug 包
 
 ```bash
 git clone https://github.com/GdeiAssistant/GdeiAssistant-Android.git
 cd GdeiAssistant-Android
-```
-
-### 2. 准备本地环境
-
-- 使用 Android Studio 打开项目并完成 Gradle Sync
-- 确保本机已安装 Android SDK 35 与 Build Tools
-- 若命令行环境尚未生成 `local.properties`，请先通过 Android Studio 打开一次项目，或手动补充本地 `sdk.dir`
-
-### 3. 构建 Debug 安装包
-
-```bash
 ./gradlew :app:assembleDebug
-```
-
-构建成功后，APK 默认输出到：
-
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-### 4. 安装到设备
-
-```bash
 ./gradlew :app:installDebug
 ```
 
-### 5. 构建 Release 安装包
+APK 输出在 `app/build/outputs/apk/debug/app-debug.apk`。
 
-#### GitHub Actions 构建 APK
+首次用命令行构建前，需要先生成 `local.properties` 并写入 `sdk.dir`。最简单的办法是用 Android Studio 打开一次项目完成 Gradle Sync，它会自动生成这个文件。
 
-仓库提供 [**Android Release**](https://github.com/GdeiAssistant/GdeiAssistant-Android/actions/workflows/android-release.yml) 手动工作流：在 Actions 页选择 **Run workflow**，填写 `tag_name`、`version_name`、`version_code` 等参数后触发。成功后会将签名 APK / AAB 发布到 [GitHub Releases](https://github.com/GdeiAssistant/GdeiAssistant-Android/releases)（首个正式 Release 发布后可在该页下载）。
+### 构建 Release 包
 
-发布前需要在仓库或环境中配置：
+走 CI：在 Actions 页打开 [Android Release](https://github.com/GdeiAssistant/GdeiAssistant-Android/actions/workflows/android-release.yml)，选 **Run workflow**，填 `tag_name`、`version_name`、`version_code`，可勾选 prerelease。工作流先跑 lint 和单元测试，再执行 `assembleRelease` 与 `bundleRelease`，成功后把签名产物发到 [Releases](https://github.com/GdeiAssistant/GdeiAssistant-Android/releases)。
 
-- `ANDROID_KEYSTORE_BASE64`：release keystore 文件的 base64 内容
-- `ANDROID_KEYSTORE_PASSWORD`：keystore 密码
-- `ANDROID_KEY_ALIAS`：release key alias
-- `ANDROID_KEY_PASSWORD`：release key 密码
+签名所需配置（仓库 secret 或 environment）：
 
-工作流输入包括 `tag_name`、`version_name`、`version_code` 和是否标记为
-prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRelease` 和
-`bundleRelease`。
+| 名称 | 内容 |
+| --- | --- |
+| `ANDROID_KEYSTORE_BASE64` | release keystore 的 base64 |
+| `ANDROID_KEYSTORE_PASSWORD` | keystore 密码 |
+| `ANDROID_KEY_ALIAS` | key alias |
+| `ANDROID_KEY_PASSWORD` | key 密码 |
 
-本地签名构建可以使用：
+本地签名构建：
 
 ```bash
 ./gradlew :app:assembleRelease \
@@ -228,20 +81,15 @@ prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRel
   -PGDEI_VERSION_CODE=2
 ```
 
-### 6. 运行方式
+## 接口环境
 
-- `mock` 模式（仅 Debug）：适合本地开发、UI 联调、回归验证
-- `remote` 模式：连接真实后端；Release 固定为 `remote` + `prod`
+| 环境 | 地址 | 用途 |
+| --- | --- | --- |
+| `dev` | `http://10.0.2.2:8080/` | 模拟器连本机后端 |
+| `staging` | `https://gdeiassistant.azurewebsites.net/` | 演示环境 |
+| `prod` | `https://gdeiassistant.cn/` | 生产环境 |
 
-### 7. 远程接口环境
-
-应用内远程接口默认按 `dev / staging / prod` 三套环境运行：
-
-- `dev`：`http://10.0.2.2:8080/`（Android 模拟器本地联调）
-- `staging`：`https://gdeiassistant.azurewebsites.net/`
-- `prod`：`https://gdeiassistant.cn/`
-
-也可以在 Gradle 命令行覆盖：
+Debug 构建可以在应用内切换环境和数据源；Release 构建固定 `remote` + `prod`，没有开关。命令行覆盖地址：
 
 ```bash
 ./gradlew :app:assembleDebug \
@@ -250,32 +98,60 @@ prerelease。工作流会先运行 lint 与单元测试，再执行 `assembleRel
   -PGDEI_BASE_URL_PROD=https://gdeiassistant.cn/
 ```
 
+## 工程结构
+
+```text
+app/src/main/java/cn/gdeiassistant/
+├── data/          本地存储与仓库层
+├── di/            Hilt 模块
+├── model/         领域模型
+├── network/       Retrofit 接口与 mock 路由
+├── service/       后台服务
+├── ui/            按业务域拆分的 Compose 页面
+│   ├── home/ messages/ social/ profile/
+│   ├── grade/ schedule/ card/ book/
+│   ├── marketplace/ lostfound/ secret/ dating/
+│   ├── delivery/ express/ topic/ photograph/
+│   └── navigation/
+└── util/
+```
+
+## 架构说明
+
+### 数据源
+
+`remote` 请求真实接口，`mock` 使用本地模拟数据。默认 `DEFAULT_MOCK_MODE_ENABLED=false`，即默认连真实后端。只有 Debug 构建能在关于页切换 mock；Release 构建被 `SettingsRepository.canUseDemoMode()` 和 `canChangeNetworkEnvironment()` 锁死为 `remote` + `prod`。
+
+mock 数据只用于 UI 联调和回归验证，不是真实校园业务数据。测试账号密码不要写进公开发行说明。
+
+### 登录态
+
+四个组件分工：`SessionManager` 管当前用户、Token 和 Cookie 会话；`TokenUtils` 用 `EncryptedSharedPreferences` 做本地加密存储；`AuthInterceptor` 注入鉴权头；`ResponseInterceptor` 统一处理错误。
+
+### 网络层
+
+Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持久化与线程安全、mock 路由分发、Gson 序列化，以及错误归一化。
+
+### UI 与导航
+
+底部三个 Tab：首页、消息、我的。业务页面按域组织成 `service`、`community`、`information`、`account` 四张导航图，方便各域独立迭代。
+
+### 主题
+
+固定 Campus Green 品牌色，与 Web / iOS / 小程序四端一致，不使用 Material You 动态取色。用户可选浅色/深色/跟随系统，字体四档可调，偏好存在独立的 `user_preferences` DataStore 里。
+
 ## 社交与私信
 
-Android 端接入说明见 [`docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md`](docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md)。共享契约以主仓设计文档为准；本仓仅实现客户端，不包含后端部署。
+客户端实现见 [`docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md`](docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md)。数据契约以主仓设计文档为准。
 
-## 后端接口位置
+## 参与贡献
 
-本项目对应的后端仓库为：
+见 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 处理，不要在公开 Issue 里贴真实账号、验证码或密钥。
 
-- GitHub：`https://github.com/GdeiAssistant/GdeiAssistant`
-- Wiki：`https://github.com/GdeiAssistant/GdeiAssistant/wiki`
+## 许可
 
-## 开源协议
+[Apache License 2.0](LICENSE)。
 
-本项目采用 [Apache License 2.0](LICENSE) 开源协议。
+## 免责声明
 
-你可以在遵守协议条款的前提下使用、修改和分发本项目代码。
-
-## 法律、隐私与安全提示
-
-1. 本项目为校园场景 Android 客户端，不代表学校官方服务。
-2. 面向用户的正式协议、隐私政策和功能风险提示，以 App 内关于、隐私、校园凭证、二手、跑腿/快递、失物招领等页面展示内容为准。
-3. 仓库中的 `mock` 数据仅用于本地开发、界面验证和联调演示，不代表真实校园业务数据。
-4. 生产发布前，发布方应结合实际环境确认隐私处理、校园凭证管理、Android 权限说明、第三方服务、日志脱敏、密钥管理、签名配置以及商标/名称使用边界。
-5. 本 README 只保留维护和部署层面的提示，不替代用户协议或隐私政策正文。
-
-
-## 2026-10-07 演示环境架构升级
-
-默认远端 API 使用现有 Azure 演示服务 `https://gdeiassistant.azurewebsites.net/`，可通过本仓配置入口调整。公共商品/跑腿信息使用展示名称及不透明作者 ID，不再返回校园账号；市场路由统一 `/api/marketplace`。跑腿发布使用 JSON 与明确的 taskName、pickupCode、contactPhone、pickupLocation、deliveryAddress 字段；图书借阅与账号注销密码放入 JSON 请求体。旧请求的认证失败不能清除换号后的新会话，缺失关键标识/状态不推造正常值。
+本项目不代表学校官方服务。面向用户的协议、隐私政策和功能风险提示，以 App 内「关于」「隐私」「校园凭证」等页面展示的内容为准，本 README 不替代这些正文。发布衍生版本前，请自行确认隐私处理、校园凭证管理、Android 权限说明、日志脱敏、密钥管理、签名配置和商标使用边界。
