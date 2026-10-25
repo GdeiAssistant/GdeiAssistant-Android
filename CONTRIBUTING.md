@@ -27,7 +27,7 @@ python3 scripts/check_locale_resources.py
 ./scripts/run-emulator-tests.sh
 ```
 
-改动了多语言文案，必须同时更新 `values-*/strings.xml` 和 `docs/LOCATION_NAMES.md` 里对应的条目。文案对不上，`check_locale_resources.py` 会报错。
+改动了多语言文案，必须同时更新 `values-*/strings.xml` 和 `docs/location-names.md` 里对应的条目。文案对不上，`check_locale_resources.py` 会报错。
 
 ## 代码风格
 

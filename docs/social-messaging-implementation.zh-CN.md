@@ -74,7 +74,7 @@
 
 缺 SDK/`local.properties` 时记录环境阻塞，不以设备/完整 build 通过宣称；测试源码已落地。
 
-`.gitignore` 对 `docs/` 增加精确例外：`docs/SOCIAL_MESSAGING_IMPLEMENTATION.zh-CN.md`。
+`.gitignore` 对 `docs/` 增加精确例外：`docs/social-messaging-implementation.zh-CN.md`。
 
 ## 本轮交付边界
 
