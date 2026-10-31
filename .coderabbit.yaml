@@ -2,7 +2,6 @@
 language: en-US
 reviews:
   profile: assertive
-  request_changes_workflow: true
   auto_approvals:
     enabled: true
     allow_author_approval: false
