@@ -53,6 +53,8 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 
 ## 不要做
 
+- 只有所有者或经所有者明确授权的审查者可以添加 `owner-approved` 标签；编码智能体绝不能给自己的 PR 添加该标签。
+
 - 不要手改生成的设计令牌产物，改 `design/` 源文件。
 - 不要单方面改接口契约。服务端、iOS、微信小程序共用同一套。
 - 不要在 `app/` 里新增只为一个页面服务的全局单例。
