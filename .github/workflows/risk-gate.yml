@@ -200,12 +200,7 @@ jobs:
             const eventSha = context.payload.pull_request.head.sha;
             const SETTLE_MS = 600000;
             if (context.payload.pull_request.draft) return;
-            function ownerOnly(path) {
-              return /(^|\/)(?:\.coderabbit\.ya?ml|agents\.md)$/.test(path.toLowerCase())
-                || path.toLowerCase() === '.github/engineering.md';
-            }
             function highRisk(path) {
-              if (ownerOnly(path)) return true;
               const p = path.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
               if (p.startsWith('.github/workflows/') || /(^|\/)codeowners$/.test(p)) return true;
               if (/(^|\/)(docs?|tests?|examples?|fixtures)(\/|$)/.test(p)) return false;
