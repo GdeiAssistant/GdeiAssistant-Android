@@ -4,7 +4,7 @@
 
 ## 范围
 
-本仓实现共享契约（`GdeiAssistant/docs/SOCIAL_MESSAGING_DESIGN.zh-CN.md`，含「图片私信追加契约」）的 Android 客户端接入：
+本仓实现共享契约（`GdeiAssistant/docs/social-messaging-design.zh-CN.md`，含「图片私信追加契约」）的 Android 客户端接入：
 
 - Retrofit `SocialApi` + `SocialRepository` + Debug-only `MockSocialProvider`
 - 全局单连接 `SocialRealtimeManager`（OkHttp WebSocket；mock 走本地事件流）
