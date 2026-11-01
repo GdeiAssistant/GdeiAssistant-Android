@@ -1,0 +1,38 @@
+[
+  {
+    "RuleID": "generic-api-key",
+    "File": "app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt",
+    "Commit": "8e20f584a9641126fb620b1dc36795c4b7b057c0",
+    "StartLine": 66,
+    "Fingerprint": "8e20f584a9641126fb620b1dc36795c4b7b057c0:app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt:generic-api-key:66",
+    "Secret": "REDACTED",
+    "Match": "REDACTED"
+  },
+  {
+    "RuleID": "generic-api-key",
+    "File": "app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt",
+    "Commit": "8e20f584a9641126fb620b1dc36795c4b7b057c0",
+    "StartLine": 69,
+    "Fingerprint": "8e20f584a9641126fb620b1dc36795c4b7b057c0:app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt:generic-api-key:69",
+    "Secret": "REDACTED",
+    "Match": "REDACTED"
+  },
+  {
+    "RuleID": "generic-api-key",
+    "File": "app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt",
+    "Commit": "8e20f584a9641126fb620b1dc36795c4b7b057c0",
+    "StartLine": 76,
+    "Fingerprint": "8e20f584a9641126fb620b1dc36795c4b7b057c0:app/src/test/java/cn/gdeiassistant/data/ChargeRepositoryContractTest.kt:generic-api-key:76",
+    "Secret": "REDACTED",
+    "Match": "REDACTED"
+  },
+  {
+    "RuleID": "generic-api-key",
+    "File": "app/src/test/java/cn/gdeiassistant/data/AuthRepositoryContractTest.kt",
+    "Commit": "2d53a8190eed9eb45a460182cf2ec6e310eab0bd",
+    "StartLine": 57,
+    "Fingerprint": "2d53a8190eed9eb45a460182cf2ec6e310eab0bd:app/src/test/java/cn/gdeiassistant/data/AuthRepositoryContractTest.kt:generic-api-key:57",
+    "Secret": "REDACTED",
+    "Match": "REDACTED"
+  }
+]
