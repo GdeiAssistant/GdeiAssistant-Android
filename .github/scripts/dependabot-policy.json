@@ -1,0 +1,10 @@
+{
+  "repo": "GdeiAssistant/GdeiAssistant-Android",
+  "branch": "master",
+  "files": ["build.gradle.kts","app/build.gradle.kts","gradle/libs.versions.toml"],
+  "directories": ["/"],
+  "required_checks": ["Unit Tests","Emulator Smoke Tests","Repository hygiene","Safe dependency update"],
+  "action_files": [
+    ".github/workflows/android-ci.yml"
+  ]
+}
