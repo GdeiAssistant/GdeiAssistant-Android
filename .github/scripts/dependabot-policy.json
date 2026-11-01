@@ -1,0 +1,17 @@
+{
+  "repo": "GdeiAssistant/GdeiAssistant-Android",
+  "branch": "master",
+  "files": ["build.gradle.kts","app/build.gradle.kts","gradle/libs.versions.toml"],
+  "directories": ["/"],
+  "required_checks": ["Unit Tests","Emulator Smoke Tests","Repository hygiene","Safe dependency update"],
+  "action_files": [
+    ".github/workflows/android-ci.yml",
+    ".github/workflows/android-release.yml",
+    ".github/workflows/codeql.yml",
+    ".github/workflows/dependabot-auto-merge.yml",
+    ".github/workflows/dependabot-policy.yml",
+    ".github/workflows/engineering-governance.yml",
+    ".github/workflows/repository-hygiene.yml",
+    ".github/workflows/risk-gate.yml"
+  ]
+}

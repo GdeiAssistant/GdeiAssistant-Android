@@ -10,3 +10,17 @@
 /.github/CODEOWNERS @Pigbibi
 /.github/workflows/ @Pigbibi
 /app/src/main/java/cn/gdeiassistant/ui/secret/ @Pigbibi
+
+# Dependency-only files do not automatically request a human review.
+# CODEOWNERS is path-based: these exceptions also apply to human PRs.
+/build.gradle.kts
+/app/build.gradle.kts
+/gradle/libs.versions.toml
+/.github/workflows/android-ci.yml
+/.github/workflows/android-release.yml
+/.github/workflows/codeql.yml
+/.github/workflows/dependabot-auto-merge.yml
+/.github/workflows/dependabot-policy.yml
+/.github/workflows/engineering-governance.yml
+/.github/workflows/repository-hygiene.yml
+/.github/workflows/risk-gate.yml
