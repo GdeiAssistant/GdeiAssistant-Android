@@ -91,11 +91,14 @@ class SecretScanTests(unittest.TestCase):
                                     '-c', 'user.email=fixture@example.invalid', 'commit', '--quiet',
                                     '-m', 'test: approved synthetic fixture'], check=True)
                     self.assertEqual(SCANNER.scan(BINARY, 'git', repository, self.output), [])
+                    # Keep the default rule's entropy and word filters deterministic.
+                    api_value = ''.join(character + str(index % 10) for index, character in enumerate(
+                        secrets.SystemRandom().sample(string.ascii_letters, 16)))
                     payload.write_text('token=fake-' + fake_value() + '\n'
                                        'token=${X}' + fake_value() + '\n'
                                        'mongodb://fixture:' + fake_value() + '@example.invalid/db\n'
                                        'ALIBABA_ACCESS_KEY_SECRET=' + fake_value(30) + '\n'
-                                       'api_key=' + fake_value() + '\n')
+                                       'api_key=' + api_value + '\n')
                     subprocess.run(['git', '-C', str(repository), 'add', '.'], check=True)
                     subprocess.run(['git', '-C', str(repository), '-c', 'user.name=Synthetic Test',
                                     '-c', 'user.email=fixture@example.invalid', 'commit', '--quiet',
@@ -103,7 +106,8 @@ class SecretScanTests(unittest.TestCase):
                     findings = SCANNER.scan(BINARY, 'git', repository, self.output)
                     expected = {'configuration-secret-value', 'mongodb-userinfo-password',
                                 'alibaba-access-key-secret', 'generic-api-key'}
-                    self.assertTrue(expected <= {row['RuleID'] for row in findings})
+                    self.assertTrue(expected <= {row['RuleID'] for row in findings},
+                                    {row['RuleID'] for row in findings})
                     # Directory scanning traverses relative paths before checking values.
                     result = subprocess.run(
                         [BINARY, 'dir', '.', '--config', str(repository / '.gitleaks.toml'),
@@ -112,7 +116,8 @@ class SecretScanTests(unittest.TestCase):
                         cwd=repository, capture_output=True, check=False)
                     self.assertEqual(result.returncode, 1)
                     findings = json.loads(self.output.read_text())
-                    self.assertTrue(expected <= {row['RuleID'] for row in findings})
+                    self.assertTrue(expected <= {row['RuleID'] for row in findings},
+                                    {row['RuleID'] for row in findings})
 
     def test_clean_directory_passes(self):
         self.assertEqual(SCANNER.scan(BINARY, 'dir', self.source, self.output), [])
