@@ -60,12 +60,59 @@ class SecretScanTests(unittest.TestCase):
 
     def test_clean_placeholders_pass(self):
         self.assertEqual(self.detect('jwt.secret=${JWT_SECRET}\npassword=\n'
-                                     'token=${LONG_TOKEN_VARIABLE:?must be supplied}\n'
+                                     'token=${LONG_TOKEN_VARIABLE}\ntoken=${_TOKEN_1}\n'
                                      'token=your-token-placeholder\npassword=xxxxxxxxxxxxxxxx\n'), [])
 
     def test_punctuation_in_password_is_detected(self):
         findings = self.detect('password=' + fake_value(16) + '&$*()!')
         self.assertIn('configuration-secret-value', {row['RuleID'] for row in findings})
+
+    def test_placeholder_with_literal_text_is_detected(self):
+        for value in ('${X}' + fake_value(), fake_value() + '${X}',
+                      '${LONG_TOKEN_VARIABLE}' + fake_value(),
+                      '${LONG_TOKEN_VARIABLE:-' + fake_value() + '}',
+                      '${LONG_TOKEN_VARIABLE}${OTHER_VARIABLE}'):
+            findings = self.detect('token=' + value)
+            self.assertIn('configuration-secret-value', {row['RuleID'] for row in findings})
+
+    def test_fixture_directories_still_detect_unapproved_credentials(self):
+        for directory in ('app/src/test', 'scripts/tests'):
+            with self.subTest(directory=directory):
+                repository = self.root / directory.replace('/', '-')
+                repository.mkdir()
+                subprocess.run(['git', 'init', '--quiet', str(repository)], check=True)
+                payload = repository / directory / 'credentials.properties'
+                payload.parent.mkdir(parents=True)
+                payload.write_text('token=fake-' + fake_value() + '\n')
+                shutil.copyfile(SCANNER.ROOT / '.gitleaks.toml', repository / '.gitleaks.toml')
+                with patch.object(SCANNER, 'ROOT', repository):
+                    subprocess.run(['git', '-C', str(repository), 'add', '.'], check=True)
+                    subprocess.run(['git', '-C', str(repository), '-c', 'user.name=Synthetic Test',
+                                    '-c', 'user.email=fixture@example.invalid', 'commit', '--quiet',
+                                    '-m', 'test: approved synthetic fixture'], check=True)
+                    self.assertEqual(SCANNER.scan(BINARY, 'git', repository, self.output), [])
+                    payload.write_text('token=fake-' + fake_value() + '\n'
+                                       'token=${X}' + fake_value() + '\n'
+                                       'mongodb://fixture:' + fake_value() + '@example.invalid/db\n'
+                                       'ALIBABA_ACCESS_KEY_SECRET=' + fake_value(30) + '\n'
+                                       'api_key=' + fake_value() + '\n')
+                    subprocess.run(['git', '-C', str(repository), 'add', '.'], check=True)
+                    subprocess.run(['git', '-C', str(repository), '-c', 'user.name=Synthetic Test',
+                                    '-c', 'user.email=fixture@example.invalid', 'commit', '--quiet',
+                                    '-m', 'test: unapproved synthetic credentials'], check=True)
+                    findings = SCANNER.scan(BINARY, 'git', repository, self.output)
+                    expected = {'configuration-secret-value', 'mongodb-userinfo-password',
+                                'alibaba-access-key-secret', 'generic-api-key'}
+                    self.assertTrue(expected <= {row['RuleID'] for row in findings})
+                    # Directory scanning traverses relative paths before checking values.
+                    result = subprocess.run(
+                        [BINARY, 'dir', '.', '--config', str(repository / '.gitleaks.toml'),
+                         '--redact', '--no-banner', '--report-format', 'json',
+                         '--report-path', str(self.output)],
+                        cwd=repository, capture_output=True, check=False)
+                    self.assertEqual(result.returncode, 1)
+                    findings = json.loads(self.output.read_text())
+                    self.assertTrue(expected <= {row['RuleID'] for row in findings})
 
     def test_clean_directory_passes(self):
         self.assertEqual(SCANNER.scan(BINARY, 'dir', self.source, self.output), [])
