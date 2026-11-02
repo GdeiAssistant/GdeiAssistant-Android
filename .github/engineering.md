@@ -59,4 +59,6 @@ Gitleaks 8.30.1 的原生 baseline 还比较作者、日期及位置元数据，
 
 每次上传报告、日志或混合产物前，先用同一配置扫描上传的精确路径；发现凭据或扫描错误则阻止该次上传。缺失路径沿用原上传步骤的缺失文件行为。只含 APK/AAB、已编译模拟器应用 ZIP、IPA/dSYM 的步骤不做无意义的二进制文本扫描；二进制安全仍须独立的制品分析。不要将明文日志或配置加入这些例外。
 
+明确上传的 `android-emulator-logcat.log` 若仅命中 `configuration-secret-value`，先将命中行替换为固定脱敏标记，再用完整配置复扫实际上传文件。Android 对象标识等配置噪声与该规则捕获的真实凭据都会被移除，不豁免任何值或整个文件；其他规则命中、其他产物命中、脱敏失败或复扫失败仍阻止上传。
+
 本地验证：`python3 .github/scripts/test_secret_scan.py`，以及 `python3 .github/scripts/secret_scan.py history --summary /tmp/secret-summary.json`。新规则需要用运行时生成的合成凭据测试；不得把真实值放进测试或终端输出。Gitleaks 安装固定 8.30.1，并按平台校验已固定的 SHA-256。

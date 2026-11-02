@@ -157,6 +157,80 @@ class SecretScanTests(unittest.TestCase):
         self.assertIn('RuleID', output.getvalue())
         self.assertNotIn(value, output.getvalue())
 
+    def test_logcat_configuration_findings_are_redacted_before_upload(self):
+        # Android dumps object identities in assignment form; the same rule
+        # also catches credentials, which must never survive in the upload.
+        value = fake_value()
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('before\n  mToken=android.os.BinderProxy@12345678\n'
+                          f'password={value}\nafter\n')
+        self.assertIn('configuration-secret-value', {
+            row['RuleID'] for row in SCANNER.scan(BINARY, 'dir', logcat, self.output)
+        })
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), patch.object(
+            SCANNER, 'scan', wraps=SCANNER.scan
+        ) as scan:
+            status = SCANNER.artifacts(BINARY, str(logcat))
+        # Avoid putting the generated value in assertion failure output.
+        self.assertEqual(status, 0)
+        self.assertEqual(scan.call_count, 2)
+        self.assertFalse(value in logcat.read_text() or value in output.getvalue())
+        self.assertFalse('BinderProxy@' in logcat.read_text())
+        self.assertEqual(logcat.read_text().splitlines()[0], 'before')
+        self.assertEqual(logcat.read_text().splitlines()[-1], 'after')
+        self.assertEqual(len(logcat.read_text().splitlines()), 4)
+        self.assertEqual(SCANNER.scan(BINARY, 'dir', logcat, self.output), [])
+
+    def test_logcat_other_credentials_still_block_upload(self):
+        for credential in ('api_key = "' + fake_value() + '"', 'ghp_' + fake_value(36)):
+            with self.subTest():
+                logcat = self.source / 'android-emulator-logcat.log'
+                logcat.write_text('mToken=android.os.BinderProxy@12345678\n' + credential)
+                output = io.StringIO()
+                with contextlib.redirect_stdout(output):
+                    status = SCANNER.artifacts(BINARY, str(logcat))
+                self.assertEqual(status, 1)
+                self.assertFalse(credential in output.getvalue())
+
+    def test_configuration_redaction_is_scoped_to_exact_logcat_file(self):
+        for filename in ('other.log', 'android-emulator-logcat.log.txt'):
+            with self.subTest(filename=filename):
+                path = self.source / filename
+                original = 'password=' + fake_value()
+                path.write_text(original)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    status = SCANNER.artifacts(BINARY, str(path))
+                self.assertEqual(status, 1)
+                self.assertTrue(path.read_text() == original)
+
+    def test_logcat_redaction_does_not_bypass_rescan_failure(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        findings = [{'RuleID': 'configuration-secret-value', 'StartLine': 1, 'EndLine': 1}]
+        with patch.object(SCANNER, 'scan', side_effect=[findings, RuntimeError('scan failed')]):
+            with self.assertRaises(RuntimeError):
+                SCANNER.artifacts(BINARY, str(logcat))
+
+    def test_logcat_remaining_findings_block_upload(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        initial = [{'RuleID': 'configuration-secret-value', 'StartLine': 1, 'EndLine': 1}]
+        remaining = [{'RuleID': 'generic-api-key', 'File': logcat.name}]
+        with patch.object(SCANNER, 'scan', side_effect=[initial, remaining]):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(SCANNER.artifacts(BINARY, str(logcat)), 1)
+
+    def test_logcat_redaction_rejects_invalid_line_ranges(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        for start, end in ((0, 1), (1, 2), (2, 1)):
+            with self.subTest(start=start, end=end), patch.object(SCANNER, 'scan', return_value=[{
+                'RuleID': 'configuration-secret-value', 'StartLine': start, 'EndLine': end,
+            }]):
+                with self.assertRaises(RuntimeError):
+                    SCANNER.artifacts(BINARY, str(logcat))
+
     def test_empty_artifact_glob_passes_without_scanning_workspace(self):
         self.detect('jwt.secret=' + fake_value())
         self.assertEqual(SCANNER.artifacts(BINARY, str(self.source / '*.absent')), 0)
