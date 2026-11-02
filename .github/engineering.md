@@ -49,7 +49,9 @@
 
 ## 凭据泄漏预防
 
-不得提交凭据；使用 GitHub Secrets 或环境变量注入。必需的 `Gitleaks` 检查保留原名，使用 `.gitleaks.toml` 扫描新增提交，补充 MongoDB 带密码 URI、Alibaba AccessKey Secret 和配置赋值规则。测试目录只豁免明确合成的值，不整体跳过测试代码。
+不得提交凭据；使用 GitHub Secrets 或环境变量注入。必需的 `Gitleaks` 检查保留原名，使用 `.gitleaks.toml` 扫描新增提交，补充 MongoDB 带密码 URI、Alibaba AccessKey Secret 和配置赋值规则。在 MongoDB、配置赋值和 generic-api-key 规则下，`app/src/test/` 和 `scripts/tests/` 只豁免以 `test-`、`fake-`、`dummy-`、`example-`（也支持 `_` 和 `.` 分隔符）开头的明确合成值。
+
+路径和数值条件必须写在规则级 allowlist 中；顶层路径 allowlist 会导致整个文件被跳过，即使声明 `condition = "AND"`。其他值和其他规则继续扫描测试代码。Auth 和 Charge 合约测试中既有的模拟登录 token、固定幂等标识只在 generic-api-key 规则下按精确文件和精确值豁免，同文件中的其他值仍会被检测。
 
 每周一 UTC 04:23 和手动触发的 `secret-scan-weekly.yml` 获取所有分支并扫描完整历史。`.gitleaks-baseline.json` 仅保存既有发现的规则、路径、提交、行号、fingerprint 和固定脱敏标记；它不豁免新提交。历史凭据仍须由所有者轮换，baseline 不代表凭据安全。
 
