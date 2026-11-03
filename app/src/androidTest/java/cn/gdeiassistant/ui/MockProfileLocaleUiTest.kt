@@ -2,6 +2,7 @@ package cn.gdeiassistant.ui
 
 import android.content.res.Configuration
 import android.util.Log
+import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -62,6 +63,7 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
         // Profile loading renders ShimmerScreen instead of the LazyColumn. Wait until the
         // seeded profile and initial navigation are present before scrolling or clearing extras.
         composeRule.waitUntilAtLeastOneExists(hasTestTag("profile.identity"), 20_000)
+        KnownEmulatorSystemAnr.dismissIfPresent()
         // Locale/route extras seed this fixture once; let a real configuration recreation retain
         // the user's language and navigation state, rather than reapplying the test bootstrap.
         composeRule.runOnUiThread {
@@ -125,7 +127,23 @@ class MockProfileLocaleUiTest : BaseMockUiSmokeTest(seedSession = true, initialR
     }
 
     private fun waitForPickerWindowReady() {
-        // Compose semantics can be ready before the dialog owns native input focus.
+        // Compose semantics can be ready before the dialog owns native input focus. A known system
+        // ANR modal on the CI AVD can hold that focus, so close it and retry within a bounded wait.
+        val deadline = SystemClock.uptimeMillis() + 30_000
+        while (true) {
+            KnownEmulatorSystemAnr.dismissIfPresent()
+            try {
+                checkPickerWindowReady()
+                return
+            } catch (error: RuntimeException) {
+                val withoutFocus = generateSequence<Throwable>(error) { it.cause }
+                    .any { it.javaClass.simpleName == "RootViewWithoutFocusException" }
+                if (!withoutFocus || SystemClock.uptimeMillis() >= deadline) throw error
+            }
+        }
+    }
+
+    private fun checkPickerWindowReady() {
         onView(isRoot()).inRoot(isDialog()).check { view, error ->
             if (error != null) throw error
             assertTrue("Picker dialog must own native window focus", view.hasWindowFocus())

@@ -53,9 +53,11 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 
 ## 不要做
 
-- `owner-approved` 仅在标签存在且最新相关事件是 `Pigbibi` 添加（`labeled`）时通过门禁；编码智能体绝不能给自己的 PR 添加该标签。
+- `owner-approved` 仅在标签存在且最新相关事件是仓库现行 gate 指定的所有者添加（`labeled`）时通过门禁；编码智能体绝不能给自己的 PR 添加该标签。
 
 - CodeRabbit 配置（`.coderabbit.yaml` / `.coderabbit.yml`）、`AGENTS.md` 和 `.github/engineering.md` 的改动（含重命名前路径）必须由上述所有者标签事件批准，CodeRabbit 审批不能授权。
+
+- CodeRabbit 仅作辅助审查；跳过、配额不足或不可用不阻塞合并。既定审查合并 bot 对当前完整 head 的 CLEAN 审查可作为审查批准；必需 CI、风险分类和 `owner-approved` 来源校验仍分别执行。
 
 - 不要手改生成的设计令牌产物，改 `design/` 源文件。
 - 不要单方面改接口契约。服务端、iOS、微信小程序共用同一套。

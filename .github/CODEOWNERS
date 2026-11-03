@@ -10,3 +10,12 @@
 /.github/CODEOWNERS @Pigbibi
 /.github/workflows/ @Pigbibi
 /app/src/main/java/cn/gdeiassistant/ui/secret/ @Pigbibi
+
+# Dependency-only files do not automatically request a human review.
+# CODEOWNERS is path-based: these exceptions also apply to human PRs.
+# Only plain build/test CI workflows without secrets or write permissions are listed. Deploy, release,
+# governance and policy workflows keep their @Pigbibi owner and never auto-merge.
+/build.gradle.kts
+/app/build.gradle.kts
+/gradle/libs.versions.toml
+/.github/workflows/android-ci.yml

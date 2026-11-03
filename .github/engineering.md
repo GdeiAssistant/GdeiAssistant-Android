@@ -41,7 +41,24 @@
 - 工作流默认只读，按 job 授予写入；外部 Action 固定完整提交 SHA，由依赖更新 PR 维护版本。
 - 修改 workflow、依赖清单、AI 规则或发布脚本属于需要仔细检查的变更；CODEOWNERS 提供责任路由，实际审批要求以当前分支保护和可用维护者为准。
 - 构建与发布凭据分离；发布分支、实际 checkout 与获准提交保持一致。只在必要步骤读取凭据，不把凭据带进安装依赖或普通测试。
-- Dependabot 在本组织只提出升级 PR 和校验元数据；升级由维护者复核合并，不启用自动合并。重大版本、工具链和权限相关更新先完成对应兼容验证。
+- Dependabot 自动批准和 squash 合并仅接受签名校验通过的同仓 PR：稳定版本的 patch/minor，或只更换固定 SHA 的、不含密钥和写权限的普通构建/测试 CI workflow 中的 GitHub Actions 版本；部署、发布、治理与策略 workflow 的更新始终需要人工复核，并保留 CODEOWNERS 的 @Pigbibi 责任路由。应用依赖 major、0.x、预发布、未知元数据及混合源码改动仍需复核。许可文件和必需检查见 `.github/scripts/dependabot-policy.json`；全部当前 CI 和已有治理检查必须成功，默认分支必须为最新，批准与合并均锁定 head。CODEOWNERS 的依赖文件例外同时影响人工 PR；其他文件归属不变。不绕过分支保护或已有审批。
+- 治理检查从默认分支加载同一套 Dependabot 策略；符合策略的依赖更新免人工路径审批，已验证的机器人描述免人工 PR 模板。人工 PR 仍按原规则审批，合并仍等待全部 CI 成功。
 - 安全问题走 SECURITY.md 的私密入口。普通问题按复现、版本和影响分类，已关闭历史需求不自动恢复。
 
 完成本次目标及必要验证即可交付。不能把这份约定扩展成每次全量测试、强制新建设计文档、持续 Goal、自动化或多轮审批。
+
+## 凭据泄漏预防
+
+不得提交凭据；使用 GitHub Secrets 或环境变量注入。必需的 `Gitleaks` 检查保留原名，使用 `.gitleaks.toml` 扫描新增提交，补充 MongoDB 带密码 URI、Alibaba AccessKey Secret 和配置赋值规则。在 MongoDB、配置赋值和 generic-api-key 规则下，`app/src/test/` 和 `scripts/tests/` 只豁免以 `test-`、`fake-`、`dummy-`、`example-`（也支持 `_` 和 `.` 分隔符）开头的明确合成值。
+
+路径和数值条件必须写在规则级 allowlist 中；顶层路径 allowlist 会导致整个文件被跳过，即使声明 `condition = "AND"`。其他值和其他规则继续扫描测试代码。Auth 和 Charge 合约测试中既有的模拟登录 token、固定幂等标识只在 generic-api-key 规则下按精确文件和精确值豁免，同文件中的其他值仍会被检测。
+
+每周一 UTC 04:23 和手动触发的 `secret-scan-weekly.yml` 获取所有分支并扫描完整历史。`.gitleaks-baseline.json` 仅保存既有发现的规则、路径、提交、行号、fingerprint 和固定脱敏标记；它不豁免新提交。历史凭据仍须由所有者轮换，baseline 不代表凭据安全。
+
+Gitleaks 8.30.1 的原生 baseline 还比较作者、日期及位置元数据，不能直接使用精简记录。`secret_scan.py` 从本次脱敏扫描中按完整身份匹配已知项，临时补齐原生 baseline，再用 `--baseline-path` 复扫。原始报告和临时文件不上传；摘要仅含路径、规则和短提交号，保留三天。新增或修改 baseline 必须单独核对，不自动扩大历史豁免。
+
+每次上传报告、日志或混合产物前，先用同一配置扫描上传的精确路径；发现凭据或扫描错误则阻止该次上传。缺失路径沿用原上传步骤的缺失文件行为。只含 APK/AAB、已编译模拟器应用 ZIP、IPA/dSYM 的步骤不做无意义的二进制文本扫描；二进制安全仍须独立的制品分析。不要将明文日志或配置加入这些例外。
+
+明确上传的 `android-emulator-logcat.log` 若仅命中 `configuration-secret-value`，先将命中行替换为固定脱敏标记，再用完整配置复扫实际上传文件。Android 对象标识等配置噪声与该规则捕获的真实凭据都会被移除，不豁免任何值或整个文件；其他规则命中、其他产物命中、脱敏失败或复扫失败仍阻止上传。
+
+本地验证：`python3 .github/scripts/test_secret_scan.py`，以及 `python3 .github/scripts/secret_scan.py history --summary /tmp/secret-summary.json`。新规则需要用运行时生成的合成凭据测试；不得把真实值放进测试或终端输出。Gitleaks 安装固定 8.30.1，并按平台校验已固定的 SHA-256。

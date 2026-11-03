@@ -1,0 +1,282 @@
+import importlib.util
+import contextlib
+import io
+import json
+import os
+import secrets
+import shutil
+import string
+import subprocess
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+SPEC = importlib.util.spec_from_file_location('secret_scan', Path(__file__).with_name('secret_scan.py'))
+SCANNER = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(SCANNER)
+BINARY = os.environ.get('GITLEAKS_BIN', 'gitleaks')
+
+
+def fake_value(length=32):
+    return ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+
+class SecretScanTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.output = self.root / 'report.json'
+        self.source = self.root / 'payload'
+        self.source.mkdir()
+
+    def detect(self, text, filename='credentials.properties'):
+        path = self.source / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        # Gitleaks retains the target prefix in paths. Use repository-relative
+        # paths so anchored allowlists are actually exercised.
+        with contextlib.chdir(self.source):
+            return SCANNER.scan(BINARY, 'dir', Path('.'), self.output)
+
+    def fixture_assignments(self, value):
+        protocol = 'mongodb'
+        return (
+            ('mongodb-userinfo-password', 'mongo.kt',
+             f'{protocol}://fixture:{value}@example.invalid/db'),
+            ('alibaba-access-key-secret', 'cloud.kt', f'ACCESS_KEY_SECRET="{value}"'),
+            ('configuration-secret-value', 'credentials.properties', f'password={value}'),
+            ('generic-api-key', 'client.kt', f'api_key = "{value}"'),
+        )
+
+    def test_synthetic_values_in_test_directories_are_suppressed(self):
+        for directory in ('app/src/test/nested', 'scripts/tests/nested'):
+            for prefix in ('test', 'fake', 'dummy', 'example'):
+                value = prefix + '-' + fake_value(29 - len(prefix)).lower()
+                for rule, name, text in self.fixture_assignments(value):
+                    # This rule only accepts 30 alphanumeric characters, so a
+                    # delimited placeholder cannot match it in the first place.
+                    if rule == 'alibaba-access-key-secret':
+                        continue
+                    with self.subTest(directory=directory, prefix=prefix, rule=rule):
+                        filename = f'{directory}/{name}'
+                        findings = self.detect(text, filename)
+                        (self.source / filename).unlink()
+                        self.assertEqual({row['RuleID'] for row in findings}, set())
+
+    def test_non_placeholder_secrets_in_test_directories_are_detected(self):
+        for directory in ('app/src/test/nested', 'scripts/tests/nested'):
+            for rule, name, text in self.fixture_assignments(fake_value(30)):
+                with self.subTest(directory=directory, rule=rule):
+                    filename = f'{directory}/{name}'
+                    findings = self.detect(text, filename)
+                    (self.source / filename).unlink()
+                    self.assertIn(rule, {row['RuleID'] for row in findings})
+
+    def test_synthetic_values_outside_test_directories_are_detected(self):
+        for directory in ('app/src/main', 'scripts/tests-other', 'other/app/src/test'):
+            for rule, name, text in self.fixture_assignments('test-' + fake_value(25).lower()):
+                if rule == 'alibaba-access-key-secret':
+                    continue
+                with self.subTest(directory=directory, rule=rule):
+                    filename = f'{directory}/{name}'
+                    findings = self.detect(text, filename)
+                    (self.source / filename).unlink()
+                    self.assertIn(rule, {row['RuleID'] for row in findings})
+
+    def test_other_rules_still_detect_secrets_in_test_directories(self):
+        for directory in ('app/src/test/nested', 'scripts/tests/nested'):
+            with self.subTest(directory=directory):
+                findings = self.detect('ghp_' + fake_value(36), f'{directory}/client.kt')
+                self.assertIn('github-pat', {row['RuleID'] for row in findings})
+
+    def test_contract_fixtures_do_not_hide_new_secrets_in_the_same_file(self):
+        for name in ('AuthRepositoryContractTest.kt', 'ChargeRepositoryContractTest.kt'):
+            with self.subTest(name=name):
+                filename = f'app/src/test/java/cn/gdeiassistant/data/{name}'
+                source = (SCANNER.ROOT / filename).read_text().rstrip() + '\n'
+                findings = self.detect(source + f'val api_key = "{fake_value()}"\n', filename)
+                (self.source / filename).unlink()
+                self.assertEqual([(row['RuleID'], row['StartLine']) for row in findings],
+                                 [('generic-api-key', len(source.splitlines()) + 1)])
+
+    def test_logcat_identifiers_do_not_hide_new_secrets_in_the_same_file(self):
+        identifiers = ('Build time autogenerated kernel key: ' + secrets.token_hex(20) + '\n'
+                       'KeyboardDefCache Load data from cache for key: ' + secrets.token_hex(16) + '\n')
+        findings = self.detect(identifiers + f'api_key = "{fake_value()}"\n',
+                               'reports/android-emulator-logcat.log')
+        self.assertEqual([(row['RuleID'], row['StartLine']) for row in findings],
+                         [('generic-api-key', 3)])
+
+    def test_mongodb_protocols_are_detected_without_keywords(self):
+        for protocol in ('mongodb', 'mongodb+srv'):
+            with self.subTest(protocol=protocol):
+                findings = self.detect(f'{protocol}://fixture:{fake_value()}@example.invalid/db')
+                self.assertIn('mongodb-userinfo-password', {row['RuleID'] for row in findings})
+
+    def test_alibaba_access_key_secret_is_detected(self):
+        findings = self.detect('ALIBABA_ACCESS_KEY_SECRET=' + fake_value(30))
+        self.assertIn('alibaba-access-key-secret', {row['RuleID'] for row in findings})
+
+    def test_configuration_credentials_are_detected(self):
+        for name in ('jwt.secret', 'wechat.appsecret', 'request.validate.token',
+                     'PASSWORD', 'passwd', 'access-key'):
+            with self.subTest(name=name):
+                findings = self.detect(f'{name}={fake_value()}')
+                self.assertIn('configuration-secret-value', {row['RuleID'] for row in findings})
+
+    def test_yaml_and_env_assignments_are_detected(self):
+        for filename, assignment in (('config.yaml', '  appsecret: "'), ('.env', 'export TOKEN="')):
+            with self.subTest(filename=filename):
+                findings = self.detect(assignment + fake_value() + '"', filename)
+                self.assertIn('configuration-secret-value', {row['RuleID'] for row in findings})
+
+    def test_clean_placeholders_pass(self):
+        self.assertEqual(self.detect('jwt.secret=${JWT_SECRET}\npassword=\n'
+                                     'token=${LONG_TOKEN_VARIABLE:?must be supplied}\n'
+                                     'token=your-token-placeholder\npassword=xxxxxxxxxxxxxxxx\n'), [])
+
+    def test_punctuation_in_password_is_detected(self):
+        findings = self.detect('password=' + fake_value(16) + '&$*()!')
+        self.assertIn('configuration-secret-value', {row['RuleID'] for row in findings})
+
+    def test_clean_directory_passes(self):
+        self.assertEqual(SCANNER.scan(BINARY, 'dir', self.source, self.output), [])
+
+    def test_fake_value_outside_test_paths_is_not_allowlisted(self):
+        findings = self.detect('token=fake-' + fake_value())
+        self.assertTrue(findings)
+
+    def test_artifact_findings_block_upload(self):
+        value = fake_value()
+        self.detect('jwt.secret=' + value)
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(SCANNER.artifacts(BINARY, str(self.source / '*.properties')), 1)
+        self.assertIn('RuleID', output.getvalue())
+        self.assertNotIn(value, output.getvalue())
+
+    def test_logcat_configuration_findings_are_redacted_before_upload(self):
+        # Android dumps object identities in assignment form; the same rule
+        # also catches credentials, which must never survive in the upload.
+        value = fake_value()
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('before\n  mToken=android.os.BinderProxy@12345678\n'
+                          f'password={value}\nafter\n')
+        self.assertIn('configuration-secret-value', {
+            row['RuleID'] for row in SCANNER.scan(BINARY, 'dir', logcat, self.output)
+        })
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), patch.object(
+            SCANNER, 'scan', wraps=SCANNER.scan
+        ) as scan:
+            status = SCANNER.artifacts(BINARY, str(logcat))
+        # Avoid putting the generated value in assertion failure output.
+        self.assertEqual(status, 0)
+        self.assertEqual(scan.call_count, 2)
+        self.assertFalse(value in logcat.read_text() or value in output.getvalue())
+        self.assertFalse('BinderProxy@' in logcat.read_text())
+        self.assertEqual(logcat.read_text().splitlines()[0], 'before')
+        self.assertEqual(logcat.read_text().splitlines()[-1], 'after')
+        self.assertEqual(len(logcat.read_text().splitlines()), 4)
+        self.assertEqual(SCANNER.scan(BINARY, 'dir', logcat, self.output), [])
+
+    def test_logcat_other_credentials_still_block_upload(self):
+        for credential in ('api_key = "' + fake_value() + '"', 'ghp_' + fake_value(36)):
+            with self.subTest():
+                logcat = self.source / 'android-emulator-logcat.log'
+                logcat.write_text('mToken=android.os.BinderProxy@12345678\n' + credential)
+                output = io.StringIO()
+                with contextlib.redirect_stdout(output):
+                    status = SCANNER.artifacts(BINARY, str(logcat))
+                self.assertEqual(status, 1)
+                self.assertFalse(credential in output.getvalue())
+
+    def test_configuration_redaction_is_scoped_to_exact_logcat_file(self):
+        for filename in ('other.log', 'android-emulator-logcat.log.txt'):
+            with self.subTest(filename=filename):
+                path = self.source / filename
+                original = 'password=' + fake_value()
+                path.write_text(original)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    status = SCANNER.artifacts(BINARY, str(path))
+                self.assertEqual(status, 1)
+                self.assertTrue(path.read_text() == original)
+
+    def test_logcat_redaction_does_not_bypass_rescan_failure(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        findings = [{'RuleID': 'configuration-secret-value', 'StartLine': 1, 'EndLine': 1}]
+        with patch.object(SCANNER, 'scan', side_effect=[findings, RuntimeError('scan failed')]):
+            with self.assertRaises(RuntimeError):
+                SCANNER.artifacts(BINARY, str(logcat))
+
+    def test_logcat_remaining_findings_block_upload(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        initial = [{'RuleID': 'configuration-secret-value', 'StartLine': 1, 'EndLine': 1}]
+        remaining = [{'RuleID': 'generic-api-key', 'File': logcat.name}]
+        with patch.object(SCANNER, 'scan', side_effect=[initial, remaining]):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(SCANNER.artifacts(BINARY, str(logcat)), 1)
+
+    def test_logcat_redaction_rejects_invalid_line_ranges(self):
+        logcat = self.source / 'android-emulator-logcat.log'
+        logcat.write_text('mToken=android.os.BinderProxy@12345678\n')
+        for start, end in ((0, 1), (1, 2), (2, 1)):
+            with self.subTest(start=start, end=end), patch.object(SCANNER, 'scan', return_value=[{
+                'RuleID': 'configuration-secret-value', 'StartLine': start, 'EndLine': end,
+            }]):
+                with self.assertRaises(RuntimeError):
+                    SCANNER.artifacts(BINARY, str(logcat))
+
+    def test_empty_artifact_glob_passes_without_scanning_workspace(self):
+        self.detect('jwt.secret=' + fake_value())
+        self.assertEqual(SCANNER.artifacts(BINARY, str(self.source / '*.absent')), 0)
+
+    def test_missing_binary_fails(self):
+        with self.assertRaises(OSError):
+            SCANNER.scan(str(self.root / 'missing'), 'dir', self.source, self.output)
+
+    def test_unredacted_baseline_is_rejected(self):
+        self.output.write_text(json.dumps([{'Secret': fake_value()}]))
+        with self.assertRaises(ValueError):
+            SCANNER.load_baseline(self.output)
+
+    def test_history_baseline_passes_and_new_remote_commit_fails(self):
+        repository = self.root / 'repository'
+        subprocess.run(['git', 'init', '--quiet', '-b', 'security/leak-prevention-20261101', str(repository)], check=True)
+
+        def git(*arguments):
+            return subprocess.run(['git', '-C', str(repository), *arguments], check=True,
+                                  capture_output=True, text=True).stdout.strip()
+
+        git('config', 'user.name', 'Synthetic Test')
+        git('config', 'user.email', 'fixture@example.invalid')
+        shutil.copyfile(SCANNER.ROOT / '.gitleaks.toml', repository / '.gitleaks.toml')
+        payload = repository / 'credentials.properties'
+        payload.write_text('jwt.secret=' + fake_value())
+        git('add', '.')
+        git('commit', '--quiet', '-m', 'test: synthetic historical fixture')
+        old_commit = git('rev-parse', 'HEAD')
+        baseline = repository / '.gitleaks-baseline.json'
+        summary = self.root / 'summary.json'
+        with patch.object(SCANNER, 'ROOT', repository):
+            self.assertEqual(SCANNER.history(BINARY, baseline, summary, create=True), 0)
+            self.assertTrue(SCANNER.load_baseline(baseline))
+            self.assertTrue(SCANNER.scan(BINARY, 'git', repository, self.output, baseline))
+            self.assertEqual(SCANNER.history(BINARY, baseline, summary), 0)
+            payload.write_text('jwt.secret=' + fake_value())
+            git('add', 'credentials.properties')
+            git('commit', '--quiet', '-m', 'test: new synthetic credential')
+            git('update-ref', 'refs/remotes/origin/security/leak-prevention-20261101', 'HEAD')
+            git('checkout', '--quiet', '--detach', old_commit)
+            self.assertEqual(SCANNER.history(BINARY, baseline, summary), 1)
+        rows = json.loads(summary.read_text())
+        self.assertTrue(rows)
+        self.assertTrue(all(set(row) == {'File', 'RuleID', 'Commit'} for row in rows))
+
+
+if __name__ == '__main__':
+    unittest.main()

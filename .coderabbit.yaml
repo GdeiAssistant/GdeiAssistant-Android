@@ -2,8 +2,9 @@
 language: en-US
 reviews:
   profile: assertive
+  request_changes_workflow: false
   auto_approvals:
-    enabled: true
+    enabled: false
     allow_author_approval: false
     max_merge_risk: low
   auto_apply_labels: false
@@ -16,9 +17,9 @@ reviews:
       service API.
   - path: .github/**
     instructions: Check workflow event trust, untrusted PR input, least-privilege GITHUB_TOKEN permissions,
-      pinned actions, secret redaction and deployment side effects. A comment or successful check is not
-      a formal review. Only the latest submitted coderabbitai[bot] review may authorize the current head,
-      and only when APPROVED with a matching commit_id. Only the owner or a reviewer explicitly authorized
+      pinned actions, secret redaction and deployment side effects. CodeRabbit is advisory; skips, quota limits and
+      unavailable reviews do not block merging. A CLEAN review of the exact current head by the established
+      review-and-merge bot counts as review approval; required owner approval and CI remain separate gates. Only the owner or a reviewer explicitly authorized
       by the owner may apply owner-approved; coding agents must never apply it to their own PRs.
   - path: app/**
     instructions: Check Android lifecycle, localization, credential storage, privacy permissions, and

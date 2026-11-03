@@ -2,6 +2,7 @@
 """Execute the real github-script bodies with offline GitHub API doubles."""
 import json
 import os
+import re
 import subprocess
 import unittest
 from pathlib import Path
@@ -25,7 +26,7 @@ const github = {rest: {
     if (f.getError) throw new Error('mock PR API failure');
     if (input.job === 'targets') return {data: f.prs[String(args.pull_number)]};
     return {data: ++prReads > 1 && f.current ? f.current : f.pr};
-  }, listFiles: 'files', listReviews: 'reviews', list: 'open'},
+  }, listFiles: 'files', listReviews: 'reviews', list: 'open', listCommits: 'commits'},
   issues: {listEvents: 'events', listComments: 'comments', createComment: async args => comments.push(args)},
   repos: {listPullRequestsAssociatedWithCommit: 'associated', get: async () => ({data: {stargazers_count: 0}}),
     createCommitStatus: async args => statuses.push(args)}
@@ -38,19 +39,19 @@ const github = {rest: {
   return f[endpoint];
 }};
 const core = {setFailed: message => failures.push(message), warning: () => {}};
-const context = {repo: {owner: 'example', repo: 'project'}, serverUrl: 'https://example.invalid',
+const context = {repo: input.repository, serverUrl: 'https://example.invalid',
   runId: 1, eventName: input.event || 'pull_request_target', payload: f.payload || {pull_request: f.pr}};
 (async () => {
   let result, error;
   try {
-    result = await new (Object.getPrototypeOf(async function(){}).constructor)('github', 'context', 'core', input.script)(github, context, core);
+    result = await new (Object.getPrototypeOf(async function(){}).constructor)('github', 'context', 'core', 'require', input.script)(github, context, core, require);
   } catch (e) { error = e.message; }
   process.stdout.write(JSON.stringify({result, error, statuses, comments, failures, calls}));
 })();
 '''
 
 
-def label_event(event_id=1, event='labeled', actor='Pigbibi'):
+def label_event(event_id=1, event='labeled', actor='fake-owner'):
     return {'id': event_id, 'event': event, 'label': {'name': 'owner-approved'}, 'actor': {'login': actor}}
 
 
@@ -61,18 +62,21 @@ def review(state='APPROVED', sha=SHA, review_id=1):
 
 class ScriptTests(unittest.TestCase):
     def run_script(self, fixture, job='evaluate', event=None):
-        script = WORKFLOW['jobs'][job]['steps'][0]['with']['script']
-        # The throttled request-review job waits a real settle window; offline tests skip only that delay.
-        script = script.replace('const SETTLE_MS = 600000;', 'const SETTLE_MS = 0;')
+        script = next(step['with']['script'] for step in WORKFLOW['jobs'][job]['steps'] if 'script' in step.get('with', {}))
+        # Exercise owner provenance with a synthetic identity, never a real account.
+        script, count = re.subn(r"(latest\.actor\?\.login === )'[^']+'", r"\1'fake-owner'", script)
+        self.assertEqual(count, 1, 'Owner provenance must be checked explicitly')
         result = subprocess.run(['node', '-e', HARNESS], input=json.dumps({
             'fixture': fixture, 'script': script, 'job': job, 'event': event,
+            'repository': dict(zip(('owner', 'repo'), json.loads((ROOT / '.github/scripts/dependabot-policy.json').read_text())['repo'].split('/'))),
         }), capture_output=True, text=True, check=True, timeout=10,
-            env={'PATH': os.environ['PATH'], 'PR_NUMBER': '7'})
+            cwd=ROOT, env={'PATH': os.environ['PATH'], 'PR_NUMBER': '7',
+                'DEPENDABOT_DEPENDENCIES': fixture.get('dependency_json', 'null')})
         return json.loads(result.stdout)
 
     def fixture(self, labels=True, events=None, files=None, reviews=None, **extra):
         files = files if files is not None else [{'filename': '.github/workflows/build.yml'}]
-        return {'pr': {'number': 7, 'state': 'open', 'head': {'sha': SHA}, 'changed_files': len(files),
+        return {'pr': {'user': {'login': 'synthetic-contributor'}, 'number': 7, 'state': 'open', 'head': {'sha': SHA}, 'changed_files': len(files),
                        'labels': [{'name': 'owner-approved'}] if labels else [],
                        'body': '## AI assistance\nCoding assistant.\n## What changed\nGate validation.\n## How verified\nOffline regression tests.\n'},
                 'files': files, 'events': events if events is not None else [label_event()],
@@ -120,12 +124,12 @@ class ScriptTests(unittest.TestCase):
     def test_label_absent_does_not_use_event(self):
         self.assert_gate(self.fixture(labels=False), False)
 
-    def test_bot_approval_without_label_passes(self):
-        result = self.assert_gate(self.fixture(labels=False, reviews=[review()]), True)
+    def test_bot_approval_without_owner_label_cannot_authorize(self):
+        result = self.assert_gate(self.fixture(labels=False, reviews=[review()]), False)
         self.assertNotIn('events', [name for name, _ in result['calls']])
 
-    def test_wrong_actor_can_still_use_valid_bot_approval(self):
-        self.assert_gate(self.fixture(events=[label_event(actor='other')], reviews=[review()]), True)
+    def test_wrong_actor_cannot_use_bot_approval(self):
+        self.assert_gate(self.fixture(events=[label_event(actor='other')], reviews=[review()]), False)
 
     def test_stale_bot_approval_fails(self):
         self.assert_gate(self.fixture(labels=False, reviews=[review(sha='b' * 40)]), False)
@@ -135,14 +139,20 @@ class ScriptTests(unittest.TestCase):
             with self.subTest(state=state):
                 self.assert_gate(self.fixture(labels=False, reviews=[review(), review(state, review_id=2)]), False)
 
-    def test_review_race_fails_closed(self):
-        self.assert_gate(self.fixture(labels=False, reviewReads=[[review()], [review('DISMISSED')]]), False)
+    def test_coderabbit_unavailable_is_not_a_dependency(self):
+        for files in ([{'filename': 'docs/guide.md'}], [{'filename': '.github/workflows/build.yml'}]):
+            with self.subTest(files=files):
+                result = self.assert_gate(self.fixture(files=files, errors=['reviews']), True)
+                self.assertNotIn('reviews', [name for name, _ in result['calls']])
 
-    def test_unknown_review_metadata_fails_closed(self):
-        self.assert_gate(self.fixture(labels=False, reviews=[review(review_id=None)]), False)
+    def test_coderabbit_cannot_change_gate_outcome(self):
+        for state in ('APPROVED', 'COMMENTED', 'CHANGES_REQUESTED', 'DISMISSED', 'UNKNOWN'):
+            for labels in (False, True):
+                with self.subTest(state=state, labels=labels):
+                    self.assert_gate(self.fixture(labels=labels, reviews=[review(state)]), labels)
 
-    def test_review_api_error_fails_closed(self):
-        self.assert_gate(self.fixture(labels=False, errors=['reviews']), False)
+    def test_low_risk_passes_when_coderabbit_is_skipped_or_unavailable(self):
+        self.assert_gate(self.fixture(labels=False, files=[{'filename': 'docs/guide.md'}], errors=['reviews']), True)
 
     def test_pr_head_race_fails_closed(self):
         fixture = self.fixture()
@@ -157,11 +167,49 @@ class ScriptTests(unittest.TestCase):
         fixture['pr']['changed_files'] += 1
         self.assert_gate(fixture, False)
 
-    def test_only_evaluator_gains_issue_read_permission(self):
-        self.assertEqual(WORKFLOW['permissions'], {})
-        self.assertEqual(WORKFLOW['jobs']['evaluate']['permissions'], {
-            'pull-requests': 'read', 'issues': 'read', 'statuses': 'write'})
-        self.assertEqual(WORKFLOW['jobs']['targets']['permissions'], {'pull-requests': 'read'})
+    def test_master_trusted_policy_and_concurrency_are_retained(self):
+        self.assertEqual(WORKFLOW['permissions'], {
+            'contents': 'read', 'pull-requests': 'read', 'issues': 'read', 'statuses': 'write'})
+        self.assertEqual(WORKFLOW['concurrency']['cancel-in-progress'], 'true')
+        self.assertNotIn('workflow_run', WORKFLOW['on'])
+        self.assertEqual(set(WORKFLOW['jobs']), {'evaluate'})
+        checkout = WORKFLOW['jobs']['evaluate']['steps'][0]
+        self.assertEqual(checkout['with']['persist-credentials'], 'false')
+        self.assertEqual(checkout['with']['ref'], '${{ github.event.repository.default_branch }}')
+
+    def test_pr_body_and_label_races_fail_closed(self):
+        for change in ({'body': 'replaced'}, {'labels': []}, {'state': 'closed'}):
+            with self.subTest(change=change):
+                fixture = self.fixture()
+                fixture['current'] = dict(fixture['pr'], **change)
+                self.assert_gate(fixture, False)
+
+    def test_bad_template_is_still_blocking(self):
+        fixture = self.fixture()
+        fixture['pr']['body'] = 'Incomplete template'
+        result = self.run_script(fixture)
+        self.assertEqual(result['statuses'][-1]['state'], 'failure', result)
+        self.assertTrue(result['failures'], result)
+
+    def test_verified_dependabot_template_policy_is_retained(self):
+        repository = json.loads((ROOT / '.github/scripts/dependabot-policy.json').read_text())['repo']
+        fixture = self.fixture(labels=False, files=[{'filename': 'gradle/libs.versions.toml', 'status': 'modified'}])
+        fixture['pr'].update(user={'login': 'dependabot[bot]'}, draft=False, commits=1, body='Dependency update',
+            base={'ref': 'master', 'repo': {'full_name': repository}})
+        fixture['pr']['head']['repo'] = {'full_name': repository}
+        fixture['commits'] = [{'sha': SHA, 'author': {'login': 'dependabot[bot]'},
+            'committer': {'login': 'web-flow'}, 'commit': {'committer': {'email': 'noreply@' + 'github' + '.com'},
+                'verification': {'verified': True}}}]
+        result = self.assert_gate(fixture, True)
+        self.assertIn('Verified Dependabot', result['statuses'][-1]['description'])
+
+    def test_unverified_dependabot_cannot_bypass_template(self):
+        fixture = self.fixture(labels=False, files=[{'filename': 'gradle/libs.versions.toml', 'status': 'modified'}])
+        fixture['pr'].update(user={'login': 'dependabot[bot]'}, body='Dependency update')
+        fixture['commits'] = []
+        result = self.run_script(fixture)
+        self.assertEqual(result['statuses'][-1]['state'], 'failure', result)
+        self.assertTrue(result['failures'], result)
 
 
 class OwnerOnlyTests(unittest.TestCase):
@@ -188,18 +236,10 @@ class OwnerOnlyTests(unittest.TestCase):
             {'filename': '.github/workflows/build.yml'}, {'filename': '.coderabbit.yaml'},
         ]), False)
 
-    def test_request_review_classifies_control_plane_before_docs_exclusion(self):
-        for file in self.control_files():
-            with self.subTest(file=file):
-                result = self.run_script(self.fixture(labels=False, files=[file]), job='request-review')
-                self.assertFalse(result.get('error'), result)
-                self.assertEqual(len(result['comments']), 1, result)
-
-    def test_supported_auto_approval_setting_is_preserved(self):
+    def test_coderabbit_configuration_is_advisory(self):
         config = yaml.safe_load((ROOT / '.coderabbit.yaml').read_text())
-        self.assertNotIn('request_changes_workflow', config['reviews'])
-        self.assertEqual(config['reviews']['auto_approvals'], {
-            'enabled': True, 'allow_author_approval': False, 'max_merge_risk': 'low'})
+        self.assertFalse(config['reviews']['request_changes_workflow'])
+        self.assertFalse(config['reviews']['auto_approvals']['enabled'])
 
 
 if __name__ == '__main__':
