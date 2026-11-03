@@ -3,6 +3,8 @@ name: PR risk gate
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, edited, labeled, unlabeled, ready_for_review]
+  issue_comment:
+    types: [created, edited, deleted]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -18,11 +20,12 @@ permissions:
   statuses: write
 
 concurrency:
-  group: risk-gate-${{ github.event.pull_request.number || inputs.pr_number }}
+  group: risk-gate-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
   cancel-in-progress: true
 
 jobs:
   evaluate:
+    if: github.event_name != 'issue_comment' || github.event.issue.pull_request
     name: Evaluate PR governance
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -46,7 +49,7 @@ jobs:
         with:
           script: |
             // Executed only by the trusted base-branch workflow and policy. Never load PR code.
-            const number = context.payload.pull_request?.number || Number(process.env.PR_NUMBER);
+            const number = context.payload.pull_request?.number || context.payload.issue?.number || Number(process.env.PR_NUMBER);
             if (!Number.isSafeInteger(number) || number < 1) throw new Error('Invalid PR number');
             const repo = context.repo;
             const target = `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}`;
@@ -97,20 +100,36 @@ jobs:
               const verifiedDependabot = policy.trustedPR(config, repository, pr, sha, commits);
               const safeDependency = policy.eligible({config, repo: repository, pr, eventHead: sha, dependencies, files, commits});
               const risky = !safeDependency && files.some(file => [file.filename, file.previous_filename].filter(Boolean).some(highRisk));
-              let approved = false;
-              if (pr.labels.some(label => label.name === 'owner-approved')) {
+              async function readApproval() {
+                if (!pr.labels.some(label => label.name === 'owner-approved')) return { approved: false };
                 const events = await github.paginate(github.rest.issues.listEvents, { ...repo, issue_number: number, per_page: 100 });
                 const relevant = events.filter(event => ['labeled', 'unlabeled'].includes(event.event)
                   && event.label?.name === 'owner-approved');
                 if (relevant.some(event => !Number.isSafeInteger(event.id))) throw new Error('Unknown owner-approved event metadata');
                 const latest = relevant.sort((a, b) => b.id - a.id)[0];
-                // A shared GitHub identity cannot distinguish the owner from their AI agents.
-                approved = latest?.event === 'labeled' && latest.actor?.login === 'Pigbibi';
+                // Retain the existing owner allowlist; shared identities remain indistinguishable.
+                const ownerLabel = latest?.event === 'labeled' && latest.actor?.login === 'Pigbibi';
+                const comments = await github.paginate(github.rest.issues.listComments, { ...repo, issue_number: number, per_page: 100 });
+                const records = comments.filter(comment => ownerLabel && comment.user?.login === latest.actor.login
+                  && comment.user?.type === 'User' && /^owner-approved(?:\s|$)/.test(comment.body || ''));
+                if (records.some(comment => !Number.isSafeInteger(comment.id))) throw new Error('Unknown approval record metadata');
+                records.sort((a, b) => b.id - a.id);
+                const validSHAs = /^[0-9a-f]{40}$/.test(sha) && /^[0-9a-f]{40}$/.test(pr.base?.sha);
+                const expected = `owner-approved head=${sha} base=${pr.base?.sha} scope=all-changed-paths`;
+                return {
+                  approved: Boolean(ownerLabel && validSHAs && records[0]?.body?.trim() === expected),
+                  snapshot: JSON.stringify([relevant, records]),
+                };
               }
+              const approval = await readApproval();
+              const approved = approval.approved;
               const { data: current } = await github.rest.pulls.get({ ...repo, pull_number: number });
-              if (current.state !== 'open' || current.head.sha !== sha || current.body !== pr.body
+              if (current.state !== 'open' || current.head.sha !== sha || current.base?.sha !== pr.base?.sha || current.body !== pr.body
                   || JSON.stringify(current.labels.map(x => x.name).sort()) !== JSON.stringify(pr.labels.map(x => x.name).sort())) {
                 throw new Error('PR changed during evaluation; wait for the latest event');
+              }
+              if (JSON.stringify(await readApproval()) !== JSON.stringify(approval)) {
+                throw new Error('Owner approval changed during evaluation; rerun the gate');
               }
               // CodeRabbit is advisory: skipped, unavailable or approving reviews
               // cannot block low-risk changes or replace required owner approval.
@@ -118,7 +137,7 @@ jobs:
               // this workflow retains the separate owner and dependency gates.
               const allowed = !risky || approved;
               await status('risk-gate', allowed ? 'success' : 'failure', safeDependency ? 'Verified dependency policy: CI must pass before merge' : !risky ? 'Low-risk paths: no owner approval needed'
-                : approved ? 'High-risk paths: owner-approved label verified' : 'High-risk paths: needs-owner-approval; owner must add owner-approved');
+                : approved ? 'High-risk paths: owner approval bound to head, base and scope' : 'High-risk paths: needs exact-head owner approval and owner label');
               const templateOK = verifiedDependabot || completeTemplate(pr.body);
               await status('pr-template', templateOK ? 'success' : 'failure', templateOK
                 ? (verifiedDependabot ? 'Verified Dependabot-generated PR description' : 'AI, change and verification fields are filled in') : 'Fill in AI assistance, What changed and How verified sections');

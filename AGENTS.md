@@ -53,7 +53,7 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 
 ## 不要做
 
-- `owner-approved` 仅在标签存在且最新相关事件是仓库现行 gate 指定的所有者添加（`labeled`）时通过门禁；编码智能体绝不能给自己的 PR 添加该标签。
+- `owner-approved` 仅在标签存在且最新相关事件是仓库现行 gate 指定的所有者添加（`labeled`）时通过门禁；编码智能体绝不能给自己的 PR 添加该标签。 同时要求该所有者账号（`User`）在 PR 评论中独立写入 `owner-approved head=<完整40位head SHA> base=<完整40位base SHA> scope=all-changed-paths`；最新 owner-approved 记录须逐字匹配当前 head、base 和全部改动路径范围。新 head、base 变化、缺失或不匹配记录均不通过。记录新增、编辑、删除会重跑门禁，也可手动运行；评估完成前重读 PR、标签事件和记录，变化时拒绝。共享账号仍无法区分所有者与代理，不增加任何代理豁免。
 
 - CodeRabbit 配置（`.coderabbit.yaml` / `.coderabbit.yml`）、`AGENTS.md` 和 `.github/engineering.md` 的改动（含重命名前路径）必须由上述所有者标签事件批准，CodeRabbit 审批不能授权。
 

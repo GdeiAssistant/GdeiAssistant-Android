@@ -12,6 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = yaml.load((ROOT / '.github/workflows/risk-gate.yml').read_text(), Loader=yaml.BaseLoader)
 SHA = 'a' * 40
+BASE = 'c' * 40
 
 # Only explicitly mocked endpoints exist; no Octokit client or network is used.
 HARNESS = r'''
@@ -19,7 +20,7 @@ const fs = require('fs');
 const input = JSON.parse(fs.readFileSync(0, 'utf8'));
 const f = input.fixture;
 const calls = [], statuses = [], comments = [], failures = [];
-let prReads = 0, reviewReads = 0;
+let prReads = 0, reviewReads = 0, commentReads = 0, eventReads = 0;
 const github = {rest: {
   pulls: {get: async args => {
     calls.push(['pulls.get', args]);
@@ -34,7 +35,8 @@ const github = {rest: {
   calls.push([endpoint, args]);
   if (f.errors?.includes(endpoint)) throw new Error('mock ' + endpoint + ' API failure');
   if (endpoint === 'reviews') return f.reviewReads ? f.reviewReads[reviewReads++] : (f.reviews || []);
-  if (endpoint === 'comments') return [];
+  if (endpoint === 'comments') return ++commentReads > 1 && f.currentComments ? f.currentComments : (f.comments || []);
+  if (endpoint === 'events') return ++eventReads > 1 && f.currentEvents ? f.currentEvents : f.events;
   if (!Object.hasOwn(f, endpoint)) throw new Error('Unmocked API: ' + endpoint);
   return f[endpoint];
 }};
@@ -60,6 +62,11 @@ def review(state='APPROVED', sha=SHA, review_id=1):
             'submitted_at': '2026-01-01T00:00:00Z', 'user': {'login': 'coderabbitai[bot]', 'type': 'Bot'}}
 
 
+def approval_comment(sha=SHA, scope='all-changed-paths', actor='fake-owner', base=BASE):
+    return {'id': 10, 'user': {'login': actor, 'type': 'User'},
+            'body': f'owner-approved head={sha} base={base} scope={scope}'}
+
+
 class ScriptTests(unittest.TestCase):
     def run_script(self, fixture, job='evaluate', event=None):
         script = next(step['with']['script'] for step in WORKFLOW['jobs'][job]['steps'] if 'script' in step.get('with', {}))
@@ -76,11 +83,11 @@ class ScriptTests(unittest.TestCase):
 
     def fixture(self, labels=True, events=None, files=None, reviews=None, **extra):
         files = files if files is not None else [{'filename': '.github/workflows/build.yml'}]
-        return {'pr': {'user': {'login': 'synthetic-contributor'}, 'number': 7, 'state': 'open', 'head': {'sha': SHA}, 'changed_files': len(files),
+        return {'pr': {'user': {'login': 'synthetic-contributor'}, 'number': 7, 'state': 'open', 'head': {'sha': SHA}, 'base': {'sha': BASE}, 'changed_files': len(files),
                        'labels': [{'name': 'owner-approved'}] if labels else [],
                        'body': '## AI assistance\nCoding assistant.\n## What changed\nGate validation.\n## How verified\nOffline regression tests.\n'},
                 'files': files, 'events': events if events is not None else [label_event()],
-                'reviews': reviews or [], **extra}
+                'reviews': reviews or [], 'comments': [approval_comment()], **extra}
 
     def assert_gate(self, fixture, allowed):
         result = self.run_script(fixture)
@@ -94,6 +101,63 @@ class ScriptTests(unittest.TestCase):
             self.assertIn(states[-1], ('failure', 'error'), result)
             self.assertTrue(result.get('error') or result['failures'], result)
         return result
+
+    def test_stale_head_approval_fails(self):
+        self.assert_gate(self.fixture(comments=[approval_comment(sha='b' * 40)]), False)
+
+    def test_changed_head_after_label_fails(self):
+        fixture = self.fixture()
+        fixture['pr']['head']['sha'] = 'b' * 40
+        self.assert_gate(fixture, False)
+
+    def test_wrong_scope_fails(self):
+        self.assert_gate(self.fixture(comments=[approval_comment(scope='docs-only')]), False)
+
+    def test_non_owner_approval_record_fails(self):
+        self.assert_gate(self.fixture(comments=[approval_comment(actor='other')]), False)
+
+    def test_missing_approval_record_fails(self):
+        self.assert_gate(self.fixture(comments=[]), False)
+
+    def test_stale_base_approval_fails(self):
+        self.assert_gate(self.fixture(comments=[approval_comment(base='d' * 40)]), False)
+
+    def test_comment_read_error_fails_closed(self):
+        self.assert_gate(self.fixture(errors=['comments']), False)
+
+    def test_approval_comment_deleted_during_evaluation_fails(self):
+        self.assert_gate(self.fixture(currentComments=[]), False)
+
+    def test_label_revoked_during_evaluation_fails(self):
+        self.assert_gate(self.fixture(currentEvents=[label_event(2, 'unlabeled')]), False)
+
+    def test_base_changed_during_evaluation_fails(self):
+        fixture = self.fixture()
+        fixture['current'] = dict(fixture['pr'], base={'sha': 'd' * 40})
+        self.assert_gate(fixture, False)
+
+    def test_bot_record_and_malformed_record_fail(self):
+        for change in ({'user': {'login': 'fake-owner', 'type': 'Bot'}},
+                       {'id': None}, {'body': 'owner-approved'},
+                       {'body': approval_comment()['body'] + ' extra'}):
+            with self.subTest(change=change):
+                self.assert_gate(self.fixture(comments=[dict(approval_comment(), **change)]), False)
+
+    def test_latest_owner_record_replaces_old_approval(self):
+        old = approval_comment()
+        new = dict(approval_comment(scope='docs-only'), id=11)
+        self.assert_gate(self.fixture(comments=[old, new]), False)
+
+    def test_approval_record_edited_during_evaluation_fails(self):
+        self.assert_gate(self.fixture(currentComments=[approval_comment(scope='docs-only')]), False)
+
+    def test_comment_event_evaluates_pr_and_ignores_issue(self):
+        fixture = self.fixture(payload={'issue': {'number': 7, 'pull_request': {}}})
+        result = self.run_script(fixture, event='issue_comment')
+        self.assertFalse(result['failures'], result)
+        self.assertEqual(result['statuses'][2]['state'], 'success')
+        self.assertIn('github.event.issue.pull_request', WORKFLOW['jobs']['evaluate']['if'])
+        self.assertIn('github.event.issue.number', WORKFLOW['concurrency']['group'])
 
     def test_right_actor_passes(self):
         self.assert_gate(self.fixture(), True)
