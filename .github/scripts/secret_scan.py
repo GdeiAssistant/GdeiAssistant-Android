@@ -87,12 +87,32 @@ def history(binary, baseline_path, summary, create=False):
         return int(bool(new_findings))
 
 
+def redact_logcat_configuration(path, findings):
+    # Redact the actual upload, not just Gitleaks' report. No value allowlist:
+    # even a real credential caught by this rule must be removed from logcat.
+    lines = path.read_text().splitlines(keepends=True)
+    for finding in findings:
+        start, end = finding['StartLine'], finding['EndLine']
+        if (type(start) is not int or type(end) is not int
+                or not 1 <= start <= end <= len(lines)):
+            raise RuntimeError('Invalid redaction range; no artifact may be uploaded')
+        for index in range(start - 1, end):
+            lines[index] = '[REDACTED configuration assignment]\n'
+    path.write_text(''.join(lines))
+
+
 def artifacts(binary, patterns):
     paths = sorted({Path(match) for pattern in patterns.splitlines() if pattern.strip()
                     for match in glob.glob(pattern.strip(), recursive=True)})
     with tempfile.TemporaryDirectory(prefix='gitleaks-', dir=os.environ.get('RUNNER_TEMP')) as directory:
         for index, path in enumerate(paths):
             findings = scan(binary, 'dir', path, Path(directory) / f'{index}.json')
+            if (findings and path.is_file() and path.name == 'android-emulator-logcat.log'
+                    and all(row['RuleID'] == 'configuration-secret-value' for row in findings)):
+                redact_logcat_configuration(path, findings)
+                # Scan the bytes that will be uploaded. Errors and any remaining
+                # findings still fail closed, with no raw report in CI output.
+                findings = scan(binary, 'dir', path, Path(directory) / f'{index}-redacted.json')
             if findings:
                 print('Artifact scan blocked upload: credential finding(s); values suppressed')
                 for finding in findings:
