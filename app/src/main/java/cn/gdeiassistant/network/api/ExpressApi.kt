@@ -30,28 +30,28 @@ interface ExpressApi {
         @Path("size") size: Int
     ): DataJsonResult<List<ExpressPostDto>>
 
-    @GET("api/express/id/{id}")
+    @GET("api/express/{id}")
     suspend fun getDetail(
         @Path("id") id: String
     ): DataJsonResult<ExpressPostDto>
 
-    @GET("api/express/id/{id}/comment")
+    @GET("api/express/{id}/comment")
     suspend fun getComments(
         @Path("id") id: String
     ): DataJsonResult<List<ExpressCommentDto>>
 
-    @POST("api/express/id/{id}/comment")
+    @POST("api/express/{id}/comment")
     suspend fun submitComment(
         @Path("id") id: String,
         @Query("comment") comment: String
     ): JsonResult
 
-    @POST("api/express/id/{id}/like")
+    @POST("api/express/{id}/like")
     suspend fun like(
         @Path("id") id: String
     ): JsonResult
 
-    @POST("api/express/id/{id}/guess")
+    @POST("api/express/{id}/guess")
     suspend fun guess(
         @Path("id") id: String,
         @Query("name") name: String

@@ -21,7 +21,7 @@ interface DeliveryApi {
     @GET("api/delivery/mine")
     suspend fun getMine(): DataJsonResult<DeliveryMineDto>
 
-    @GET("api/delivery/order/id/{id}")
+    @GET("api/delivery/order/{id}")
     suspend fun getDetail(
         @Path("id") id: String
     ): DataJsonResult<DeliveryDetailDto>
@@ -31,12 +31,12 @@ interface DeliveryApi {
         @Query("orderId") orderId: String
     ): JsonResult
 
-    @POST("api/delivery/trade/id/{id}/finishtrade")
+    @POST("api/delivery/trade/{id}/finishtrade")
     suspend fun finishTrade(
         @Path("id") tradeId: String
     ): JsonResult
 
-    @DELETE("api/delivery/order/id/{id}")
+    @DELETE("api/delivery/order/{id}")
     suspend fun deleteOrder(
         @Path("id") orderId: String
     ): JsonResult

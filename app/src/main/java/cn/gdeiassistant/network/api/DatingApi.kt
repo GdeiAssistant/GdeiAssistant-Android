@@ -21,7 +21,7 @@ interface DatingApi {
         @Path("start") start: Int
     ): DataJsonResult<List<DatingProfileDto>>
 
-    @GET("api/dating/profile/id/{id}")
+    @GET("api/dating/profile/{id}")
     suspend fun getProfileDetail(
         @Path("id") id: String
     ): DataJsonResult<DatingProfileDetailDto>
@@ -56,13 +56,13 @@ interface DatingApi {
         @Field("content") content: String
     ): JsonResult
 
-    @POST("api/dating/pick/id/{id}")
+    @POST("api/dating/pick/{id}")
     suspend fun updatePickState(
         @Path("id") id: String,
         @Query("state") state: Int
     ): JsonResult
 
-    @POST("api/dating/profile/id/{id}/state")
+    @POST("api/dating/profile/{id}/state")
     suspend fun updateProfileState(
         @Path("id") id: String,
         @Query("state") state: Int

@@ -13,7 +13,7 @@ interface NoticeApi {
         @Path("size") size: Int
     ): DataJsonResult<List<NewsItemDto>>
 
-    @GET("api/information/news/id/{id}")
+    @GET("api/information/news/{id}")
     suspend fun queryNewsDetail(
         @Path("id") id: String
     ): DataJsonResult<NewsItemDto>

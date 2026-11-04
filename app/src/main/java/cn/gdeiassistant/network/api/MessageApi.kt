@@ -17,7 +17,7 @@ interface MessageApi {
     @GET("api/information/message/unread")
     suspend fun getUnreadCount(): DataJsonResult<Int>
 
-    @POST("api/information/message/id/{id}/read")
+    @POST("api/information/message/{id}/read")
     suspend fun markMessageRead(
         @Path("id") id: String
     ): JsonResult

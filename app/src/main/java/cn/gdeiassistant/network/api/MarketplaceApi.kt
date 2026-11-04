@@ -32,12 +32,12 @@ interface MarketplaceApi {
         @Path("start") start: Int
     ): DataJsonResult<List<MarketplaceItemDto>>
 
-    @GET("api/marketplace/item/id/{id}")
+    @GET("api/marketplace/item/{id}")
     suspend fun getItemDetail(
         @Path("id") id: String
     ): DataJsonResult<MarketplaceDetailDto>
 
-    @GET("api/marketplace/item/id/{id}/preview")
+    @GET("api/marketplace/item/{id}/preview")
     suspend fun getItemPreview(
         @Path("id") id: String
     ): DataJsonResult<String>
@@ -59,7 +59,7 @@ interface MarketplaceApi {
     ): JsonResult
 
     @FormUrlEncoded
-    @POST("api/marketplace/item/id/{id}")
+    @POST("api/marketplace/item/{id}")
     suspend fun updateItem(
         @Path("id") id: String,
         @Field("name") name: String,
@@ -71,7 +71,7 @@ interface MarketplaceApi {
         @Field("phone") phone: String? = null
     ): JsonResult
 
-    @POST("api/marketplace/item/state/id/{id}")
+    @POST("api/marketplace/item/state/{id}")
     suspend fun updateItemState(
         @Path("id") id: String,
         @Query("state") state: Int
