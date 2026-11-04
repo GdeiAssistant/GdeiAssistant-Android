@@ -25,12 +25,12 @@ interface SecretApi {
         @Path("size") size: Int
     ): DataJsonResult<List<SecretPostDto>>
 
-    @GET("api/secret/id/{id}")
+    @GET("api/secret/{id}")
     suspend fun getDetail(
         @Path("id") id: String
     ): DataJsonResult<SecretPostDto>
 
-    @GET("api/secret/id/{id}/comments")
+    @GET("api/secret/{id}/comments")
     suspend fun getComments(
         @Path("id") id: String
     ): DataJsonResult<List<SecretCommentDto>>
@@ -45,13 +45,13 @@ interface SecretApi {
         @Part voice: MultipartBody.Part? = null
     ): JsonResult
 
-    @POST("api/secret/id/{id}/comment")
+    @POST("api/secret/{id}/comment")
     suspend fun submitComment(
         @Path("id") id: String,
         @Query("comment") comment: String
     ): JsonResult
 
-    @POST("api/secret/id/{id}/like")
+    @POST("api/secret/{id}/like")
     suspend fun setLike(
         @Path("id") id: String,
         @Query("like") like: Int

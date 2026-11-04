@@ -214,7 +214,7 @@ class MockInterceptorSmokeTest {
         assertTrue(announcementItems.size() > 0)
         val announcementId = announcementItems[0].asJsonObject.get("id").asString
 
-        val announcementDetail = executeJson("/api/information/announcement/id/$announcementId")
+        val announcementDetail = executeJson("/api/information/announcement/$announcementId")
         assertEquals(announcementId, announcementDetail.dataObject().get("id").asString)
 
         val news = executeJson("/api/information/news/type/1/start/0/size/10")
@@ -222,7 +222,7 @@ class MockInterceptorSmokeTest {
         assertTrue(newsItems.size() > 0)
         val newsId = newsItems[0].asJsonObject.get("id").asString
 
-        val newsDetail = executeJson("/api/information/news/id/$newsId")
+        val newsDetail = executeJson("/api/information/news/$newsId")
         assertEquals(newsId, newsDetail.dataObject().get("id").asString)
 
         val interactions = executeJson("/api/information/message/interaction/start/0/size/10")
@@ -233,7 +233,7 @@ class MockInterceptorSmokeTest {
         val unread = executeJson("/api/information/message/unread")
         assertTrue(unread.dataElement().asInt >= 0)
 
-        val readOne = executeJson(path = "/api/information/message/id/$messageId/read", method = "POST")
+        val readOne = executeJson(path = "/api/information/message/$messageId/read", method = "POST")
         assertEquals(messageId, readOne.dataObject().get("id").asString)
         assertTrue(readOne.dataObject().get("isRead").asBoolean)
 
@@ -251,7 +251,7 @@ class MockInterceptorSmokeTest {
         assertTrue(marketplaceItems.size() > 0)
         val marketplaceId = marketplaceItems[0].asJsonObject.get("id").asString
 
-        val marketplaceDetail = executeJson("/api/marketplace/item/id/$marketplaceId")
+        val marketplaceDetail = executeJson("/api/marketplace/item/$marketplaceId")
         assertEquals(marketplaceId, marketplaceDetail.dataObject().getAsJsonObject("item").get("id").asString)
         val marketplaceProfile = executeJson("/api/marketplace/profile")
         assertTrue(marketplaceProfile.dataObject().has("doing"))
@@ -261,7 +261,7 @@ class MockInterceptorSmokeTest {
         assertTrue(lostFoundItems.size() > 0)
         val lostFoundId = lostFoundItems[0].asJsonObject.get("id").asString
 
-        val lostFoundDetail = executeJson("/api/lostandfound/item/id/$lostFoundId")
+        val lostFoundDetail = executeJson("/api/lostandfound/item/$lostFoundId")
         assertEquals(lostFoundId, lostFoundDetail.dataObject().getAsJsonObject("item").get("id").asString)
         val lostFoundProfile = executeJson("/api/lostandfound/profile")
         assertTrue(lostFoundProfile.dataObject().has("lost"))
@@ -271,9 +271,9 @@ class MockInterceptorSmokeTest {
         assertTrue(secretItems.size() > 0)
         val secretId = secretItems[0].asJsonObject.get("id").asString
 
-        val secretDetail = executeJson("/api/secret/id/$secretId")
+        val secretDetail = executeJson("/api/secret/$secretId")
         assertEquals(secretId, secretDetail.dataObject().get("id").asString)
-        val secretComments = executeJson("/api/secret/id/$secretId/comments")
+        val secretComments = executeJson("/api/secret/$secretId/comments")
         assertTrue(secretComments.dataArray().size() >= 0)
 
         val dating = executeJson("/api/dating/profile/area/0/start/0")
@@ -281,7 +281,7 @@ class MockInterceptorSmokeTest {
         assertTrue(datingItems.size() > 0)
         val datingId = datingItems[0].asJsonObject.get("profileId").asString
 
-        val datingDetail = executeJson("/api/dating/profile/id/$datingId")
+        val datingDetail = executeJson("/api/dating/profile/$datingId")
         assertEquals(datingId, datingDetail.dataObject().getAsJsonObject("profile").get("profileId").asString)
         val datingMine = executeJson("/api/dating/profile/my")
         assertTrue(datingMine.dataArray().size() >= 0)
@@ -291,9 +291,9 @@ class MockInterceptorSmokeTest {
         assertTrue(expressItems.size() > 0)
         val expressId = expressItems[0].asJsonObject.get("id").asString
 
-        val expressDetail = executeJson("/api/express/id/$expressId")
+        val expressDetail = executeJson("/api/express/$expressId")
         assertEquals(expressId, expressDetail.dataObject().get("id").asString)
-        val expressComments = executeJson("/api/express/id/$expressId/comment")
+        val expressComments = executeJson("/api/express/$expressId/comment")
         assertTrue(expressComments.dataArray().size() >= 0)
 
         val topic = executeJson("/api/topic/start/0/size/10")
@@ -301,7 +301,7 @@ class MockInterceptorSmokeTest {
         assertTrue(topicItems.size() > 0)
         val topicId = topicItems[0].asJsonObject.get("id").asString
 
-        val topicDetail = executeJson("/api/topic/id/$topicId")
+        val topicDetail = executeJson("/api/topic/$topicId")
         assertEquals(topicId, topicDetail.dataObject().get("id").asString)
 
         val delivery = executeJson("/api/delivery/order/start/0/size/10")
@@ -309,7 +309,7 @@ class MockInterceptorSmokeTest {
         assertTrue(deliveryItems.size() > 0)
         val deliveryId = deliveryItems[0].asJsonObject.get("orderId").asString
 
-        val deliveryDetail = executeJson("/api/delivery/order/id/$deliveryId")
+        val deliveryDetail = executeJson("/api/delivery/order/$deliveryId")
         assertEquals(deliveryId, deliveryDetail.dataObject().getAsJsonObject("order").get("orderId").asString)
         val deliveryMine = executeJson("/api/delivery/mine")
         assertTrue(deliveryMine.dataObject().has("published"))
@@ -326,9 +326,9 @@ class MockInterceptorSmokeTest {
         assertTrue(photographItems.size() > 0)
         val photographId = photographItems[0].asJsonObject.get("id").asString
 
-        val photographDetail = executeJson("/api/photograph/id/$photographId")
+        val photographDetail = executeJson("/api/photograph/$photographId")
         assertEquals(photographId, photographDetail.dataObject().get("id").asString)
-        val photographComments = executeJson("/api/photograph/id/$photographId/comment")
+        val photographComments = executeJson("/api/photograph/$photographId/comment")
         assertTrue(photographComments.dataArray().size() >= 0)
 
         assertEquals(0, fallbackHits)

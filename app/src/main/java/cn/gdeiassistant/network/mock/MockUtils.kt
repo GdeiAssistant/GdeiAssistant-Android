@@ -18,6 +18,15 @@ object MockUtils {
     const val MOCK_CAPTCHA_BASE64 =
         "iVBORw0KGgoAAAANSUhEUgAAAMAAAAA8CAIAAACVO0mNAAAA/0lEQVR4nO3TsQ3DMBQFQdP9d7aBkYzWxExA0RduCMsZ/HXXIQK5vCk1vZ1tc665fb3e8DqgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJoCaAmoCqAmgJqBv+B8C9ZV8o8AAAAASUVORK5CYII="
 
+    private val PATH_SEGMENT_KEYWORDS = setOf(
+        "api", "information", "news", "announcement", "message",
+        "secret", "express", "topic", "delivery", "order", "trade",
+        "dating", "profile", "pick", "photograph", "marketplace", "item",
+        "lostandfound", "start", "size", "index", "read", "comment",
+        "comments", "like", "guess", "preview", "didfound", "finishtrade",
+        "state", "picture", "my", "area", "type", "keyword"
+    )
+
     fun successDataJson(data: Any?, message: String = ""): String {
         return Gson().toJson(
             linkedMapOf(
@@ -107,7 +116,8 @@ object MockUtils {
     fun Request.itemIdFromPath(): String? {
         val segments = url.pathSegments
         val idIndex = segments.indexOf("id")
-        return segments.getOrNull(idIndex + 1)
+        if (idIndex >= 0) return segments.getOrNull(idIndex + 1)
+        return segments.firstOrNull { it.isNotEmpty() && it !in PATH_SEGMENT_KEYWORDS }
     }
 
     fun Request.pathValueAfter(key: String): String? {

@@ -31,12 +31,12 @@ interface TopicApi {
         @Path("size") size: Int
     ): DataJsonResult<List<TopicPostDto>>
 
-    @GET("api/topic/id/{id}")
+    @GET("api/topic/{id}")
     suspend fun getDetail(
         @Path("id") id: String
     ): DataJsonResult<TopicPostDto>
 
-    @POST("api/topic/id/{id}/like")
+    @POST("api/topic/{id}/like")
     suspend fun like(
         @Path("id") id: String
     ): JsonResult
@@ -49,7 +49,7 @@ interface TopicApi {
         @Part images: List<MultipartBody.Part>
     ): JsonResult
 
-    @GET("api/topic/id/{id}/index/{index}/image")
+    @GET("api/topic/{id}/index/{index}/image")
     suspend fun getImage(
         @Path("id") id: String,
         @Path("index") index: Int

@@ -12,7 +12,7 @@ interface AnnouncementApi {
         @Path("size") size: Int
     ): DataJsonResult<List<AnnouncementDto>>
 
-    @GET("api/information/announcement/id/{id}")
+    @GET("api/information/announcement/{id}")
     suspend fun queryAnnouncementDetail(
         @Path("id") id: String
     ): DataJsonResult<AnnouncementDto>

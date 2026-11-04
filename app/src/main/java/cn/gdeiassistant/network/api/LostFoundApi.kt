@@ -24,12 +24,12 @@ interface LostFoundApi {
         @Path("start") start: Int
     ): DataJsonResult<List<LostFoundItemDto>>
 
-    @GET("api/lostandfound/item/id/{id}")
+    @GET("api/lostandfound/item/{id}")
     suspend fun getItemDetail(
         @Path("id") id: String
     ): DataJsonResult<LostFoundDetailDto>
 
-    @GET("api/lostandfound/item/id/{id}/preview")
+    @GET("api/lostandfound/item/{id}/preview")
     suspend fun getItemPreview(
         @Path("id") id: String
     ): DataJsonResult<String>
@@ -52,7 +52,7 @@ interface LostFoundApi {
     ): JsonResult
 
     @FormUrlEncoded
-    @POST("api/lostandfound/item/id/{id}")
+    @POST("api/lostandfound/item/{id}")
     suspend fun updateItem(
         @Path("id") id: String,
         @Field("name") name: String,
@@ -65,7 +65,7 @@ interface LostFoundApi {
         @Field("phone") phone: String? = null
     ): JsonResult
 
-    @POST("api/lostandfound/item/id/{id}/didfound")
+    @POST("api/lostandfound/item/{id}/didfound")
     suspend fun markDidFound(
         @Path("id") id: String
     ): JsonResult

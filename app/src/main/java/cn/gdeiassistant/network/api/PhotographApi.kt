@@ -35,29 +35,29 @@ interface PhotographApi {
         @Path("size") size: Int
     ): DataJsonResult<List<PhotographPostDto>>
 
-    @GET("api/photograph/id/{id}")
+    @GET("api/photograph/{id}")
     suspend fun getDetail(
         @Path("id") id: String
     ): DataJsonResult<PhotographPostDto>
 
-    @GET("api/photograph/id/{id}/index/{index}/image")
+    @GET("api/photograph/{id}/index/{index}/image")
     suspend fun getImage(
         @Path("id") id: String,
         @Path("index") index: Int
     ): DataJsonResult<String>
 
-    @GET("api/photograph/id/{id}/comment")
+    @GET("api/photograph/{id}/comment")
     suspend fun getComments(
         @Path("id") id: String
     ): DataJsonResult<List<PhotographCommentDto>>
 
-    @POST("api/photograph/id/{id}/comment")
+    @POST("api/photograph/{id}/comment")
     suspend fun submitComment(
         @Path("id") id: String,
         @Query("comment") comment: String
     ): JsonResult
 
-    @POST("api/photograph/id/{id}/like")
+    @POST("api/photograph/{id}/like")
     suspend fun like(
         @Path("id") id: String
     ): JsonResult

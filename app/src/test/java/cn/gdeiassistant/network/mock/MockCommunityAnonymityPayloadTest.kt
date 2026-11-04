@@ -45,7 +45,7 @@ class MockCommunityAnonymityPayloadTest {
     @Test
     fun secretCommentsAlsoUseAnonymousLabels() {
         val json = MockCommunityProvider.mockSecretCommentList(
-            Request.Builder().url("http://localhost/api/secret/id/6101/comments").get().build()
+            Request.Builder().url("http://localhost/api/secret/6101/comments").get().build()
         )
         val items = dataArray(json)
         assertTrue(items.size() > 0)
@@ -83,7 +83,7 @@ class MockCommunityAnonymityPayloadTest {
     @Test
     fun expressCommentsOmitUsername() {
         val json = MockCommunityProvider.mockExpressCommentList(
-            Request.Builder().url("http://localhost/api/express/id/10101/comment").get().build()
+            Request.Builder().url("http://localhost/api/express/10101/comment").get().build()
         )
         val items = dataArray(json)
         assertTrue(items.size() > 0)
