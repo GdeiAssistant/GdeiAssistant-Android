@@ -217,6 +217,11 @@ class MockInterceptorSmokeTest {
         val announcementDetail = executeJson("/api/information/announcement/$announcementId")
         assertEquals(announcementId, announcementDetail.dataObject().get("id").asString)
 
+        val overview = executeJson("/api/information/overview")
+        val overviewData = overview.dataObject()
+        assertTrue(overviewData.getAsJsonArray("notices").size() > 0)
+        assertTrue(overviewData.getAsJsonObject("festival").get("name").asString.isNotBlank())
+
         val news = executeJson("/api/information/news/type/1/start/0/size/10")
         val newsItems = news.dataArray()
         assertTrue(newsItems.size() > 0)

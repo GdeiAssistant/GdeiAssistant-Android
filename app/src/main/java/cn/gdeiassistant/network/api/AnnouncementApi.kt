@@ -17,8 +17,8 @@ interface AnnouncementApi {
         @Path("id") id: String
     ): DataJsonResult<AnnouncementDto>
 
-    @GET("api/information/festival")
-    suspend fun getFestival(): DataJsonResult<FestivalDto>
+    @GET("api/information/overview")
+    suspend fun getInformation(): DataJsonResult<InformationDto>
 }
 
 data class AnnouncementDto(
@@ -26,6 +26,12 @@ data class AnnouncementDto(
     val title: String? = null,
     val content: String? = null,
     val publishTime: String? = null
+)
+
+data class InformationDto(
+    val notice: AnnouncementDto? = null,
+    val notices: List<AnnouncementDto>? = null,
+    val festival: FestivalDto? = null
 )
 
 data class FestivalDto(

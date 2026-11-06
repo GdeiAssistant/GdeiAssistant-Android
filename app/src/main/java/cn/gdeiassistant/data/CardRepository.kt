@@ -35,36 +35,21 @@ class CardRepository @Inject constructor(
     }
 
     suspend fun getCardInfo(): Result<CardInfo?> = withContext(Dispatchers.IO) {
-        try {
-            val token = requireToken()
-            safeApiCall { cardApi.getCardInfo(token) }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        safeApiCall { cardApi.getCardInfo(requireToken()) }
     }
 
     /**
      * 查询消费流水，支持按日期过滤（year/month/date 均为 null 则查询当月）。
      */
     suspend fun getRecords(year: Int? = null, month: Int? = null, date: Int? = null): Result<CardQueryResult?> = withContext(Dispatchers.IO) {
-        try {
-            val token = requireToken()
-            safeApiCall {
-                cardApi.queryCard(token, CardQueryBody(year = year, month = month, date = date))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
+        safeApiCall {
+            cardApi.queryCard(requireToken(), CardQueryBody(year = year, month = month, date = date))
         }
     }
 
     suspend fun lostCard(cardPassword: String): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val token = requireToken()
-            val result = safeApiCall { cardApi.reportLost(token, cardPassword) }
-            if (result.isSuccess) Result.success(Unit) else Result.failure(Exception(context.getString(R.string.lost_failed)))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        safeApiCall { cardApi.reportLost(requireToken(), cardPassword) }
+            .mapCatching { Unit }
     }
 
     /**

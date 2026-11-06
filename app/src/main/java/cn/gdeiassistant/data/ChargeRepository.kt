@@ -25,17 +25,10 @@ class ChargeRepository @Inject constructor(
     suspend fun getCardInfo() = cardRepository.getCardInfo()
 
     suspend fun getChargeOrder(orderId: String): Result<ChargeOrder> = withContext(Dispatchers.IO) {
-        try {
-            val order = safeApiCall {
-                chargeApi.getChargeOrder(orderId)
-            }.getOrElse { return@withContext Result.failure(it) }
-                ?: return@withContext Result.failure(
-                    IllegalStateException(context.getString(R.string.charge_order_unavailable))
-                )
-            Result.success(order)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        safeApiCall { chargeApi.getChargeOrder(orderId) }
+            .mapCatching {
+                it ?: throw IllegalStateException(context.getString(R.string.charge_order_unavailable))
+            }
     }
 
     suspend fun getRecentChargeOrders(
@@ -43,38 +36,21 @@ class ChargeRepository @Inject constructor(
         size: Int = 20,
         status: String? = null
     ): Result<List<ChargeOrder>> = withContext(Dispatchers.IO) {
-        try {
-            val orders = safeApiCall {
-                chargeApi.getRecentChargeOrders(page = page, size = size, status = status)
-            }.getOrElse { return@withContext Result.failure(it) }.orEmpty()
-            Result.success(orders)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        safeApiCall {
+            chargeApi.getRecentChargeOrders(page = page, size = size, status = status)
+        }.map { it.orEmpty() }
     }
 
     suspend fun submitCharge(amount: Int, password: String): Result<Charge> = withContext(Dispatchers.IO) {
-        try {
-            val idempotencyKey = idempotencyKeyGenerator.newKey()
-            val charge = safeApiCall {
-                chargeApi.submitCharge(
-                    idempotencyKey = idempotencyKey,
-                    amount = amount.toString(),
-                    password = password
-                )
-            }.getOrElse { return@withContext Result.failure(it) }
-                ?: return@withContext Result.failure(
-                    IllegalStateException(context.getString(R.string.charge_error_no_payment_info))
-                )
-
-            if (charge.alipayURL.isNullOrBlank()) {
-                return@withContext Result.failure(
-                    IllegalStateException(context.getString(R.string.charge_error_no_payment_info))
-                )
-            }
-            Result.success(charge)
-        } catch (e: Exception) {
-            Result.failure(e)
+        safeApiCall {
+            chargeApi.submitCharge(
+                idempotencyKey = idempotencyKeyGenerator.newKey(),
+                amount = amount.toString(),
+                password = password
+            )
+        }.mapCatching { charge ->
+            charge?.takeIf { !it.alipayURL.isNullOrBlank() }
+                ?: throw IllegalStateException(context.getString(R.string.charge_error_no_payment_info))
         }
     }
 }

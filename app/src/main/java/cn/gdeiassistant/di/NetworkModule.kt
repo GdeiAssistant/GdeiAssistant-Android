@@ -35,7 +35,6 @@ import cn.gdeiassistant.network.api.SecretApi
 import cn.gdeiassistant.network.api.SocialApi
 import cn.gdeiassistant.network.api.SpareApi
 import cn.gdeiassistant.network.api.TopicApi
-import cn.gdeiassistant.network.api.UpgradeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -147,5 +146,4 @@ object NetworkModule {
     @Provides @Singleton fun provideSocialApi(retrofit: Retrofit): SocialApi = retrofit.create(SocialApi::class.java)
     @Provides @Singleton fun provideSpareApi(retrofit: Retrofit): SpareApi = retrofit.create(SpareApi::class.java)
     @Provides @Singleton fun provideTopicApi(retrofit: Retrofit): TopicApi = retrofit.create(TopicApi::class.java)
-    @Provides @Singleton fun provideUpgradeApi(retrofit: Retrofit): UpgradeApi = retrofit.create(UpgradeApi::class.java)
 }

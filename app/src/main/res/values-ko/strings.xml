@@ -4,7 +4,6 @@
     <string name="app_name">캠퍼스 어시스턴트</string>
     <!-- 일반 안내 -->
     <string name="service_unavailable">서비스를 일시적으로 이용할 수 없습니다</string>
-    <string name="check_upgrade">소프트웨어 업데이트 확인</string>
     <string name="checking_update">앱 업데이트 확인 중…</string>
     <string name="cet_name">이름: %s</string>
     <string name="cet_school">학교: %s</string>
@@ -212,7 +211,7 @@
     <string name="feature_evaluate_subtitle">수업 평가 제출</string>
     <string name="feature_library_subtitle">대출, 연장 및 소장 현황 보기</string>
     <string name="feature_card_subtitle">잔액 및 소비 내역</string>
-    <string name="feature_about_subtitle">버전, 업데이트 및 피드백</string>
+    <string name="feature_about_subtitle">버전 및 피드백</string>
     <string name="feature_spare_subtitle">캠퍼스와 시간대별 빈 강의실 조회</string>
     <string name="feature_graduate_exam_subtitle">대학원 입시 성적 조회</string>
     <string name="feature_data_center_subtitle">전기료 및 캠퍼스 연락처 도구</string>
@@ -241,15 +240,9 @@
 
     <!-- 정보 -->
     <string name="about_title">정보</string>
-    <string name="about_version">버전 %s</string>
-    <string name="about_subtitle">버전, 업데이트, 공식 웹사이트 링크 및 피드백 방법을 확인할 수 있습니다.</string>
-    <string name="about_check_update">업데이트 확인</string>
-    <string name="about_latest_version">현재 최신 버전입니다</string>
-    <string name="about_update_available">새 버전이 있습니다</string>
-    <string name="about_update_notes">업데이트 내용</string>
+    <string name="about_subtitle">버전, 공식 웹사이트 링크 및 피드백 방법을 확인할 수 있습니다.</string>
     <string name="about_open_official_site">공식 사이트</string>
     <string name="about_feedback">피드백 이메일</string>
-    <string name="about_download_update">업데이트 다운로드</string>
     <string name="about_backend_title">문의 및 지원</string>
     <string name="about_official_site_url">https://gdeiassistant.cn</string>
     <string name="about_support_email">support@gdeiassistant.cn</string>
@@ -258,8 +251,6 @@
     <string name="about_mock_mode_desc">활성화하면 앱이 화면 검증과 데모 표시를 위해 로컬 데모 데이터를 우선 사용합니다.</string>
     <string name="about_mock_mode_restart_hint">전환 후 앱을 재시작하여 요청과 화면 상태를 완전히 새로고침하세요.</string>
     <string name="about_mock_mode_toast">데모 데이터 설정이 변경되었습니다. 앱을 재시작한 뒤 계속 이용하세요</string>
-    <string name="about_checking">업데이트 확인 중…</string>
-    <string name="about_update_none">최신 버전입니다</string>
     <string name="about_open_failed">외부 링크를 열 수 없습니다</string>
     <string name="about_file_size">파일 크기 %s</string>
     <string name="about_metric_version">현재 버전</string>

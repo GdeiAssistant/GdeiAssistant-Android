@@ -6,9 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.SettingsRepository
-import cn.gdeiassistant.data.UpgradeRepository
-import cn.gdeiassistant.model.CheckUpgradeResult
-import cn.gdeiassistant.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,20 +23,11 @@ data class AboutUiState(
     val currentVersionName: String = "",
     val currentVersionCode: Long = 0L,
     val isMockModeEnabled: Boolean = false,
-    val canUseDemoMode: Boolean = SettingsRepository.canUseDemoMode(),
-    val isCheckingUpdate: Boolean = false,
-    val latestVersion: CheckUpgradeResult? = null,
-    val updateAvailable: Boolean = false,
-    val status: UiText? = null,
-    val error: UiText? = null
-) {
-    val hasDownloadUrl: Boolean
-        get() = !latestVersion?.downloadURL.isNullOrBlank()
-}
+    val canUseDemoMode: Boolean = SettingsRepository.canUseDemoMode()
+)
 
 @HiltViewModel
 class AboutViewModel @Inject constructor(
-    private val upgradeRepository: UpgradeRepository,
     private val settingsRepository: SettingsRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -55,63 +43,6 @@ class AboutViewModel @Inject constructor(
         observeDeveloperSettings()
     }
 
-    fun checkForUpdate() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(isCheckingUpdate = true, error = null, status = null)
-            }
-
-            upgradeRepository.checkUpgrade().fold(
-                onSuccess = { result ->
-                    when {
-                        result == null || result.versionCode == null -> {
-                            _state.update {
-                                it.copy(
-                                    isCheckingUpdate = false,
-                                    latestVersion = null,
-                                    updateAvailable = false,
-                                    status = UiText.StringResource(R.string.about_update_none)
-                                )
-                            }
-                        }
-
-                        result.versionCode > _state.value.currentVersionCode -> {
-                            _state.update {
-                                it.copy(
-                                    isCheckingUpdate = false,
-                                    latestVersion = result,
-                                    updateAvailable = true,
-                                    status = UiText.StringResource(R.string.about_update_available)
-                                )
-                            }
-                        }
-
-                        else -> {
-                            _state.update {
-                                it.copy(
-                                    isCheckingUpdate = false,
-                                    latestVersion = result,
-                                    updateAvailable = false,
-                                    status = UiText.StringResource(R.string.about_latest_version)
-                                )
-                            }
-                        }
-                    }
-                },
-                onFailure = { e ->
-                    _state.update {
-                        it.copy(
-                            isCheckingUpdate = false,
-                            error = e.message?.takeIf { message -> message.isNotBlank() }?.let { message ->
-                                UiText.DynamicString(message)
-                            } ?: UiText.StringResource(R.string.load_failed)
-                        )
-                    }
-                }
-            )
-        }
-    }
-
     fun setMockModeEnabled(enabled: Boolean) {
         if (!SettingsRepository.canUseDemoMode()) return
         viewModelScope.launch {
@@ -120,12 +51,10 @@ class AboutViewModel @Inject constructor(
             }.onSuccess {
                 _events.emit(context.getString(R.string.about_mock_mode_toast))
             }.onFailure { error ->
-                _state.update {
-                    it.copy(
-                        error = error.message?.takeIf(String::isNotBlank)?.let(UiText::DynamicString)
-                            ?: UiText.StringResource(R.string.load_failed)
-                    )
-                }
+                _events.emit(
+                    error.message?.takeIf(String::isNotBlank)
+                        ?: context.getString(R.string.load_failed)
+                )
             }
         }
     }

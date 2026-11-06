@@ -3,7 +3,6 @@
     <string name="app_name">廣東二師助手</string>
     <!-- 通用提示 -->
     <string name="service_unavailable">服務暫時用唔到</string>
-    <string name="check_upgrade">檢查軟件更新</string>
     <string name="checking_update">檢查緊應用更新…</string>
     <string name="cet_name">姓名：%s</string>
     <string name="cet_school">學校：%s</string>
@@ -211,7 +210,7 @@
     <string name="feature_evaluate_subtitle">提交教學評價</string>
     <string name="feature_library_subtitle">查看借閱、續借與館藏狀態</string>
     <string name="feature_card_subtitle">餘額與消費流水</string>
-    <string name="feature_about_subtitle">版本、更新與反饋</string>
+    <string name="feature_about_subtitle">版本與反饋</string>
     <string name="feature_spare_subtitle">按校區和時段查詢教室</string>
     <string name="feature_graduate_exam_subtitle">查詢考研成績結果</string>
     <string name="feature_data_center_subtitle">電費與校園黃頁工具</string>
@@ -240,15 +239,9 @@
 
     <!-- 關於 -->
     <string name="about_title">關於</string>
-    <string name="about_version">版本 %s</string>
-    <string name="about_subtitle">在呢度查看版本、更新、官網入口和反饋方式。</string>
-    <string name="about_check_update">檢查更新</string>
-    <string name="about_latest_version">已經係最新版本</string>
-    <string name="about_update_available">發現新版本</string>
-    <string name="about_update_notes">更新說明</string>
+    <string name="about_subtitle">在呢度查看版本、官網入口和反饋方式。</string>
     <string name="about_open_official_site">官網</string>
     <string name="about_feedback">反饋郵箱</string>
-    <string name="about_download_update">下載更新</string>
     <string name="about_backend_title">聯繫與支援</string>
     <string name="about_official_site_url">https://gdeiassistant.cn</string>
     <string name="about_support_email">support@gdeiassistant.cn</string>
@@ -257,8 +250,6 @@
     <string name="about_mock_mode_desc">開啟後，應用會優先使用本地示例數據，適合預覽界面和演示展示。</string>
     <string name="about_mock_mode_restart_hint">切換後建議重啟應用，確保網絡請求與頁面狀態全部刷新。</string>
     <string name="about_mock_mode_toast">已切換示例數據設定，建議重啟應用後繼續使用</string>
-    <string name="about_checking">檢查緊更新…</string>
-    <string name="about_update_none">而家已經係最新版本</string>
     <string name="about_open_failed">唔可以打開外部連結</string>
     <string name="about_file_size">文件大小 %s</string>
     <string name="about_metric_version">而家版本</string>

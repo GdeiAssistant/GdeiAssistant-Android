@@ -26,19 +26,9 @@ class CetRepository @Inject constructor(
 
     /** 获取验证码图片。后端当前直接返回 Base64 字符串。 */
     suspend fun getCheckCode(): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            safeApiCall { cetApi.getCheckCode() }.fold(
-                onSuccess = { data ->
-                    if (!data.isNullOrBlank()) {
-                        Result.success(data)
-                    } else {
-                        Result.failure(Exception(context.getString(R.string.cet_check_code_load_failed)))
-                    }
-                },
-                onFailure = { Result.failure(it) }
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
+        safeApiCall { cetApi.getCheckCode() }.mapCatching { data ->
+            data?.takeIf { it.isNotBlank() }
+                ?: throw Exception(context.getString(R.string.cet_check_code_load_failed))
         }
     }
 
@@ -48,23 +38,15 @@ class CetRepository @Inject constructor(
         name: String,
         checkcode: String
     ): Result<Cet> = withContext(Dispatchers.IO) {
-        try {
-            val token = requireToken()
-            safeApiCall {
-                cetApi.query(
-                    token = token,
-                    ticketNumber = ticketNumber,
-                    name = name,
-                    checkcode = checkcode
-                )
-            }.fold(
-                onSuccess = { data ->
-                    if (data != null) Result.success(data) else Result.failure(Exception(context.getString(R.string.cet_no_data)))
-                },
-                onFailure = { Result.failure(it) }
+        safeApiCall {
+            cetApi.query(
+                token = requireToken(),
+                ticketNumber = ticketNumber,
+                name = name,
+                checkcode = checkcode
             )
-        } catch (e: Exception) {
-            Result.failure(e)
+        }.mapCatching { data ->
+            data ?: throw Exception(context.getString(R.string.cet_no_data))
         }
     }
 }
