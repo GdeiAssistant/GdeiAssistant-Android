@@ -64,7 +64,8 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     } catch (e: AppException) {
         Result.failure(e)
     } catch (e: HttpException) {
-        val parsed = e.response()?.errorBody()?.string()?.let(::parseErrorBody)
+        // MockInterceptor short-circuits before ResponseInterceptor, so mock 4xx/5xx arrive here.
+        val parsed = parseErrorBody(e.response()?.errorBody()?.string())
         val message = parsed?.first
             ?: when (e.code()) {
                 NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.messageLoginExpired()
@@ -79,8 +80,8 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     }
 }
 
-private fun parseErrorBody(bodyStr: String): Pair<String?, String?>? {
-    if (bodyStr.isBlank()) return null
+internal fun parseErrorBody(bodyStr: String?): Pair<String?, String?>? {
+    if (bodyStr.isNullOrBlank()) return null
     return try {
         val json = com.google.gson.Gson().fromJson(bodyStr, JsonObject::class.java) ?: return null
         val message = (json.get("message") as? JsonPrimitive)?.asString

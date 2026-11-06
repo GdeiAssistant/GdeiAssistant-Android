@@ -43,8 +43,9 @@ class AnnouncementRepository @Inject constructor(
 
     suspend fun getFestival(): Result<Festival?> = withContext(Dispatchers.IO) {
         safeApiCall {
-            announcementApi.getFestival()
-        }.map { dto ->
+            announcementApi.getInformation()
+        }.map { information ->
+            val dto = information?.festival
             val name = dto?.name?.trim()
             if (name.isNullOrBlank()) {
                 null

@@ -150,6 +150,52 @@ object MockInfoProvider {
         )
     }
 
+    fun mockInformationOverview(request: Request): String {
+        val locale = request.requestLocale()
+        val announcements = mockAnnouncements(locale).map { announcement ->
+            linkedMapOf(
+                "id" to announcement.id,
+                "title" to announcement.title,
+                "content" to announcement.content,
+                "publishTime" to announcement.publishTime
+            )
+        }
+        return MockUtils.successDataJson(
+            linkedMapOf(
+                "notice" to announcements.firstOrNull(),
+                "notices" to announcements.take(3),
+                "festival" to linkedMapOf(
+                    "name" to infoText(
+                        locale,
+                        "春季运动会",
+                        "Spring Sports Meet",
+                        "春季運動會",
+                        "春季スポーツ大会",
+                        "봄 체육대회"
+                    ),
+                    "description" to listOf(
+                        infoText(
+                            locale,
+                            "4 月 18 日开幕，为期两天。",
+                            "Opens on April 18 for two days.",
+                            "4 月 18 日開幕，為期兩天。",
+                            "4 月 18 日に開幕し、2 日間開催されます。",
+                            "4월 18일 개막, 이틀간 진행됩니다."
+                        ),
+                        infoText(
+                            locale,
+                            "开幕式当天上午停课，请提前安排。",
+                            "Morning classes are cancelled on opening day; please plan ahead.",
+                            "開幕當天上午停課，請提前安排。",
+                            "開幕日の午前は休講です。事前に予定を調整してください。",
+                            "개막일 오전 수업은 휴강입니다. 미리 일정을 조정해 주세요."
+                        )
+                    )
+                )
+            )
+        )
+    }
+
     fun mockInteractionMessages(request: Request): String {
         val locale = request.requestLocale()
         val start = request.pathValueAfter("start")

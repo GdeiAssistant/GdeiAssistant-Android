@@ -4,7 +4,6 @@
     <string name="app_name">キャンパスアシスタント</string>
     <!-- 汎用メッセージ -->
     <string name="service_unavailable">サービスは一時的に利用できません</string>
-    <string name="check_upgrade">ソフトウェアの更新を確認</string>
     <string name="checking_update">アプリの更新を確認中…</string>
     <string name="cet_name">氏名：%s</string>
     <string name="cet_school">学校：%s</string>
@@ -212,7 +211,7 @@
     <string name="feature_evaluate_subtitle">授業評価を提出</string>
     <string name="feature_library_subtitle">貸出・延長・蔵書状況を確認</string>
     <string name="feature_card_subtitle">残高と利用履歴</string>
-    <string name="feature_about_subtitle">バージョン・更新・フィードバック</string>
+    <string name="feature_about_subtitle">バージョン・フィードバック</string>
     <string name="feature_spare_subtitle">キャンパスと時間帯で空き教室を検索</string>
     <string name="feature_graduate_exam_subtitle">大学院入試の成績を照会</string>
     <string name="feature_data_center_subtitle">電気料金とキャンパスイエローページ</string>
@@ -241,15 +240,9 @@
 
     <!-- アプリについて -->
     <string name="about_title">アプリについて</string>
-    <string name="about_version">バージョン %s</string>
-    <string name="about_subtitle">バージョン情報、更新確認、公式サイトとフィードバック方法を確認できます。</string>
-    <string name="about_check_update">更新を確認</string>
-    <string name="about_latest_version">現在、最新バージョンです</string>
-    <string name="about_update_available">新しいバージョンがあります</string>
-    <string name="about_update_notes">更新内容</string>
+    <string name="about_subtitle">バージョン情報、公式サイトとフィードバック方法を確認できます。</string>
     <string name="about_open_official_site">公式サイト</string>
     <string name="about_feedback">フィードバック用メール</string>
-    <string name="about_download_update">更新をダウンロード</string>
     <string name="about_backend_title">お問い合わせ・サポート</string>
     <string name="about_official_site_url">https://gdeiassistant.cn</string>
     <string name="about_support_email">support@gdeiassistant.cn</string>
@@ -258,8 +251,6 @@
     <string name="about_mock_mode_desc">有効にすると、アプリは画面確認やデモ表示向けにローカルのデモデータを優先して使用します。</string>
     <string name="about_mock_mode_restart_hint">切り替え後はアプリを再起動し、通信と画面状態を完全に更新してください。</string>
     <string name="about_mock_mode_toast">デモデータ設定を切り替えました。再起動後に続行してください</string>
-    <string name="about_checking">更新を確認中…</string>
-    <string name="about_update_none">最新バージョンです</string>
     <string name="about_open_failed">外部リンクを開けません</string>
     <string name="about_file_size">ファイルサイズ %s</string>
     <string name="about_metric_version">現在のバージョン</string>

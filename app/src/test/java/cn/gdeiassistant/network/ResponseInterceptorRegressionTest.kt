@@ -131,6 +131,28 @@ class ResponseInterceptorRegressionTest {
         }
     }
 
+    @Test fun mockShortCircuitHttpErrorKeepsBackendMessageAndErrorCode() = runBlocking {
+        val server = MockWebServer()
+        // MockInterceptor runs before ResponseInterceptor, so its 4xx responses reach Retrofit untouched.
+        val client = OkHttpClient.Builder().build()
+        try {
+            server.start()
+            val api = Retrofit.Builder().baseUrl(server.url("/"))
+                .client(client).addConverterFactory(GsonConverterFactory.create())
+                .build().create(TestApi::class.java)
+            server.enqueue(MockResponse().setResponseCode(403).setBody("""{"message":"synthetic forbidden","errorCode":"PRIVACY_RESTRICTED"}"""))
+            val error = safeJsonResultCall { api.request() }.exceptionOrNull()
+            assertTrue("HttpException must become AppException", error is AppException)
+            assertEquals(403, (error as AppException).code)
+            assertEquals("synthetic forbidden", error.message)
+            assertEquals("PRIVACY_RESTRICTED", error.errorCode)
+        } finally {
+            client.dispatcher.executorService.shutdownNow()
+            client.connectionPool.evictAll()
+            server.shutdown()
+        }
+    }
+
     @Test fun errorResponsesCloseOriginalBodyForAllStatusesAndLargeBodies() {
         for (code in listOf(401, 422, 500)) {
             for (padding in listOf("", " ".repeat(70_000))) {

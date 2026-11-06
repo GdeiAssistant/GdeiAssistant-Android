@@ -14,12 +14,3 @@ data class Book(
     val returnDate: String? = null,
     val renewTime: Int? = null
 ) : Serializable
-
-@Immutable
-data class CheckUpgradeResult(
-    val downloadURL: String? = null,
-    val versionInfo: String? = null,
-    val versionCodeName: String? = null,
-    val fileSize: String? = null,
-    val versionCode: Int? = null
-) : Serializable

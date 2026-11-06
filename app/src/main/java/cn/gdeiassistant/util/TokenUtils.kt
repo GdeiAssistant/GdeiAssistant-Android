@@ -8,7 +8,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.auth0.android.jwt.DecodeException
 import com.auth0.android.jwt.JWT
-import java.util.Date
 import androidx.core.content.edit
 
 object TokenUtils {
@@ -37,17 +36,6 @@ object TokenUtils {
             putString(KEY_ACCESS, accessToken)
             remove(LEGACY_KEY_REFRESH)
         }
-    }
-
-    @JvmStatic
-    fun ValidateTokenTimestamp(token: String?): Boolean {
-        if (token.isNullOrBlank()) return false
-        return try {
-            val expireTime = JWT(token).getClaim("expireTime").asString()
-            if (expireTime.isNullOrBlank()) return false
-            val expireMillis = expireTime.toLongOrNull() ?: return false
-            TimeUtils.GetTimestampDifference(Date(), Date(expireMillis), TimeUtils.TimeUnit.HOUR) > 1
-        } catch (_: DecodeException) { false } catch (_: NumberFormatException) { false }
     }
 
     @JvmStatic

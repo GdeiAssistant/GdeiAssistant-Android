@@ -43,7 +43,6 @@ class MockInterceptor : Interceptor {
         val path = request.url.encodedPath
         return when {
             path.contains("api/auth/login") -> MockAuthProvider.mockLogin(request)
-            path.contains("api/update/android") -> MockAuthProvider.mockUpgrade(request)
             else -> null
         }
     }
@@ -207,6 +206,7 @@ class MockInterceptor : Interceptor {
         val path = request.url.encodedPath
         return when {
             path.contains("api/information/announcement/start/") -> MockInfoProvider.mockAnnouncementPage(request)
+            path.contains("api/information/overview") -> MockInfoProvider.mockInformationOverview(request)
             Regex("/api/information/announcement/[^/]+$").containsMatchIn(path) -> MockInfoProvider.mockAnnouncementDetail(request)
             Regex("/api/information/message/[^/]+/read$").containsMatchIn(path) -> MockInfoProvider.mockMessageRead(request)
             path.contains("api/information/message/readall") -> MockInfoProvider.mockMessageReadAll(request)

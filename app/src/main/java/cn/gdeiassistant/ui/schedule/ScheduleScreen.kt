@@ -83,10 +83,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.toColorInt
 
-// ──────────────────────────────────────────────────────────
-// 入口
-// ──────────────────────────────────────────────────────────
-
 @Composable
 fun ScheduleScreen(navController: NavHostController) {
     val viewModel: ScheduleViewModel = hiltViewModel()
@@ -113,10 +109,6 @@ fun ScheduleScreen(navController: NavHostController) {
         onClearBackground = { viewModel.setBackgroundImageUri(null) }
     )
 }
-
-// ──────────────────────────────────────────────────────────
-// 内容
-// ──────────────────────────────────────────────────────────
 
 @Composable
 private fun ScheduleContent(
@@ -803,10 +795,6 @@ private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
     }
 }
 
-// ──────────────────────────────────────────────────────────
-// 对话框
-// ──────────────────────────────────────────────────────────
-
 @Composable
 private fun WeekPickerDialog(
     selectedWeek: Int,
@@ -890,10 +878,6 @@ private fun DetailRow(label: String, value: String) {
         Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
     }
 }
-
-// ──────────────────────────────────────────────────────────
-// 工具函数
-// ──────────────────────────────────────────────────────────
 
 private fun courseColor(raw: String?, fallback: Color): Color {
     if (raw.isNullOrBlank()) return fallback

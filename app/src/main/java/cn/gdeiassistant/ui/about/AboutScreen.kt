@@ -5,11 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.*
@@ -20,8 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,11 +26,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.model.CheckUpgradeResult
 import cn.gdeiassistant.ui.components.*
 import cn.gdeiassistant.ui.theme.AppShapes
-import cn.gdeiassistant.ui.theme.AppSpacing
-import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
 import androidx.core.net.toUri
 
@@ -57,16 +48,12 @@ fun AboutScreen(navController: NavHostController) {
     AboutContent(
         state = state,
         onBack = navController::popBackStack,
-        onCheckUpdate = viewModel::checkForUpdate,
         onMockModeChange = viewModel::setMockModeEnabled,
         onOpenSite = {
             launchExternal(context, officialSiteUrl)
         },
         onOpenFeedback = {
             launchExternal(context, "mailto:$supportEmail")
-        },
-        onOpenDownload = { url ->
-            launchExternal(context, url)
         }
     )
 }
@@ -76,14 +63,10 @@ fun AboutScreen(navController: NavHostController) {
 private fun AboutContent(
     state: AboutUiState,
     onBack: () -> Unit,
-    onCheckUpdate: () -> Unit,
     onMockModeChange: (Boolean) -> Unit,
     onOpenSite: () -> Unit,
-    onOpenFeedback: () -> Unit,
-    onOpenDownload: (String) -> Unit
+    onOpenFeedback: () -> Unit
 ) {
-    val statusText = state.status?.asString()
-    val errorText = state.error?.asString()
     val versionName = state.currentVersionName.ifBlank { "—" }
     val sourceText = if (state.isMockModeEnabled) {
         stringResource(R.string.about_data_source_mock)
@@ -102,15 +85,6 @@ private fun AboutContent(
                 sourceText = sourceText,
                 onOpenSite = onOpenSite,
                 onOpenFeedback = onOpenFeedback
-            )
-        }
-        item {
-            UpdateCard(
-                state = state,
-                statusText = statusText,
-                errorText = errorText,
-                onCheckUpdate = onCheckUpdate,
-                onOpenDownload = onOpenDownload
             )
         }
         if (state.canUseDemoMode) {
@@ -186,126 +160,6 @@ private fun AboutOverviewCard(
                 icon = Icons.AutoMirrored.Rounded.Send,
                 modifier = Modifier.weight(1f)
             )
-        }
-    }
-}
-
-@Composable
-private fun UpdateCard(
-    state: AboutUiState,
-    statusText: String?,
-    errorText: String?,
-    onCheckUpdate: () -> Unit,
-    onOpenDownload: (String) -> Unit
-) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.about_check_update),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            GhostButton(
-                text = if (state.isCheckingUpdate) stringResource(R.string.about_checking) else stringResource(R.string.about_check_update),
-                onClick = { if (!state.isCheckingUpdate) onCheckUpdate() },
-                icon = if (state.isCheckingUpdate) null else Icons.Rounded.Refresh
-            )
-        }
-
-        when {
-            state.isCheckingUpdate -> {
-                Spacer(modifier = Modifier.height(12.dp))
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-            !errorText.isNullOrBlank() -> {
-                Spacer(modifier = Modifier.height(12.dp))
-                StatusBanner(
-                    title = stringResource(R.string.load_failed),
-                    body = errorText,
-                    icon = Icons.Rounded.Info
-                )
-            }
-            !statusText.isNullOrBlank() -> {
-                Spacer(modifier = Modifier.height(12.dp))
-                StatusBanner(
-                    title = statusText,
-                    body = state.latestVersion?.versionInfo ?: stringResource(R.string.about_update_notes),
-                    icon = Icons.Rounded.Info,
-                    surface = MaterialTheme.colorScheme.primaryContainer,
-                    border = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        state.latestVersion?.let { update ->
-            Spacer(modifier = Modifier.height(12.dp))
-            UpdateSnapshot(update = update, updateAvailable = state.updateAvailable)
-            if (state.updateAvailable && state.hasDownloadUrl) {
-                Spacer(modifier = Modifier.height(12.dp))
-                TintButton(
-                    text = stringResource(R.string.about_download_update),
-                    onClick = { onOpenDownload(update.downloadURL.orEmpty()) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun UpdateSnapshot(
-    update: CheckUpgradeResult,
-    updateAvailable: Boolean
-) {
-    val snapshotScrollState = rememberScrollState()
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surfaceVariant
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppSpacing.lg),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Text(
-                text = if (updateAvailable) {
-                    stringResource(R.string.about_update_available)
-                } else {
-                    stringResource(R.string.about_latest_version)
-                },
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Row(
-                modifier = Modifier.horizontalScroll(snapshotScrollState),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                BadgePill(
-                    text = stringResource(R.string.about_version, update.versionCodeName ?: "—"),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                update.fileSize?.takeIf { it.isNotBlank() }?.let { size ->
-                    BadgePill(
-                        text = stringResource(R.string.about_file_size, size),
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-            }
-            update.versionInfo?.takeIf { it.isNotBlank() }?.let { info ->
-                Text(
-                    text = info,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
         }
     }
 }
