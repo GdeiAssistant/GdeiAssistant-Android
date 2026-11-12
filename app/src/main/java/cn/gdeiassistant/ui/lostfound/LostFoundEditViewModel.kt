@@ -100,25 +100,17 @@ class LostFoundEditViewModel @Inject constructor(
         wechat: String,
         phone: String
     ) {
-        val normalizedTitle = title.trim()
-        val normalizedDescription = description.trim()
-        val normalizedLocation = location.trim()
-        val normalizedQq = qq.trim()
-        val normalizedWechat = wechat.trim()
-        val normalizedPhone = phone.trim()
+        val form = LostFoundFormValidator.normalize(title, description, location, qq, wechat, phone)
+        val normalizedTitle = form.title
+        val normalizedDescription = form.description
+        val normalizedLocation = form.location
+        val normalizedQq = form.qq
+        val normalizedWechat = form.wechat
+        val normalizedPhone = form.phone
+        val errorRes = LostFoundFormValidator.errorRes(form)
 
         when {
-            normalizedTitle.isBlank() -> emitMessage(context.getString(R.string.lost_found_publish_title_required))
-            normalizedTitle.length > 25 -> emitMessage(context.getString(R.string.lost_found_publish_title_too_long))
-            normalizedDescription.isBlank() -> emitMessage(context.getString(R.string.lost_found_publish_description_required))
-            normalizedDescription.length > 100 -> emitMessage(context.getString(R.string.lost_found_publish_description_too_long))
-            normalizedLocation.isBlank() -> emitMessage(context.getString(R.string.lost_found_publish_location_required))
-            normalizedLocation.length > 30 -> emitMessage(context.getString(R.string.lost_found_publish_location_too_long))
-            normalizedQq.isBlank() && normalizedWechat.isBlank() && normalizedPhone.isBlank() ->
-                emitMessage(context.getString(R.string.lost_found_publish_contact_required))
-            normalizedQq.length > 20 -> emitMessage(context.getString(R.string.lost_found_publish_qq_too_long))
-            normalizedWechat.length > 20 -> emitMessage(context.getString(R.string.lost_found_publish_wechat_too_long))
-            normalizedPhone.length > 11 -> emitMessage(context.getString(R.string.lost_found_publish_phone_too_long))
+            errorRes != null -> emitMessage(context.getString(errorRes))
             else -> {
                 viewModelScope.launch {
                     _state.update { it.copy(isSubmitting = true, error = null) }
