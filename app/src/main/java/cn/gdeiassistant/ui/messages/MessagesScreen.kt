@@ -369,20 +369,6 @@ private fun FestivalCard(festival: Festival) {
     }
 }
 
-@Composable
-private fun interactionModuleLabel(module: String?): String {
-    return when (module) {
-        "secret" -> stringResource(R.string.messages_module_secret)
-        "secondhand" -> stringResource(R.string.messages_module_marketplace)
-        "lostandfound" -> stringResource(R.string.messages_module_lost_found)
-        "topic" -> stringResource(R.string.messages_module_topic)
-        "express" -> stringResource(R.string.messages_module_express)
-        "dating" -> stringResource(R.string.messages_module_dating)
-        "delivery" -> stringResource(R.string.messages_module_delivery)
-        "photograph" -> stringResource(R.string.messages_module_photograph)
-        else -> stringResource(R.string.messages_interaction_badge)
-    }
-}
 
 @Composable
 private fun InfoSectionCard(

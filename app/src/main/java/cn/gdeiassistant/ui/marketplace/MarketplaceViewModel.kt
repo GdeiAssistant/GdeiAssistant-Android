@@ -133,24 +133,16 @@ class MarketplacePublishViewModel @Inject constructor(
         phone: String,
         images: List<Uri>
     ) {
-        val normalizedTitle = title.trim()
-        val normalizedDescription = description.trim()
-        val normalizedLocation = location.trim()
-        val normalizedQq = qq.trim()
-        val normalizedPhone = phone.trim()
-        val price = priceText.trim().toDoubleOrNull()
+        val form = MarketplaceFormValidator.normalize(title, priceText, description, location, qq, phone)
+        val normalizedTitle = form.title
+        val normalizedDescription = form.description
+        val normalizedLocation = form.location
+        val normalizedQq = form.qq
+        val normalizedPhone = form.phone
+        val errorRes = MarketplaceFormValidator.errorRes(form)
 
         when {
-            normalizedTitle.isBlank() -> emitMessage(context.getString(R.string.marketplace_publish_title_required))
-            normalizedTitle.length > 25 -> emitMessage(context.getString(R.string.marketplace_publish_title_too_long))
-            price == null || price <= 0.0 || price > 9999.99 -> emitMessage(context.getString(R.string.marketplace_publish_price_invalid))
-            normalizedDescription.isBlank() -> emitMessage(context.getString(R.string.marketplace_publish_description_required))
-            normalizedDescription.length > 100 -> emitMessage(context.getString(R.string.marketplace_publish_description_too_long))
-            normalizedLocation.isBlank() -> emitMessage(context.getString(R.string.marketplace_publish_location_required))
-            normalizedLocation.length > 30 -> emitMessage(context.getString(R.string.marketplace_publish_location_too_long))
-            normalizedQq.isBlank() -> emitMessage(context.getString(R.string.marketplace_publish_qq_required))
-            normalizedQq.length > 20 -> emitMessage(context.getString(R.string.marketplace_publish_qq_too_long))
-            normalizedPhone.length > 11 -> emitMessage(context.getString(R.string.marketplace_publish_phone_too_long))
+            errorRes != null -> emitMessage(context.getString(errorRes))
             images.isEmpty() -> emitMessage(context.getString(R.string.marketplace_publish_images_required))
             else -> {
                 viewModelScope.launch {
@@ -158,7 +150,7 @@ class MarketplacePublishViewModel @Inject constructor(
                     marketplaceRepository.publish(
                         draft = MarketplaceDraft(
                             title = normalizedTitle,
-                            price = price,
+                            price = MarketplaceFormValidator.price(form),
                             description = normalizedDescription,
                             location = normalizedLocation,
                             typeId = typeId,
