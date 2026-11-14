@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cn.gdeiassistant.data.SettingsRepository
 import cn.gdeiassistant.data.UserPreferencesRepository
+import cn.gdeiassistant.model.CampusAccent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +21,9 @@ class AppearanceViewModel @Inject constructor(
     val themeMode: StateFlow<String> = userPreferencesRepository.themeMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserPreferencesRepository.THEME_SYSTEM)
 
+    val campusAccent: StateFlow<CampusAccent> = userPreferencesRepository.campusAccent
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CampusAccent.BANYAN)
+
     val fontScaleStep: StateFlow<Int> = userPreferencesRepository.fontScaleStep
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
 
@@ -26,6 +32,10 @@ class AppearanceViewModel @Inject constructor(
 
     fun setThemeMode(mode: String) {
         viewModelScope.launch { userPreferencesRepository.setThemeMode(mode) }
+    }
+
+    fun setCampusAccent(accent: CampusAccent) {
+        viewModelScope.launch { userPreferencesRepository.setCampusAccent(accent) }
     }
 
     fun setFontScaleStep(step: Int) {

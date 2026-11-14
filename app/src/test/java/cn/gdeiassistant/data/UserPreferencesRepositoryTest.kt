@@ -1,7 +1,8 @@
 package cn.gdeiassistant.data
 
+import cn.gdeiassistant.model.CampusAccent
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.Assert.*
 
 class UserPreferencesRepositoryTest {
     @Test
@@ -19,5 +20,15 @@ class UserPreferencesRepositoryTest {
         assertEquals("system", UserPreferencesRepository.THEME_SYSTEM)
         assertEquals("light", UserPreferencesRepository.THEME_LIGHT)
         assertEquals("dark", UserPreferencesRepository.THEME_DARK)
+    }
+
+    @Test
+    fun campusAccent_fromStorageKey_defaultsToBanyan() {
+        assertEquals(CampusAccent.BANYAN, CampusAccent.fromStorageKey(null))
+        assertEquals(CampusAccent.BANYAN, CampusAccent.fromStorageKey("unknown"))
+        assertEquals(CampusAccent.BANYAN, CampusAccent.fromStorageKey("banyan"))
+        assertEquals(CampusAccent.KAPOK, CampusAccent.fromStorageKey("kapok"))
+        assertEquals(CampusAccent.HAIZHU, CampusAccent.fromStorageKey("haizhu"))
+        assertEquals(CampusAccent.BAUHINIA, CampusAccent.fromStorageKey("bauhinia"))
     }
 }

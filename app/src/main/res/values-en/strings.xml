@@ -1380,6 +1380,11 @@
     <string name="appearance_theme_system">Follow System</string>
     <string name="appearance_theme_light">Light Mode</string>
     <string name="appearance_theme_dark">Dark Mode</string>
+    <string name="appearance_accent_label">Theme Accent</string>
+    <string name="appearance_accent_banyan">Banyan Emerald</string>
+    <string name="appearance_accent_kapok">Kapok Terracotta</string>
+    <string name="appearance_accent_haizhu">Haizhu Blue</string>
+    <string name="appearance_accent_bauhinia">Bauhinia Violet</string>
     <string name="appearance_font_label">Font Size</string>
     <string name="appearance_font_small">Small</string>
     <string name="appearance_font_standard">Standard</string>

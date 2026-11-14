@@ -43,12 +43,15 @@ import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
 import cn.gdeiassistant.data.DiscoveryRepository
 import cn.gdeiassistant.model.DiscoverySummary
+import cn.gdeiassistant.ui.components.EditorialPullQuote
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.extendedColors
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -144,11 +147,18 @@ fun DiscoveryScreen(navController: NavHostController) {
                     tint = MaterialTheme.colorScheme.primary,
                     onOpen = { navController.navigate(Routes.SECRET) }
                 ) {
-                    state.summary.secretPosts.forEach { post ->
+                    state.summary.secretPosts.forEachIndexed { index, post ->
+                        if (index > 0) {
+                            HorizontalDivider(
+                                thickness = 0.75.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                         DiscoveryPreviewRow(
                             title = post.title,
                             subtitle = post.summary,
                             meta = post.createdAt,
+                            usePullQuote = true,
                             onClick = { navController.navigate(Routes.secretDetail(post.id)) }
                         )
                     }
@@ -160,14 +170,22 @@ fun DiscoveryScreen(navController: NavHostController) {
                     subtitle = stringResource(R.string.discovery_express_subtitle),
                     actionTitle = stringResource(R.string.discovery_open_express),
                     icon = Icons.Rounded.Favorite,
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.extendedColors.warmAccent,
                     onOpen = { navController.navigate(Routes.EXPRESS) }
                 ) {
-                    state.summary.expressPosts.forEach { post ->
+                    state.summary.expressPosts.forEachIndexed { index, post ->
+                        if (index > 0) {
+                            HorizontalDivider(
+                                thickness = 0.75.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                         DiscoveryPreviewRow(
                             title = "${post.nickname} -> ${post.targetName}",
                             subtitle = post.contentPreview,
                             meta = post.publishTime,
+                            usePullQuote = true,
+                            pullQuoteAccent = MaterialTheme.extendedColors.warmAccent,
                             onClick = { navController.navigate(Routes.expressDetail(post.id)) }
                         )
                     }
@@ -182,7 +200,13 @@ fun DiscoveryScreen(navController: NavHostController) {
                     tint = MaterialTheme.colorScheme.secondary,
                     onOpen = { navController.navigate(Routes.TOPIC) }
                 ) {
-                    state.summary.topicPosts.forEach { post ->
+                    state.summary.topicPosts.forEachIndexed { index, post ->
+                        if (index > 0) {
+                            HorizontalDivider(
+                                thickness = 0.75.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                         DiscoveryPreviewRow(
                             title = "#${post.topic}",
                             subtitle = post.contentPreview,
@@ -245,14 +269,16 @@ private fun DiscoveryPreviewRow(
     title: String,
     subtitle: String,
     meta: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    usePullQuote: Boolean = false,
+    pullQuoteAccent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = title,
@@ -260,20 +286,27 @@ private fun DiscoveryPreviewRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        if (usePullQuote) {
+            EditorialPullQuote(
+                text = subtitle,
+                accentColor = pullQuoteAccent,
+                maxLines = 2
+            )
+        } else {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
         Text(
             text = meta,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.withTabularNumbers(),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f))
 }
 
 @Composable

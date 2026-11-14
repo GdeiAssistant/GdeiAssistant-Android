@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +48,8 @@ import cn.gdeiassistant.model.ExpressCommentItem
 import cn.gdeiassistant.model.ExpressGender
 import cn.gdeiassistant.model.ExpressPost
 import cn.gdeiassistant.model.ExpressPostDetail
+import cn.gdeiassistant.ui.components.EditorialPullQuote
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -54,6 +59,8 @@ import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.ShimmerBox
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.extendedColors
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -511,66 +518,91 @@ private fun ExpressPostCard(
     onClick: () -> Unit,
     onAuthorClick: (() -> Unit)? = null
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(
-                text = post.nickname,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = if (onAuthorClick != null) {
-                    Modifier.clickable(onClick = onAuthorClick)
-                } else {
-                    Modifier
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = post.nickname,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = if (onAuthorClick != null) {
+                            Modifier.clickable(onClick = onAuthorClick)
+                        } else {
+                            Modifier
+                        }
+                    )
+                    Text(
+                        text = "\u2192",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = post.targetName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = post.publishTime,
+                    style = MaterialTheme.typography.labelSmall.withTabularNumbers(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            EditorialPullQuote(
+                text = post.contentPreview,
+                accentColor = MaterialTheme.extendedColors.warmAccent,
+                maxLines = 3
             )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EditorialTag(text = expressGenderLabel(post.selfGender))
+                EditorialTag(text = expressGenderLabel(post.targetGender))
+                EditorialTag(
+                    text = if (post.canGuess) {
+                        stringResource(R.string.express_can_guess)
+                    } else {
+                        stringResource(R.string.express_cannot_guess)
+                    },
+                    containerColor = if (post.canGuess) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                    contentColor = if (post.canGuess) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
-                text = post.publishTime,
-                style = MaterialTheme.typography.bodySmall,
+                text = "${stringResource(R.string.express_stat_like)} ${post.likeCount} · " +
+                    "${stringResource(R.string.express_stat_comment)} ${post.commentCount} · " +
+                    "${stringResource(R.string.express_stat_matched)} ${post.correctGuessCount}/${post.guessCount}",
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BadgePill(text = expressGenderLabel(post.selfGender))
-            BadgePill(text = expressGenderLabel(post.targetGender), tint = MaterialTheme.colorScheme.tertiary)
-            BadgePill(
-                text = if (post.canGuess) {
-                    stringResource(R.string.express_can_guess)
-                } else {
-                    stringResource(R.string.express_cannot_guess)
-                },
-                tint = if (post.canGuess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
-            )
-        }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            text = post.targetName,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(6.dp))
-        Text(
-            text = post.contentPreview,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            text = "${stringResource(R.string.express_stat_like)} ${post.likeCount} · " +
-                "${stringResource(R.string.express_stat_comment)} ${post.commentCount} · " +
-                "${stringResource(R.string.express_stat_matched)} ${post.correctGuessCount}/${post.guessCount}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

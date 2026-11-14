@@ -43,6 +43,7 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.util.asString
@@ -221,8 +222,7 @@ private fun TermSnapshotCard(
         }
         Text(
             text = stringResource(R.string.grade_summary_title, grades.size),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.headlineMedium.withTabularNumbers(),
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
@@ -280,7 +280,12 @@ private fun GradeListSection(
             )
         } else {
             grades.forEachIndexed { index, grade ->
-                if (index > 0) HorizontalDivider()
+                if (index > 0) {
+                    HorizontalDivider(
+                        thickness = 0.75.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                }
                 GradeRow(
                     grade = grade,
                     modifier = Modifier.fillMaxWidth(),
@@ -330,17 +335,17 @@ private fun GradeRow(
                         grade.gradeCredit ?: "—",
                         grade.gradeGpa ?: "—"
                     ),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Surface(shape = AppShapes.pill, color = badgeBg) {
+        Surface(shape = AppShapes.small, color = badgeBg) {
             Text(
                 text = grade.gradeScore ?: "—",
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.titleMedium.withTabularNumbers(),
                 fontWeight = FontWeight.Bold,
                 color = badgeFg
             )

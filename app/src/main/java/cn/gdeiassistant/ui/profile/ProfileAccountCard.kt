@@ -29,11 +29,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cn.gdeiassistant.R
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import cn.gdeiassistant.model.AppLocaleSupport
 import cn.gdeiassistant.model.ProfileLocationCatalog
 import cn.gdeiassistant.model.ProfileFormSupport
@@ -100,16 +100,14 @@ internal fun ProfileAccountCard(
             ) {
                 Text(
                     text = displayName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = stringResource(R.string.profile_username_label, profile.username),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontFamily = FontFamily.Monospace,
+                    style = MaterialTheme.typography.labelLarge.withTabularNumbers(),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (!profile.ipArea.isNullOrBlank()) {

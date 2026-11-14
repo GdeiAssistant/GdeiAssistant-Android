@@ -78,6 +78,8 @@ import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.SelectionPill
 import cn.gdeiassistant.ui.components.StatusBanner
+import cn.gdeiassistant.ui.components.hairline
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -244,7 +246,7 @@ private fun ScheduleOverviewCard(
     val isCurrentWeek = selectedWeek == currentWeek
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
@@ -272,8 +274,8 @@ private fun ScheduleOverviewCard(
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.schedule_week_nth, selectedWeek),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineMedium.withTabularNumbers(),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -435,8 +437,9 @@ private fun FocusCourseRow(course: Schedule, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surfaceContainerLow
+        shape = AppShapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        border = hairline()
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Text(
@@ -450,7 +453,7 @@ private fun FocusCourseRow(course: Schedule, onClick: () -> Unit) {
                     course.sectionDisplayText(),
                     course.scheduleLocation ?: stringResource(R.string.schedule_location_pending)
                 ).joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -755,8 +758,9 @@ private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surfaceContainerLow
+        shape = AppShapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        border = hairline()
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
@@ -773,7 +777,7 @@ private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
                     course.sectionDisplayText(),
                     course.scheduleLocation ?: stringResource(R.string.schedule_location_pending)
                 ).joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
@@ -788,7 +792,7 @@ private fun ScheduleListRow(course: Schedule, onClick: () -> Unit) {
                         course.minScheduleWeek ?: 1,
                         course.maxScheduleWeek ?: 1
                     ),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.withTabularNumbers(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.items
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.rounded.LockPerson
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +51,7 @@ import cn.gdeiassistant.model.LostFoundItem
 import cn.gdeiassistant.model.LostFoundItemState
 import cn.gdeiassistant.model.LostFoundPersonalSummary
 import cn.gdeiassistant.model.LostFoundType
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -63,6 +67,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -546,14 +551,16 @@ private fun LostFoundItemCard(
     item: LostFoundItem,
     onClick: () -> Unit
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Top
         ) {
             if (item.previewImageUrl != null) {
@@ -574,16 +581,31 @@ private fun LostFoundItemCard(
                         text = item.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-                    BadgePill(
-                        text = if (item.type == LostFoundType.LOST) stringResource(R.string.lost_found_filter_lost) else stringResource(R.string.lost_found_filter_found)
+                    Spacer(modifier = Modifier.size(12.dp))
+                    EditorialTag(
+                        text = if (item.type == LostFoundType.LOST) {
+                            stringResource(R.string.lost_found_filter_lost)
+                        } else {
+                            stringResource(R.string.lost_found_filter_found)
+                        },
+                        containerColor = if (item.type == LostFoundType.LOST) {
+                            MaterialTheme.colorScheme.errorContainer
+                        } else {
+                            MaterialTheme.colorScheme.primaryContainer
+                        },
+                        contentColor = if (item.type == LostFoundType.LOST) {
+                            MaterialTheme.colorScheme.onErrorContainer
+                        } else {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        }
                     )
                 }
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(6.dp))
                 Text(
                     text = item.summary,
                     style = MaterialTheme.typography.bodyMedium,
@@ -591,17 +613,23 @@ private fun LostFoundItemCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    BadgePill(text = item.createdAt)
+                Spacer(modifier = Modifier.size(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    EditorialTag(text = item.createdAt)
                     Text(
                         text = item.location,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
         }
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

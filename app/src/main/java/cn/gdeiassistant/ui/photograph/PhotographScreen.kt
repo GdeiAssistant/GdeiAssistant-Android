@@ -11,6 +11,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,6 +57,7 @@ import cn.gdeiassistant.model.PhotographCategory
 import cn.gdeiassistant.model.PhotographPost
 import cn.gdeiassistant.model.PhotographPostDetail
 import cn.gdeiassistant.model.SelectedLocalImage
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -62,6 +68,7 @@ import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.ShimmerBox
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.mutableIntStateOf
 
@@ -570,62 +577,69 @@ private fun PhotographPostCard(
     onClick: () -> Unit,
     onAuthorClick: (() -> Unit)? = null
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
-        androidx.compose.foundation.layout.Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = post.authorName,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = if (onAuthorClick != null) {
+                        Modifier.clickable(onClick = onAuthorClick)
+                    } else {
+                        Modifier
+                    }
+                )
+                Text(
+                    text = post.createdAt,
+                    style = MaterialTheme.typography.labelSmall.withTabularNumbers(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
                 text = post.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Serif),
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = post.createdAt,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = post.contentPreview,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
-        }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
-        Text(
-            text = post.contentPreview,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BadgePill(text = photographCategoryLabel(post.category))
-            if (post.photoCount > 0) {
-                BadgePill(text = "${stringResource(R.string.photograph_stat_photo)} ${post.photoCount}", tint = MaterialTheme.colorScheme.tertiary)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EditorialTag(text = photographCategoryLabel(post.category))
+                if (post.photoCount > 0) {
+                    EditorialTag(text = "${stringResource(R.string.photograph_stat_photo)} ${post.photoCount}")
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "${stringResource(R.string.photograph_stat_like)} ${post.likeCount} · ${stringResource(R.string.photograph_stat_comment)} ${post.commentCount}",
+                    style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
-        Text(
-            text = "${stringResource(R.string.photograph_stat_like)} ${post.likeCount} · ${stringResource(R.string.photograph_stat_comment)} ${post.commentCount}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(4.dp))
-        Text(
-            text = post.authorName,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = if (onAuthorClick != null) {
-                Modifier.clickable(onClick = onAuthorClick)
-            } else {
-                Modifier
-            }
-        )
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

@@ -1379,6 +1379,11 @@
     <string name="appearance_theme_system">跟随系统</string>
     <string name="appearance_theme_light">浅色模式</string>
     <string name="appearance_theme_dark">深色模式</string>
+    <string name="appearance_accent_label">主题色</string>
+    <string name="appearance_accent_banyan">榕荫翠</string>
+    <string name="appearance_accent_kapok">木棉丹</string>
+    <string name="appearance_accent_haizhu">海珠蓝</string>
+    <string name="appearance_accent_bauhinia">紫荆紫</string>
     <string name="appearance_font_label">字体大小</string>
     <string name="appearance_font_small">小</string>
     <string name="appearance_font_standard">标准</string>
