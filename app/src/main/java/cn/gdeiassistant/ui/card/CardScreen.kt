@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -57,7 +56,12 @@ import cn.gdeiassistant.model.Card
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.GhostButton
 import cn.gdeiassistant.ui.components.LazyScreen
+import cn.gdeiassistant.ui.components.ListDivider
+import cn.gdeiassistant.ui.components.ListGroup
 import cn.gdeiassistant.ui.components.SectionCard
+import cn.gdeiassistant.ui.components.SectionHeader
+import cn.gdeiassistant.ui.components.hairline
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
@@ -276,25 +280,24 @@ private fun CardOverviewCard(state: CardUiState) {
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = state.balanceText,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
+                    style = MaterialTheme.typography.headlineLarge.withTabularNumbers(),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.card_number_status, state.cardNumberText, cardStatusText),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Surface(
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Rounded.CreditCard,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.padding(AppSpacing.md)
                 )
             }
@@ -354,16 +357,23 @@ private fun ActionCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = AppShapes.card,
+        shape = AppShapes.medium,
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, tint.copy(alpha = 0.14f)),
+        border = hairline(),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(AppSpacing.xl)) {
+        Column(modifier = Modifier.padding(AppSpacing.lg)) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .background(tint.copy(alpha = 0.12f), CircleShape),
+                    .size(40.dp)
+                    .background(
+                        color = if (tint == MaterialTheme.colorScheme.error) {
+                            MaterialTheme.colorScheme.errorContainer
+                        } else {
+                            MaterialTheme.colorScheme.primaryContainer
+                        },
+                        shape = AppShapes.small
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -393,21 +403,15 @@ private fun MonthSection(
     title: String,
     records: List<Card>
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Surface(
-            shape = AppShapes.pill,
-            color = MaterialTheme.colorScheme.secondaryContainer
-        ) {
-            Text(
-                text = title,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        records.forEach { record ->
-            RecordItem(record = record)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(title = title)
+        ListGroup {
+            records.forEachIndexed { index, record ->
+                if (index > 0) {
+                    ListDivider(inset = 16.dp)
+                }
+                RecordItem(record = record)
+            }
         }
     }
 }
@@ -416,73 +420,55 @@ private fun MonthSection(
 private fun RecordItem(record: Card) {
     val amount = record.tradePrice.orEmpty().ifBlank { "0.00" }
     val isNegative = amount.startsWith("-")
-    val amountSurface = if (isNegative) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer
     val amountColor = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val tradeTypeColor = when {
-        isNegative -> MaterialTheme.colorScheme.error
-        amount == "0.00" -> MaterialTheme.colorScheme.tertiary
-        else -> MaterialTheme.colorScheme.primary
-    }
 
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Column(modifier = Modifier.padding(AppSpacing.xl)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = record.tradeName ?: stringResource(R.string.card_record_default),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = record.merchantName ?: stringResource(R.string.card_merchant_unknown),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Surface(
-                    shape = AppShapes.pill,
-                    color = amountSurface
-                ) {
-                    Text(
-                        text = amount,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = amountColor,
-                        fontFamily = FontFamily.Monospace
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                MetaPill(
-                    icon = Icons.Rounded.Schedule,
-                    text = record.tradeTime ?: "—",
-                    tint = MaterialTheme.colorScheme.primary,
-                    surface = MaterialTheme.colorScheme.secondaryContainer,
-                    modifier = Modifier.weight(1f)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = record.tradeName ?: stringResource(R.string.card_record_default),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                MetaPill(
-                    icon = Icons.Rounded.Lock,
-                    text = stringResource(R.string.card_record_balance, record.accountBalance ?: "—"),
-                    tint = tradeTypeColor,
-                    surface = amountSurface,
-                    modifier = Modifier.weight(1f)
+                Text(
+                    text = record.merchantName ?: stringResource(R.string.card_merchant_unknown),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = amount,
+                style = MaterialTheme.typography.titleMedium.withTabularNumbers(),
+                fontWeight = FontWeight.Bold,
+                color = amountColor
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = record.tradeTime ?: "—",
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = stringResource(R.string.card_record_balance, record.accountBalance ?: "—"),
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -493,38 +479,5 @@ private fun InfoMetric(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier, monospace = true)
-}
-
-@Composable
-private fun MetaPill(
-    modifier: Modifier = Modifier,
-    icon: ImageVector,
-    text: String,
-    tint: Color,
-    surface: Color
-) {
-    Surface(
-        modifier = modifier,
-        shape = AppShapes.card,
-        color = surface
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = tint,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+    cn.gdeiassistant.ui.components.MetricFigure(label = label, value = value, modifier = modifier, monospace = false)
 }

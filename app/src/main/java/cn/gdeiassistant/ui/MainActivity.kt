@@ -29,6 +29,7 @@ import cn.gdeiassistant.data.SocialSessionCoordinator
 import cn.gdeiassistant.data.UserPreferencesRepository
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cn.gdeiassistant.model.AppLocaleSupport
+import cn.gdeiassistant.model.CampusAccent
 import cn.gdeiassistant.ui.theme.GdeiAssistantTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.awaitCancellation
@@ -146,6 +147,8 @@ class MainActivity : ComponentActivity() {
             val hasActiveSession = remember { sessionManager.hasActiveSession() }
             val themeMode by userPreferencesRepository.themeMode
                 .collectAsStateWithLifecycle(initialValue = UserPreferencesRepository.THEME_SYSTEM)
+            val campusAccent by userPreferencesRepository.campusAccent
+                .collectAsStateWithLifecycle(initialValue = CampusAccent.BANYAN)
             val fontScale by userPreferencesRepository.fontScale
                 .collectAsStateWithLifecycle(initialValue = 1.0f)
             val locale by settingsRepository.locale
@@ -167,7 +170,10 @@ class MainActivity : ComponentActivity() {
                     fontScale = baseDensity.fontScale * fontScale
                 )
             ) {
-                GdeiAssistantTheme(themeMode = themeMode) {
+                GdeiAssistantTheme(
+                    themeMode = themeMode,
+                    campusAccent = campusAccent
+                ) {
                     GdeiAssistantApp(
                         initialRoute = uiTestInitialRoute.ifBlank { null },
                         hasActiveSession = hasActiveSession

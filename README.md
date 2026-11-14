@@ -56,6 +56,15 @@ APK 输出在 `app/build/outputs/apk/debug/app-debug.apk`。
 
 首次用命令行构建前，需要先生成 `local.properties` 并写入 `sdk.dir`。最简单的办法是用 Android Studio 打开一次项目完成 Gradle Sync，它会自动生成这个文件。
 
+### 本地检查
+
+```bash
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+python3 scripts/check_locale_resources.py
+python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+python3 scripts/check_hygiene.py
+```
+
 ### 构建 Release 包
 
 走 CI：在 Actions 页打开 [Android Release](https://github.com/GdeiAssistant/GdeiAssistant-Android/actions/workflows/android-release.yml)，选 **Run workflow**，填 `tag_name`、`version_name`、`version_code`，可勾选 prerelease。工作流先跑 lint 和单元测试，再执行 `assembleRelease` 与 `bundleRelease`，成功后把签名产物发到 [Releases](https://github.com/GdeiAssistant/GdeiAssistant-Android/releases)。
@@ -102,17 +111,20 @@ Debug 构建可以在应用内切换环境和数据源；Release 构建固定 `r
 
 ```text
 app/src/main/java/cn/gdeiassistant/
-├── data/          本地存储与仓库层
+├── data/          本地存储与仓库层（含 UserPreferencesRepository）
 ├── di/            Hilt 模块
-├── model/         领域模型
+├── model/         领域模型（含 CampusAccent 主题色模型）
 ├── network/       Retrofit 接口与 mock 路由
 ├── service/       后台服务
 ├── ui/            按业务域拆分的 Compose 页面
-│   ├── home/ messages/ social/ profile/
-│   ├── grade/ schedule/ card/ book/
+│   ├── theme/     GeneratedDesignTokens、Color、Theme、Type、Shape
+│   ├── components/ DesignKit（0.75dp 细线系统）、AppChrome
+│   ├── screen/    HomeScreen 等主界面
+│   ├── discovery/ 社区广场聚合页
+│   ├── grade/ schedule/ card/ library/
 │   ├── marketplace/ lostfound/ secret/ dating/
-│   ├── delivery/ express/ topic/ photograph/
-│   └── navigation/
+│   ├── delivery/ express/ topic/ photograph/ lost/
+│   └── profile/   外观主题（AppearanceScreen）与个人中心
 └── util/
 ```
 
@@ -138,7 +150,7 @@ Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持�
 
 ### 主题
 
-固定 Campus Green 品牌色，与 Web / iOS / 小程序四端一致，不使用 Material You 动态取色。用户可选浅色/深色/跟随系统，字体四档可调，偏好存在独立的 `user_preferences` DataStore 里。
+采用《岭南书院人文风》（Warm Editorial Lingnan Academy）设计系统，与 Web / iOS / 微信小程序四端对齐：提供浅色「岭南晨纸」（`#F7F6F2`）、深色「珠江夜读」（`#0D1311`）和跟随系统三种明暗模式，内置 **榕荫翠 / 木棉丹 / 海珠蓝 / 紫荆紫** 四套正交校园主题色、4 档字体缩放与 6 种语言本地化，偏好持久保存在 `user_preferences` DataStore 中。界面预览见 [主仓 README 预览](https://github.com/GdeiAssistant/GdeiAssistant#界面预览)。
 
 ## 社交与私信
 

@@ -36,6 +36,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +58,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
+import cn.gdeiassistant.ui.components.hairline
 import cn.gdeiassistant.ui.navigation.Routes
 import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.theme.extendedColors
@@ -254,11 +256,11 @@ private fun LoginForm(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Card(
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                )
+                shape = AppShapes.medium,
+                color = MaterialTheme.colorScheme.surface,
+                border = hairline()
             ) {
                 Row(
                     modifier = Modifier
@@ -325,11 +327,11 @@ private fun LoginMockCard(
     switchEnabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
-        )
+        shape = AppShapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        border = hairline()
     ) {
         Column {
             ListItem(

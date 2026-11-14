@@ -1,6 +1,7 @@
 package cn.gdeiassistant.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -36,27 +37,29 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cn.gdeiassistant.ui.theme.AppShapes
 import cn.gdeiassistant.ui.theme.GdeiMotion
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 
 /**
- * GdeiAssistant v2 design kit.
+ * Lingnan Editorial design kit.
  *
- * Visual language: flat tonal surfaces on a cool green-grey page, 1dp hairline outlines instead of
- * shadows, left-aligned section headers that sit outside their group, one emerald accent reserved
- * for interactive or key figures. Every interactive row keeps a 48dp+ touch target.
+ * Visual language: warm paper or deep ink canvas with crisp 0.75dp hairline rules instead of
+ * heavy drop shadows, left-aligned section headers, and tabular numerals on figures.
  */
 
 /** Neutral placeholder for missing values; avoids em / en dash glyphs. */
 const val ValuePlaceholder = "\u2014"
 
-/** Hairline used by every grouped surface. */
+/** Editorial 0.75dp hairline used by grouped surfaces and dividers. */
 @Composable
-fun hairline(color: Color = MaterialTheme.colorScheme.outlineVariant): BorderStroke = BorderStroke(1.dp, color)
+fun hairline(color: Color = MaterialTheme.colorScheme.outlineVariant): BorderStroke = BorderStroke(0.75.dp, color)
 
 /**
  * Press feedback per the design spec: 0.12s settle at scale 0.98. Pair with the same
@@ -113,8 +116,10 @@ fun ListGroup(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = AppShapes.card,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        shape = AppShapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
         border = hairline()
     ) {
         Column(content = content)
@@ -126,7 +131,8 @@ fun ListGroup(
 fun ListDivider(inset: Dp = 68.dp) {
     HorizontalDivider(
         modifier = Modifier.padding(start = inset),
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
+        thickness = 0.75.dp,
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.85f)
     )
 }
 
@@ -240,14 +246,16 @@ data class StatItem(
 fun StatStrip(
     items: List<StatItem>,
     modifier: Modifier = Modifier,
-    container: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    container: Color = MaterialTheme.colorScheme.surface,
     emphasizeFirst: Boolean = true
 ) {
     if (items.isEmpty()) return
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = AppShapes.card,
+        shape = AppShapes.medium,
         color = container,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
         border = hairline()
     ) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
@@ -255,6 +263,7 @@ fun StatStrip(
                 if (index > 0) {
                     VerticalDivider(
                         modifier = Modifier.fillMaxHeight().padding(vertical = 14.dp),
+                        thickness = 0.75.dp,
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
                 }
@@ -273,7 +282,7 @@ fun StatStrip(
                 ) {
                     Text(
                         text = item.value,
-                        style = if (lead) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
+                        style = (if (lead) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge).withTabularNumbers(),
                         fontWeight = FontWeight.SemiBold,
                         color = if (lead) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
@@ -355,6 +364,67 @@ fun MetricFigure(
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+/** Outlined editorial tag with 0.75dp hairline rule instead of heavy solid badge fills. */
+@Composable
+fun EditorialTag(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant
+) {
+    Surface(
+        modifier = modifier,
+        shape = AppShapes.small,
+        color = containerColor,
+        contentColor = contentColor,
+        border = BorderStroke(0.75.dp, borderColor)
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            style = MaterialTheme.typography.labelMedium.withTabularNumbers(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+/** Editorial serif pull-quote with a thin vertical accent bar for community reflections and notes. */
+@Composable
+fun EditorialPullQuote(
+    text: String,
+    modifier: Modifier = Modifier,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
+    maxLines: Int = 3
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(2.5.dp)
+                .fillMaxHeight()
+                .background(accentColor, AppShapes.pill)
+        )
+        Text(
+            text = text,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Normal,
+                lineHeight = 25.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
     }

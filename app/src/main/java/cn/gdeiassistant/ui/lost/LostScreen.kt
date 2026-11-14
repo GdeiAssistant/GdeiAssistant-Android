@@ -40,12 +40,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import cn.gdeiassistant.R
-import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.ui.components.BadgePill
 import cn.gdeiassistant.ui.components.LazyScreen
 import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TintButton
+import cn.gdeiassistant.ui.components.hairline
+import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.AppSpacing
 import cn.gdeiassistant.ui.util.asString
 import kotlinx.coroutines.flow.collectLatest
 
@@ -186,8 +188,9 @@ private fun ProcessStep(
 ) {
     Surface(
         modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f)
+        shape = AppShapes.medium,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = hairline()
     ) {
         Column(
             modifier = Modifier
@@ -197,8 +200,8 @@ private fun ProcessStep(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Surface(
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f)
+                shape = AppShapes.small,
+                color = MaterialTheme.colorScheme.errorContainer
             ) {
                 Icon(
                     imageVector = icon,

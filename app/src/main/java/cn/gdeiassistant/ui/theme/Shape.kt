@@ -5,21 +5,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
-/** GdeiAssistant shape tokens: compact 6dp, card 14dp, button / input 10dp, tag full. */
+/**
+ * Refined editorial shape tokens: crisp architectural corners replacing puffy rounded boxes.
+ */
 object AppShapes {
+    val small = RoundedCornerShape(6.dp)
     val compact = RoundedCornerShape(6.dp)
-    val card = RoundedCornerShape(GeneratedDesignTokens.cardRadius)
+    val medium = RoundedCornerShape(10.dp)
+    val card = RoundedCornerShape(10.dp)
     val button = RoundedCornerShape(10.dp)
     val input = RoundedCornerShape(10.dp)
-    val small = RoundedCornerShape(10.dp)
-    val container = RoundedCornerShape(20.dp)
+    val large = RoundedCornerShape(14.dp)
+    val container = RoundedCornerShape(14.dp)
     val pill = CircleShape
 }
 
 val AppMaterialShapes = Shapes(
-    extraSmall = AppShapes.input,
-    small = AppShapes.button,
-    medium = AppShapes.card,
-    large = AppShapes.card,
-    extraLarge = AppShapes.container
+    extraSmall = AppShapes.small,
+    small = AppShapes.small,
+    medium = AppShapes.medium,
+    large = AppShapes.large,
+    extraLarge = AppShapes.large,
 )

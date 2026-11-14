@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +49,8 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.SecretComment
 import cn.gdeiassistant.model.SecretDetail
 import cn.gdeiassistant.model.SecretPost
+import cn.gdeiassistant.ui.components.EditorialPullQuote
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -56,6 +61,7 @@ import cn.gdeiassistant.ui.components.SectionCard
 import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TwoPaneScreen
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import cn.gdeiassistant.ui.util.GdeiWindowWidthClass
 import cn.gdeiassistant.ui.util.rememberGdeiWindowWidthClass
 import kotlinx.coroutines.flow.collectLatest
@@ -459,20 +465,22 @@ fun SecretProfileScreen(navController: NavHostController) {
 private fun SecretDetailHero(detail: SecretDetail) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
-        BadgePill(
+        EditorialTag(
             text = if (detail.post.isVoice) {
                 stringResource(R.string.secret_voice_badge)
             } else {
                 stringResource(R.string.secret_text_badge)
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            borderColor = MaterialTheme.colorScheme.outlineVariant
         )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = detail.post.title,
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
@@ -496,47 +504,49 @@ private fun SecretPostCard(
     post: SecretPost,
     onClick: () -> Unit
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f),
-        borderColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.20f)
+            .clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            BadgePill(
-                text = if (post.isVoice) {
-                    stringResource(R.string.secret_voice_badge)
-                } else {
-                    stringResource(R.string.secret_text_badge)
-                },
-                tint = MaterialTheme.colorScheme.tertiary
-            )
-            secretTimerText(post)?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EditorialTag(
+                    text = if (post.isVoice) {
+                        stringResource(R.string.secret_voice_badge)
+                    } else {
+                        stringResource(R.string.secret_text_badge)
+                    }
                 )
+                secretTimerText(post)?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.labelSmall.withTabularNumbers(),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
+            EditorialPullQuote(
+                text = post.summary,
+                accentColor = MaterialTheme.colorScheme.primary,
+                maxLines = 3
+            )
+            Text(
+                text = "${post.createdAt} · ${stringResource(R.string.secret_like_count_value, post.likeCount)} · ${stringResource(R.string.secret_comment_count_value, post.commentCount)}",
+                style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            text = post.summary,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            text = "${post.createdAt} · ${stringResource(R.string.secret_like_count_value, post.likeCount)} · ${stringResource(R.string.secret_comment_count_value, post.commentCount)}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

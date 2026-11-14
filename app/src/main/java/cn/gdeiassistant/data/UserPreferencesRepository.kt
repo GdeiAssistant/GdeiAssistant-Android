@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import cn.gdeiassistant.model.CampusAccent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,6 +20,7 @@ class UserPreferencesRepository @Inject constructor(
     companion object {
         private val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
         private val KEY_FONT_SCALE_STEP = intPreferencesKey("font_scale_step")
+        private val KEY_CAMPUS_ACCENT = stringPreferencesKey("campus_accent")
 
         const val THEME_SYSTEM = "system"
         const val THEME_LIGHT = "light"
@@ -30,6 +32,9 @@ class UserPreferencesRepository @Inject constructor(
     val themeMode: Flow<String> = context.userPreferencesDataStore.data
         .map { it[KEY_THEME_MODE] ?: THEME_SYSTEM }
 
+    val campusAccent: Flow<CampusAccent> = context.userPreferencesDataStore.data
+        .map { CampusAccent.fromStorageKey(it[KEY_CAMPUS_ACCENT]) }
+
     val fontScaleStep: Flow<Int> = context.userPreferencesDataStore.data
         .map { (it[KEY_FONT_SCALE_STEP] ?: 1).coerceIn(0, 3) }
 
@@ -39,6 +44,10 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun setThemeMode(mode: String) {
         require(mode in listOf(THEME_SYSTEM, THEME_LIGHT, THEME_DARK))
         context.userPreferencesDataStore.edit { it[KEY_THEME_MODE] = mode }
+    }
+
+    suspend fun setCampusAccent(accent: CampusAccent) {
+        context.userPreferencesDataStore.edit { it[KEY_CAMPUS_ACCENT] = accent.storageKey }
     }
 
     suspend fun setFontScaleStep(step: Int) {

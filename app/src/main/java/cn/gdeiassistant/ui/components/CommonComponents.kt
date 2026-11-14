@@ -63,7 +63,7 @@ import coil.compose.SubcomposeAsyncImageContent
 fun BentoCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -73,8 +73,10 @@ fun BentoCard(
         Surface(
             onClick = onClick,
             modifier = cardModifier.gdeiPressScale(interactionSource),
-            shape = AppShapes.card,
+            shape = AppShapes.medium,
             color = containerColor,
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
             border = hairline(),
             interactionSource = interactionSource
         ) {
@@ -83,8 +85,10 @@ fun BentoCard(
     } else {
         Surface(
             modifier = cardModifier,
-            shape = AppShapes.card,
+            shape = AppShapes.medium,
             color = containerColor,
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
             border = hairline()
         ) {
             Column(modifier = Modifier.padding(contentPadding), content = content)
@@ -107,7 +111,7 @@ fun SelectionPill(
         shape = AppShapes.pill,
         label = { Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis) },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            containerColor = MaterialTheme.colorScheme.surface,
             labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             selectedContainerColor = MaterialTheme.colorScheme.primary,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -116,6 +120,7 @@ fun SelectionPill(
             enabled = true,
             selected = selected,
             borderColor = MaterialTheme.colorScheme.outlineVariant,
+            borderWidth = 0.75.dp,
             selectedBorderColor = Color.Transparent
         )
     )
@@ -361,7 +366,7 @@ fun AppTopBar(
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
         scrollBehavior = scrollBehavior

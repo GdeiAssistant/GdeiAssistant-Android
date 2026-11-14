@@ -1380,6 +1380,11 @@
     <string name="appearance_theme_system">システムに従う</string>
     <string name="appearance_theme_light">ライトモード</string>
     <string name="appearance_theme_dark">ダークモード</string>
+    <string name="appearance_accent_label">テーマカラー</string>
+    <string name="appearance_accent_banyan">ガジュマル翠</string>
+    <string name="appearance_accent_kapok">キワタ丹</string>
+    <string name="appearance_accent_haizhu">海珠ブルー</string>
+    <string name="appearance_accent_bauhinia">バウヒニア紫</string>
     <string name="appearance_font_label">フォントサイズ</string>
     <string name="appearance_font_small">小</string>
     <string name="appearance_font_standard">標準</string>

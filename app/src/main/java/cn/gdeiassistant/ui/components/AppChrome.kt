@@ -64,22 +64,24 @@ fun Atmosphere(
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     borderColor: Color = Color.Unspecified,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    // Flat surface with a hairline; tinted containers drop the outline so they read as a fill.
+    // Flat surface with a 0.75dp hairline; tinted containers drop the outline so they read as a fill.
     val isNeutral = containerColor == MaterialTheme.colorScheme.surfaceContainerLowest ||
         containerColor == MaterialTheme.colorScheme.surface
     val stroke = when {
-        borderColor != Color.Unspecified -> BorderStroke(1.dp, borderColor)
+        borderColor != Color.Unspecified -> BorderStroke(0.75.dp, borderColor)
         isNeutral -> hairline()
         else -> null
     }
     Surface(
         modifier = modifier.animateContentSize(),
-        shape = AppShapes.card,
+        shape = AppShapes.medium,
         color = containerColor,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
         contentColor = contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
         border = stroke
     ) {

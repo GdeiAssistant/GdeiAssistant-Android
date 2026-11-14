@@ -1,9 +1,14 @@
 package cn.gdeiassistant.ui.delivery
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,16 +17,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.NoteAdd
 import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,6 +52,7 @@ import cn.gdeiassistant.R
 import cn.gdeiassistant.model.DeliveryOrder
 import cn.gdeiassistant.model.DeliveryOrderDetail
 import cn.gdeiassistant.model.DeliveryOrderState
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -55,6 +64,9 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.ShimmerBox
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.AppShapes
+import cn.gdeiassistant.ui.theme.extendedColors
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -581,41 +593,72 @@ private fun DeliveryOrderCard(
     order: DeliveryOrder,
     onClick: () -> Unit
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
-        androidx.compose.foundation.layout.Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            BadgePill(text = order.taskName)
-            Text(
-                text = "¥%.2f".format(order.price),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(MaterialTheme.extendedColors.warmAccent, CircleShape)
+                    )
+                    Text(
+                        text = order.taskName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Spacer(modifier = Modifier.size(12.dp))
+                Text(
+                    text = "¥%.2f".format(order.price),
+                    style = MaterialTheme.typography.titleLarge.withTabularNumbers(),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            DeliveryRouteRow(
+                marker = stringResource(R.string.delivery_route_pickup_marker),
+                value = "${order.company} ${stringResource(R.string.delivery_route_pickup_suffix)}",
+                tint = MaterialTheme.colorScheme.primary
             )
+            DeliveryRouteRow(
+                marker = stringResource(R.string.delivery_route_delivery_marker),
+                value = order.address,
+                tint = MaterialTheme.extendedColors.warmAccent
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EditorialTag(
+                    text = deliveryStateLabel(order.state),
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                EditorialTag(text = order.orderTime)
+            }
         }
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(10.dp))
-        DeliveryRouteRow(
-            marker = stringResource(R.string.delivery_route_pickup_marker),
-            value = "${order.company} ${stringResource(R.string.delivery_route_pickup_suffix)}",
-            tint = MaterialTheme.colorScheme.primary
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
-        DeliveryRouteRow(
-            marker = stringResource(R.string.delivery_route_delivery_marker),
-            value = order.address,
-            tint = MaterialTheme.colorScheme.tertiary
-        )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-        androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BadgePill(text = deliveryStateLabel(order.state))
-            BadgePill(text = order.orderTime, tint = MaterialTheme.colorScheme.tertiary)
-        }
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
@@ -625,21 +668,22 @@ private fun DeliveryRouteRow(
     value: String,
     tint: androidx.compose.ui.graphics.Color
 ) {
-    androidx.compose.foundation.layout.Row(
+    Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        androidx.compose.material3.Surface(
+        Surface(
             modifier = Modifier.offset(y = (-1).dp),
-            shape = MaterialTheme.shapes.small,
-            color = tint.copy(alpha = 0.14f)
+            shape = AppShapes.small,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(0.75.dp, tint.copy(alpha = 0.5f))
         ) {
             Text(
                 text = marker,
-                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = tint
             )
         }

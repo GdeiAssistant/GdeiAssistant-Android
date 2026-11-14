@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.items
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +55,7 @@ import cn.gdeiassistant.model.MarketplaceItem
 import cn.gdeiassistant.model.MarketplaceItemState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import cn.gdeiassistant.ui.components.EditorialTag
 import cn.gdeiassistant.ui.components.EmptyState
 import cn.gdeiassistant.ui.components.ActionTile
 import cn.gdeiassistant.ui.components.BadgePill
@@ -67,6 +71,7 @@ import cn.gdeiassistant.ui.components.StatusBanner
 import cn.gdeiassistant.ui.components.TextTabSelector
 import cn.gdeiassistant.ui.components.TintButton
 import cn.gdeiassistant.ui.navigation.Routes
+import cn.gdeiassistant.ui.theme.withTabularNumbers
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
 
@@ -530,19 +535,20 @@ fun MarketplaceProfileScreen(navController: NavHostController) {
 private fun MarketplaceDetailHero(detail: MarketplaceDetail) {
     SectionCard(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
-        BadgePill(
-            text = detail.displayCondition()
+        EditorialTag(
+            text = detail.displayCondition(),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = detail.item.title,
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricChip(
                 label = stringResource(R.string.marketplace_price_label),
@@ -563,14 +569,16 @@ private fun MarketplaceItemCard(
     item: MarketplaceItem,
     onClick: () -> Unit
 ) {
-    SectionCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Top
         ) {
             if (item.previewImageUrl != null) {
@@ -591,19 +599,20 @@ private fun MarketplaceItemCard(
                         text = item.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.size(12.dp))
                     Text(
                         text = String.format(Locale.ROOT, "¥%.2f", item.price),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge.withTabularNumbers(),
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(6.dp))
                 Text(
                     text = item.summary,
                     style = MaterialTheme.typography.bodyMedium,
@@ -611,17 +620,23 @@ private fun MarketplaceItemCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    BadgePill(text = item.tags.firstOrNull() ?: stringResource(R.string.marketplace_filter_all))
+                Spacer(modifier = Modifier.size(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    EditorialTag(text = item.tags.firstOrNull() ?: stringResource(R.string.marketplace_filter_all))
                     Text(
                         text = "${item.sellerName} · ${item.location} · ${item.postedAt}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodySmall.withTabularNumbers(),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
         }
+        HorizontalDivider(thickness = 0.75.dp, color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
