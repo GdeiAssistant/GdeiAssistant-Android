@@ -170,7 +170,7 @@ fun GdeiAssistantApp(
             when (event) {
                 is GlobalEvent.Unauthorized -> {
                     navController.navigate(Routes.LOGIN) {
-                        popUpTo(startDestination) { inclusive = true }
+                        popUpTo(navController.graph.id) { inclusive = true }
                     }
                     Toast.makeText(context, loginExpiredToast, Toast.LENGTH_LONG).show()
                 }

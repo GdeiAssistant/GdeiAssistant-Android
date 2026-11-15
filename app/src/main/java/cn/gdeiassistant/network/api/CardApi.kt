@@ -4,8 +4,6 @@ import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.DataJsonResult
 import cn.gdeiassistant.model.CardQueryResult
 import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -24,11 +22,10 @@ interface CardApi {
         @Body body: CardQueryBody
     ): DataJsonResult<CardQueryResult>
 
-    @FormUrlEncoded
     @POST("api/card/lost")
     suspend fun reportLost(
         @Header("token") token: String,
-        @Field("cardPassword") cardPassword: String
+        @Body body: CardLostBody
     ): DataJsonResult<Unit>
 }
 
@@ -38,3 +35,5 @@ data class CardQueryBody(
     val month: Int? = null,
     val date: Int? = null
 )
+
+data class CardLostBody(val cardPassword: String)
