@@ -25,6 +25,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -163,7 +164,10 @@ class ResponseInterceptorTest {
     @Test
     fun switchingProtocols101PassesThroughWithoutClosingBodyOrThrowing() {
         val body = TrackingResponseBody()
-        val request = Request.Builder().url("https://example.test/api/social/realtime").build()
+        val request = Request.Builder()
+            .url("https://example.test/api/social/realtime")
+            .header("Upgrade", "websocket")
+            .build()
         val rawResponse = Response.Builder()
             .request(request)
             .protocol(Protocol.HTTP_1_1)
@@ -185,11 +189,12 @@ class ResponseInterceptorTest {
     }
 
     @Test
-    fun webSocketUpgradeRequestPassesThroughWithoutThrowing() {
-        val body = TrackingResponseBody()
+    fun webSocketUpgrade401TriggersUnauthorizedCleanupAndThrows() {
+        val body = TrackingResponseBody("""{"success":false,"message":"登录已过期"}""")
         val request = Request.Builder()
             .url("https://example.test/api/social/realtime")
             .header("Upgrade", "websocket")
+            .header("Authorization", "Bearer expired-token")
             .build()
         val rawResponse = Response.Builder()
             .request(request)
@@ -201,26 +206,29 @@ class ResponseInterceptorTest {
         val chain: Interceptor.Chain = mock()
         whenever(chain.request()).thenReturn(request)
         whenever(chain.proceed(any())).thenReturn(rawResponse)
+        whenever(sessionManager.clearTokensIfCurrent("expired-token")).thenReturn(true)
 
-        val result = ResponseInterceptor(sessionManager).intercept(chain)
+        val caught = runCatching { ResponseInterceptor(sessionManager).intercept(chain) }.exceptionOrNull()
 
-        assertSame(rawResponse, result)
-        assertEquals(401, result.code)
-        assertFalse("WebSocket upgrade response body must not be consumed or closed", body.closed)
-        verify(sessionManager, never()).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull())
+        assertTrue("Expected AppException for 401 WebSocket handshake", caught is AppException)
+        assertEquals(401, (caught as AppException).code)
+        assertEquals("登录已过期", caught.message)
+        assertTrue("401 response body must be closed", body.closed)
+        verify(sessionManager).clearTokensIfCurrent("expired-token")
     }
 
-    private class TrackingResponseBody : ResponseBody() {
+    private class TrackingResponseBody(text: String = "") : ResponseBody() {
         var closed = false
-        private val source = object : ForwardingSource(Buffer()) {
+        private val bytes = text.toByteArray(Charsets.UTF_8)
+        private val source = object : ForwardingSource(Buffer().write(bytes)) {
             override fun close() {
                 closed = true
                 super.close()
             }
         }.buffer()
 
-        override fun contentType(): MediaType = "application/octet-stream".toMediaType()
-        override fun contentLength(): Long = 0L
+        override fun contentType(): MediaType = "application/json".toMediaType()
+        override fun contentLength(): Long = bytes.size.toLong()
         override fun source(): BufferedSource = source
     }
 }

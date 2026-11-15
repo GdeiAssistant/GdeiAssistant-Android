@@ -60,10 +60,9 @@ class ResponseInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
-        val request = chain.request()
-        val response = chain.proceed(request)
+        val response = chain.proceed(chain.request())
 
-        if (response.code == 101 || request.header("Upgrade").equals("websocket", ignoreCase = true)) {
+        if (response.code == 101) {
             return response
         }
 
