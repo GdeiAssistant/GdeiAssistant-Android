@@ -16,6 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -74,7 +75,7 @@ class AuthInterceptorTest {
             editor
         }
         val prefs: SharedPreferences = mock()
-        whenever(prefs.getString(any(), any())).thenAnswer { invocation ->
+        whenever(prefs.getString(any(), anyOrNull())).thenAnswer { invocation ->
             backingMap[invocation.getArgument(0)] ?: invocation.getArgument(1)
         }
         whenever(prefs.edit()).thenReturn(editor)
