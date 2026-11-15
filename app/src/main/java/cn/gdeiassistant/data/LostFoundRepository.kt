@@ -4,7 +4,6 @@ import cn.gdeiassistant.network.requireRemoteId
 import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import cn.gdeiassistant.model.LostFoundDetail
 import cn.gdeiassistant.model.LostFoundDraft
 import cn.gdeiassistant.model.LostFoundEditableItem
@@ -26,7 +25,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -211,26 +209,13 @@ class LostFoundRepository @Inject constructor(
     }
 
     private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
-        val mimeType = context.contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
-        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException("Failed to read image")
-        val fileName = queryDisplayName(uri).ifBlank { "lost-found-${UUID.randomUUID()}.jpg" }
-        return MultipartBody.Part.createFormData(
-            "image$index",
-            fileName,
-            bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+        return SocialChatImageSupport.prepareUploadPart(
+            context = context,
+            uri = uri,
+            partName = "image$index",
+            fallbackPrefix = "lost-found",
+            readErrorMessage = "Failed to read image"
         )
-    }
-
-    private fun queryDisplayName(uri: Uri): String {
-        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        cursor?.use {
-            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && it.moveToFirst()) {
-                return it.getString(index).orEmpty()
-            }
-        }
-        return uri.lastPathSegment.orEmpty()
     }
 
     private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())

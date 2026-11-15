@@ -3,7 +3,6 @@ package cn.gdeiassistant.data
 import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import cn.gdeiassistant.model.DatingArea
 import cn.gdeiassistant.model.DatingMyPost
 import cn.gdeiassistant.model.DatingPickStatus
@@ -182,25 +181,13 @@ class DatingRepository @Inject constructor(
     }
 
     private fun Uri.toPart(): MultipartBody.Part {
-        val mimeType = context.contentResolver.getType(this)?.ifBlank { null } ?: "image/jpeg"
-        val bytes = context.contentResolver.openInputStream(this)?.use { it.readBytes() }
-            ?: throw IllegalStateException("image_read_failed")
-        return MultipartBody.Part.createFormData(
-            "image",
-            queryDisplayName(this).ifBlank { "dating-${UUID.randomUUID()}.jpg" },
-            bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+        return SocialChatImageSupport.prepareUploadPart(
+            context = context,
+            uri = this,
+            partName = "image",
+            fallbackPrefix = "dating",
+            readErrorMessage = "image_read_failed"
         )
-    }
-
-    private fun queryDisplayName(uri: Uri): String {
-        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        cursor?.use {
-            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && it.moveToFirst()) {
-                return it.getString(index).orEmpty()
-            }
-        }
-        return uri.lastPathSegment.orEmpty()
     }
 
     private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())

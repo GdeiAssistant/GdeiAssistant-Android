@@ -6,6 +6,7 @@ import cn.gdeiassistant.model.Card
 import cn.gdeiassistant.model.CardInfo
 import cn.gdeiassistant.model.CardQueryResult
 import cn.gdeiassistant.network.api.CardApi
+import cn.gdeiassistant.network.api.CardLostBody
 import cn.gdeiassistant.network.api.CardQueryBody
 import cn.gdeiassistant.network.safeApiCall
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -48,7 +49,7 @@ class CardRepository @Inject constructor(
     }
 
     suspend fun lostCard(cardPassword: String): Result<Unit> = withContext(Dispatchers.IO) {
-        safeApiCall { cardApi.reportLost(requireToken(), cardPassword) }
+        safeApiCall { cardApi.reportLost(requireToken(), CardLostBody(cardPassword)) }
             .mapCatching { Unit }
     }
 

@@ -4,7 +4,6 @@ import cn.gdeiassistant.network.requireRemoteId
 import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.PhotographCategory
 import cn.gdeiassistant.model.PhotographCommentItem
@@ -24,7 +23,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -175,28 +173,13 @@ class PhotographRepository @Inject constructor(
     }
 
     private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
-        val contentResolver = context.contentResolver
-        val mimeType = contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
-        val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.photograph_publish_read_failed))
-        val fileName = queryDisplayName(uri).ifBlank { "photograph-${UUID.randomUUID()}.jpg" }
-        val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData(
-            "image$index",
-            fileName,
-            requestBody
+        return SocialChatImageSupport.prepareUploadPart(
+            context = context,
+            uri = uri,
+            partName = "image$index",
+            fallbackPrefix = "photograph",
+            readErrorMessage = context.getString(R.string.photograph_publish_read_failed)
         )
-    }
-
-    private fun queryDisplayName(uri: Uri): String {
-        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        cursor?.use {
-            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && it.moveToFirst()) {
-                return it.getString(index).orEmpty()
-            }
-        }
-        return uri.lastPathSegment.orEmpty()
     }
 
     private fun String.toRequestBody() = toRequestBody("text/plain".toMediaTypeOrNull())
