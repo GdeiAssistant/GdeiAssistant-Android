@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  <defs>
+    <clipPath id="screen-clip">
+      <rect x="0.5" y="0.5" width="389" height="843" rx="22" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#screen-clip)">
+    <rect width="390" height="844" fill="#0D1311" />
+    <rect x="0" y="0" width="390" height="30" fill="transparent" />
+    <text x="18" y="20" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="12" font-weight="600" fill="#F1EFEA" text-anchor="start">20:45</text>
+    <g fill="none" stroke="#F1EFEA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M324 20 L324 17 M328 20 L328 14 M332 20 L332 11 M336 20 L336 8" />
+    </g>
+    <rect x="346" y="10" width="22" height="11" rx="2.5" fill="none" stroke="#F1EFEA" stroke-width="1.3" />
+    <rect x="348" y="12" width="16" height="7" rx="1" fill="#F1EFEA" />
+    <rect x="369" y="13" width="2" height="5" rx="1" fill="#F1EFEA" />
+    <rect x="0" y="30" width="390" height="50" fill="#0D1311" />
+    <g transform="translate(12 42) scale(0.9167)" fill="none" stroke="#F1EFEA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></g>
+    <text x="44" y="61" font-family="'Songti SC', 'STSong', 'Noto Serif CJK SC', Georgia, serif" font-size="19" font-weight="700" fill="#F1EFEA" text-anchor="start">社区广场</text>
+    
+    <g transform="translate(344 42) scale(0.8333)" fill="none" stroke="#8D9B95" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></g>
+    <line x1="0" y1="80" x2="390" y2="80" stroke="#1D2925" stroke-width="1" />
+    <rect x="16" y="96" width="358" height="74" rx="12" fill="#151E1B" stroke="#24322D" />
+    
+    <text x="60.75" y="129" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="19" font-weight="700" fill="#FB923C" text-anchor="middle">28</text>
+    <text x="60.75" y="151" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11" font-weight="400" fill="#8D9B95" text-anchor="middle">闲置物品</text>
+    <line x1="105.5" y1="110" x2="105.5" y2="156" stroke="#1D2925" />
+    <text x="150.25" y="129" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="19" font-weight="700" fill="#FB923C" text-anchor="middle">14</text>
+    <text x="150.25" y="151" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11" font-weight="400" fill="#8D9B95" text-anchor="middle">校园跑腿</text>
+    <line x1="195" y1="110" x2="195" y2="156" stroke="#1D2925" />
+    <text x="239.75" y="129" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="19" font-weight="700" fill="#FB923C" text-anchor="middle">9</text>
+    <text x="239.75" y="151" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11" font-weight="400" fill="#8D9B95" text-anchor="middle">失物招领</text>
+    <line x1="284.5" y1="110" x2="284.5" y2="156" stroke="#1D2925" />
+    <text x="329.25" y="129" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="19" font-weight="700" fill="#FB923C" text-anchor="middle">42</text>
+    <text x="329.25" y="151" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11" font-weight="400" fill="#8D9B95" text-anchor="middle">校园树洞</text>
+    <rect x="16" y="186" width="358" height="76" rx="12" fill="#362015" stroke="#FB923C" stroke-opacity="0.35" />
+    <rect x="28" y="200" width="3.5" height="48" rx="1.75" fill="#FB923C" />
+    <text x="44" y="218" font-family="'Songti SC', 'STSong', 'Noto Serif CJK SC', Georgia, serif" font-size="15" font-weight="600" fill="#F1EFEA" text-anchor="start">“红棉映青砖，书院话日常。”</text>
+    <text x="44" y="242" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="12" font-weight="400" fill="#8D9B95" text-anchor="start">汇聚八大校园生活板块的最新动态与互助信息</text>
+    <text x="18" y="294" font-family="'Songti SC', 'STSong', 'Noto Serif CJK SC', Georgia, serif" font-size="16" font-weight="700" fill="#F1EFEA" text-anchor="start">广场精选动态</text>
+    <text x="372" y="294" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="12" font-weight="600" fill="#FB923C" text-anchor="end">按模块浏览 ›</text>
+    <rect x="16" y="310" width="358" height="110" rx="12" fill="#151E1B" stroke="#24322D" />
+    <rect x="30" y="326" width="34" height="34" rx="9" fill="#362015" />
+    <g transform="translate(38 334) scale(0.75)" fill="none" stroke="#FB923C" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></g>
+    <rect x="76" y="324" width="64" height="20" rx="6" fill="#1B2622" />
+    <text x="108" y="338" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#FB923C" text-anchor="middle">二手市场</text>
+    <text x="358" y="338" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="12.5" font-weight="700" fill="#FB923C" text-anchor="end">¥120</text>
+    <text x="76" y="368" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="14" font-weight="600" fill="#F1EFEA" text-anchor="start">九成新机械键盘与腕托套装</text>
+    <text x="76" y="394" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11.5" font-weight="400" fill="#6E7D78" text-anchor="start">海珠校区 · 15 分钟前</text>
+    <rect x="16" y="434" width="358" height="110" rx="12" fill="#151E1B" stroke="#24322D" />
+    <rect x="30" y="450" width="34" height="34" rx="9" fill="#362015" />
+    <g transform="translate(38 458) scale(0.75)" fill="none" stroke="#FB923C" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></g>
+    <rect x="76" y="448" width="64" height="20" rx="6" fill="#1B2622" />
+    <text x="108" y="462" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#FB923C" text-anchor="middle">失物招领</text>
+    <text x="358" y="462" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="12.5" font-weight="700" fill="#FB923C" text-anchor="end">待认领</text>
+    <text x="76" y="492" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="14" font-weight="600" fill="#F1EFEA" text-anchor="start">拾获校园卡一张（尾号 0832）</text>
+    <text x="76" y="518" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11.5" font-weight="400" fill="#6E7D78" text-anchor="start">图书馆二楼服务台 · 40 分钟前</text>
+    <rect x="16" y="558" width="358" height="110" rx="12" fill="#151E1B" stroke="#24322D" />
+    <rect x="30" y="574" width="34" height="34" rx="9" fill="#362015" />
+    <g transform="translate(38 582) scale(0.75)" fill="none" stroke="#FB923C" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" /></g>
+    <rect x="76" y="572" width="64" height="20" rx="6" fill="#1B2622" />
+    <text x="108" y="586" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#FB923C" text-anchor="middle">表白墙</text>
+    <text x="358" y="586" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="12.5" font-weight="700" fill="#FB923C" text-anchor="end">热门</text>
+    <text x="76" y="616" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="14" font-weight="600" fill="#F1EFEA" text-anchor="start">谢谢今天图书馆三楼借我伞的同学！</text>
+    <text x="76" y="642" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11.5" font-weight="400" fill="#6E7D78" text-anchor="start">38 次点赞 · 12 条评论</text>
+    <rect x="16" y="682" width="358" height="110" rx="12" fill="#151E1B" stroke="#24322D" />
+    <rect x="30" y="698" width="34" height="34" rx="9" fill="#362015" />
+    <g transform="translate(38 706) scale(0.75)" fill="none" stroke="#FB923C" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /><circle cx="12" cy="13" r="3" /></g>
+    <rect x="76" y="696" width="64" height="20" rx="6" fill="#1B2622" />
+    <text x="108" y="710" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#FB923C" text-anchor="middle">校园话题</text>
+    <text x="358" y="710" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="12.5" font-weight="700" fill="#FB923C" text-anchor="end">26 讨论</text>
+    <text x="76" y="740" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="14" font-weight="600" fill="#F1EFEA" text-anchor="start">#岭南秋色 校园落羽杉摄影分享</text>
+    <text x="76" y="766" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif" font-size="11.5" font-weight="400" fill="#6E7D78" text-anchor="start">摄影社 · 2 小时前</text>
+    <rect x="128" y="830" width="134" height="4.5" rx="2.25" fill="#6E7D78" opacity="0.4" />
+  </g>
+  <rect x="0.5" y="0.5" width="389" height="843" rx="22" fill="none" stroke="#283731" stroke-width="1" />
+</svg>
