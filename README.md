@@ -10,6 +10,7 @@
 - [接口环境](#接口环境)
 - [工程结构](#工程结构)
 - [架构说明](#架构说明)
+- [界面预览](#界面预览)
 - [参与贡献](#参与贡献)
 
 ## 功能
@@ -150,11 +151,27 @@ Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持�
 
 ### 主题
 
-采用《岭南书院人文风》（Warm Editorial Lingnan Academy）设计系统，与 Web / iOS / 微信小程序四端对齐：提供浅色「岭南晨纸」（`#F7F6F2`）、深色「珠江夜读」（`#0D1311`）和跟随系统三种明暗模式，内置 **榕荫翠 / 木棉丹 / 海珠蓝 / 紫荆紫** 四套正交校园主题色、4 档字体缩放与 6 种语言本地化，偏好持久保存在 `user_preferences` DataStore 中。界面预览见 [主仓 README 预览](https://github.com/GdeiAssistant/GdeiAssistant#界面预览)。
+采用《岭南书院人文风》（Warm Editorial Lingnan Academy）设计系统，与 Web / iOS / 微信小程序四端对齐：提供浅色「岭南晨纸」（`#F7F6F2`）、深色「珠江夜读」（`#0D1311`）和跟随系统三种明暗模式，内置 **榕荫翠 / 木棉丹 / 海珠蓝 / 紫荆紫** 四套正交校园主题色、4 档字体缩放与 6 种语言本地化，偏好持久保存在 `user_preferences` DataStore 中。界面效果见下方 [界面预览](#界面预览)。
 
 ## 社交与私信
 
 客户端实现见 [`docs/social-messaging-implementation.zh-CN.md`](docs/social-messaging-implementation.zh-CN.md)。数据契约以主仓设计文档为准。
+
+## 界面预览
+
+以下为 Android 端基于《岭南书院人文风》（Lingnan Editorial）设计系统的 6 张统一尺寸移动端矢量界面预览，覆盖今日总览、课表、社区互动、消息中心与界面外观（含浅色「岭南晨纸」、深色「珠江夜读」与四套校园主题色）：
+
+<p align="center">
+  <img src="assets/screenshots/android-home-light.svg" alt="Android 今日总览浅色（榕荫翠）" width="260" />
+  <img src="assets/screenshots/android-home-dark.svg" alt="Android 今日总览深色（榕荫翠）" width="260" />
+  <img src="assets/screenshots/android-schedule-light.svg" alt="Android 我的课表浅色（木棉丹）" width="260" />
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/android-discovery-dark.svg" alt="Android 校园社区深色（紫荆紫）" width="260" />
+  <img src="assets/screenshots/android-messages-light.svg" alt="Android 消息中心浅色（海珠蓝）" width="260" />
+  <img src="assets/screenshots/android-appearance-dark.svg" alt="Android 界面和外观深色（木棉丹）" width="260" />
+</p>
 
 ## 参与贡献
 
