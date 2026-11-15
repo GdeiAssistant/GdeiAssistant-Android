@@ -256,6 +256,9 @@ class MockInterceptorSmokeTest {
         assertTrue(marketplaceItems.size() > 0)
         val marketplaceId = marketplaceItems[0].asJsonObject.get("id").asString
 
+        val marketplaceSearch = executeJson("/api/marketplace/keyword/蓝牙/start/0")
+        assertTrue(marketplaceSearch.dataArray().size() > 0)
+
         val marketplaceDetail = executeJson("/api/marketplace/item/$marketplaceId")
         assertEquals(marketplaceId, marketplaceDetail.dataObject().getAsJsonObject("item").get("id").asString)
         val marketplaceProfile = executeJson("/api/marketplace/profile")

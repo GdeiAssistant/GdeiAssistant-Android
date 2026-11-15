@@ -4,7 +4,6 @@ import cn.gdeiassistant.network.requireRemoteId
 import cn.gdeiassistant.network.cancellableRunCatching
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.AvatarState
 import cn.gdeiassistant.model.AppLocaleSupport
@@ -50,7 +49,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.Collator
 import java.util.Locale
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -485,33 +483,19 @@ class ProfileRepository @Inject constructor(
     }
 
     private fun avatarUploadPayload(uri: Uri): AvatarUploadPayload {
-        val mimeType = context.contentResolver.getType(uri)?.trim()?.takeIf(String::isNotEmpty) ?: "image/jpeg"
-        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.profile_avatar_read_failed))
-        val extension = when {
-            mimeType.contains("png", ignoreCase = true) -> "png"
-            mimeType.contains("webp", ignoreCase = true) -> "webp"
-            else -> "jpg"
-        }
-        val fileName = queryDisplayName(uri)
-            .takeIf(String::isNotBlank)
-            ?: "avatar-${UUID.randomUUID()}.$extension"
-        return AvatarUploadPayload(
-            fileName = fileName,
-            mimeType = mimeType,
-            bytes = bytes
-        )
-    }
-
-    private fun queryDisplayName(uri: Uri): String {
-        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        cursor?.use {
-            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && it.moveToFirst()) {
-                return it.getString(index).orEmpty()
+        val prepared = try {
+            SocialChatImageSupport.prepareJpeg(context, uri)
+        } catch (error: IllegalArgumentException) {
+            if (error.message == "image_unreadable") {
+                throw IllegalStateException(context.getString(R.string.profile_avatar_read_failed), error)
             }
+            throw error
         }
-        return uri.lastPathSegment.orEmpty()
+        return AvatarUploadPayload(
+            fileName = SocialChatImageSupport.resolveJpegFileName(context, uri, "avatar"),
+            mimeType = prepared.contentType,
+            bytes = prepared.bytes
+        )
     }
 
     private companion object {

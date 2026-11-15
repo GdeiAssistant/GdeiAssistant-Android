@@ -3,7 +3,6 @@ package cn.gdeiassistant.data
 import cn.gdeiassistant.network.requireRemoteId
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import cn.gdeiassistant.R
 import cn.gdeiassistant.model.TopicDraft
 import cn.gdeiassistant.model.TopicPost
@@ -18,7 +17,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -80,7 +78,7 @@ class TopicRepository @Inject constructor(
             topicApi.publish(
                 topic = draft.topic.trim().toPlainBody(),
                 content = draft.content.trim().toPlainBody(),
-                images = images.mapIndexed { index, uri -> uriToPart(uri = uri, index = index + 1) }
+                images = images.map(::uriToPart)
             )
         }
     }
@@ -116,27 +114,21 @@ class TopicRepository @Inject constructor(
         )
     }
 
-    private fun uriToPart(uri: Uri, index: Int): MultipartBody.Part {
-        val mimeType = context.contentResolver.getType(uri)?.ifBlank { null } ?: "image/jpeg"
-        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: throw IllegalStateException(context.getString(R.string.topic_publish_read_failed))
-        val fileName = queryDisplayName(uri).ifBlank { "topic-${UUID.randomUUID()}.jpg" }
+    private fun uriToPart(uri: Uri): MultipartBody.Part {
+        val prepared = try {
+            SocialChatImageSupport.prepareJpeg(context, uri)
+        } catch (error: IllegalArgumentException) {
+            if (error.message == "image_unreadable") {
+                throw IllegalStateException(context.getString(R.string.topic_publish_read_failed), error)
+            }
+            throw error
+        }
+        val fileName = SocialChatImageSupport.resolveJpegFileName(context, uri, "topic")
         return MultipartBody.Part.createFormData(
             "images",
             fileName,
-            bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+            prepared.bytes.toRequestBody(prepared.contentType.toMediaTypeOrNull())
         )
-    }
-
-    private fun queryDisplayName(uri: Uri): String {
-        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        cursor?.use {
-            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && it.moveToFirst()) {
-                return it.getString(index).orEmpty()
-            }
-        }
-        return uri.lastPathSegment.orEmpty()
     }
 
     private fun String.toPlainBody() = toRequestBody("text/plain".toMediaTypeOrNull())

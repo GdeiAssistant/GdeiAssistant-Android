@@ -135,6 +135,7 @@ class MockInterceptor : Interceptor {
             isNumericIdPath(path, "api/marketplace/item/") && request.method == "POST" -> MockCommunityProvider.mockMarketplaceUpdate(request)
             isNumericIdPath(path, "api/marketplace/item/") && path.endsWith("/preview") -> MockCommunityProvider.mockMarketplacePreview(request)
             isNumericIdPath(path, "api/marketplace/item/") -> MockCommunityProvider.mockMarketplaceDetail(request)
+            path.contains("api/marketplace/keyword/") -> MockCommunityProvider.mockMarketplaceSearch(request)
             path.contains("api/marketplace/item/type/") -> MockCommunityProvider.mockMarketplaceItemsByType(request)
             path.contains("api/marketplace/item/start/") -> MockCommunityProvider.mockMarketplaceItemList(request)
             path.contains("api/marketplace/profile") -> MockCommunityProvider.mockMarketplaceProfile(request)

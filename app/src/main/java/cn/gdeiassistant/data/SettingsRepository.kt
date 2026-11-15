@@ -51,6 +51,9 @@ class SettingsRepository @Inject constructor(
                 )
             )
         )
+        localeCache = AppLocaleSupport.normalizeLocale(
+            syncCachePreferences.getString(SYNC_CACHE_KEY_LOCALE, null) ?: detectSystemLocale()
+        )
     }
 
     val isMockModeEnabled: Flow<Boolean> =
@@ -104,12 +107,17 @@ class SettingsRepository @Inject constructor(
         appContext.settingsDataStore.data
             .map { preferences -> AppLocaleSupport.normalizeLocale(preferences[KEY_LOCALE] ?: detectSystemLocale()) }
             .distinctUntilChanged()
+            .onEach(::persistLocaleCache)
 
     suspend fun setLocale(locale: String) {
+        val normalized = AppLocaleSupport.normalizeLocale(locale)
         appContext.settingsDataStore.edit { preferences ->
-            preferences[KEY_LOCALE] = AppLocaleSupport.normalizeLocale(locale)
+            preferences[KEY_LOCALE] = normalized
         }
+        persistLocaleCache(normalized)
     }
+
+    fun currentLocaleSync(): String = Companion.currentLocaleSync()
 
     private fun detectSystemLocale(): String {
         return AppLocaleSupport.detectSystemLocale()
@@ -138,6 +146,7 @@ class SettingsRepository @Inject constructor(
         } else {
             setNetworkEnvironment(NetworkEnvironment.PROD)
         }
+        persistLocaleCache(locale.first())
     }
 
     companion object {
@@ -148,6 +157,7 @@ class SettingsRepository @Inject constructor(
         private const val SYNC_CACHE_PREFERENCES_NAME = "developer_settings_sync_cache"
         private const val SYNC_CACHE_KEY_MOCK_MODE_ENABLED = "is_mock_mode_enabled"
         private const val SYNC_CACHE_KEY_NETWORK_ENVIRONMENT = "network_environment"
+        private const val SYNC_CACHE_KEY_LOCALE = "locale"
         private const val DEFAULT_MOCK_MODE_ENABLED = false
 
         @Volatile
@@ -156,6 +166,9 @@ class SettingsRepository @Inject constructor(
         @Volatile
         private var networkEnvironmentCache: NetworkEnvironment = NetworkEnvironment.default()
 
+        @Volatile
+        private var localeCache: String? = null
+
         fun canUseDemoMode(): Boolean = BuildConfig.DEBUG
 
         fun canChangeNetworkEnvironment(): Boolean = BuildConfig.DEBUG
@@ -163,6 +176,9 @@ class SettingsRepository @Inject constructor(
         fun isMockModeEnabledSync(): Boolean = canUseDemoMode() && mockModeEnabledCache
 
         fun currentNetworkEnvironmentSync(): NetworkEnvironment = sanitizeNetworkEnvironment(networkEnvironmentCache)
+
+        fun currentLocaleSync(): String =
+            AppLocaleSupport.normalizeLocale(localeCache ?: AppLocaleSupport.currentLocale())
     }
 
     private fun persistMockModeCache(enabled: Boolean) {
@@ -178,6 +194,14 @@ class SettingsRepository @Inject constructor(
         networkEnvironmentCache = nextEnvironment
         syncCachePreferences.edit()
             .putString(SYNC_CACHE_KEY_NETWORK_ENVIRONMENT, nextEnvironment.storageValue)
+            .apply()
+    }
+
+    private fun persistLocaleCache(locale: String) {
+        val normalized = AppLocaleSupport.normalizeLocale(locale)
+        localeCache = normalized
+        syncCachePreferences.edit()
+            .putString(SYNC_CACHE_KEY_LOCALE, normalized)
             .apply()
     }
 }

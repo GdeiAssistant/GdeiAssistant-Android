@@ -1028,6 +1028,26 @@ object MockCommunityProvider {
         return MockUtils.successDataJson(items)
     }
 
+    fun mockMarketplaceSearch(request: Request): String {
+        val segments = request.url.pathSegments
+        val kwIdx = segments.indexOf("keyword")
+        val keyword = segments.getOrNull(kwIdx + 1).orEmpty().trim()
+        val start = segments.getOrNull(kwIdx + 3)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+        val locale = request.requestLocale()
+        val items = mockMarketplaceItems
+            .filter { it.state == 1 }
+            .filter { item ->
+                keyword.isBlank() ||
+                    item.name.contains(keyword, ignoreCase = true) ||
+                    item.description.contains(keyword, ignoreCase = true) ||
+                    item.location.contains(keyword, ignoreCase = true)
+            }
+            .sortedByDescending { it.publishTime }
+            .drop(start)
+            .map { it.toMarketplaceItemPayload(locale) }
+        return MockUtils.successDataJson(items)
+    }
+
     fun mockMarketplaceDetail(request: Request): String {
         val locale = request.requestLocale()
         val item = mockMarketplaceItems.findById(request.itemIdFromPath())
