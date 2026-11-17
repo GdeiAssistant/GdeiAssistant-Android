@@ -377,16 +377,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun draftStateFrom(profile: UserProfileSummary, options: ProfileOptions): ProfileDraftUiState {
-        val resolvedFacultyCode = profile.facultyCode
-            ?.takeIf { code -> options.facultyOptionFor(code) != null }
-            ?: 0
+        val resolvedFacultyCode = profile.facultyCode ?: 0
         val resolvedMajorCode = profile.majorCode
             ?.trim()
-            ?.takeIf { code ->
-                code.isNotEmpty() &&
-                    code != ProfileFormSupport.UnselectedCode &&
-                    options.facultyOptionFor(resolvedFacultyCode)?.majors?.any { it.code == code } == true
-            }
+            ?.takeIf { code -> code.isNotEmpty() && code != ProfileFormSupport.UnselectedCode }
         return ProfileDraftUiState(
             nickname = profile.nickname.orEmpty(),
             facultyCode = resolvedFacultyCode,
@@ -402,19 +396,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun sanitizeDraft(draft: ProfileDraftUiState, options: ProfileOptions): ProfileDraftUiState {
-        val resolvedFacultyCode = draft.facultyCode
-            .takeIf { code -> options.facultyOptionFor(code) != null }
-            ?: 0
-        val resolvedMajorCode = draft.majorCode
-            ?.trim()
-            ?.takeIf { code ->
-                code.isNotEmpty() &&
-                    code != ProfileFormSupport.UnselectedCode &&
-                    options.facultyOptionFor(resolvedFacultyCode)?.majors?.any { it.code == code } == true
-            }
         return draft.copy(
-            facultyCode = resolvedFacultyCode,
-            majorCode = resolvedMajorCode
+            majorCode = draft.majorCode?.trim()?.takeIf { code ->
+                code.isNotEmpty() && code != ProfileFormSupport.UnselectedCode
+            }
         )
     }
 }

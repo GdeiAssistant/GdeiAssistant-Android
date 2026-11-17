@@ -135,4 +135,37 @@ class MockProfileProviderTest {
         assertEquals(11, profileData.get("facultyCode").asInt)
         assertEquals("software_engineering", profileData.get("majorCode").asString)
     }
+
+    @Test
+    fun mockPatchProfileAcceptsDefaultEnglishIntroductionWhenEditingUnrelatedField() {
+        val englishProfile = gson.fromJson(
+            MockProfileProvider.mockUserProfile(
+                Request.Builder()
+                    .url("https://example.com/api/user/profile")
+                    .header("Accept-Language", "en-US")
+                    .build()
+            ),
+            JsonObject::class.java
+        ).getAsJsonObject("data")
+        val defaultEnglishIntro = englishProfile.get("introduction").asString
+        assertTrue(defaultEnglishIntro.length <= 80)
+
+        val patchRequest = Request.Builder()
+            .url("https://example.com/api/profile")
+            .header("Accept-Language", "en-US")
+            .patch(
+                gson.toJson(
+                    mapOf(
+                        "nickname" to "Updated English Name",
+                        "introduction" to defaultEnglishIntro,
+                        "faculty" to englishProfile.get("facultyCode").asInt,
+                        "major" to englishProfile.get("majorCode").asString
+                    )
+                ).toRequestBody("application/json; charset=utf-8".toMediaType())
+            )
+            .build()
+
+        val result = gson.fromJson(MockProfileProvider.mockPatchProfile(patchRequest), JsonObject::class.java)
+        assertTrue(result.get("success").asBoolean)
+    }
 }

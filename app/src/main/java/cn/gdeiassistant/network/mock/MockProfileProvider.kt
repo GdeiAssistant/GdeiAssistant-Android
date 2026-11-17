@@ -557,7 +557,7 @@ object MockProfileProvider {
             localizedMockText(
                 simplifiedChinese = "喜欢做实用的小工具，也在准备 iOS 开发实习。",
                 traditionalChinese = "喜歡做實用的小工具，也在準備 iOS 開發實習。",
-                english = "Enjoys building practical tools and is preparing for an iOS development internship.",
+                english = "Enjoys building practical tools and preparing for an iOS dev internship.",
                 japanese = "実用的な小さなツールを作るのが好きで、iOS 開発インターンの準備もしています。",
                 korean = "실용적인 작은 도구를 만드는 것을 좋아하고, iOS 개발 인턴을 준비하고 있습니다.",
                 locale = locale
