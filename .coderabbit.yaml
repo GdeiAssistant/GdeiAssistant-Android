@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://www.coderabbit.ai/integrations/schema.v2.json
+language: zh-CN
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  auto_approvals:
+    enabled: false
+    allow_author_approval: false
+    max_merge_risk: low
+  auto_apply_labels: false
+  path_instructions:
+    - path: '**/*'
+      instructions: >-
+        Follow AGENTS.md. Prioritize correctness, security, and data integrity.
+        Protect authentication state, EncryptedSharedPreferences token storage,
+        shared API contracts across Web/iOS/WeChat clients, and release
+        certificate pinning boundaries. CodeRabbit feedback is advisory and
+        non-blocking; never apply owner-approved or claim deployment authority.
+    - path: '.github/**'
+      instructions: >-
+        Check workflow event trust, untrusted PR input, least-privilege
+        GITHUB_TOKEN permissions, pinned commit SHAs, secret redaction, and
+        release signing boundaries.

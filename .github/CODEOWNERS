@@ -9,7 +9,8 @@
 # Risk-sensitive changes require the repository owner.
 /.github/CODEOWNERS @Pigbibi
 /.github/workflows/ @Pigbibi
-/app/src/main/java/cn/gdeiassistant/ui/secret/ @Pigbibi
+/app/src/main/java/cn/gdeiassistant/network/ @Pigbibi
+/app/src/main/java/cn/gdeiassistant/util/TokenUtils.kt @Pigbibi
 
 # Dependency-only files do not automatically request a human review.
 # CODEOWNERS is path-based: these exceptions also apply to human PRs.

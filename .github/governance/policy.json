@@ -7,8 +7,14 @@
       "@claude review"
     ]
   },
-  "r0_paths": [],
-  "r2_paths": [],
+  "r0_paths": [
+    "README.md",
+    "docs/"
+  ],
+  "r2_paths": [
+    "app/src/main/java/cn/gdeiassistant/network/",
+    "app/src/main/java/cn/gdeiassistant/util/TokenUtils.kt"
+  ],
   "dependabot_template_exemption": true,
   "max_evidence_age_hours": 168
 }

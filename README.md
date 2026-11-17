@@ -41,7 +41,7 @@ Kotlin · Jetpack Compose + Material 3 · Hilt · Retrofit + OkHttp + Gson · Da
 | Gradle | 9.6.1（使用仓库自带 wrapper） |
 | Android Gradle Plugin | 9.3.1 |
 | Kotlin | 2.3.21 |
-| Android SDK | 35 |
+| Android SDK | compileSdk 37 / targetSdk 35 |
 | 设备 | Android 8.0 及以上 |
 
 ### 构建并安装 Debug 包
@@ -63,7 +63,6 @@ APK 输出在 `app/build/outputs/apk/debug/app-debug.apk`。
 ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 python3 scripts/check_locale_resources.py
 python3 -m unittest discover -s scripts/tests -p 'test_*.py'
-python3 scripts/check_hygiene.py
 ```
 
 ### 构建 Release 包
@@ -97,7 +96,7 @@ python3 scripts/check_hygiene.py
 | --- | --- | --- |
 | `dev` | `http://10.0.2.2:8080/` | 模拟器连本机后端 |
 | `staging` | `https://gdeiassistant.azurewebsites.net/` | 演示环境 |
-| `prod` | `https://gdeiassistant.cn/` | 生产环境 |
+| `prod` | `https://gdeiassistant.azurewebsites.net/`（默认）；正式发布可通过 `-PGDEI_BASE_URL_PROD=https://gdeiassistant.cn/` 覆盖 | 生产环境 |
 
 Debug 构建可以在应用内切换环境和数据源；Release 构建固定 `remote` + `prod`，没有开关。命令行覆盖地址：
 
@@ -155,7 +154,7 @@ Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持�
 
 ## 社交与私信
 
-客户端实现见 [`docs/social-messaging-implementation.zh-CN.md`](docs/social-messaging-implementation.zh-CN.md)。数据契约以主仓设计文档为准。
+客户端与服务端共享的社交及私信契约见 [GdeiAssistant 社交架构契约](https://github.com/GdeiAssistant/GdeiAssistant/blob/master/docs/social-messaging.md)。
 
 ## 界面预览
 
@@ -175,12 +174,12 @@ Retrofit + OkHttp 负责 API Service 注入、Bearer Token 注入、Cookie 持�
 
 ## 参与贡献
 
-见 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 处理，不要在公开 Issue 里贴真实账号、验证码或密钥。
-
-## 许可
-
-[Apache License 2.0](LICENSE)。
+见 [CONTRIBUTING.md](CONTRIBUTING.md) 与组织行为准则 [CODE_OF_CONDUCT.md](https://github.com/GdeiAssistant/.github/blob/main/CODE_OF_CONDUCT.md)。安全问题请按 [SECURITY.md](SECURITY.md) 处理，不要在公开 Issue 里贴真实账号、验证码或密钥。
 
 ## 免责声明
 
 本项目不代表学校官方服务。面向用户的协议、隐私政策和功能风险提示，以 App 内「关于」「隐私」「校园凭证」等页面展示的内容为准，本 README 不替代这些正文。发布衍生版本前，请自行确认隐私处理、校园凭证管理、Android 权限说明、日志脱敏、密钥管理、签名配置和商标使用边界。
+
+## 许可证
+
+[Apache License 2.0](LICENSE) · [NOTICE](NOTICE) · [TRADEMARK.md](TRADEMARK.md)

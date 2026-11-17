@@ -49,12 +49,12 @@ python3 scripts/check_locale_resources.py
 
 ## 提交信息
 
-用能看懂的话写，不要只写「update」：
+标题遵循英文 Conventional Commits（不超过 72 字符），用清晰可追踪的英文说明改动内容：
 
 ```text
-feat: 成绩页支持按学期筛选
-fix: 校园卡余额在弱网下显示为 0
-docs: 补充 release 签名步骤
+feat: filter grades by semester
+fix: preserve card balance under weak network
+docs: clarify release signing flags
 ```
 
 ## 许可
