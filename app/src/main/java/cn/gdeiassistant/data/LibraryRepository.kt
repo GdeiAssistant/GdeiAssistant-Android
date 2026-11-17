@@ -17,7 +17,6 @@ import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +34,7 @@ class LibraryRepository @Inject constructor(
             )
         }.mapCatching { dto ->
             CollectionSearchPage(
-                items = dto?.collectionList.orEmpty().map {
+                items = dto?.collectionList.orEmpty().mapNotNull {
                     mapCollectionSearchItem(
                         dto = it,
                         fallbackTitle = context.getString(R.string.library_collection_default_title),
@@ -53,6 +52,7 @@ class LibraryRepository @Inject constructor(
             .mapCatching { dto ->
                 val item = dto ?: throw IllegalStateException(context.getString(R.string.library_collection_missing))
                 mapCollectionDetailInfo(
+                    detailUrl = detailUrl,
                     dto = item,
                     fallbacks = context.libraryTextFallbacks()
                 )
@@ -62,7 +62,7 @@ class LibraryRepository @Inject constructor(
     suspend fun getBorrowedBooks(password: String? = null): Result<List<CollectionBorrowItem>> = withContext(Dispatchers.IO) {
         safeApiCall { libraryApi.getBorrowedBooks(cn.gdeiassistant.network.api.PasswordDto(password)) }
             .mapCatching { items ->
-                items.orEmpty().map {
+                items.orEmpty().mapNotNull {
                     mapCollectionBorrowItem(
                         dto = it,
                         fallbackTitle = context.getString(R.string.library_collection_default_title),
@@ -108,10 +108,9 @@ internal fun mapCollectionSearchItem(
     dto: CollectionItemDto,
     fallbackTitle: String,
     fallbackAuthor: String,
-    fallbackPublisher: String,
-    idFactory: () -> String = { UUID.randomUUID().toString() }
-): CollectionSearchItem {
-    val detailUrl = dto.detailURL.orEmpty().ifBlank(idFactory)
+    fallbackPublisher: String
+): CollectionSearchItem? {
+    val detailUrl = dto.detailURL?.trim()?.takeIf(String::isNotEmpty) ?: return null
     return CollectionSearchItem(
         id = detailUrl,
         title = dto.bookname.orEmpty().ifBlank { fallbackTitle },
@@ -122,12 +121,15 @@ internal fun mapCollectionSearchItem(
 }
 
 internal fun mapCollectionDetailInfo(
+    detailUrl: String,
     dto: CollectionDetailDto,
-    fallbacks: LibraryTextFallbacks,
-    idFactory: () -> String = { UUID.randomUUID().toString() }
+    fallbacks: LibraryTextFallbacks
 ): CollectionDetailInfo {
+    val detailId = detailUrl.trim().takeIf(String::isNotEmpty)
+        ?: dto.bookname?.trim()?.takeIf(String::isNotEmpty)
+        ?: throw IllegalStateException("Missing collection detail identifier")
     return CollectionDetailInfo(
-        id = dto.bookname.orEmpty().ifBlank(idFactory),
+        id = detailId,
         title = dto.bookname.orEmpty().ifBlank { fallbacks.defaultTitle },
         author = dto.author.orEmpty().ifBlank { fallbacks.defaultAuthor },
         principal = dto.principal.orEmpty()
@@ -140,12 +142,13 @@ internal fun mapCollectionDetailInfo(
         subjectTheme = dto.subjectTheme.orEmpty().ifBlank { fallbacks.defaultSubject },
         classification = dto.chineseLibraryClassification.orEmpty()
             .ifBlank { fallbacks.defaultClassification },
-        distributions = dto.collectionDistributionList.orEmpty().map { distribution ->
+        distributions = dto.collectionDistributionList.orEmpty().mapNotNull { distribution ->
+            val barcode = distribution.barcode?.trim()?.takeIf(String::isNotEmpty) ?: return@mapNotNull null
             CollectionDistributionItem(
-                id = distribution.barcode.orEmpty().ifBlank(idFactory),
+                id = barcode,
                 location = distribution.location.orEmpty().ifBlank { fallbacks.defaultDistributionLocation },
                 callNumber = distribution.callNumber.orEmpty().ifBlank { fallbacks.defaultDistributionCallNumber },
-                barcode = distribution.barcode.orEmpty().ifBlank { fallbacks.defaultDistributionBarcode },
+                barcode = barcode,
                 state = distribution.state.orEmpty().ifBlank { fallbacks.defaultDistributionState }
             )
         }
@@ -156,13 +159,15 @@ internal fun mapCollectionBorrowItem(
     dto: CollectionBorrowDto,
     fallbackTitle: String,
     fallbackAuthor: String,
-    fallbackDate: String,
-    idFactory: () -> String = { UUID.randomUUID().toString() }
-): CollectionBorrowItem {
+    fallbackDate: String
+): CollectionBorrowItem? {
+    val remoteId = dto.id?.trim()?.takeIf(String::isNotEmpty)
+        ?: dto.sn?.trim()?.takeIf(String::isNotEmpty)
+        ?: return null
     return CollectionBorrowItem(
-        id = dto.id.orEmpty().ifBlank { dto.sn.orEmpty().ifBlank(idFactory) },
-        sn = dto.sn.orEmpty(),
-        code = dto.code.orEmpty(),
+        id = remoteId,
+        sn = dto.sn?.trim().orEmpty(),
+        code = dto.code?.trim().orEmpty(),
         title = dto.name.orEmpty().ifBlank { fallbackTitle },
         author = dto.author.orEmpty().ifBlank { fallbackAuthor },
         borrowDate = dto.borrowDate.orEmpty().ifBlank { fallbackDate },

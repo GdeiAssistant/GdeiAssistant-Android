@@ -23,25 +23,21 @@ class MessagesRepository @Inject constructor(
             messageApi.getInteractionMessages(start = start.coerceAtLeast(0), size = size.coerceAtLeast(1))
         }.mapCatching { items ->
             items.orEmpty().mapNotNull { dto ->
-                val id = dto.id?.trim().orEmpty()
+                val id = dto.id?.trim()?.takeIf(String::isNotEmpty) ?: return@mapNotNull null
                 val title = dto.title?.trim().orEmpty()
                 val content = dto.content?.trim().orEmpty()
-                if (id.isBlank() && title.isBlank() && content.isBlank()) {
-                    null
-                } else {
-                    InteractionMessage(
-                        id = id.ifBlank { "${title.hashCode()}-${content.hashCode()}" },
-                        module = dto.module?.trim(),
-                        type = dto.type?.trim(),
-                        title = title.ifBlank { context.getString(R.string.messages_interaction_title) },
-                        content = content.ifBlank { context.getString(R.string.messages_interaction_default_content) },
-                        createdAt = dto.createdAt?.trim().orEmpty().ifBlank { context.getString(R.string.common_just_now) },
-                        isRead = dto.isRead == true,
-                        targetType = dto.targetType?.trim(),
-                        targetId = dto.targetId?.trim(),
-                        targetSubId = dto.targetSubId?.trim()
-                    )
-                }
+                InteractionMessage(
+                    id = id,
+                    module = dto.module?.trim(),
+                    type = dto.type?.trim(),
+                    title = title.ifBlank { context.getString(R.string.messages_interaction_title) },
+                    content = content.ifBlank { context.getString(R.string.messages_interaction_default_content) },
+                    createdAt = dto.createdAt?.trim().orEmpty().ifBlank { context.getString(R.string.common_just_now) },
+                    isRead = dto.isRead == true,
+                    targetType = dto.targetType?.trim(),
+                    targetId = dto.targetId?.trim(),
+                    targetSubId = dto.targetSubId?.trim()
+                )
             }
         }
     }
