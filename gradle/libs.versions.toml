@@ -1,5 +1,5 @@
-# Gradle 9.x + Kotlin 2.3 版本目录
-# 使用方式：在 build.gradle.kts 中通过 libs.xxx 引用
+# Gradle 9.x + AGP 9.3 + Kotlin 2.3 version catalog
+# Referenced in build.gradle.kts via libs.*
 
 [versions]
 agp = "9.3.1"

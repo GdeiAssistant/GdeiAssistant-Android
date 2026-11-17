@@ -1,6 +1,6 @@
 # Lingnan Editorial Design Tokens & Homepage Notes
 
-`GeneratedDesignTokens.kt` is synced directly from `design/generated/GeneratedDesignTokens.kt` in the main `GdeiAssistant` repository (`design/tokens.json` v1). Run `node design/generate-tokens.mjs` in the main repository before copying updates; never hand-edit the generated token file.
+`GeneratedDesignTokens.kt` is synced directly from the generated Kotlin tokens in the main `GdeiAssistant` repository (`tokens.json` v1). Run `generate-tokens.mjs` in the main repository before copying updates; never hand-edit the generated token file.
 
 ## Theme System & Typography
 
@@ -18,4 +18,4 @@ The homepage service grid maps entries to crisp monochrome `HomeFeatureIcons` Im
 
 ## Local Verification
 
-Run `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug`, `python3 scripts/check_locale_resources.py`, and `python3 scripts/check_hygiene.py` before pushing changes.
+Run `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug` and `python3 scripts/check_locale_resources.py` before pushing changes.

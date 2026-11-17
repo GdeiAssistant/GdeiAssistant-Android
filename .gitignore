@@ -15,10 +15,6 @@ bin/
 gen/
 out/
 release/
-docs/*
-# 本任务实现说明例外（精确文件，非整目录）
-!docs/location-names.md
-!docs/social-messaging-implementation.zh-CN.md
 
 # Gradle
 .gradle/
