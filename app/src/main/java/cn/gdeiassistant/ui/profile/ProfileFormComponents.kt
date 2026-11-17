@@ -66,7 +66,7 @@ internal fun ProfileSummaryContent(
 ) {
     val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
     val faculty = profileOptions.facultyNameFor(profile.facultyCode) ?: profile.faculty
-    val major = profileOptions.majorLabelFor(faculty.orEmpty(), profile.majorCode.orEmpty()) ?: profile.major
+    val major = profileOptions.majorLabelFor(profile.facultyCode, profile.majorCode) ?: profile.major
     Column(modifier = Modifier.testTag("profile.details")) {
         ProfileSummaryRow(
             title = stringResource(R.string.profile_info_nickname),
@@ -133,9 +133,9 @@ internal fun ProfileEditingContent(
     state: ProfileUiState,
     onNicknameChange: (String) -> Unit,
     onBirthdayChange: (String) -> Unit,
-    onSelectCollege: (String) -> Unit,
-    onSelectMajor: (String) -> Unit,
-    onSelectEnrollment: (String) -> Unit,
+    onSelectCollege: (Int) -> Unit,
+    onSelectMajor: (String?) -> Unit,
+    onSelectEnrollment: (Int?) -> Unit,
     onBioChange: (String) -> Unit,
     onOpenLocationPicker: (ProfileLocationField) -> Unit,
     onCancel: () -> Unit,
@@ -144,10 +144,12 @@ internal fun ProfileEditingContent(
 ) {
     val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
     val draft = state.draft
-    val profileOptions = state.profileOptions
-    val majorOptions = profileOptions.majorOptionsFor(draft.college)
-    val canSelectMajor = profileOptions.canSelectMajor(draft.college)
-    val enrollmentOptions = listOf(ProfileFormSupport.UnselectedOption) + ProfileFormSupport.enrollmentOptions
+    val profileOptions = state.profileOptions.localizedForLocale(locale)
+    val facultyOptions = profileOptions.faculties
+    val majorOptions = profileOptions.majorOptionsFor(draft.facultyCode, locale)
+    val canSelectMajor = profileOptions.canSelectMajor(draft.facultyCode)
+    val enrollmentYearOptions = ProfileFormSupport.enrollmentYearOptions
+    val enrollmentLabels = listOf(ProfileFormSupport.UnselectedOption) + enrollmentYearOptions.map(Int::toString)
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         ProfileTextInput(
@@ -166,25 +168,36 @@ internal fun ProfileEditingContent(
 
         ProfileSelectionField(
             title = stringResource(R.string.profile_college_label),
-            value = draft.college,
-            options = profileOptions.facultyOptions,
-            onSelect = onSelectCollege
+            value = profileOptions.facultyNameFor(draft.facultyCode) ?: ProfileFormSupport.UnselectedOption,
+            options = facultyOptions.map { it.label },
+            onSelect = { selectedLabel ->
+                val selectedCode = facultyOptions.firstOrNull { it.label == selectedLabel }?.code ?: 0
+                onSelectCollege(selectedCode)
+            }
         )
 
         ProfileSelectionField(
             title = stringResource(R.string.profile_info_major),
-            value = draft.major,
-            options = majorOptions,
+            value = profileOptions.majorLabelFor(draft.facultyCode, draft.majorCode) ?: ProfileFormSupport.UnselectedOption,
+            options = majorOptions.map { it.label },
             enabled = canSelectMajor,
             disabledLabel = stringResource(R.string.profile_select_college_first),
-            onSelect = onSelectMajor
+            onSelect = { selectedLabel ->
+                val selectedCode = majorOptions.firstOrNull { it.label == selectedLabel }?.code
+                    ?.takeUnless { it == ProfileFormSupport.UnselectedCode }
+                onSelectMajor(selectedCode)
+            }
         )
 
         ProfileSelectionField(
             title = stringResource(R.string.profile_info_enrollment),
-            value = draft.grade.ifBlank { ProfileFormSupport.UnselectedOption },
-            options = enrollmentOptions,
-            onSelect = onSelectEnrollment,
+            value = draft.enrollment?.toString() ?: ProfileFormSupport.UnselectedOption,
+            options = enrollmentLabels,
+            onSelect = { selectedLabel ->
+                val index = enrollmentLabels.indexOf(selectedLabel)
+                val selectedYear = if (index > 0) enrollmentYearOptions.getOrNull(index - 1) else null
+                onSelectEnrollment(selectedYear)
+            },
             monospace = true
         )
 

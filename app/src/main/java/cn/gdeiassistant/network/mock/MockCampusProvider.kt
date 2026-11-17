@@ -159,7 +159,9 @@ object MockCampusProvider {
     }
 
     fun mockCollectionBorrow(request: Request): String {
-        if (request.url.queryParameter("password").orEmpty().trim().isEmpty()) {
+        val password = request.jsonObjectBody()?.getString("password")
+            ?: request.url.queryParameter("password")
+        if (password.orEmpty().trim().isEmpty()) {
             return MockUtils.failureJson(campusText(request.requestLocale(), "请输入图书馆密码后再查询借阅", "Please enter your library password before checking borrowing records", "請輸入圖書館密碼後再查詢借閱", "貸出情報を確認する前に図書館パスワードを入力してください", "대출 내역을 조회하려면 도서관 비밀번호를 입력해 주세요"))
         }
         return mockLibraryBorrowQuery(request)

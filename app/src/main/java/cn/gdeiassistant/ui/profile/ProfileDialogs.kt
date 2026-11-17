@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -91,15 +91,20 @@ internal fun ProfileTextEditorDialog(
     )
 }
 
+internal data class ProfileSelectionOption<T>(
+    val value: T,
+    val label: String
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ProfileSelectionPickerSheet(
+internal fun <T> ProfileSelectionPickerSheet(
     title: String,
-    options: List<String>,
-    selectedValue: String,
+    options: List<ProfileSelectionOption<T>>,
+    selectedValue: T,
     monospace: Boolean,
     onDismiss: () -> Unit,
-    onSelect: (String) -> Unit
+    onSelect: (T) -> Unit
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Text(
@@ -115,21 +120,22 @@ internal fun ProfileSelectionPickerSheet(
                 .heightIn(max = 420.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            items(options, key = { it }) { option ->
+            itemsIndexed(options, key = { index, option -> "${index}_${option.label}" }) { _, option ->
+                val isSelected = option.value == selectedValue
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = option,
+                            text = option.label,
                             fontFamily = if (monospace) FontFamily.Monospace else FontFamily.Default,
-                            fontWeight = if (option == selectedValue) FontWeight.Bold else FontWeight.Normal
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                         )
                     },
-                    supportingContent = if (option == selectedValue) {
+                    supportingContent = if (isSelected) {
                         { Text(text = stringResource(R.string.profile_selected_badge)) }
                     } else {
                         null
                     },
-                    modifier = Modifier.clickable { onSelect(option) }
+                    modifier = Modifier.clickable { onSelect(option.value) }
                 )
             }
         }

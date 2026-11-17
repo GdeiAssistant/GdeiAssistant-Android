@@ -30,9 +30,9 @@ import javax.inject.Inject
 
 data class ProfileDraftUiState(
     val nickname: String = "",
-    val college: String = ProfileFormSupport.UnselectedOption,
-    val major: String = ProfileFormSupport.UnselectedOption,
-    val grade: String = "",
+    val facultyCode: Int = 0,
+    val majorCode: String? = null,
+    val enrollment: Int? = null,
     val bio: String = "",
     val birthday: String = "",
     val location: String = "",
@@ -163,54 +163,53 @@ class ProfileViewModel @Inject constructor(
         _state.update { it.copy(draft = it.draft.copy(birthday = ""), saveError = null) }
     }
 
-    fun selectCollege(value: String) {
+    fun selectCollege(facultyCode: Int) {
         _state.update { current ->
-            val normalizedCollege = ProfileFormSupport.normalizeSelection(value)
-            val majorOptions = current.profileOptions.majorOptionsFor(normalizedCollege)
+            val resolvedFacultyCode = current.profileOptions.facultyOptionFor(facultyCode)?.code ?: 0
+            val validMajors = current.profileOptions.majorOptionsFor(resolvedFacultyCode)
             current.copy(
                 draft = current.draft.copy(
-                    college = normalizedCollege,
-                    major = current.draft.major.takeIf { majorOptions.contains(it) }
-                        ?: ProfileFormSupport.UnselectedOption
+                    facultyCode = resolvedFacultyCode,
+                    majorCode = current.draft.majorCode?.takeIf { code -> validMajors.any { it.code == code } }
                 ),
                 saveError = null
             )
         }
     }
 
-    fun selectMajor(value: String) {
+    fun selectMajor(majorCode: String?) {
         _state.update { current ->
-            if (!current.profileOptions.canSelectMajor(current.draft.college)) {
+            if (!current.profileOptions.canSelectMajor(current.draft.facultyCode)) {
                 current.copy(saveError = context.getString(R.string.profile_select_college_first))
             } else {
+                val normalized = majorCode?.trim()
+                    ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
                 current.copy(
-                    draft = current.draft.copy(major = ProfileFormSupport.normalizeSelection(value)),
+                    draft = current.draft.copy(majorCode = normalized),
                     saveError = null
                 )
             }
         }
     }
 
-    fun selectEnrollment(value: String) {
+    fun selectEnrollment(enrollment: Int?) {
         _state.update {
             it.copy(
-                draft = it.draft.copy(
-                    grade = if (value == ProfileFormSupport.UnselectedOption) "" else value
-                ),
+                draft = it.draft.copy(enrollment = enrollment),
                 saveError = null
             )
         }
     }
 
-    fun updateLocationSelection(field: ProfileLocationField, selection: ProfileLocationSelection) {
+    fun updateLocationSelection(field: ProfileLocationField, selection: ProfileLocationSelection?) {
         _state.update { current ->
             val draft = when (field) {
                 ProfileLocationField.Location -> current.draft.copy(
-                    location = selection.displayName,
+                    location = selection?.displayName.orEmpty(),
                     locationSelection = selection
                 )
                 ProfileLocationField.Hometown -> current.draft.copy(
-                    hometown = selection.displayName,
+                    hometown = selection?.displayName.orEmpty(),
                     hometownSelection = selection
                 )
             }
@@ -230,44 +229,43 @@ class ProfileViewModel @Inject constructor(
         saveDraftUpdate { draft, _ -> draft.copy(birthday = value) }
     }
 
-    fun saveCollege(value: String) {
+    fun saveCollege(facultyCode: Int) {
         saveDraftUpdate { draft, options ->
-            val normalizedCollege = ProfileFormSupport.normalizeSelection(value)
-            val majorOptions = options.majorOptionsFor(normalizedCollege)
+            val resolvedFacultyCode = options.facultyOptionFor(facultyCode)?.code ?: 0
+            val validMajors = options.majorOptionsFor(resolvedFacultyCode)
             draft.copy(
-                college = normalizedCollege,
-                major = draft.major.takeIf { majorOptions.contains(it) }
-                    ?: ProfileFormSupport.UnselectedOption
+                facultyCode = resolvedFacultyCode,
+                majorCode = draft.majorCode?.takeIf { code -> validMajors.any { it.code == code } }
             )
         }
     }
 
-    fun saveMajor(value: String) {
+    fun saveMajor(majorCode: String?) {
         saveDraftUpdate { draft, options ->
-            if (!options.canSelectMajor(draft.college)) {
+            if (!options.canSelectMajor(draft.facultyCode)) {
                 throw IllegalStateException(context.getString(R.string.profile_select_college_first))
             }
-            draft.copy(major = ProfileFormSupport.normalizeSelection(value))
+            val normalized = majorCode?.trim()
+                ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
+            draft.copy(majorCode = normalized)
         }
     }
 
-    fun saveEnrollment(value: String) {
+    fun saveEnrollment(enrollment: Int?) {
         saveDraftUpdate { draft, _ ->
-            draft.copy(
-                grade = if (value == ProfileFormSupport.UnselectedOption) "" else value
-            )
+            draft.copy(enrollment = enrollment)
         }
     }
 
-    fun saveLocation(field: ProfileLocationField, selection: ProfileLocationSelection) {
+    fun saveLocation(field: ProfileLocationField, selection: ProfileLocationSelection?) {
         saveDraftUpdate { draft, _ ->
             when (field) {
                 ProfileLocationField.Location -> draft.copy(
-                    location = selection.displayName,
+                    location = selection?.displayName.orEmpty(),
                     locationSelection = selection
                 )
                 ProfileLocationField.Hometown -> draft.copy(
-                    hometown = selection.displayName,
+                    hometown = selection?.displayName.orEmpty(),
                     hometownSelection = selection
                 )
             }
@@ -368,31 +366,32 @@ class ProfileViewModel @Inject constructor(
     private fun requestFrom(draft: ProfileDraftUiState): ProfileUpdateRequest {
         return ProfileUpdateRequest(
             nickname = draft.nickname.trim(),
-            college = draft.college,
-            major = draft.major,
-            grade = draft.grade,
+            facultyCode = draft.facultyCode,
+            majorCode = draft.majorCode,
+            enrollment = draft.enrollment,
             bio = draft.bio.trim(),
-            birthday = draft.birthday,
+            birthday = draft.birthday.trim().takeIf(String::isNotEmpty),
             location = draft.locationSelection,
             hometown = draft.hometownSelection
         )
     }
 
     private fun draftStateFrom(profile: UserProfileSummary, options: ProfileOptions): ProfileDraftUiState {
-        val normalizedCollege = (options.facultyNameFor(profile.facultyCode) ?: profile.faculty)?.takeIf(String::isNotBlank)
-            ?.takeIf { options.facultyOptions.contains(it) }
-            ?: ProfileFormSupport.UnselectedOption
-        val restoredMajor = profile.majorCode
-            ?.let { options.majorLabelFor(normalizedCollege, it) }
-            ?.takeIf { options.majorOptionsFor(normalizedCollege).contains(it) }
-            ?: profile.major?.takeIf(String::isNotBlank)
-                ?.takeIf { options.majorOptionsFor(normalizedCollege).contains(it) }
-                ?: ProfileFormSupport.UnselectedOption
+        val resolvedFacultyCode = profile.facultyCode
+            ?.takeIf { code -> options.facultyOptionFor(code) != null }
+            ?: 0
+        val resolvedMajorCode = profile.majorCode
+            ?.trim()
+            ?.takeIf { code ->
+                code.isNotEmpty() &&
+                    code != ProfileFormSupport.UnselectedCode &&
+                    options.facultyOptionFor(resolvedFacultyCode)?.majors?.any { it.code == code } == true
+            }
         return ProfileDraftUiState(
             nickname = profile.nickname.orEmpty(),
-            college = normalizedCollege,
-            major = restoredMajor,
-            grade = profile.enrollment.orEmpty(),
+            facultyCode = resolvedFacultyCode,
+            majorCode = resolvedMajorCode,
+            enrollment = profile.enrollment?.trim()?.toIntOrNull(),
             bio = profile.introduction.orEmpty(),
             birthday = profile.birthday.orEmpty(),
             location = profile.location.orEmpty(),
@@ -403,12 +402,19 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun sanitizeDraft(draft: ProfileDraftUiState, options: ProfileOptions): ProfileDraftUiState {
-        val normalizedCollege = draft.college.takeIf { options.facultyOptions.contains(it) }
-            ?: ProfileFormSupport.UnselectedOption
-        val validMajors = options.majorOptionsFor(normalizedCollege)
+        val resolvedFacultyCode = draft.facultyCode
+            .takeIf { code -> options.facultyOptionFor(code) != null }
+            ?: 0
+        val resolvedMajorCode = draft.majorCode
+            ?.trim()
+            ?.takeIf { code ->
+                code.isNotEmpty() &&
+                    code != ProfileFormSupport.UnselectedCode &&
+                    options.facultyOptionFor(resolvedFacultyCode)?.majors?.any { it.code == code } == true
+            }
         return draft.copy(
-            college = normalizedCollege,
-            major = draft.major.takeIf { validMajors.contains(it) } ?: ProfileFormSupport.UnselectedOption
+            facultyCode = resolvedFacultyCode,
+            majorCode = resolvedMajorCode
         )
     }
 }

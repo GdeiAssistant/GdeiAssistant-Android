@@ -64,15 +64,12 @@ private suspend inline fun <Response, ResultType> safeResultCall(
     } catch (e: AppException) {
         Result.failure(e)
     } catch (e: HttpException) {
-        // MockInterceptor short-circuits before ResponseInterceptor, so mock 4xx/5xx arrive here.
-        val parsed = parseErrorBody(e.response()?.errorBody()?.string())
-        val message = parsed?.first
-            ?: when (e.code()) {
-                NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.messageLoginExpired()
-                NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.messageForbidden()
-                else -> NetworkConstants.messageServerError(e.code())
-            }
-        Result.failure(AppException(message, e.code(), parsed?.second))
+        val message = when (e.code()) {
+            NetworkConstants.HTTP_UNAUTHORIZED -> NetworkConstants.messageLoginExpired()
+            NetworkConstants.HTTP_FORBIDDEN -> NetworkConstants.messageForbidden()
+            else -> NetworkConstants.messageServerError(e.code())
+        }
+        Result.failure(AppException(message, e.code()))
     } catch (e: IOException) {
         Result.failure(AppException(NetworkConstants.messageNetworkError(), -1))
     } catch (e: Exception) {

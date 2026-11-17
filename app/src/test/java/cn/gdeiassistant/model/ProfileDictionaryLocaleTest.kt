@@ -14,13 +14,25 @@ class ProfileDictionaryLocaleTest {
                 AppLocaleSupport.setCurrentLocale(locale)
                 val expected = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
                 assertEquals(locale, expected.facultyNameFor(11), cached.facultyNameFor(11))
-                assertEquals(locale, expected.majorOptionsFor(expected.facultyNameFor(11).orEmpty()), cached.majorOptionsFor(originalFaculty.label))
+                assertEquals(
+                    locale,
+                    expected.majorOptionsFor(11).map(ProfileMajorOption::code),
+                    cached.majorOptionsFor(11, locale).map(ProfileMajorOption::code)
+                )
+                assertEquals(
+                    locale,
+                    expected.majorOptionsFor(11).map(ProfileMajorOption::label),
+                    cached.majorOptionsFor(11, locale).map(ProfileMajorOption::label)
+                )
                 assertEquals(locale, expected.marketplaceTypeTitle(3), cached.marketplaceTypeTitle(3))
                 assertEquals(locale, expected.lostFoundItemTypeTitle(10), cached.lostFoundItemTypeTitle(10))
                 assertEquals(locale, expected.lostFoundModeTitle(1), cached.lostFoundModeTitle(1))
-                assertEquals(11, cached.facultyCodeFor(expected.facultyNameFor(11).orEmpty()))
-                assertEquals("software_engineering", cached.majorCodeFor(originalFaculty.label, expected.majorLabelFor(expected.facultyNameFor(11).orEmpty(), "software_engineering").orEmpty()))
-                assertFalse(cached.canSelectMajor(LocalizedProfileCatalog.catalogForLocale("zh-CN").unselectedLabel))
+                assertEquals(
+                    expected.majorLabelFor(11, "software_engineering"),
+                    cached.majorLabelFor(11, "software_engineering")
+                )
+                assertFalse(cached.canSelectMajor(0))
+                assertFalse(cached.canSelectMajor(null))
             }
         } finally {
             AppLocaleSupport.setCurrentLocale(null)

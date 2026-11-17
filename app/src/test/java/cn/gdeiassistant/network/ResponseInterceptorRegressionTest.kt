@@ -1,6 +1,7 @@
 package cn.gdeiassistant.network
 
 import cn.gdeiassistant.data.SessionManager
+import cn.gdeiassistant.di.NetworkModule
 import cn.gdeiassistant.model.JsonResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,6 +11,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.CookieJar
 import okhttp3.Dispatcher
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -19,6 +21,7 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -131,26 +134,71 @@ class ResponseInterceptorRegressionTest {
         }
     }
 
-    @Test fun mockShortCircuitHttpErrorKeepsBackendMessageAndErrorCode() = runBlocking {
-        val server = MockWebServer()
-        // MockInterceptor runs before ResponseInterceptor, so its 4xx responses reach Retrofit untouched.
-        val client = OkHttpClient.Builder().build()
-        try {
-            server.start()
-            val api = Retrofit.Builder().baseUrl(server.url("/"))
-                .client(client).addConverterFactory(GsonConverterFactory.create())
-                .build().create(TestApi::class.java)
-            server.enqueue(MockResponse().setResponseCode(403).setBody("""{"message":"synthetic forbidden","errorCode":"PRIVACY_RESTRICTED"}"""))
-            val error = safeJsonResultCall { api.request() }.exceptionOrNull()
-            assertTrue("HttpException must become AppException", error is AppException)
-            assertEquals(403, (error as AppException).code)
-            assertEquals("synthetic forbidden", error.message)
-            assertEquals("PRIVACY_RESTRICTED", error.errorCode)
-        } finally {
-            client.dispatcher.executorService.shutdownNow()
-            client.connectionPool.evictAll()
-            server.shutdown()
+    @Test fun mockShortCircuitHttpErrorPassesThroughResponseInterceptor() {
+        runBlocking {
+            val session: SessionManager = mock()
+            val mockShortCircuit = Interceptor { chain ->
+                val request = chain.request()
+                val (code, body) = when (request.url.encodedPath) {
+                    "/unauthorized" -> 401 to """{"message":"synthetic expired","errorCode":"AUTH_REQUIRED"}"""
+                    else -> 403 to """{"message":"synthetic forbidden","errorCode":"PRIVACY_RESTRICTED"}"""
+                }
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(code)
+                    .message("Mock")
+                    .body(body.toResponseBody("application/json; charset=utf-8".toMediaType()))
+                    .build()
+            }
+            val client = OkHttpClient.Builder()
+                .addInterceptor(ResponseInterceptor(session))
+                .addInterceptor(mockShortCircuit)
+                .build()
+            try {
+                val api = Retrofit.Builder().baseUrl("https://mock.local/")
+                    .client(client).addConverterFactory(GsonConverterFactory.create())
+                    .build().create(TestApi::class.java)
+                val forbiddenError = safeJsonResultCall { api.request() }.exceptionOrNull()
+                assertTrue("Mock 403 must become AppException via ResponseInterceptor", forbiddenError is AppException)
+                assertEquals(403, (forbiddenError as AppException).code)
+                assertEquals("synthetic forbidden", forbiddenError.message)
+                assertEquals("PRIVACY_RESTRICTED", forbiddenError.errorCode)
+
+                val unauthorizedCall = client.newCall(Request.Builder().url("https://mock.local/unauthorized").build())
+                val unauthorizedError = runCatching { unauthorizedCall.execute() }.exceptionOrNull()
+                assertTrue(unauthorizedError is AppException)
+                assertEquals(401, (unauthorizedError as AppException).code)
+                assertEquals("synthetic expired", unauthorizedError.message)
+                verify(session).clearTokensIfCurrent(org.mockito.kotlin.anyOrNull())
+            } finally {
+                client.dispatcher.executorService.shutdownNow()
+                client.connectionPool.evictAll()
+            }
         }
+    }
+
+    @Test fun networkModuleOrdersMockInterceptorAfterAuthAndResponseInterceptors() {
+        val sessionManager: SessionManager = mock()
+        whenever(sessionManager.cookieJar).thenReturn(CookieJar.NO_COOKIES)
+        val authInterceptor = AuthInterceptor(sessionManager)
+        val responseInterceptor = ResponseInterceptor(sessionManager)
+        val client = NetworkModule.provideOkHttpClient(
+            sessionManager = sessionManager,
+            requestIdInterceptor = RequestIdInterceptor(),
+            networkLoggingInterceptor = NetworkLoggingInterceptor(),
+            baseUrlOverrideInterceptor = BaseUrlOverrideInterceptor(),
+            authInterceptor = authInterceptor,
+            responseInterceptor = responseInterceptor,
+            localeInterceptor = LocaleInterceptor(mock())
+        )
+        val interceptors = client.interceptors
+        val authIndex = interceptors.indexOf(authInterceptor)
+        val responseIndex = interceptors.indexOf(responseInterceptor)
+        val mockIndex = interceptors.indexOfFirst { it is MockInterceptor }
+        assertTrue(authIndex >= 0)
+        assertTrue(responseIndex > authIndex)
+        assertTrue(mockIndex > responseIndex)
     }
 
     @Test fun errorResponsesCloseOriginalBodyForAllStatusesAndLargeBodies() {

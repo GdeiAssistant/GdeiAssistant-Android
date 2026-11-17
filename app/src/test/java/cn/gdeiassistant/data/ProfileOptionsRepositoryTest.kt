@@ -1,7 +1,8 @@
 package cn.gdeiassistant.data
 
-import cn.gdeiassistant.model.ProfileFormSupport
 import cn.gdeiassistant.model.AppLocaleSupport
+import cn.gdeiassistant.model.ProfileFormSupport
+import cn.gdeiassistant.model.ProfileMajorOption
 import cn.gdeiassistant.network.api.ProfileDictionaryOptionDto
 import cn.gdeiassistant.network.api.ProfileFacultyOptionDto
 import cn.gdeiassistant.network.api.ProfileMajorOptionDto
@@ -49,10 +50,13 @@ class ProfileOptionsRepositoryTest {
         assertEquals("中文系", options.facultyNameFor(3))
         assertEquals(
             listOf(ProfileFormSupport.UnselectedOption, "汉语言文学", "秘书学"),
-            options.majorOptionsFor("中文系")
+            options.majorOptionsFor(3).map(ProfileMajorOption::label)
         )
-        assertEquals("secretarial_studies", options.majorCodeFor("中文系", "秘书学"))
-        assertEquals("秘书学", options.majorLabelFor("中文系", "secretarial_studies"))
+        assertEquals(
+            listOf(ProfileFormSupport.UnselectedCode, "chinese_language_literature", "secretarial_studies"),
+            options.majorOptionsFor(3).map(ProfileMajorOption::code)
+        )
+        assertEquals("秘书学", options.majorLabelFor(3, "secretarial_studies"))
         assertEquals("图书教材", options.marketplaceTypeTitle(8))
         assertEquals(
             ProfileFormSupport.defaultOptions.lostFoundItemTypes,
@@ -90,9 +94,9 @@ class ProfileOptionsRepositoryTest {
             )
         )
 
-        assertEquals(11, options.facultyCodeFor("计算机科学系"))
-        assertNull(options.facultyCodeFor("无效院系"))
-        assertEquals("software_engineering", options.majorCodeFor("计算机科学系", "软件工程"))
+        assertEquals(11, options.facultyOptionFor(11)?.code)
+        assertNull(options.facultyOptionFor(999))
+        assertEquals("软件工程", options.majorLabelFor(11, "software_engineering"))
         assertEquals("数码配件", options.marketplaceTypeTitle(3))
     }
 
@@ -100,7 +104,7 @@ class ProfileOptionsRepositoryTest {
     fun codeOnlyProfileOptionsReuseSharedCatalogLabels() {
         val fallbackOptions = ProfileFormSupport.defaultOptions
         val facultyName = fallbackOptions.facultyNameFor(11).orEmpty()
-        val majorName = fallbackOptions.majorLabelFor(facultyName, "software_engineering").orEmpty()
+        val majorName = fallbackOptions.majorLabelFor(11, "software_engineering").orEmpty()
         val options = mapProfileOptions(
             ProfileOptionsDto(
                 faculties = listOf(
@@ -129,9 +133,12 @@ class ProfileOptionsRepositoryTest {
         assertEquals(facultyName, options.facultyNameFor(11))
         assertEquals(
             listOf(ProfileFormSupport.UnselectedOption, majorName),
-            options.majorOptionsFor(facultyName)
+            options.majorOptionsFor(11).map(ProfileMajorOption::label)
         )
-        assertEquals("software_engineering", options.majorCodeFor(facultyName, majorName))
+        assertEquals(
+            listOf(ProfileFormSupport.UnselectedCode, "software_engineering"),
+            options.majorOptionsFor(11).map(ProfileMajorOption::code)
+        )
         assertEquals(fallbackOptions.marketplaceTypeTitle(0), options.marketplaceTypeTitle(0))
         assertEquals(fallbackOptions.marketplaceTypeTitle(11), options.marketplaceTypeTitle(11))
         assertEquals(fallbackOptions.lostFoundModeTitle(1), options.lostFoundModeTitle(1))

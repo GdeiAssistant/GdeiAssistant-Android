@@ -42,11 +42,11 @@ data class ProfileLocationSelection(
 @Immutable
 data class ProfileUpdateRequest(
     val nickname: String,
-    val college: String,
-    val major: String,
-    val grade: String,
+    val facultyCode: Int,
+    val majorCode: String?,
+    val enrollment: Int?,
     val bio: String,
-    val birthday: String,
+    val birthday: String?,
     val location: ProfileLocationSelection?,
     val hometown: ProfileLocationSelection?
 ) : Serializable
@@ -96,29 +96,32 @@ data class ProfileOptions(
         )
     }
 
-    private fun facultyForLabel(value: String): ProfileFacultyOption? {
-        return faculties.firstOrNull { normalizeOptionLookup(it.label) == normalizeOptionLookup(value) }
-            ?: LocalizedProfileCatalog.facultyCodeForLabel(value)?.let { code -> faculties.firstOrNull { it.code == code } }
-    }
-
     val facultyOptions: List<String>
         get() = localizedForLocale().faculties.map(ProfileFacultyOption::label)
 
-    fun majorOptionsFor(faculty: String): List<String> {
-        val code = facultyForLabel(faculty)?.code
-        return localizedForLocale().faculties.firstOrNull { it.code == code }
+    fun facultyOptionFor(
+        code: Int?,
+        locale: String = AppLocaleSupport.currentLocale()
+    ): ProfileFacultyOption? {
+        return code?.let { target ->
+            localizedForLocale(locale).faculties.firstOrNull { it.code == target }
+        }
+    }
+
+    fun majorOptionsFor(
+        facultyCode: Int?,
+        locale: String = AppLocaleSupport.currentLocale()
+    ): List<ProfileMajorOption> {
+        return facultyOptionFor(facultyCode, locale)
             ?.majors
-            ?.map(ProfileMajorOption::label)
-            ?.takeIf(List<String>::isNotEmpty)
-            ?: listOf(ProfileFormSupport.UnselectedOption)
+            ?.takeIf(List<ProfileMajorOption>::isNotEmpty)
+            ?: listOf(ProfileMajorOption(ProfileFormSupport.UnselectedCode, ProfileFormSupport.UnselectedOption))
     }
 
-    fun canSelectMajor(faculty: String): Boolean {
-        return facultyForLabel(faculty)?.code?.let { it != 0 } ?: false
-    }
-
-    fun facultyCodeFor(college: String): Int? {
-        return facultyForLabel(college)?.code
+    fun canSelectMajor(facultyCode: Int?): Boolean {
+        return facultyCode != null &&
+            facultyCode != 0 &&
+            faculties.any { it.code == facultyCode && it.majors.isNotEmpty() }
     }
 
     fun facultyNameFor(code: Int?): String? {
@@ -129,18 +132,13 @@ data class ProfileOptions(
         return normalized.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedOption }
     }
 
-    fun majorCodeFor(faculty: String, majorLabel: String): String? {
-        val option = facultyForLabel(faculty) ?: return null
-        val normalizedMajor = normalizeOptionLookup(majorLabel)
-        return option.majors.firstOrNull { normalizeOptionLookup(it.label) == normalizedMajor }?.code
-            ?: LocalizedProfileCatalog.majorCodeForLabel(option.code, majorLabel)?.takeIf { code -> option.majors.any { it.code == code } }
-    }
-
-    fun majorLabelFor(faculty: String, majorCode: String): String? {
-        val code = facultyForLabel(faculty)?.code
-        return localizedForLocale().faculties.firstOrNull { it.code == code }
+    fun majorLabelFor(facultyCode: Int?, majorCode: String?): String? {
+        val normalizedMajor = majorCode?.trim()
+            ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
+            ?: return null
+        return facultyOptionFor(facultyCode)
             ?.majors
-            ?.firstOrNull { it.code == majorCode }
+            ?.firstOrNull { it.code == normalizedMajor }
             ?.label
     }
 
@@ -182,16 +180,18 @@ data class ProfileOptions(
 }
 
 object ProfileFormSupport {
+    const val UnselectedCode: String = "unselected"
+
     val UnselectedOption: String
         get() = LocalizedProfileCatalog.currentCatalog().unselectedLabel
 
     val defaultOptions: ProfileOptions
         get() = LocalizedProfileCatalog.currentCatalog().defaultOptions
 
-    val enrollmentOptions: List<String>
+    val enrollmentYearOptions: List<Int>
         get() {
             val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-            return (2014..currentYear).map(Int::toString)
+            return (2014..currentYear).toList()
         }
 
     fun makeLocationDisplay(
@@ -222,18 +222,6 @@ object ProfileFormSupport {
         val trimmed = value.trim()
         return if (trimmed.isEmpty()) UnselectedOption else trimmed
     }
-
-    fun normalizeOptionalSelection(value: String): String? {
-        val trimmed = value.trim()
-        return trimmed.takeIf { it.isNotEmpty() && it != UnselectedOption }
-    }
-}
-
-private fun normalizeOptionLookup(value: String): String {
-    return value
-        .trim()
-        .replace(" ", "")
-        .replace("\u3000", "")
 }
 
 private fun dictionaryLabelFor(

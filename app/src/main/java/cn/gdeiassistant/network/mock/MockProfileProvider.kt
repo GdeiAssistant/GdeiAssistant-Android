@@ -11,6 +11,8 @@ import cn.gdeiassistant.network.mock.MockUtils.getString
 import cn.gdeiassistant.network.mock.MockUtils.hasMultipartPart
 import cn.gdeiassistant.network.mock.MockUtils.jsonObjectBody
 import okhttp3.Request
+import java.time.LocalDate
+import java.time.ZoneId
 
 /** Mock provider for user profile, privacy, account management endpoints. */
 object MockProfileProvider {
@@ -200,21 +202,29 @@ object MockProfileProvider {
             "facultyCode" to facultyCode,
             "majorCode" to majorCode,
             "enrollment" to enrollment,
-            "location" to linkedMapOf(
-                "regionCode" to locationRegion,
-                "stateCode" to locationState,
-                "cityCode" to locationCity
-            ),
-            "hometown" to linkedMapOf(
-                "regionCode" to hometownRegion,
-                "stateCode" to hometownState,
-                "cityCode" to hometownCity
-            ),
+            "location" to locationRegion.takeIf(String::isNotBlank)?.let {
+                linkedMapOf(
+                    "regionCode" to locationRegion,
+                    "stateCode" to locationState,
+                    "cityCode" to locationCity
+                )
+            },
+            "hometown" to hometownRegion.takeIf(String::isNotBlank)?.let {
+                linkedMapOf(
+                    "regionCode" to hometownRegion,
+                    "stateCode" to hometownState,
+                    "cityCode" to hometownCity
+                )
+            },
             "introduction" to introduction,
             "birthday" to birthday,
             "ipArea" to ipArea,
             "age" to age
         )
+    }
+
+    fun resetMockProfile() {
+        mockProfileSummary = baseMockProfileSummary
     }
 
     private fun MockProfileLocationRegionRecord.toPayload(): Map<String, Any?> {
@@ -339,20 +349,187 @@ object MockProfileProvider {
         return success(locale, "saved")
     }
 
+    fun mockPatchProfile(request: Request): String {
+        val locale = request.requestLocale()
+        val body = request.jsonObjectBody() ?: return failure(locale, "invalidRequestBody")
+        val allowedKeys = setOf("nickname", "introduction", "birthday", "faculty", "major", "enrollment", "location", "hometown")
+        if (body.keySet().any { it !in allowedKeys }) {
+            return failure(locale, "invalidRequestBody")
+        }
+
+        var updated = mockProfileSummary
+        if (body.has("nickname")) {
+            val raw = body.get("nickname")
+            val nickname = if (!raw.isJsonNull && raw.isJsonPrimitive && raw.asJsonPrimitive.isString) {
+                raw.asString.trim()
+            } else {
+                return failure(locale, "missingNickname")
+            }
+            if (nickname.isEmpty()) return failure(locale, "nicknameEmpty")
+            if (nickname.length > 32) return failure(locale, "invalidRequestBody")
+            updated = updated.copy(nickname = nickname)
+        }
+
+        if (body.has("introduction")) {
+            val raw = body.get("introduction")
+            val introduction = when {
+                raw.isJsonNull -> ""
+                raw.isJsonPrimitive && raw.asJsonPrimitive.isString -> raw.asString.trim()
+                else -> return failure(locale, "invalidRequestBody")
+            }
+            if (introduction.length > 80) return failure(locale, "invalidRequestBody")
+            updated = updated.copy(introduction = introduction)
+        }
+
+        if (body.has("birthday")) {
+            val raw = body.get("birthday")
+            if (raw.isJsonNull) {
+                updated = updated.copy(birthday = "")
+            } else if (raw.isJsonObject) {
+                val obj = raw.asJsonObject
+                val year = obj.getInteger("year") ?: return failure(locale, "missingYear")
+                val month = obj.getInteger("month") ?: return failure(locale, "missingMonth")
+                val date = obj.getInteger("date") ?: return failure(locale, "missingDate")
+                val parsedDate = runCatching { LocalDate.of(year, month, date) }.getOrNull()
+                    ?: return failure(locale, "invalidRequestBody")
+                if (parsedDate.year < 1900 || parsedDate.isAfter(LocalDate.now(ZoneId.of("Asia/Shanghai")))) {
+                    return failure(locale, "invalidRequestBody")
+                }
+                updated = updated.copy(birthday = "%04d-%02d-%02d".format(year, month, date))
+            } else {
+                return failure(locale, "missingBirthday")
+            }
+        }
+
+        if (body.has("enrollment")) {
+            val raw = body.get("enrollment")
+            if (raw.isJsonNull) {
+                updated = updated.copy(enrollment = "")
+            } else if (raw.isJsonPrimitive && raw.asJsonPrimitive.isNumber) {
+                val year = body.getInteger("enrollment") ?: return failure(locale, "invalidRequestBody")
+                val currentYear = LocalDate.now(ZoneId.of("Asia/Shanghai")).year
+                if (year !in 1900..currentYear) return failure(locale, "invalidRequestBody")
+                updated = updated.copy(enrollment = year.toString())
+            } else {
+                return failure(locale, "invalidRequestBody")
+            }
+        }
+
+        val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
+        val previousFacultyCode = updated.facultyCode
+        val targetFacultyOption = if (body.has("faculty")) {
+            val raw = body.get("faculty")
+            if (raw.isJsonNull || !raw.isJsonPrimitive || !raw.asJsonPrimitive.isNumber) {
+                return failure(locale, "missingFaculty")
+            }
+            val facultyCode = body.getInteger("faculty") ?: return failure(locale, "missingFaculty")
+            options.facultyOptionFor(facultyCode) ?: return failure(locale, "facultyNotFound")
+        } else {
+            options.facultyOptionFor(updated.facultyCode) ?: return failure(locale, "facultyNotFound")
+        }
+
+        val targetMajorCode = if (body.has("major")) {
+            val raw = body.get("major")
+            when {
+                raw.isJsonNull -> ""
+                raw.isJsonPrimitive && raw.asJsonPrimitive.isString -> {
+                    val code = raw.asString.trim()
+                    if (code.isEmpty() || code == ProfileFormSupport.UnselectedCode) {
+                        ""
+                    } else if (targetFacultyOption.majors.any { it.code == code }) {
+                        code
+                    } else {
+                        return failure(locale, "majorNotFound")
+                    }
+                }
+                else -> return failure(locale, "missingMajor")
+            }
+        } else if (body.has("faculty") && targetFacultyOption.code != previousFacultyCode) {
+            ""
+        } else {
+            updated.majorCode.takeIf { code ->
+                code.isNotBlank() && targetFacultyOption.majors.any { it.code == code }
+            }.orEmpty()
+        }
+
+        updated = updated.copy(
+            facultyCode = targetFacultyOption.code,
+            faculty = if (targetFacultyOption.code == 0) "" else targetFacultyOption.label,
+            majorCode = targetMajorCode,
+            major = targetMajorCode.takeIf(String::isNotEmpty)
+                ?.let { code -> targetFacultyOption.majors.firstOrNull { it.code == code }?.label }
+                .orEmpty()
+        )
+
+        if (body.has("location")) {
+            val raw = body.get("location")
+            if (raw.isJsonNull) {
+                updated = updated.copy(location = "", locationRegion = "", locationState = "", locationCity = "")
+            } else if (raw.isJsonObject) {
+                val obj = raw.asJsonObject
+                val regionCode = obj.getString("region")?.trim().orEmpty()
+                if (regionCode.isEmpty()) return failure(locale, "missingLocation")
+                val stateCode = obj.getString("state")?.trim().orEmpty()
+                val cityCode = obj.getString("city")?.trim().orEmpty()
+                val displayName = ProfileLocationCatalog.displayName(regionCode, stateCode, cityCode, locale)
+                    .takeIf(String::isNotBlank)
+                    ?: return failure(locale, "missingLocation")
+                updated = updated.copy(
+                    location = displayName,
+                    locationRegion = regionCode,
+                    locationState = stateCode,
+                    locationCity = cityCode
+                )
+            } else {
+                return failure(locale, "missingLocation")
+            }
+        }
+
+        if (body.has("hometown")) {
+            val raw = body.get("hometown")
+            if (raw.isJsonNull) {
+                updated = updated.copy(hometown = "", hometownRegion = "", hometownState = "", hometownCity = "")
+            } else if (raw.isJsonObject) {
+                val obj = raw.asJsonObject
+                val regionCode = obj.getString("region")?.trim().orEmpty()
+                if (regionCode.isEmpty()) return failure(locale, "missingHometown")
+                val stateCode = obj.getString("state")?.trim().orEmpty()
+                val cityCode = obj.getString("city")?.trim().orEmpty()
+                val displayName = ProfileLocationCatalog.displayName(regionCode, stateCode, cityCode, locale)
+                    .takeIf(String::isNotBlank)
+                    ?: return failure(locale, "missingHometown")
+                updated = updated.copy(
+                    hometown = displayName,
+                    hometownRegion = regionCode,
+                    hometownState = stateCode,
+                    hometownCity = cityCode
+                )
+            } else {
+                return failure(locale, "missingHometown")
+            }
+        }
+
+        mockProfileSummary = updated
+        return success(locale, "saved")
+    }
+
     fun mockUpdateFaculty(request: Request): String {
         val locale = request.requestLocale()
         val facultyCode = request.jsonObjectBody()?.getInteger("faculty")
             ?: return failure(locale, "missingFaculty")
         val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
-        val facultyName = options.facultyNameFor(facultyCode) ?: return failure(locale, "facultyNotFound")
-        val majorOptions = options.majorOptionsFor(facultyName)
+        val facultyOption = options.facultyOptionFor(facultyCode) ?: return failure(locale, "facultyNotFound")
+        val facultyName = options.facultyNameFor(facultyCode).orEmpty()
         mockProfileSummary = mockProfileSummary.copy(
-            faculty = if (facultyName == ProfileFormSupport.UnselectedOption) "" else facultyName,
+            faculty = facultyName,
             facultyCode = facultyCode,
-            major = mockProfileSummary.major.takeIf { majorOptions.contains(it) } ?: "",
+            major = mockProfileSummary.majorCode
+                .takeIf { code -> facultyOption.majors.any { it.code == code } }
+                ?.let { code -> options.majorLabelFor(facultyCode, code) }
+                .orEmpty(),
             majorCode = mockProfileSummary.majorCode.takeIf { code ->
-                options.majorLabelFor(facultyName, code)?.let(majorOptions::contains) == true
-            } ?: ""
+                facultyOption.majors.any { it.code == code }
+            }.orEmpty()
         )
         return success(locale, "saved")
     }
@@ -362,9 +539,8 @@ object MockProfileProvider {
         val majorCode = request.jsonObjectBody()?.getString("major")?.trim()
             ?: return failure(locale, "missingMajor")
         val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
-        val currentFacultyLabel = options.facultyNameFor(mockProfileSummary.facultyCode).orEmpty()
         val majorLabel = options
-            .majorLabelFor(currentFacultyLabel, majorCode)
+            .majorLabelFor(mockProfileSummary.facultyCode, majorCode)
             ?: return failure(locale, "majorNotFound")
         mockProfileSummary = mockProfileSummary.copy(
             major = majorLabel,
@@ -376,38 +552,44 @@ object MockProfileProvider {
     private fun localizedProfileSummary(locale: String): MockProfileSummaryRecord {
         val options = LocalizedProfileCatalog.catalogForLocale(locale).defaultOptions
         val facultyLabel = options.facultyNameFor(mockProfileSummary.facultyCode).orEmpty()
-        val majorLabel = options.majorLabelFor(facultyLabel, mockProfileSummary.majorCode).orEmpty()
-        return mockProfileSummary.copy(
-            faculty = facultyLabel,
-            major = majorLabel,
-            nickname = localizedMockText(
-                simplifiedChinese = MockUtils.MOCK_PROFILE_NICKNAME,
-                traditionalChinese = "林知遠",
-                english = "Lin Zhiyuan",
-                japanese = "リン・ジーユエン",
-                korean = "린즈위안",
-                locale = locale
-            ),
-            location = ProfileLocationCatalog.displayName(
-                regionCode = mockProfileSummary.locationRegion,
-                stateCode = mockProfileSummary.locationState,
-                cityCode = mockProfileSummary.locationCity,
-                locale = locale
-            ),
-            hometown = ProfileLocationCatalog.displayName(
-                regionCode = mockProfileSummary.hometownRegion,
-                stateCode = mockProfileSummary.hometownState,
-                cityCode = mockProfileSummary.hometownCity,
-                locale = locale
-            ),
-            introduction = localizedMockText(
+        val majorLabel = options.majorLabelFor(mockProfileSummary.facultyCode, mockProfileSummary.majorCode).orEmpty()
+        val localizedIntroduction = if (mockProfileSummary.introduction == baseMockProfileSummary.introduction) {
+            localizedMockText(
                 simplifiedChinese = "喜欢做实用的小工具，也在准备 iOS 开发实习。",
                 traditionalChinese = "喜歡做實用的小工具，也在準備 iOS 開發實習。",
                 english = "Enjoys building practical tools and is preparing for an iOS development internship.",
                 japanese = "実用的な小さなツールを作るのが好きで、iOS 開発インターンの準備もしています。",
                 korean = "실용적인 작은 도구를 만드는 것을 좋아하고, iOS 개발 인턴을 준비하고 있습니다.",
                 locale = locale
-            ),
+            )
+        } else {
+            mockProfileSummary.introduction
+        }
+        return mockProfileSummary.copy(
+            faculty = facultyLabel,
+            major = majorLabel,
+            nickname = currentMockNickname(locale),
+            location = if (mockProfileSummary.locationRegion.isBlank()) {
+                ""
+            } else {
+                ProfileLocationCatalog.displayName(
+                    regionCode = mockProfileSummary.locationRegion,
+                    stateCode = mockProfileSummary.locationState,
+                    cityCode = mockProfileSummary.locationCity,
+                    locale = locale
+                )
+            },
+            hometown = if (mockProfileSummary.hometownRegion.isBlank()) {
+                ""
+            } else {
+                ProfileLocationCatalog.displayName(
+                    regionCode = mockProfileSummary.hometownRegion,
+                    stateCode = mockProfileSummary.hometownState,
+                    cityCode = mockProfileSummary.hometownCity,
+                    locale = locale
+                )
+            },
+            introduction = localizedIntroduction,
             ipArea = localizedMockText(
                 simplifiedChinese = "广东",
                 traditionalChinese = "廣東",
