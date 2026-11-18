@@ -1,6 +1,7 @@
 package cn.gdeiassistant.network
 
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.network.mock.MockProfileProvider
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -13,6 +14,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -39,6 +41,7 @@ class MockInterceptorSmokeTest {
 
     @After
     fun tearDown() {
+        MockProfileProvider.resetMockProfile()
         setMockModeEnabled(false)
     }
 
@@ -129,6 +132,28 @@ class MockInterceptorSmokeTest {
         assertTrue(feedback.root.get("message").asString.isNotBlank())
         assertTrue(!feedback.root.has("data") || feedback.dataElement().isJsonNull || feedback.dataElement().isJsonPrimitive)
 
+        val patchProfile = executeJson(
+            path = "/api/profile",
+            method = "PATCH",
+            jsonBody = """{"nickname":"原子测试","introduction":"更新简介","faculty":3,"major":"chinese_language_literature","enrollment":2024,"birthday":null,"location":null,"hometown":null}"""
+        )
+        assertTrue(patchProfile.root.get("message").asString.isNotBlank())
+        val updatedProfile = executeJson("/api/user/profile").dataObject()
+        assertEquals("原子测试", updatedProfile.get("nickname").asString)
+        assertEquals(3, updatedProfile.get("facultyCode").asInt)
+        assertEquals("chinese_language_literature", updatedProfile.get("majorCode").asString)
+        assertEquals("2024", updatedProfile.get("enrollment").asString)
+        assertEquals("", updatedProfile.get("birthday").asString)
+        assertTrue(!updatedProfile.has("location") || updatedProfile.get("location").isJsonNull)
+        assertTrue(!updatedProfile.has("hometown") || updatedProfile.get("hometown").isJsonNull)
+
+        val introPost = executeJson(
+            path = "/api/introduction",
+            method = "POST",
+            jsonBody = """{"introduction":"hello"}"""
+        )
+        assertTrue(introPost.root.get("success").asBoolean)
+
         assertEquals(0, fallbackHits)
     }
 
@@ -149,7 +174,11 @@ class MockInterceptorSmokeTest {
         val libraryDetail = executeJson("/api/library/detail?detailURL=https://mock/detail?id=001")
         assertTrue(libraryDetail.dataObject().get("bookname").asString.isNotBlank())
 
-        val borrowed = executeJson("/api/library/borrow?password=library123")
+        val borrowed = executeJson(
+            path = "/api/library/borrow",
+            method = "POST",
+            jsonBody = """{"password":"library123"}"""
+        )
         val borrowedItems = borrowed.dataArray()
         assertTrue(borrowedItems.size() > 0)
         val borrowedCode = borrowedItems[0].asJsonObject.get("code").asString
@@ -342,6 +371,27 @@ class MockInterceptorSmokeTest {
         assertEquals(0, fallbackHits)
     }
 
+    @Test
+    fun rejectsWrongMethodsAndLegacySubstringRoutesAndNormalizesPrefix() {
+        val prefixedGrade = executeJson("/ctx/api/grade/?year=2025")
+        assertTrue(prefixedGrade.dataObject().getAsJsonArray("firstTermGradeList").size() > 0)
+        assertEquals(0, fallbackHits)
+
+        val uninterceptedRequests = listOf(
+            Request.Builder().url("https://mock/api/introduction").get().build(),
+            Request.Builder().url("https://mock/api/gradequery").get().build(),
+            Request.Builder().url("https://mock/api/grade/query").get().build(),
+            Request.Builder().url("https://mock/api/schedulequery").get().build(),
+            Request.Builder().url("https://mock/api/schedule/query").get().build(),
+            Request.Builder().url("https://mock/api/library/borrow").get().build()
+        )
+        uninterceptedRequests.forEach { request ->
+            val failure = runCatching { client.newCall(request).execute() }.exceptionOrNull()
+            assertTrue("Expected unintercepted route to fall through: ${request.method} ${request.url}", failure is AssertionError)
+        }
+        assertEquals(uninterceptedRequests.size, fallbackHits)
+    }
+
     private fun executeJson(
         path: String,
         method: String = "GET",
@@ -351,6 +401,7 @@ class MockInterceptorSmokeTest {
         val requestBuilder = Request.Builder().url("https://mock$path")
         when (method) {
             "POST" -> requestBuilder.post(createRequestBody(jsonBody, formBody))
+            "PATCH" -> requestBuilder.patch(createRequestBody(jsonBody, formBody))
             "DELETE" -> requestBuilder.delete(createRequestBody(jsonBody, formBody))
             else -> requestBuilder.get()
         }

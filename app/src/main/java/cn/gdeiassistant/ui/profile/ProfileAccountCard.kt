@@ -49,11 +49,11 @@ internal fun ProfileAccountCard(
     onOpenRelations: (String, SocialRelationshipKind) -> Unit,
     onSaveNickname: (String) -> Unit,
     onSaveBirthday: (String) -> Unit,
-    onSaveCollege: (String) -> Unit,
-    onSaveMajor: (String) -> Unit,
-    onSaveEnrollment: (String) -> Unit,
+    onSaveCollege: (Int) -> Unit,
+    onSaveMajor: (String?) -> Unit,
+    onSaveEnrollment: (Int?) -> Unit,
     onSaveBio: (String) -> Unit,
-    onSaveLocation: (ProfileLocationField, ProfileLocationSelection) -> Unit
+    onSaveLocation: (ProfileLocationField, ProfileLocationSelection?) -> Unit
 ) {
     val context = LocalContext.current
     val locale = AppLocaleSupport.normalizeLocale(LocalConfiguration.current.locales[0].toLanguageTag())
@@ -67,12 +67,11 @@ internal fun ProfileAccountCard(
     val avatarFallbackLabel = profile.nickname?.takeIf(String::isNotBlank)
         ?: profile.username
     val profileOptions = state.profileOptions.localizedForLocale(locale)
-    val currentCollege = profileOptions.facultyNameFor(profile.facultyCode)
-        ?: profile.faculty?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
-    val currentMajor = profileOptions.majorLabelFor(currentCollege, profile.majorCode.orEmpty())
-        ?: profile.major?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
-    val currentEnrollment = profile.enrollment?.takeIf(String::isNotBlank) ?: ProfileFormSupport.UnselectedOption
-    val canSelectMajor = profileOptions.canSelectMajor(currentCollege)
+    val currentFacultyCode = profile.facultyCode ?: 0
+    val currentMajorCode = profile.majorCode?.trim()
+        ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
+    val currentEnrollment = profile.enrollment?.trim()?.toIntOrNull()
+    val canSelectMajor = profileOptions.canSelectMajor(currentFacultyCode)
     val selectCollegeFirstText = stringResource(R.string.profile_select_college_first)
 
     Column(
@@ -240,33 +239,55 @@ internal fun ProfileAccountCard(
         )
     }
 
-    activeSelectionEditor?.let { editor ->
-        ProfileSelectionPickerSheet(
-            title = when (editor) {
-                ProfileSelectionEditorField.College -> stringResource(R.string.profile_college_label)
-                ProfileSelectionEditorField.Major -> stringResource(R.string.profile_info_major)
-                ProfileSelectionEditorField.Enrollment -> stringResource(R.string.profile_info_enrollment)
-            },
-            options = when (editor) {
-                ProfileSelectionEditorField.College -> profileOptions.facultyOptions
-                ProfileSelectionEditorField.Major -> profileOptions.majorOptionsFor(currentCollege)
-                ProfileSelectionEditorField.Enrollment -> listOf(ProfileFormSupport.UnselectedOption) + ProfileFormSupport.enrollmentOptions
-            },
-            selectedValue = when (editor) {
-                ProfileSelectionEditorField.College -> currentCollege
-                ProfileSelectionEditorField.Major -> currentMajor
-                ProfileSelectionEditorField.Enrollment -> currentEnrollment
-            },
-            monospace = editor == ProfileSelectionEditorField.Enrollment,
-            onDismiss = { activeSelectionEditor = null },
-            onSelect = { option ->
-                when (editor) {
-                    ProfileSelectionEditorField.College -> onSaveCollege(option)
-                    ProfileSelectionEditorField.Major -> onSaveMajor(option)
-                    ProfileSelectionEditorField.Enrollment -> onSaveEnrollment(option)
+    when (activeSelectionEditor) {
+        ProfileSelectionEditorField.College -> {
+            ProfileSelectionPickerSheet(
+                title = stringResource(R.string.profile_college_label),
+                options = profileOptions.faculties.map { ProfileSelectionOption(it.code, it.label) },
+                selectedValue = currentFacultyCode,
+                monospace = false,
+                onDismiss = { activeSelectionEditor = null },
+                onSelect = { facultyCode ->
+                    onSaveCollege(facultyCode)
+                    activeSelectionEditor = null
                 }
-                activeSelectionEditor = null
-            }
-        )
+            )
+        }
+        ProfileSelectionEditorField.Major -> {
+            ProfileSelectionPickerSheet(
+                title = stringResource(R.string.profile_info_major),
+                options = profileOptions.majorOptionsFor(currentFacultyCode, locale).map { major ->
+                    ProfileSelectionOption(
+                        value = major.code.takeUnless { it == ProfileFormSupport.UnselectedCode },
+                        label = major.label
+                    )
+                },
+                selectedValue = currentMajorCode,
+                monospace = false,
+                onDismiss = { activeSelectionEditor = null },
+                onSelect = { majorCode ->
+                    onSaveMajor(majorCode)
+                    activeSelectionEditor = null
+                }
+            )
+        }
+        ProfileSelectionEditorField.Enrollment -> {
+            ProfileSelectionPickerSheet(
+                title = stringResource(R.string.profile_info_enrollment),
+                options = listOf(
+                    ProfileSelectionOption<Int?>(null, ProfileFormSupport.UnselectedOption)
+                ) + ProfileFormSupport.enrollmentYearOptions.map { year ->
+                    ProfileSelectionOption<Int?>(year, year.toString())
+                },
+                selectedValue = currentEnrollment,
+                monospace = true,
+                onDismiss = { activeSelectionEditor = null },
+                onSelect = { year ->
+                    onSaveEnrollment(year)
+                    activeSelectionEditor = null
+                }
+            )
+        }
+        null -> Unit
     }
 }

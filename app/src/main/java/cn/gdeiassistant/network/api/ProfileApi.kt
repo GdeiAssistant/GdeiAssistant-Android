@@ -6,8 +6,11 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
+import com.google.gson.TypeAdapter
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -15,6 +18,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -97,29 +101,8 @@ interface ProfileApi {
     @POST("api/email/unbind")
     suspend fun unbindEmail(): JsonResult
 
-    @POST("api/profile/nickname")
-    suspend fun updateNickname(@Body body: NicknameUpdateDto): JsonResult
-
-    @POST("api/profile/birthday")
-    suspend fun updateBirthday(@Body body: BirthdayUpdateDto): JsonResult
-
-    @POST("api/profile/faculty")
-    suspend fun updateFaculty(@Body body: FacultyUpdateDto): JsonResult
-
-    @POST("api/profile/major")
-    suspend fun updateMajor(@Body body: MajorUpdateDto): JsonResult
-
-    @POST("api/profile/enrollment")
-    suspend fun updateEnrollment(@Body body: EnrollmentUpdateDto): JsonResult
-
-    @POST("api/profile/location")
-    suspend fun updateLocation(@Body body: LocationUpdateDto): JsonResult
-
-    @POST("api/profile/hometown")
-    suspend fun updateHometown(@Body body: LocationUpdateDto): JsonResult
-
-    @POST("api/introduction")
-    suspend fun updateIntroduction(@Body body: IntroductionUpdateDto): JsonResult
+    @PATCH("api/profile")
+    suspend fun updateProfile(@Body body: ProfilePatchDto): JsonResult
 
     @Multipart
     @POST("api/profile/avatar")
@@ -167,30 +150,22 @@ data class PhoneStatusDto(
     val code: Int? = null
 )
 
-data class NicknameUpdateDto(
-    val nickname: String
-)
-
-data class FacultyUpdateDto(
-    val faculty: Int
-)
-
-data class MajorUpdateDto(
-    val major: String
-)
-
-data class EnrollmentUpdateDto(
-    val year: Int? = null
-)
-
-data class IntroductionUpdateDto(
-    val introduction: String
+@JsonAdapter(ProfilePatchDtoTypeAdapter::class)
+data class ProfilePatchDto(
+    val nickname: String,
+    val introduction: String,
+    val faculty: Int,
+    val major: String? = null,
+    val enrollment: Int? = null,
+    val birthday: BirthdayUpdateDto? = null,
+    val location: LocationUpdateDto? = null,
+    val hometown: LocationUpdateDto? = null
 )
 
 data class BirthdayUpdateDto(
-    val year: Int? = null,
-    val month: Int? = null,
-    val date: Int? = null
+    val year: Int,
+    val month: Int,
+    val date: Int
 )
 
 data class LocationUpdateDto(
@@ -198,6 +173,64 @@ data class LocationUpdateDto(
     val state: String? = null,
     val city: String? = null
 )
+
+class ProfilePatchDtoTypeAdapter : TypeAdapter<ProfilePatchDto>() {
+    override fun write(out: JsonWriter, value: ProfilePatchDto?) {
+        if (value == null) {
+            out.nullValue()
+            return
+        }
+        val previousSerializeNulls = out.serializeNulls
+        out.serializeNulls = true
+        try {
+            out.beginObject()
+            out.name("nickname").value(value.nickname)
+            out.name("introduction").value(value.introduction)
+            out.name("faculty").value(value.faculty)
+            out.name("major")
+            if (value.major != null) out.value(value.major) else out.nullValue()
+            out.name("enrollment")
+            if (value.enrollment != null) out.value(value.enrollment) else out.nullValue()
+            out.name("birthday")
+            writeBirthday(out, value.birthday)
+            out.name("location")
+            writeLocation(out, value.location)
+            out.name("hometown")
+            writeLocation(out, value.hometown)
+            out.endObject()
+        } finally {
+            out.serializeNulls = previousSerializeNulls
+        }
+    }
+
+    override fun read(`in`: JsonReader): ProfilePatchDto {
+        throw UnsupportedOperationException("ProfilePatchDto is write-only")
+    }
+
+    private fun writeBirthday(out: JsonWriter, birthday: BirthdayUpdateDto?) {
+        if (birthday == null) {
+            out.nullValue()
+            return
+        }
+        out.beginObject()
+        out.name("year").value(birthday.year)
+        out.name("month").value(birthday.month)
+        out.name("date").value(birthday.date)
+        out.endObject()
+    }
+
+    private fun writeLocation(out: JsonWriter, location: LocationUpdateDto?) {
+        if (location == null) {
+            out.nullValue()
+            return
+        }
+        out.beginObject()
+        out.name("region").value(location.region)
+        location.state?.let { out.name("state").value(it) }
+        location.city?.let { out.name("city").value(it) }
+        out.endObject()
+    }
+}
 
 data class PrivacySettingsDto(
     val facultyOpen: Boolean? = null,

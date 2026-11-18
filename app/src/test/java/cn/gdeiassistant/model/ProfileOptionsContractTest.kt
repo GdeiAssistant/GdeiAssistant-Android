@@ -24,10 +24,13 @@ class ProfileOptionsContractTest {
         assertEquals("中文系", options.facultyNameFor(3))
         assertEquals(
             listOf("未选择", "汉语言文学", "历史学", "秘书学"),
-            options.majorOptionsFor("中文系")
+            options.majorOptionsFor(3).map(ProfileMajorOption::label)
         )
-        assertEquals("secretarial_studies", options.majorCodeFor("中文系", "秘书学"))
-        assertEquals("秘书学", options.majorLabelFor("中文系", "secretarial_studies"))
+        assertEquals(
+            listOf("unselected", "chinese_language_literature", "history", "secretarial_studies"),
+            options.majorOptionsFor(3).map(ProfileMajorOption::code)
+        )
+        assertEquals("秘书学", options.majorLabelFor(3, "secretarial_studies"))
         assertNull(options.facultyNameFor(999))
     }
 
@@ -45,7 +48,7 @@ class ProfileOptionsContractTest {
         assertEquals("Department of Chinese", options.facultyNameFor(3))
         assertEquals(
             listOf("Not selected", "Chinese Language and Literature", "History", "Secretarial Studies"),
-            options.majorOptionsFor("Department of Chinese")
+            options.majorOptionsFor(3).map(ProfileMajorOption::label)
         )
         assertEquals("Digital Accessories", marketplaceTypeTitle(3))
         assertEquals("Found Item Notice", ProfileFormSupport.defaultOptions.lostFoundModeTitle(1))

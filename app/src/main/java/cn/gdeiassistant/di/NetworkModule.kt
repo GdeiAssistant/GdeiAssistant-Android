@@ -88,9 +88,9 @@ object NetworkModule {
             .addInterceptor(localeInterceptor)           // 2. Add Accept-Language
             .addInterceptor(baseUrlOverrideInterceptor)  // 3. Rewrite base URL for environment
             .addInterceptor(networkLoggingInterceptor)   // 4. Log request+response timing
-            .addInterceptor(MockInterceptor())           // 5. Short-circuit with mock data if enabled
-            .addInterceptor(authInterceptor)             // 6. Attach Bearer token
-            .addInterceptor(responseInterceptor)         // 7. Handle HTTP errors
+            .addInterceptor(authInterceptor)             // 5. Attach Bearer token
+            .addInterceptor(responseInterceptor)         // 6. Handle HTTP errors
+            .addInterceptor(MockInterceptor())           // 7. Short-circuit with mock data if enabled
 
         buildCertificatePinner(apiHost)?.let(builder::certificatePinner)
         return builder.build()

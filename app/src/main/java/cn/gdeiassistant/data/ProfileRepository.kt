@@ -26,19 +26,15 @@ import cn.gdeiassistant.model.displayDeviceName
 import cn.gdeiassistant.model.maskEmail
 import cn.gdeiassistant.model.maskPhone
 import cn.gdeiassistant.network.api.BirthdayUpdateDto
-import cn.gdeiassistant.network.api.EnrollmentUpdateDto
-import cn.gdeiassistant.network.api.FacultyUpdateDto
 import cn.gdeiassistant.network.api.FeedbackSubmissionDto
-import cn.gdeiassistant.network.api.IntroductionUpdateDto
 import cn.gdeiassistant.network.api.LocationUpdateDto
-import cn.gdeiassistant.network.api.MajorUpdateDto
-import cn.gdeiassistant.network.api.NicknameUpdateDto
 import cn.gdeiassistant.network.api.PhoneStatusDto
 import cn.gdeiassistant.network.api.PrivacySettingsDto
 import cn.gdeiassistant.network.api.ProfileApi
 import cn.gdeiassistant.network.api.ProfileLocationCityDto
 import cn.gdeiassistant.network.api.ProfileLocationRegionDto
 import cn.gdeiassistant.network.api.ProfileLocationStateDto
+import cn.gdeiassistant.network.api.ProfilePatchDto
 import cn.gdeiassistant.network.safeApiCall
 import cn.gdeiassistant.network.safeJsonResultCall
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -63,6 +59,9 @@ class ProfileRepository @Inject constructor(
         safeApiCall { profileApi.getUserProfile() }.mapCatching { dto ->
             val profile = dto ?: throw IllegalStateException(context.getString(R.string.profile_data_missing))
             val profileOptions = profileOptionsRepository.currentOptions()
+            val normalizedMajorCode = profile.majorCode
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
             UserProfileSummary(
                 username = profile.username.orEmpty(),
                 nickname = profile.nickname,
@@ -70,17 +69,17 @@ class ProfileRepository @Inject constructor(
                 faculty = profileOptions.facultyNameFor(profile.facultyCode),
                 facultyCode = profile.facultyCode,
                 major = profileOptions.majorLabelFor(
-                    faculty = profileOptions.facultyNameFor(profile.facultyCode).orEmpty(),
-                    majorCode = profile.majorCode.orEmpty()
+                    facultyCode = profile.facultyCode,
+                    majorCode = normalizedMajorCode
                 ),
-                majorCode = profile.majorCode,
-                enrollment = profile.enrollment,
+                majorCode = normalizedMajorCode,
+                enrollment = profile.enrollment?.trim()?.takeIf(String::isNotEmpty),
                 location = profile.location?.toSelection()?.displayName,
                 locationSelection = profile.location?.toSelection(),
                 hometown = profile.hometown?.toSelection()?.displayName,
                 hometownSelection = profile.hometown?.toSelection(),
                 introduction = profile.introduction,
-                birthday = profile.birthday,
+                birthday = profile.birthday?.trim()?.takeIf(String::isNotEmpty),
                 ipArea = profile.ipArea,
                 age = profile.age
             )
@@ -104,62 +103,36 @@ class ProfileRepository @Inject constructor(
     suspend fun updateProfile(request: ProfileUpdateRequest): Result<UserProfileSummary> = withContext(Dispatchers.IO) {
         cancellableRunCatching {
             val normalizedNickname = request.nickname.trim()
-            val normalizedCollege = ProfileFormSupport.normalizeSelection(request.college)
             val profileOptions = profileOptionsRepository.getOptions().getOrElse {
                 profileOptionsRepository.currentOptions()
             }
-            val facultyCode = profileOptions.facultyCodeFor(normalizedCollege)
+            val facultyOption = profileOptions.facultyOptionFor(request.facultyCode)
                 ?: throw IllegalStateException(
-                    context.getString(R.string.profile_sync_unsupported_college, normalizedCollege)
+                    context.getString(R.string.profile_sync_unsupported_college, request.facultyCode.toString())
                 )
+            val normalizedMajorCode = request.majorCode
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() && it != ProfileFormSupport.UnselectedCode }
+            if (normalizedMajorCode != null && facultyOption.majors.none { it.code == normalizedMajorCode }) {
+                throw IllegalStateException(
+                    context.getString(R.string.profile_sync_unsupported_major, normalizedMajorCode)
+                )
+            }
 
             safeJsonResultCall {
-                profileApi.updateNickname(NicknameUpdateDto(nickname = normalizedNickname))
-            }.getOrThrow()
-
-            safeJsonResultCall {
-                profileApi.updateFaculty(FacultyUpdateDto(faculty = facultyCode))
-            }.getOrThrow()
-
-            ProfileFormSupport.normalizeOptionalSelection(request.major)?.let { major ->
-                val majorCode = profileOptions.majorCodeFor(normalizedCollege, major)
-                    ?: throw IllegalStateException(
-                        context.getString(R.string.profile_sync_unsupported_major, major)
+                profileApi.updateProfile(
+                    ProfilePatchDto(
+                        nickname = normalizedNickname,
+                        introduction = request.bio.trim(),
+                        faculty = facultyOption.code,
+                        major = normalizedMajorCode,
+                        enrollment = request.enrollment,
+                        birthday = birthdayDtoFrom(request.birthday.orEmpty()),
+                        location = locationDtoFrom(request.location),
+                        hometown = locationDtoFrom(request.hometown)
                     )
-                safeJsonResultCall {
-                    profileApi.updateMajor(MajorUpdateDto(major = majorCode))
-                }.getOrThrow()
-            }
-
-            safeJsonResultCall {
-                profileApi.updateEnrollment(
-                    EnrollmentUpdateDto(year = enrollmentYearFrom(request.grade))
                 )
             }.getOrThrow()
-
-            safeJsonResultCall {
-                profileApi.updateIntroduction(
-                    IntroductionUpdateDto(introduction = request.bio.trim())
-                )
-            }.getOrThrow()
-
-            birthdayDtoFrom(request.birthday)?.let { birthday ->
-                safeJsonResultCall {
-                    profileApi.updateBirthday(birthday)
-                }.getOrThrow()
-            }
-
-            locationDtoFrom(request.location)?.let { location ->
-                safeJsonResultCall {
-                    profileApi.updateLocation(location)
-                }.getOrThrow()
-            }
-
-            locationDtoFrom(request.hometown)?.let { hometown ->
-                safeJsonResultCall {
-                    profileApi.updateHometown(hometown)
-                }.getOrThrow()
-            }
 
             getProfile().getOrThrow()
         }
@@ -411,18 +384,6 @@ class ProfileRepository @Inject constructor(
 
     private fun sanitize(value: String?): String? {
         return value?.trim()?.takeIf(String::isNotEmpty)
-    }
-
-    private fun enrollmentYearFrom(grade: String): Int? {
-        val normalizedGrade = ProfileFormSupport.normalizeOptionalSelection(grade) ?: return null
-        val matchedYear = Regex("\\d{4}").find(normalizedGrade)?.value
-            ?: throw IllegalStateException(
-                context.getString(R.string.profile_enrollment_parse_failed, normalizedGrade)
-            )
-        return matchedYear.toIntOrNull()
-            ?: throw IllegalStateException(
-                context.getString(R.string.profile_enrollment_parse_failed, normalizedGrade)
-            )
     }
 
     private fun birthdayDtoFrom(birthday: String): BirthdayUpdateDto? {
