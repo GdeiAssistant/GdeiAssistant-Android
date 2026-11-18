@@ -32,6 +32,8 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
       - name: Merge the verified current head
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node .github/scripts/dependabot-policy.cjs merge
+        uses: GdeiAssistant/.github/actions/dependabot-policy@6d342d39a5a3c8aa74120c51911d0461aa8fc747
+        with:
+          mode: merge
+          config-path: .github/scripts/dependabot-policy.json
+          github-token: ${{ github.token }}
