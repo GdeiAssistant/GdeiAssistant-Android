@@ -129,7 +129,7 @@ private fun ChatScreenBody(viewModel: ChatViewModel, onBack: (() -> Unit)?) {
         conversation.canSend &&
         !state.isSending
     val canPickImage = canCompose &&
-        conversation?.imageMessagingEnabled == true &&
+        conversation.imageMessagingEnabled &&
         !state.isPreparingImage
     val pickImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
