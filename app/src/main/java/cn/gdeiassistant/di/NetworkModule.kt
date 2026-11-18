@@ -5,7 +5,6 @@ import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.network.AuthInterceptor
 import cn.gdeiassistant.network.BaseUrlOverrideInterceptor
 import cn.gdeiassistant.network.LocaleInterceptor
-import cn.gdeiassistant.network.MockInterceptor
 import cn.gdeiassistant.network.NetworkConstants
 import cn.gdeiassistant.network.NetworkLoggingInterceptor
 import cn.gdeiassistant.network.RequestIdInterceptor
@@ -41,6 +40,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.CertificatePinner
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -73,7 +73,8 @@ object NetworkModule {
         baseUrlOverrideInterceptor: BaseUrlOverrideInterceptor,
         authInterceptor: AuthInterceptor,
         responseInterceptor: ResponseInterceptor,
-        localeInterceptor: LocaleInterceptor
+        localeInterceptor: LocaleInterceptor,
+        @MockNetworkInterceptor mockInterceptor: Interceptor
     ): OkHttpClient {
         val apiHost = runCatching {
             BuildConfig.BASE_URL.toHttpUrl().host
@@ -90,7 +91,7 @@ object NetworkModule {
             .addInterceptor(networkLoggingInterceptor)   // 4. Log request+response timing
             .addInterceptor(authInterceptor)             // 5. Attach Bearer token
             .addInterceptor(responseInterceptor)         // 6. Handle HTTP errors
-            .addInterceptor(MockInterceptor())           // 7. Short-circuit with mock data if enabled
+            .addInterceptor(mockInterceptor)             // 7. Short-circuit with mock data in debug mode
 
         buildCertificatePinner(apiHost)?.let(builder::certificatePinner)
         return builder.build()

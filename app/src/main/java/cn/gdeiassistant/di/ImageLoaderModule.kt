@@ -1,7 +1,6 @@
 package cn.gdeiassistant.di
 
 import android.content.Context
-import cn.gdeiassistant.network.MockInterceptor
 import cn.gdeiassistant.network.NetworkConstants
 import cn.gdeiassistant.network.SocialAvatarAuthInterceptor
 import coil.ImageLoader
@@ -12,6 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -38,14 +38,15 @@ object ImageLoaderModule {
     @Singleton
     @AuthenticatedImageOkHttp
     fun provideAuthenticatedImageOkHttp(
-        socialAvatarAuthInterceptor: SocialAvatarAuthInterceptor
+        socialAvatarAuthInterceptor: SocialAvatarAuthInterceptor,
+        @MockNetworkInterceptor mockInterceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(NetworkConstants.CONNECT_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
             .readTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
             .writeTimeout(NetworkConstants.READ_WRITE_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
             .addInterceptor(socialAvatarAuthInterceptor)
-            .addInterceptor(MockInterceptor())
+            .addInterceptor(mockInterceptor)
             .build()
     }
 

@@ -190,7 +190,8 @@ class ResponseInterceptorRegressionTest {
             baseUrlOverrideInterceptor = BaseUrlOverrideInterceptor(),
             authInterceptor = authInterceptor,
             responseInterceptor = responseInterceptor,
-            localeInterceptor = LocaleInterceptor(mock())
+            localeInterceptor = LocaleInterceptor(mock()),
+            mockInterceptor = MockInterceptor()
         )
         val interceptors = client.interceptors
         val authIndex = interceptors.indexOf(authInterceptor)
