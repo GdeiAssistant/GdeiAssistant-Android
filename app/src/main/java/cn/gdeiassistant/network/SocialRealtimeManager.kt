@@ -2,8 +2,8 @@ package cn.gdeiassistant.network
 
 import cn.gdeiassistant.data.SessionManager
 import cn.gdeiassistant.data.SettingsRepository
+import cn.gdeiassistant.di.SocialRealtimeMockEventSource
 import cn.gdeiassistant.model.SocialRealtimeEvent
-import cn.gdeiassistant.network.mock.MockSocialProvider
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +36,8 @@ import javax.inject.Singleton
 @Singleton
 class SocialRealtimeManager @Inject constructor(
     private val okHttpClient: OkHttpClient,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val mockEventSource: SocialRealtimeMockEventSource
 ) {
 
     private enum class Phase {
@@ -122,7 +123,7 @@ class SocialRealtimeManager @Inject constructor(
         if (mockCollectJob?.isActive != true) {
             val gen = generation.get()
             mockCollectJob = scope.launch {
-                MockSocialProvider.mockEvents.collectLatest { event ->
+                mockEventSource.events.collectLatest { event ->
                     if (generation.get() != gen) return@collectLatest
                     if (activeToken.get() != token) return@collectLatest
                     eventsMutable.emit(event)

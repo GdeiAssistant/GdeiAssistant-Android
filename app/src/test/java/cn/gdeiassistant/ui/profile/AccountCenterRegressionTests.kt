@@ -29,7 +29,7 @@ class AccountCenterRegressionTests {
 
     @Test
     fun downloadDataBodyIsDerivedAtRenderTimeInsteadOfStoredInUiState() {
-        val viewModelSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/AccountCenterViewModels.kt")
+        val viewModelSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/DownloadDataViewModel.kt")
         val screenSource = sourceFile("app/src/main/java/cn/gdeiassistant/ui/profile/DownloadDataScreen.kt")
         val downloadStateSection = viewModelSource.substringAfter("data class DownloadDataUiState(")
             .substringBefore("sealed interface DownloadDataEvent")

@@ -10,7 +10,7 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 
 ## 目录
 
-- `app/` — 应用模块。
+- `app/` — 应用模块（`app/src/main/` 为生产源码，`app/src/debug/` 隔离 Mock 拦截器与调试数据，`app/src/release/` 仅保留空实现绑定）。
 - `design/` — 设计令牌来源。
 - `docs/` — `location-names.md` 说明地点名称来源。
 - `scripts/` — 多语言资源检查与模拟器测试脚本。
@@ -34,7 +34,7 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 **编译**
 
 ```bash
-./gradlew :app:assembleDebug
+./gradlew :app:assembleDebug :app:compileReleaseKotlin
 ```
 
 ## 命名与文档
@@ -56,6 +56,7 @@ Kotlin，Jetpack Compose，Gradle（`build.gradle.kts` + `settings.gradle.kts`�
 - 不要手改生成的设计令牌产物，改 `design/` 源文件。
 - 不要单方面改接口契约。服务端、iOS、微信小程序共用同一套。
 - 不要在 `app/` 里新增只为一个页面服务的全局单例。
+- 不要把 Mock 数据、拦截器或测试桩放进 `app/src/main/` 或 `release` 构建。
 
 <!-- content-boundary:begin -->
 - 公开材料不出现真实资源名与账号：桶写 `gs://<bucket>/...`，账号写 `<account-id>`，示例用合成值。
